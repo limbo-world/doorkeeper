@@ -1,0 +1,1 @@
+authcFilter=org.limbo.authc.api.dubbo.support.dubbo.ProviderAuthcContextFilter

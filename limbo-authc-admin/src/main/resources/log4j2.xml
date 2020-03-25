@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~  Copyright 2020-2024 Limbo Team (https://github.com/LimboHome).
+  ~
+  ~  Licensed under the Apache License, Version 2.0 (the "License");
+  ~  you may not use this file except in compliance with the License.
+  ~  You may obtain a copy of the License at
+  ~
+  ~        http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  -->
+
+<Configuration status="WARN">
+    <Properties>
+        <Property name="LOG_EXCEPTION_CONVERSION_WORD">%xThrowable</Property>
+        <property name="pattern_base">%d{yy-MM-dd HH:mm:ss}  %5level %pid --- </property>
+        <property name="CONSOLE_LOG_PATTERN">${pattern_base} [%t] %-40.40c{1.} - %L : %m%n${sys:LOG_EXCEPTION_CONVERSION_WORD}</property>
+    </Properties>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${sys:CONSOLE_LOG_PATTERN}"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <!--<logger name="org.springframework" level="INFO" />-->
+        <!--<logger name="org.springframework.web" level="INFO" />-->
+        <logger name="org.apache.http.impl.conn.PoolingHttpClientConnectionManager" level="INFO" />
+        <Root level="INFO">
+            <AppenderRef ref="Console" />
+        </Root>
+    </Loggers>
+</Configuration>

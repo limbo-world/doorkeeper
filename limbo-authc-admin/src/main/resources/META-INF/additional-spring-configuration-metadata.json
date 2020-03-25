@@ -1,0 +1,32 @@
+{
+  "groups": [
+    {
+      "name": "authc",
+      "type": "org.limbo.authc.admin.support.autoconfig.AuthcProperties",
+      "sourceType": "org.limbo.authc.admin.support.autoconfig.AuthcProperties"
+    },
+    {
+      "name": "authc.api",
+      "type": "org.limbo.authc.admin.support.autoconfig.AuthcProperties$ApiConfig",
+      "sourceType": "org.limbo.authc.admin.support.autoconfig.AuthcProperties",
+      "sourceMethod": "getApi()"
+    }
+  ],
+  "properties": [
+    {
+      "name": "authc.project-id",
+      "type": "java.lang.Long",
+      "sourceType": "org.limbo.authc.admin.support.autoconfig.AuthcProperties"
+    },
+    {
+      "name": "authc.project-code",
+      "type": "java.lang.String",
+      "sourceType": "org.limbo.authc.admin.support.autoconfig.AuthcProperties"
+    },
+    {
+      "name": "authc.api.certificate",
+      "type": "java.lang.String",
+      "sourceType": "org.limbo.authc.admin.support.autoconfig.AuthcProperties$ApiConfig"
+    }
+  ]
+}

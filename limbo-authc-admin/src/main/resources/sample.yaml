@@ -1,0 +1,44 @@
+jasypt:
+  encryptor:
+    password: 7777777
+spring:
+  # redis用于管理会话
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password: ENC(20zrAQzwAz91qUzq19fAMLjNQ3)
+    database: 0
+  # AuthcAdmin项目的业务数据放在这个库中
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://120.78.128.131:3306/limbo_authc_test?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
+    username: ENC(ML9fV4B9HapVKPEZuKYDSA==)
+    password: ENC(t9WIT3EPwgWfBgzD1b8QE5NpMLAU43aZ)
+
+# DAO层基于MyBatisPlus
+mybatis-plus:
+  mapper-locations: classpath*:mybatis/mapper/*.xml
+
+dubbo:
+  application:
+    name: limbo-authc
+  registry:
+    address: ${nacos.test.top:8848} # nacos注册中心
+    protocol: nacos
+    parameters:
+      namespace: ${nacos.config.namespace}
+  consumer:
+    mock: true
+    timeout: 3000
+  service:
+    version: 1.0.0
+
+authc:
+  # 约定 AuthcAdmin项目的 projectCode 是预先设置好的
+  project-code: limbo-authc
+  # ProjectSecret，APP调用AuthcService时会需带上这个隐式参数，防止其他项目修改本项目的认证授权数据
+  project-secret: BEC00CF81411430FAC6EBDE343AADA86
+  # 调用projectApi的接口时，需要验证密码，有改密码的APP才有权调用；若不打算重做AuthcAdmin项目的业务，此密码不应让APP知晓，只在AuthcAdmin项目中配置即可；
+  api:
+    certificate: 123567890

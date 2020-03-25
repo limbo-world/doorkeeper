@@ -1,0 +1,25 @@
+# nacos 作为配置中心 注册中心
+nacos:
+  config:
+    bootstrap:
+      enable: true
+    server-addr: 172.17.16.9:8848
+    namespace: b793c494-aadf-4679-850a-43170e3190d3
+    data-id: admin
+    group: limbo-authc
+    type: yaml
+
+dubbo:
+  application:
+    name: limbo-authc
+  registry:
+    address: ${nacos.config.server-addr}
+    protocol: nacos
+    parameters:
+      namespace: ${nacos.config.namespace}
+  consumer:
+    group: brozen
+    mock: true
+    timeout: 3000
+  service:
+    version: 1.0.0

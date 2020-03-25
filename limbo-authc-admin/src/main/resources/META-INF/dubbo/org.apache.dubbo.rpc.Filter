@@ -1,0 +1,1 @@
+consumerAuthcFilter=org.limbo.authc.api.interfaces.support.dubbo.ConsumerAthcContextFilter
