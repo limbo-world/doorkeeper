@@ -25,7 +25,7 @@
   
 ## 项目架构  
 
-![项目架构图](https://github.com/LimboHome/limbo-authc/readme/system.png)
+![项目架构图](https://github.com/LimboHome/limbo-authc/tree/master/readme/system.png)
   
 - **Authc Server** : 授权服务，项目、账户、角色、菜单、权限等数据均应通过Authc Server服务操作；
 - **Authc DB** : 授权服务使用的DB；
@@ -91,19 +91,19 @@
 
  1. 在权限管理后台创建项目
 
-![创建项目](https://github.com/LimboHome/limbo-authc/readme/project.jpeg)
+![创建项目](https://github.com/LimboHome/limbo-authc/tree/master/readme/project.jpeg)
 
  2. 在权限管理后台创建项目的管理员账户，并将项目授权给管理员账户
 
-![账户管理](https://github.com/LimboHome/limbo-authc/readme/account.jpeg)
+![账户管理](https://github.com/LimboHome/limbo-authc/tree/master/readme/account.jpeg)
 
  3. 以项目管理员账户登陆权限管理后台，配置项目的权限、菜单、角色
 
-![权限](https://github.com/LimboHome/limbo-authc/readme/permission.jpeg)
+![权限](https://github.com/LimboHome/limbo-authc/tree/master/readme/permission.jpeg)
 
-![菜单](https://github.com/LimboHome/limbo-authc/readme/menu.jpeg)
+![菜单](https://github.com/LimboHome/limbo-authc/tree/master/readme/menu.jpeg)
 
-![菜单](https://github.com/LimboHome/limbo-authc/readme/role.jpeg)
+![菜单](https://github.com/LimboHome/limbo-authc/tree/master/readme/role.jpeg)
 
  4. 启动业务系统，依赖授权服务，进行账户创建
 
