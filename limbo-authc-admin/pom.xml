@@ -98,6 +98,28 @@
             <artifactId>dubbo-spring-boot-autoconfigure</artifactId>
             <version>${dubbo.version}</version>
         </dependency>
+        <!-- Sentinel限流与熔断 -->
+        <dependency>
+            <groupId>com.alibaba.csp</groupId>
+            <artifactId>sentinel-core</artifactId>
+            <version>${sentinel.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.csp</groupId>
+            <artifactId>sentinel-apache-dubbo-adapter</artifactId>
+            <version>${sentinel.version}</version>
+        </dependency>
+        <!-- Sentinel控制台 -->
+        <dependency>
+            <groupId>com.alibaba.csp</groupId>
+            <artifactId>sentinel-transport-simple-http</artifactId>
+            <version>${sentinel.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.csp</groupId>
+            <artifactId>sentinel-datasource-nacos</artifactId>
+            <version>${sentinel.version}</version>
+        </dependency>
 
         <!-- Nacos -->
         <dependency>

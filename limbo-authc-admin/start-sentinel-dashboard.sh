@@ -1,0 +1,1 @@
+java -jar -Dserver.port=9001 -Dcsp.sentinel.dashboard.server=localhost:9001 -Dproject.name=limbo.sentinel.dashboard sentinel-dashboard-1.7.1.jar

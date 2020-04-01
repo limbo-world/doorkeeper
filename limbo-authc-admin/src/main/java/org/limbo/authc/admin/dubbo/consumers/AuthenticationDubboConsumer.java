@@ -54,7 +54,7 @@ public class AuthenticationDubboConsumer {
     @Reference(version = "1.0.0", filter = {"consumerAuthcFilter"})
     private AuthenticationApi authenticationApi;
 
-    @Reference(version = "1.0.0", filter = {"consumerAuthcFilter"})
+    @Autowired
     private AuthorizationApi authorizationApi;
 
     @Autowired

@@ -18,6 +18,7 @@ package org.limbo.authc.session.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -69,6 +70,17 @@ public class HiJackson {
             return mapper.readValue(json, type);
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("Jackson反序列化失败！type=" + type.getName(), e);
+        }
+    }
+
+    public static <T> T fromJson(String json, TypeReference<T> type) {
+        Objects.requireNonNull(json);
+        Objects.requireNonNull(type);
+        ObjectMapper mapper = createMapper();
+        try {
+            return mapper.readValue(json, type);
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("Jackson反序列化失败！type=" + type.getType().getTypeName(), e);
         }
     }
 
