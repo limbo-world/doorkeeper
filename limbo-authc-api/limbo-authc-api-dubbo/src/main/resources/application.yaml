@@ -20,6 +20,5 @@ dubbo:
   provider:
     validation: true
     token: true
-    group: brozen
   service:
     version: 1.0.0

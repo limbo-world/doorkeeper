@@ -18,7 +18,6 @@ dubbo:
     parameters:
       namespace: ${nacos.config.namespace}
   consumer:
-    group: brozen
     mock: true
     timeout: 3000
   service:
