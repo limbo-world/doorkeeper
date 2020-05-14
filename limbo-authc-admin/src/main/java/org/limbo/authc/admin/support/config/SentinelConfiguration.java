@@ -36,7 +36,7 @@ import java.util.Properties;
  * @date 2020/3/31 12:27 PM
  * @email brozen@qq.com
  */
-@Configuration
+//@Configuration
 public class SentinelConfiguration implements InitializingBean {
 
     @Value("${nacos.config.server-addr}")

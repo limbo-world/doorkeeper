@@ -50,8 +50,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class AdminApplication {
 
     public static void main(String[] args) {
-        // 不使用Sentinel Dashboard可以注释这一行，也可以通过启动参数指定 -Dcsp.sentinel.dashboard.server=localhost:9001
-        System.setProperty("csp.sentinel.dashboard.server", "localhost:9001");
+        // 不使用 Sentinel 还需要注释 SentinelConfiguration
+        // 不使用 Sentinel Dashboard可以注释这一行，也可以通过启动参数指定 -Dcsp.sentinel.dashboard.server=localhost:9001
+//        System.setProperty("csp.sentinel.dashboard.server", "localhost:9001");
 
         new SpringApplicationBuilder(AdminApplication.class)
                 .web(WebApplicationType.SERVLET)
