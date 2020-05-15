@@ -46,6 +46,8 @@ public class LoginController extends BaseController {
 
     @PostMapping
     public Response<AdminSession> login(@RequestBody AccountVO.LoginParam param) {
+        Verifies.notBlank(param.getCaptcha(), "请填写验证码！");
+        Verifies.notBlank(param.getCaptchaToken(), "请填写验证码！");
         Verifies.verify(captchaService.verifyCaptcha(param.getCaptchaToken(), param.getCaptcha()), "验证码错误！");
         Response<SessionAccount> authcResponse = authenticationDubboProvider.login(param);
         if (authcResponse.ok()) {

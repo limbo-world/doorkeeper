@@ -97,9 +97,9 @@ public class AccountVO extends AccountPO {
         private String username;
         @NotBlank(message = "密码不可为空")
         private String password;
-        @NotBlank(message = "验证码错误")
+
         private String captcha;
-        @NotBlank(message = "验证码错误")
+
         private String captchaToken;
 
         private String loginIp;
