@@ -60,19 +60,19 @@ public class ConsumerAthcContextFilter extends ListenableFilter {
         return invoker.invoke(invocation);
     }
 
-    public static void setAdminCertificateSupplier(Supplier<String> adminCertificateSupplier) {
+    public static void registerAdminCertificateSupplier(Supplier<String> adminCertificateSupplier) {
         ConsumerAthcContextFilter.adminCertificateSupplier = adminCertificateSupplier;
     }
 
-    public static void setProjectIdSupplier(Supplier<String> projectIdSupplier) {
+    public static void registerProjectIdSupplier(Supplier<String> projectIdSupplier) {
         ConsumerAthcContextFilter.projectIdSupplier = projectIdSupplier;
     }
 
-    public static void setProjectCodeSupplier(Supplier<String> projectCodeSupplier) {
+    public static void registerProjectCodeSupplier(Supplier<String> projectCodeSupplier) {
         ConsumerAthcContextFilter.projectCodeSupplier = projectCodeSupplier;
     }
 
-    public static void setProjectSecretSupplier(Supplier<String> projectSecretSupplier) {
+    public static void registerProjectSecretSupplier(Supplier<String> projectSecretSupplier) {
         ConsumerAthcContextFilter.projectSecretSupplier = projectSecretSupplier;
     }
 }
