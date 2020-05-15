@@ -16,11 +16,12 @@
 
 package org.limbo.authc.api.interfaces.support.dubbo;
 
-import org.apache.dubbo.common.constants.CommonConstants;
 import org.apache.dubbo.common.extension.Activate;
 import org.apache.dubbo.rpc.*;
 import org.limbo.authc.api.interfaces.constants.DubboContants;
 import org.limbo.authc.api.interfaces.support.spring.SpringBeanContext;
+
+import java.util.function.Supplier;
 
 /**
  * @author Brozen
@@ -31,26 +32,47 @@ import org.limbo.authc.api.interfaces.support.spring.SpringBeanContext;
 @Activate
 public class ConsumerAthcContextFilter extends ListenableFilter {
 
+    private static Supplier<String> adminCertificateSupplier = () -> SpringBeanContext.getProperty("authc.api.certificate");
+    private static Supplier<String> projectIdSupplier = () -> SpringBeanContext.getProperty("authc.project-id");
+    private static Supplier<String> projectCodeSupplier = () -> SpringBeanContext.getProperty("authc.project-code");
+    private static Supplier<String> projectSecretSupplier = () -> SpringBeanContext.getProperty("authc.project-secret");
+
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
 
         invocation.setAttachment(
                 DubboContants.Attachments.ADMIN_CERTIFICATE,
-                SpringBeanContext.getProperty("authc.api.certificate")
+                adminCertificateSupplier.get()
         );
         invocation.setAttachment(
                 DubboContants.Attachments.PROJECT_ID,
-                SpringBeanContext.getProperty("authc.project-id")
+                projectIdSupplier.get()
         );
         invocation.setAttachment(
                 DubboContants.Attachments.PROJECT_CODE,
-                SpringBeanContext.getProperty("authc.project-code")
+                projectCodeSupplier.get()
         );
         invocation.setAttachment(
                 DubboContants.Attachments.PROJECT_SECRET,
-                SpringBeanContext.getProperty("authc.project-secret")
+                projectSecretSupplier.get()
         );
 
         return invoker.invoke(invocation);
+    }
+
+    public static void setAdminCertificateSupplier(Supplier<String> adminCertificateSupplier) {
+        ConsumerAthcContextFilter.adminCertificateSupplier = adminCertificateSupplier;
+    }
+
+    public static void setProjectIdSupplier(Supplier<String> projectIdSupplier) {
+        ConsumerAthcContextFilter.projectIdSupplier = projectIdSupplier;
+    }
+
+    public static void setProjectCodeSupplier(Supplier<String> projectCodeSupplier) {
+        ConsumerAthcContextFilter.projectCodeSupplier = projectCodeSupplier;
+    }
+
+    public static void setProjectSecretSupplier(Supplier<String> projectSecretSupplier) {
+        ConsumerAthcContextFilter.projectSecretSupplier = projectSecretSupplier;
     }
 }
