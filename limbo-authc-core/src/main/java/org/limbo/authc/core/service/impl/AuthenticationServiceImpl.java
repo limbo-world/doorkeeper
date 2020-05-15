@@ -82,10 +82,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         // 账户登陆自己项目
-        AccountPO account = accountMapper.getAccountAllByUsername(param.getProjectId(), param.getUsername());
+        AccountPO account = accountMapper.getLoginAccountByUsername(param.getProjectId(), param.getUsername());
         Verifies.notNull(account, "用户名或密码错误！");
         Verifies.verify(MD5Utils.verify(param.getPassword(), account.getPassword()), "用户名或密码错误！");
-
+        account.setPassword(null);
         return EnhancedBeanUtils.createAndCopy(account, AccountVO.class);
     }
 
