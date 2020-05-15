@@ -25,7 +25,7 @@
                     <el-menu-item v-if="!hasChildren(menu)" :index="menu.route" :route="menu.route"
                                   :class="menuHiddenClass">
                         <i class="menu-icon" :class="menu.icon"></i>
-                        <span slot="title">{{menu.name}}</span>
+                        <span slot="title">{{menu.menuName}}</span>
                     </el-menu-item>
 
                     <!-- 存在子菜单时，先渲染当前菜单 -->
