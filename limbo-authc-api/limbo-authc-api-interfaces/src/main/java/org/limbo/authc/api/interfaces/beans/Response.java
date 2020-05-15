@@ -89,7 +89,7 @@ public class Response<T> implements Serializable {
      * 参数错误
      */
     public static <T> Response<T> paramError(String msg) {
-        return new Response<>(msg);
+        return new Response<>(ResponseCode.PARAM_ERROR, msg);
     }
 
     /**

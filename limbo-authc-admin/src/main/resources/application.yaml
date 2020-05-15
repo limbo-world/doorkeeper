@@ -4,7 +4,7 @@ nacos:
     bootstrap:
       enable: true
     server-addr: 172.17.16.9:8848
-    namespace: b793c494-aadf-4679-850a-43170e3190d3
+    namespace: da31431c-2dc3-4705-a875-a17f8eb27f55
     data-id: admin
     group: limbo-authc
     type: yaml
