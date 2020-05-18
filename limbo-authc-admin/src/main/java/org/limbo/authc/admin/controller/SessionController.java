@@ -16,6 +16,7 @@
 
 package org.limbo.authc.admin.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.limbo.authc.admin.beans.po.AdminBLogPO;
 import org.limbo.authc.admin.dubbo.consumers.AuthorizationDubboConsumer;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -45,6 +46,7 @@ import java.util.List;
  * @author devil
  * @date 2020/3/11
  */
+@Slf4j
 @RestController
 @RequestMapping("/session")
 public class SessionController extends BaseController {
