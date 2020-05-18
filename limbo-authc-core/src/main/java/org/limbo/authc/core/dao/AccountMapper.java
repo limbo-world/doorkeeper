@@ -55,7 +55,7 @@ public interface AccountMapper extends BaseMapper<AccountPO> {
     @Select("select " + column + " from l_account where is_activated = 1 and is_deleted = 0 and project_id = #{projectId}")
     List<AccountPO> getAccounts(@Param("projectId") Long projectId);
 
-    @Select("select * where is_activated = 1 and is_deleted = 0 and project_id = #{projectId} and username = #{username}")
+    @Select("select * from l_account where is_activated = 1 and is_deleted = 0 and project_id = #{projectId} and username = #{username}")
     AccountPO getAccountAllByUsername(@Param("projectId") Long projectId, @Param("username") String username);
 
     @Select("select * from l_account where is_activated = 1 and is_deleted = 0 and project_id = #{projectId} and account_id = #{accountId}")
