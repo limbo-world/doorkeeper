@@ -5,13 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.limbo</groupId>
-    <artifactId>limbo-authc</artifactId>
+    <artifactId>doorkeeper</artifactId>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>limbo-authc-core</module>
-        <module>limbo-authc-api</module>
-        <module>limbo-authc-session</module>
-        <module>limbo-authc-admin</module>
+        <module>doorkeeper-server</module>
+        <module>doorkeeper-api</module>
     </modules>
 
     <packaging>pom</packaging>
