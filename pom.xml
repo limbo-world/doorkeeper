@@ -13,6 +13,7 @@
     </modules>
 
     <packaging>pom</packaging>
+    <description>DoorKeeper</description>
 
     <properties>
         <!-- SpringBoot 与 Spring 版本之间要适配 -->
