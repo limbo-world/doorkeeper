@@ -14,46 +14,45 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
-
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
+package org.limbo.doorkeeper.server.constants;
 
 /**
- *
- * 对应一个接口
- *
  * @author Devil
- * @date 2020/11/18 7:15 PM
+ * @date 2020/11/19 4:39 PM
  */
-@Data
-@TableName("l_api")
-public class Api {
-
-    @TableId(type = IdType.AUTO)
-    private Long apiId;
-
-    private Long projectId;
-
+public enum OrderState implements IEnum<String> {
     /**
-     * 名称
+     * 工单创建
      */
-    private String name;
-
+    CREATE("create"),
     /**
-     * 描述
+     * 工单通过
      */
-    private String describe;
-
+    PASS("pass"),
     /**
-     * 方法类型 get post
+     * 工单拒绝
      */
-    private String method;
+    REFUSE("refuse"),
+    ;
 
-    /**
-     * ant风格url
-     */
-    private String url;
+
+    private String state;
+
+    OrderState(String state) {
+        this.state = state;
+    }
+
+    @Override
+    public String getValue() {
+        return state;
+    }
+
+    public static OrderState parse(String p) {
+        for (OrderState state : values()) {
+            if (state.is(p)) {
+                return state;
+            }
+        }
+        return null;
+    }
 }

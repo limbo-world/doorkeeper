@@ -44,9 +44,14 @@ public class Role {
      */
     private String describe;
     /**
-     * 默认角色
+     * 默认角色会在用户创建的时候直接绑定
      */
     private Boolean isDefault;
+
+    /**
+     * 授予角色的时候是否需要工单审核
+     */
+    private Boolean needOrder;
 
     private Date gmtCreated;
 

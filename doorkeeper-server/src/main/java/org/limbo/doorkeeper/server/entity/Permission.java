@@ -50,11 +50,6 @@ public class Permission {
      */
     private Boolean isOnline;
 
-    /**
-     * 是否默认权限 默认权限不能删除
-     */
-    private Boolean isDefault;
-
     private Date gmtCreated;
 
     private Date gmtModified;

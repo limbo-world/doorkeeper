@@ -25,22 +25,22 @@ package org.limbo.doorkeeper.server.constants;
  * @date 2020/3/10 3:55 PM
  * @email brozen@qq.com
  */
-public enum PermissionAuthcPolicies implements IEnum<String> {
+public enum PermissionPolicy implements IEnum<String> {
 
     /**
      * 允许通过
      */
-    ALLOWED("ALLOWED"),
+    ALLOW("allow"),
 
     /**
      * 不允许通过
      */
-    REFUSED("REFUSED"),
+    REFUSE("refuse"),
     ;
 
     private String policy;
 
-    PermissionAuthcPolicies(String policy) {
+    PermissionPolicy(String policy) {
         this.policy = policy;
     }
 
@@ -49,8 +49,8 @@ public enum PermissionAuthcPolicies implements IEnum<String> {
         return policy;
     }
 
-    public static PermissionAuthcPolicies parse(String p) {
-        for (PermissionAuthcPolicies policy : values()) {
+    public static PermissionPolicy parse(String p) {
+        for (PermissionPolicy policy : values()) {
             if (policy.is(p)) {
                 return policy;
             }

@@ -16,44 +16,29 @@
 
 package org.limbo.doorkeeper.server.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 /**
- *
- * 对应一个接口
- *
  * @author Devil
- * @date 2020/11/18 7:15 PM
+ * @date 2020/11/19 4:12 PM
  */
 @Data
-@TableName("l_api")
-public class Api {
-
-    @TableId(type = IdType.AUTO)
-    private Long apiId;
+public class RoleOrder {
 
     private Long projectId;
 
     /**
-     * 名称
+     * 为哪个用户申请
      */
-    private String name;
+    private Long accountId;
 
     /**
-     * 描述
+     * 申请哪个角色
      */
-    private String describe;
+    private Long roleId;
 
     /**
-     * 方法类型 get post
+     * 审核的用户id
      */
-    private String method;
-
-    /**
-     * ant风格url
-     */
-    private String url;
+    private Long auditId;
 }
