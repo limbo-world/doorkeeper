@@ -18,6 +18,7 @@ package org.limbo.doorkeeper.server.service;
 
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.RoleAddParam;
+import org.limbo.doorkeeper.api.model.param.RoleQueryParam;
 import org.limbo.doorkeeper.api.model.param.RoleUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 
@@ -37,7 +38,7 @@ public interface RoleService {
 
     List<RoleVO> listRole(Long projectId);
 
-    Page<RoleVO> queryRole(Page<RoleVO> param);
+    Page<RoleVO> queryRole(RoleQueryParam param);
 
     RoleVO getRole(Long projectId, Long roleId);
 }

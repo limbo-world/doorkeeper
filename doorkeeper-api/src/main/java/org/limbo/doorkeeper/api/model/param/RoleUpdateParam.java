@@ -16,7 +16,12 @@
 
 package org.limbo.doorkeeper.api.model.param;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * @author Devil
@@ -25,22 +30,37 @@ import lombok.Data;
 @Data
 public class RoleUpdateParam {
 
+    @NotNull
+    private Long projectId;
+
+    @NotNull
     private Long roleId;
+
     /**
      * 角色名称
      */
+    @NotBlank
+    @Schema(name = "角色名称")
     private String name;
+
     /**
      * 角色描述
      */
+    @Size(max = 150)
+    @Schema(name = "角色描述")
     private String describe;
+
     /**
      * 默认角色会在用户创建的时候直接绑定
      */
+    @NotNull
+    @Schema(name = "默认角色会在用户创建的时候直接绑定")
     private Boolean isDefault;
 
     /**
      * 授予角色的时候是否需要工单审核
      */
+    @NotNull
+    @Schema(name = "授予角色的时候是否需要工单审核")
     private Boolean needOrder;
 }

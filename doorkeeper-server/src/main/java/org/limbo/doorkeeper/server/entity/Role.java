@@ -35,14 +35,17 @@ public class Role {
     private Long roleId;
 
     private Long projectId;
+
     /**
      * 角色名称
      */
     private String roleName;
+
     /**
      * 角色描述
      */
     private String roleDescribe;
+
     /**
      * 默认角色会在用户创建的时候直接绑定
      */
@@ -52,6 +55,11 @@ public class Role {
      * 授予角色的时候是否需要工单审核
      */
     private Boolean needOrder;
+
+    /**
+     * 是否删除
+     */
+    private Boolean isDeleted;
 
     private Date gmtCreated;
 

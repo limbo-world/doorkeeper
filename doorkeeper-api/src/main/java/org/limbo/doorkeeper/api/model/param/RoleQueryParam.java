@@ -14,27 +14,24 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.vo;
+package org.limbo.doorkeeper.api.model.param;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.limbo.doorkeeper.api.model.Page;
+import org.limbo.doorkeeper.api.model.vo.RoleVO;
+
+import javax.validation.constraints.NotNull;
 
 /**
- * @author Devil
- * @date 2020/11/19 5:40 PM
+ * @author liuqingtong
+ * @date 2020/11/19 19:04
  */
 @Data
-public class RoleVO {
+@EqualsAndHashCode(callSuper = true)
+public class RoleQueryParam extends Page<RoleVO> {
 
-    private Long roleId;
-
-    /**
-     * 角色名称
-     */
-    private String name;
-
-    /**
-     * 角色描述
-     */
-    private String describe;
+    @NotNull
+    private Long projectId;
 
 }

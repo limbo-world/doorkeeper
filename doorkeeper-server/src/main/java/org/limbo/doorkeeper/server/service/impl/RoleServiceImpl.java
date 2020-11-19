@@ -18,12 +18,14 @@ package org.limbo.doorkeeper.server.service.impl;
 
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.RoleAddParam;
+import org.limbo.doorkeeper.api.model.param.RoleQueryParam;
 import org.limbo.doorkeeper.api.model.param.RoleUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.server.dao.RoleMapper;
 import org.limbo.doorkeeper.server.entity.Role;
 import org.limbo.doorkeeper.server.service.RoleService;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,41 +47,53 @@ public class RoleServiceImpl implements RoleService {
     public Long addRole(RoleAddParam param) {
         Role role = EnhancedBeanUtils.createAndCopy(param, Role.class);
         roleMapper.insert(role);
-        Long roleId = role.getRoleId();
+        return role.getRoleId();
 
         // todo 角色对应有哪些权限
-
-        return roleId;
     }
 
     @Override
     public Integer updateRole(RoleUpdateParam param) {
-        // todo
-        return null;
+        Role role = roleMapper.getRole(param.getProjectId(), param.getRoleId());
+        Verifies.notNull(role, "角色不存在");
+
+        EnhancedBeanUtils.copyPropertiesIgnoreNull(param, role);
+        return roleMapper.updateById(role);
     }
 
     @Override
     public Integer deleteRole(Long projectId, Long roleId) {
-        // todo
-        return null;
+        Role role = roleMapper.getRole(projectId, roleId);
+        Verifies.notNull(role, "角色不存在");
+
+        return roleMapper.deleteRole(projectId, roleId);
     }
 
     @Override
     public List<RoleVO> listRole(Long projectId) {
-        // todo
-        return null;
+        List<Role> roles = roleMapper.getRoles(projectId);
+        return EnhancedBeanUtils.createAndCopyList(roles, RoleVO.class);
     }
 
     @Override
-    public Page<RoleVO> queryRole(Page<RoleVO> param) {
-        // todo
-        return null;
+    public Page<RoleVO> queryRole(RoleQueryParam param) {
+        // 总数，若参数中total为正数，则不需要查询
+        long total = param.getTotal();
+        total = total < 0 ? roleMapper.countRole(param) : total;
+        param.setTotal(total);
+
+        // 分页数据
+        List<Role> roles = roleMapper.queryRole(param);
+        param.setData(EnhancedBeanUtils.createAndCopyList(roles, RoleVO.class));
+        return param;
     }
 
     @Override
     public RoleVO getRole(Long projectId, Long roleId) {
-        // todo
-        return null;
+        Role role = roleMapper.getRole(projectId, roleId);
+        Verifies.notNull(role, "角色不存在");
+
+        return EnhancedBeanUtils.createAndCopy(role, RoleVO.class);
     }
 
 }

@@ -16,6 +16,7 @@
 
 package org.limbo.doorkeeper.api.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -35,6 +36,7 @@ public class Page<T> {
     /**
      * 查询关键字，可以不传，传了之后由实际执行查询的方法决定如何使用该字段
      */
+    @Schema(name = "查询关键字")
     private String keyword;
 
     /**
@@ -76,6 +78,13 @@ public class Page<T> {
      */
     public Boolean getHasNext() {
         return total > current * 20;
+    }
+
+    /**
+     * 获取分页查询的偏移条数
+     */
+    public int getOffset() {
+        return size * (current - 1);
     }
 
     /**
