@@ -23,7 +23,7 @@ INSERT INTO `l_permission`(`project_id`, `perm_code`, `perm_name`, `perm_desc`, 
 INSERT INTO `l_menu`(`project_id`, `menu_code`, `menu_name`, `icon`, `sort`, `parent_menu_code`, `is_default`) VALUES (10000000, '001', '项目管理', 'el-icon-setting', 0, NULL, b'1');
 INSERT INTO `l_menu`(`project_id`, `menu_code`, `menu_name`, `icon`, `sort`, `parent_menu_code`, `is_default`) VALUES (10000000, '001001', '项目列表', 'fa fa-project-diagram', 0, '001', b'1');
 INSERT INTO `l_menu`(`project_id`, `menu_code`, `menu_name`, `icon`, `sort`, `parent_menu_code`, `is_default`) VALUES (10000000, '002', '账户管理', 'el-icon-lock', 1, NULL, b'1');
-INSERT INTO `l_menu`(`project_id`, `menu_code`, `menu_name`, `icon`, `sort`, `parent_menu_code`, `is_default`) VALUES (10000000, '002001', '账户列表', 'el-icon-user', 0, '002', b'1');
+INSERT INTO `l_menu`(`project_id`, `menu_code`, `menu_name`, `icon`, `sort`, `parent_menu_code`, `is_default`) VALUES (10000000, '002001', '账户列表', 'el-icon-account', 0, '002', b'1');
 INSERT INTO `l_menu`(`project_id`, `menu_code`, `menu_name`, `icon`, `sort`, `parent_menu_code`, `is_default`) VALUES (10000000, '003', '授权管理', 'el-icon-key', 2, NULL, b'1');
 INSERT INTO `l_menu`(`project_id`, `menu_code`, `menu_name`, `icon`, `sort`, `parent_menu_code`, `is_default`) VALUES (10000000, '003001', '权限列表', 'el-icon-connection', 0, '003', b'1');
 INSERT INTO `l_menu`(`project_id`, `menu_code`, `menu_name`, `icon`, `sort`, `parent_menu_code`, `is_default`) VALUES (10000000, '003002', '菜单列表', 'el-icon-menu', 1, '003', b'1');

@@ -14,34 +14,33 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
+package org.limbo.doorkeeper.api.model.vo;
 
 import lombok.Data;
 
+import java.util.Date;
+
 /**
- *
- * 给账户授予角色的时用的审核工单
- *
  * @author Devil
- * @date 2020/11/19 4:12 PM
+ * @date 2020/11/19 3:11 PM
  */
 @Data
-public class RoleOrder {
+public class AccountVO {
+
+    private Long accountId;
 
     private Long projectId;
 
-    /**
-     * 为哪个用户申请
-     */
-    private Long accountId;
+    private String username;
 
-    /**
-     * 申请哪个角色
-     */
-    private Long roleId;
+    private String nick;
 
-    /**
-     * 审核的用户id
-     */
-    private Long auditId;
+    private Date lastLogin;
+
+    private Boolean isSuperAdmin;
+
+    private Boolean isDeleted;
+
+    // 账号是否激活
+    private Boolean isActivated;
 }

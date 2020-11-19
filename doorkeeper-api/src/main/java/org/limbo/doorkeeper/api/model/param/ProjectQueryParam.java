@@ -14,29 +14,20 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
+package org.limbo.doorkeeper.api.model.param;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import org.limbo.doorkeeper.server.constants.PermissionPolicy;
+import lombok.EqualsAndHashCode;
+import org.limbo.doorkeeper.api.model.Page;
+import org.limbo.doorkeeper.api.model.vo.ProjectVO;
 
 /**
- *
- * 对于账号进行特定权限的放行或限制
- *
  * @author Devil
- * @date 2020/11/19 11:06 AM
+ * @date 2020/11/19 3:44 PM
  */
 @Data
-@TableName("l_account_policy")
-public class AccountPolicy {
+@EqualsAndHashCode(callSuper = true)
+public class ProjectQueryParam extends Page<ProjectVO> {
 
-    private Long accountId;
-
-    private Long permissionId;
-
-    /**
-     * @see PermissionPolicy
-     */
-    private String policy;
+    private String name;
 }

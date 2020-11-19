@@ -14,28 +14,25 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
+package org.limbo.doorkeeper.api.model.param;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import org.limbo.doorkeeper.server.constants.PermissionPolicy;
 
 /**
- * 对于角色进行特定权限的放行或限制
- *
  * @author Devil
- * @date 2020/11/19 11:09 AM
+ * @date 2020/11/19 3:27 PM
  */
 @Data
-@TableName("l_role_policy")
-public class RolePolicy {
+public class AccountGetParam {
 
-    private Long roleId;
-
-    private String permissionId;
+    private Long projectId;
+    /**
+     * 等于匹配
+     */
+    private Long accountId;
 
     /**
-     * @see PermissionPolicy
+     * 等于匹配
      */
-    private String policy;
+    private String username;
 }

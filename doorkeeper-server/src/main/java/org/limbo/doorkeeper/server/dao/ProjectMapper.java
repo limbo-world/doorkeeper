@@ -19,19 +19,19 @@ package org.limbo.doorkeeper.server.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.SelectKey;
-import org.limbo.authc.api.interfaces.beans.po.ProjectPO;
+import org.limbo.doorkeeper.server.entity.Project;
 
 /**
  * @author Brozen
  * @date 2020/3/10 8:42 AM
  * @email brozen@qq.com
  */
-public interface ProjectMapper extends BaseMapper<ProjectPO> {
+public interface ProjectMapper extends BaseMapper<Project> {
 
     @Insert("replace into l_project( project_code, project_secret, project_name, project_desc, is_deleted, is_activated )"
             + "values ( #{projectCode}, #{projectSecret}, #{projectName}, #{projectDesc}, 0, 0 )")
     @SelectKey(keyProperty = "projectId", before = false,
             statement = "select LAST_INSERT_ID()", resultType = Long.class)
-    Integer replace(ProjectPO project);
+    Integer replace(Project project);
 
 }

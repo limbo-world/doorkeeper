@@ -20,7 +20,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
-import org.limbo.authc.api.interfaces.beans.po.RolePO;
+import org.limbo.doorkeeper.server.entity.Role;
 
 import java.util.List;
 
@@ -31,17 +31,17 @@ import java.util.List;
  * @date 2020/2/27 5:04 PM
  * @email brozen@qq.com
  */
-public interface RoleMapper extends BaseMapper<RolePO> {
+public interface RoleMapper extends BaseMapper<Role> {
 
     @Select("select * from l_role where project_id = #{projectId} and role_id = #{roleId}")
-    RolePO getRole(@Param("projectId") Long projectId,
+    Role getRole(@Param("projectId") Long projectId,
                    @Param("roleId") Long roleId);
 
     @Select("select * from l_role where project_id = #{projectId}")
-    List<RolePO> getRoles(@Param("projectId") Long projectId);
+    List<Role> getRoles(@Param("projectId") Long projectId);
 
     @Select("select * from l_role where role_name = #{roleName} and project_id = #{projectId}")
-    RolePO getByRoleName(@Param("projectId") Long projectId,
+    Role getByRoleName(@Param("projectId") Long projectId,
                          @Param("roleName") String roleName);
 
     @Delete("delete from l_role where project_id = #{projectId} and role_id = #{roleId}")

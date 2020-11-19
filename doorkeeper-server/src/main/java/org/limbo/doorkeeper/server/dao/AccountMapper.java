@@ -18,7 +18,8 @@ package org.limbo.doorkeeper.server.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.*;
-import org.limbo.authc.api.interfaces.beans.vo.AccountVO;
+import org.limbo.doorkeeper.api.model.param.AccountPasswordUpdateParam;
+import org.limbo.doorkeeper.server.entity.Account;
 
 import java.util.List;
 
@@ -27,38 +28,38 @@ import java.util.List;
  * @date 2020/2/27 11:39 AM
  * @email brozen@qq.com
  */
-public interface AccountMapper extends BaseMapper<AccountPO> {
+public interface AccountMapper extends BaseMapper<Account> {
 
-    String column = " account_id, project_id, username, nick, last_login, last_login_ip, is_super_admin ";
+    String column = " account_id, project_id, username, nick, last_login, is_super_admin ";
 
     @Insert("replace into l_account (project_id, username, password, nick )"
             + "values (#{projectId}, #{username}, #{password}, #{nick})")
     @SelectKey(keyProperty = "accountId", before = false,
             statement = "select LAST_INSERT_ID()", resultType = Long.class)
-    Integer replace(AccountPO po);
+    Integer replace(Account po);
 
     @Select("select " + column + " from l_account where is_activated = 1 and is_deleted = 0 and project_id = #{projectId} and account_id = #{accountId}")
-    AccountPO getAccount(@Param("projectId") Long projectId,
-                         @Param("accountId") Long accountId);
+    Account getAccount(@Param("projectId") Long projectId,
+                       @Param("accountId") Long accountId);
 
     @Select("select " + column + " from l_account where is_activated = 1 and is_deleted = 0 and project_id = #{projectId} and username = #{username}")
-    AccountPO getAccountByUsername(@Param("projectId") Long projectId,
-                                   @Param("username") String username);
+    Account getAccountByUsername(@Param("projectId") Long projectId,
+                                 @Param("username") String username);
 
     @Select("select " + column + " from l_account where is_activated = 1 and is_deleted = 0 and project_id = #{projectId} " +
             "and account_id = #{accountId} and username = #{username}")
-    AccountPO getAccountByIdAndUsername(@Param("projectId") Long projectId,
-                                        @Param("accountId") Long accountId,
-                                        @Param("username") String username);
+    Account getAccountByIdAndUsername(@Param("projectId") Long projectId,
+                                      @Param("accountId") Long accountId,
+                                      @Param("username") String username);
 
     @Select("select " + column + " from l_account where is_activated = 1 and is_deleted = 0 and project_id = #{projectId}")
-    List<AccountPO> getAccounts(@Param("projectId") Long projectId);
+    List<Account> getAccounts(@Param("projectId") Long projectId);
 
     @Select("select * from l_account where is_activated = 1 and is_deleted = 0 and project_id = #{projectId} and username = #{username}")
-    AccountPO getAccountAllByUsername(@Param("projectId") Long projectId, @Param("username") String username);
+    Account getAccountAllByUsername(@Param("projectId") Long projectId, @Param("username") String username);
 
     @Select("select * from l_account where is_activated = 1 and is_deleted = 0 and project_id = #{projectId} and account_id = #{accountId}")
-    AccountPO getAccountAllById(@Param("projectId") Long projectId, @Param("accountId") Long accountId);
+    Account getAccountAllById(@Param("projectId") Long projectId, @Param("accountId") Long accountId);
 
     @Select("select count(*) from l_account where is_activated = 1 and is_deleted = 0 and project_id = #{projectId} and username = #{username}")
     Integer countByUsername(@Param("projectId") Long projectId, @Param("username") String username);
@@ -66,17 +67,17 @@ public interface AccountMapper extends BaseMapper<AccountPO> {
     /**
      * 更新登录时间、IP
      */
-    void updateLoginInfo(AccountPO account);
+    void updateLoginInfo(Account account);
 
     /**
      * 更新基础信息，nick
      */
-    void updateBaseInfo(AccountPO account);
+    void updateBaseInfo(Account account);
 
     /**
      * 更新密码
      */
-    void updatePassword(AccountVO.UpdatePasswordParam param);
+    void updatePassword(AccountPasswordUpdateParam param);
 
     /**
      * 假删除

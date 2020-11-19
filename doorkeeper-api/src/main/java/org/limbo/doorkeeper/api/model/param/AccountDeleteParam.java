@@ -14,34 +14,21 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
+package org.limbo.doorkeeper.api.model.param;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
+
 /**
- *
- * 给账户授予角色的时用的审核工单
- *
  * @author Devil
- * @date 2020/11/19 4:12 PM
+ * @date 2020/11/19 3:28 PM
  */
 @Data
-public class RoleOrder {
+public class AccountDeleteParam {
 
     private Long projectId;
 
-    /**
-     * 为哪个用户申请
-     */
+    @NotNull(message = "用户不存在")
     private Long accountId;
-
-    /**
-     * 申请哪个角色
-     */
-    private Long roleId;
-
-    /**
-     * 审核的用户id
-     */
-    private Long auditId;
 }

@@ -14,34 +14,34 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
+package org.limbo.doorkeeper.api.model.param;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 /**
- *
- * 给账户授予角色的时用的审核工单
- *
  * @author Devil
- * @date 2020/11/19 4:12 PM
+ * @date 2020/11/19 3:09 PM
  */
 @Data
-public class RoleOrder {
+public class AccountRegisterParam {
 
+    @NotNull(message = "项目ID不能为空")
     private Long projectId;
 
-    /**
-     * 为哪个用户申请
-     */
-    private Long accountId;
+    @NotBlank(message = "用户名不可为空")
+    private String username;
 
-    /**
-     * 申请哪个角色
-     */
-    private Long roleId;
+    @NotBlank(message = "密码不可为空")
+    private String password;
 
-    /**
-     * 审核的用户id
-     */
-    private Long auditId;
+    @NotBlank(message = "两次输入密码不一致")
+    private String confirmPassword;
+
+    @NotBlank(message = "昵称不可为空")
+    @Size(max = 32, message = "昵称长度不超过32个字符")
+    private String nick;
 }

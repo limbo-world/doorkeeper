@@ -16,10 +16,12 @@
 
 package org.limbo.doorkeeper.server.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
-import org.limbo.authc.api.interfaces.beans.Page;
-import org.limbo.authc.api.interfaces.beans.po.ProjectPO;
-import org.limbo.authc.api.interfaces.beans.vo.ProjectVO;
+import org.limbo.doorkeeper.api.model.Page;
+import org.limbo.doorkeeper.api.model.param.ProjectAddParam;
+import org.limbo.doorkeeper.api.model.param.ProjectQueryParam;
+import org.limbo.doorkeeper.api.model.param.ProjectUpdateParam;
+import org.limbo.doorkeeper.api.model.vo.ProjectVO;
+import org.limbo.doorkeeper.server.entity.Project;
 
 import java.util.List;
 
@@ -28,19 +30,54 @@ import java.util.List;
  * @date 2020/3/9 3:42 PM
  * @email brozen@qq.com
  */
-public interface ProjectService extends IService<ProjectPO> {
+public interface ProjectService {
 
-    ProjectVO addProject(ProjectVO.AddParam param, Boolean isActivated);
+    /**
+     * 添加项目
+     * @param param
+     * @param isActivated
+     * @return
+     */
+    ProjectVO addProject(ProjectAddParam param, Boolean isActivated);
 
-    Integer updateProject(ProjectVO.UpdateParam param);
+    /**
+     * 更新项目
+     * @param param
+     * @return
+     */
+    Integer updateProject(ProjectUpdateParam param);
 
-    ProjectVO deleteProject(Long projectId);
+    /**
+     * 删除项目 假删除
+     * @param projectId
+     * @return
+     */
+    Project deleteProject(Long projectId);
 
-    ProjectVO get(Long projectId);
+    /**
+     * 根据id 获取项目
+     * @param projectId
+     * @return
+     */
+    Project get(Long projectId);
 
-    ProjectPO get(String projectCode);
+    /**
+     * 根据code 获取项目
+     * @param projectCode
+     * @return
+     */
+    Project get(String projectCode);
 
+    /**
+     * 获取所有项目
+     * @return
+     */
     List<ProjectVO> listProject();
 
-    Page<ProjectVO> queryProjectPage(ProjectVO.QueryParam param);
+    /**
+     * 分页查询项目列表
+     * @param param
+     * @return
+     */
+    Page<ProjectVO> queryProjectPage(ProjectQueryParam param);
 }

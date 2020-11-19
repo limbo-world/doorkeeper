@@ -19,17 +19,20 @@ package org.limbo.doorkeeper.server.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
-import org.limbo.authc.api.interfaces.beans.Page;
-import org.limbo.authc.api.interfaces.beans.po.ProjectPO;
-import org.limbo.authc.api.interfaces.beans.vo.ProjectVO;
-import org.limbo.authc.api.interfaces.utils.EnhancedBeanUtils;
-import org.limbo.authc.api.interfaces.utils.UUIDUtils;
-import org.limbo.authc.api.interfaces.utils.verify.Verifies;
-import org.limbo.authc.core.dao.ProjectMapper;
-import org.limbo.authc.core.service.ProjectService;
-import org.limbo.authc.core.utils.MyBatisPlusUtils;
+import org.limbo.doorkeeper.api.model.Page;
+import org.limbo.doorkeeper.api.model.param.ProjectAddParam;
+import org.limbo.doorkeeper.api.model.param.ProjectQueryParam;
+import org.limbo.doorkeeper.api.model.param.ProjectUpdateParam;
+import org.limbo.doorkeeper.api.model.vo.ProjectVO;
+import org.limbo.doorkeeper.server.dao.ProjectMapper;
+import org.limbo.doorkeeper.server.entity.Project;
+import org.limbo.doorkeeper.server.service.ProjectService;
+import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
+import org.limbo.doorkeeper.server.utils.UUIDUtils;
+import org.limbo.doorkeeper.server.utils.Verifies;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,90 +44,82 @@ import java.util.List;
  * @email brozen@qq.com
  */
 @Service
-public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, ProjectPO> implements ProjectService {
+public class ProjectServiceImpl implements ProjectService {
+
+    @Autowired
+    private ProjectMapper projectMapper;
 
     @Override
     @Transactional
-    public ProjectVO addProject(ProjectVO.AddParam param, Boolean isActivated) {
-        if (StringUtils.isNotBlank(param.getProjectCode())) {
-            ProjectPO dbProject = baseMapper.selectOne(Wrappers.<ProjectPO>lambdaQuery()
-                    .eq(ProjectPO::getProjectCode, param.getProjectCode())
-                    .eq(ProjectPO::getIsDeleted, false)
-                    .eq(ProjectPO::getIsActivated, true));
-            Verifies.isNull(dbProject, "项目编码已存在");
-        } else {
-            param.setProjectCode(UUIDUtils.get());
-        }
-        param.setProjectSecret(UUIDUtils.get());
-
-        ProjectPO project = EnhancedBeanUtils.createAndCopy(param, ProjectPO.class);
+    public ProjectVO addProject(ProjectAddParam param, Boolean isActivated) {
+        Project project = EnhancedBeanUtils.createAndCopy(param, Project.class);
         project.setIsActivated(isActivated);
+        project.setCode(UUIDUtils.get());
+        project.setSecret(UUIDUtils.get());
 
-        baseMapper.replace(project);
+        projectMapper.replace(project);
         return EnhancedBeanUtils.createAndCopy(project, ProjectVO.class);
     }
 
     @Override
     @Transactional
-    public Integer updateProject(ProjectVO.UpdateParam param) {
-        ProjectPO project = baseMapper.selectById(param.getProjectId());
+    public Integer updateProject(ProjectUpdateParam param) {
+        Project project = projectMapper.selectById(param.getProjectId());
         Verifies.notNull(project, "项目不存在");
 
-        LambdaUpdateWrapper<ProjectPO> update = Wrappers.<ProjectPO>lambdaUpdate()
-                .set(StringUtils.isNotBlank(param.getProjectCode()), ProjectPO::getProjectCode, param.getProjectCode())
-                .set(StringUtils.isNotBlank(param.getProjectName()), ProjectPO::getProjectName, param.getProjectName())
-                .set(StringUtils.isNotBlank(param.getProjectDesc()), ProjectPO::getProjectDesc, param.getProjectDesc())
-                .eq(ProjectPO::getProjectId, param.getProjectId());
+        LambdaUpdateWrapper<Project> update = Wrappers.<Project>lambdaUpdate()
+                .set(StringUtils.isNotBlank(param.getName()), Project::getName, param.getName())
+                .set(StringUtils.isNotBlank(param.getDescribe()), Project::getDescribe, param.getDescribe())
+                .eq(Project::getProjectId, param.getProjectId());
 
-        return baseMapper.update(null, update);
+        return projectMapper.update(null, update);
     }
 
     @Override
     @Transactional
-    public ProjectVO deleteProject(Long projectId) {
-        ProjectVO project = get(projectId);
+    public Project deleteProject(Long projectId) {
+        Project project = get(projectId);
         // 假删除，如果是真删除，需要关联删除账户、角色、菜单、权限
-        baseMapper.update(null, Wrappers.<ProjectPO>lambdaUpdate()
-                .set(ProjectPO::getIsDeleted, true)
-                .eq(ProjectPO::getProjectId, projectId)
+        projectMapper.update(null, Wrappers.<Project>lambdaUpdate()
+                .set(Project::getIsDeleted, true)
+                .eq(Project::getProjectId, projectId)
         );
         return project;
     }
 
     @Override
-    public ProjectVO get(Long projectId) {
-        ProjectPO project = baseMapper.selectOne(columnNoSecret()
-                .eq(ProjectPO::getProjectId, projectId)
-                .eq(ProjectPO::getIsDeleted, false)
-                .eq(ProjectPO::getIsActivated, true));
-        return EnhancedBeanUtils.createAndCopy(project, ProjectVO.class);
+    public Project get(Long projectId) {
+        return projectMapper.selectOne(columnNoSecret()
+                .eq(Project::getProjectId, projectId)
+                .eq(Project::getIsDeleted, false)
+                .eq(Project::getIsActivated, true));
     }
 
     @Override
-    public ProjectPO get(String projectCode) {
-        return baseMapper.selectOne(Wrappers.<ProjectPO>lambdaQuery()
-                .eq(ProjectPO::getProjectCode, projectCode)
-                .eq(ProjectPO::getIsDeleted, false)
-                .eq(ProjectPO::getIsActivated, true)
+    public Project get(String projectCode) {
+        return projectMapper.selectOne(Wrappers.<Project>lambdaQuery()
+                .eq(Project::getCode, projectCode)
+                .eq(Project::getIsDeleted, false)
+                .eq(Project::getIsActivated, true)
         );
     }
 
     @Override
     public List<ProjectVO> listProject() {
-        List<ProjectPO> allProjects = baseMapper.selectList(columnNoSecret()
-                .eq(ProjectPO::getIsDeleted, false)
-                .eq(ProjectPO::getIsActivated, true));
+        List<Project> allProjects = projectMapper.selectList(columnNoSecret()
+                .eq(Project::getIsDeleted, false)
+                .eq(Project::getIsActivated, true));
         return EnhancedBeanUtils.createAndCopyList(allProjects, ProjectVO.class);
     }
 
     @Override
-    public Page<ProjectVO> queryProjectPage(ProjectVO.QueryParam param) {
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<ProjectPO> mpage = MyBatisPlusUtils.pageOf(param);
-        LambdaQueryWrapper<ProjectPO> condition = columnNoSecret()
-                .like(StringUtils.isNotBlank(param.getProjectName()), ProjectPO::getProjectName, param.getProjectName())
-                .eq(ProjectPO::getIsDeleted, false)
-                .eq(ProjectPO::getIsActivated, true);
-        mpage = baseMapper.selectPage(mpage, condition);
+    public Page<ProjectVO> queryProjectPage(ProjectQueryParam param) {
+        com.baomidou.mybatisplus.extension.plugins.pagination.Page<Project> mpage = MyBatisPlusUtils.pageOf(param);
+        LambdaQueryWrapper<Project> condition = columnNoSecret()
+                .like(StringUtils.isNotBlank(param.getName()), Project::getName, param.getName())
+                .eq(Project::getIsDeleted, false)
+                .eq(Project::getIsActivated, true);
+        mpage = projectMapper.selectPage(mpage, condition);
 
         param.setTotal(mpage.getTotal());
         param.setData(EnhancedBeanUtils.createAndCopyList(mpage.getRecords(), ProjectVO.class));
@@ -132,14 +127,14 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, ProjectPO> im
     }
 
     // 没有secret
-    private LambdaQueryWrapper<ProjectPO> columnNoSecret() {
-        return Wrappers.<ProjectPO>lambdaQuery().select(
-                ProjectPO::getProjectId,
-                ProjectPO::getProjectCode,
-                ProjectPO::getProjectName,
-                ProjectPO::getProjectDesc,
-                ProjectPO::getGmtCreated,
-                ProjectPO::getGmtModified
+    private LambdaQueryWrapper<Project> columnNoSecret() {
+        return Wrappers.<Project>lambdaQuery().select(
+                Project::getProjectId,
+                Project::getCode,
+                Project::getName,
+                Project::getDescribe,
+                Project::getGmtCreated,
+                Project::getGmtModified
         );
     }
 }

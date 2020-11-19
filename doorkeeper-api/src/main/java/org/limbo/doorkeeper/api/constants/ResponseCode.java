@@ -14,34 +14,34 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
-
-import lombok.Data;
+package org.limbo.doorkeeper.api.constants;
 
 /**
+ * API请求错误码
  *
- * 给账户授予角色的时用的审核工单
- *
- * @author Devil
- * @date 2020/11/19 4:12 PM
+ * @author Brozen
+ * @date 2020/3/5 10:51 AM
+ * @email brozen@qq.com
  */
-@Data
-public class RoleOrder {
+public enum ResponseCode {
 
-    private Long projectId;
+    OK(200),
 
-    /**
-     * 为哪个用户申请
-     */
-    private Long accountId;
+    PARAM_ERROR(400),
+    UNAUTHORIZED(401), // 请求要求用户的身份认证
+    FORBIDDEN(403), // 权限不够
+    NOT_FOUND(404),
 
-    /**
-     * 申请哪个角色
-     */
-    private Long roleId;
+    SERVICE_ERROR(500),;
 
-    /**
-     * 审核的用户id
-     */
-    private Long auditId;
+
+    private int code;
+
+    ResponseCode(int code) {
+        this.code = code;
+    }
+
+    public int code() {
+        return code;
+    }
 }

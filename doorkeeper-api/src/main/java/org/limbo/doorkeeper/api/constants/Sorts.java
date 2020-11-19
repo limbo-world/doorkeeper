@@ -14,34 +14,20 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
-
-import lombok.Data;
+package org.limbo.doorkeeper.api.constants;
 
 /**
- *
- * 给账户授予角色的时用的审核工单
- *
- * @author Devil
- * @date 2020/11/19 4:12 PM
+ * @author Brozen
+ * @date 2020/3/9 11:30 AM
+ * @email brozen@qq.com
  */
-@Data
-public class RoleOrder {
+public enum Sorts {
 
-    private Long projectId;
+    ASC, DESC;
 
-    /**
-     * 为哪个用户申请
-     */
-    private Long accountId;
 
-    /**
-     * 申请哪个角色
-     */
-    private Long roleId;
+    public boolean is(String sort) {
+        return this.name().equalsIgnoreCase(sort);
+    }
 
-    /**
-     * 审核的用户id
-     */
-    private Long auditId;
 }
