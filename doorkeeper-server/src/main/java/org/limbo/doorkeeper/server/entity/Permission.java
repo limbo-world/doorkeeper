@@ -21,6 +21,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * @author Devil
  * @date 2020/11/18 7:12 PM
@@ -52,4 +54,8 @@ public class Permission {
      * 是否默认权限 默认权限不能删除
      */
     private Boolean isDefault;
+
+    private Date gmtCreated;
+
+    private Date gmtModified;
 }

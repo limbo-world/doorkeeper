@@ -16,55 +16,26 @@
 
 package org.limbo.doorkeeper.server.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-
-import java.util.Date;
+import org.limbo.doorkeeper.server.constants.PermissionPolicy;
 
 /**
+ * 对于角色进行特定权限的放行或限制
+ *
  * @author Devil
- * @date 2020/11/18 7:08 PM
+ * @date 2020/11/19 11:09 AM
  */
 @Data
-@TableName("l_project")
-public class Project {
+@TableName("l_role_policy")
+public class RolePolicy {
 
-    @TableId(type = IdType.AUTO)
-    private Long projectId;
+    private Long roleId;
 
-    /**
-     * 项目名称
-     */
-    private String name;
+    private String permissionId;
 
     /**
-     * 编码
+     * @see PermissionPolicy
      */
-    private String code;
-
-    /**
-     * 秘钥
-     */
-    private String secret;
-
-    /**
-     * 描述
-     */
-    private String describe;
-
-    /**
-     * 是否删除
-     */
-    private Boolean isDeleted;
-
-    /**
-     * 是否激活
-     */
-    private Boolean isActivated;
-
-    private Date gmtCreated;
-
-    private Date gmtModified;
+    private String policy;
 }

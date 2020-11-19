@@ -16,22 +16,27 @@
 
 package org.limbo.doorkeeper.server.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-
-import java.io.Serializable;
-import java.util.Date;
+import org.limbo.doorkeeper.server.constants.PermissionPolicy;
 
 /**
+ *
+ * 对于账号进行特定权限的放行或限制
+ *
  * @author Devil
- * @date 2020/3/4 9:26 AM
+ * @date 2020/11/19 11:06 AM
  */
 @Data
-public class BasePO implements Serializable {
+@TableName("l_account_policy")
+public class AccountPolicy {
 
-    private Long projectId;
+    private Long accountId;
 
-    private Date gmtCreated;
+    private Long permissionId;
 
-    private Date gmtModified;
-
+    /**
+     * @see PermissionPolicy
+     */
+    private String policy;
 }
