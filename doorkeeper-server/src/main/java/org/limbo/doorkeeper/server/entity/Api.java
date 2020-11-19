@@ -35,7 +35,17 @@ public class Api {
     private Long projectId;
 
     /**
-     * 方法类型
+     * 名称
+     */
+    private String name;
+
+    /**
+     * 描述
+     */
+    private String describe;
+
+    /**
+     * 方法类型 get post
      */
     private String method;
 
