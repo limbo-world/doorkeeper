@@ -14,43 +14,30 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
+package org.limbo.doorkeeper.server.service;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
+import org.limbo.doorkeeper.api.model.param.ApiAddParam;
 
-import java.util.Date;
+import java.util.List;
 
 /**
  * @author Devil
- * @date 2020/11/18 7:12 PM
+ * @date 2020/11/19 7:01 PM
  */
-@Data
-@TableName("l_permission")
-public class Permission {
-
-    @TableId(type = IdType.AUTO)
-    private Long permissionId;
-
-    private Long projectId;
-    /**
-     * 权限名称
-     */
-    private String permissionName;
+public interface ApiService {
 
     /**
-     * 描述
+     * 添加api
      */
-    private String permissionDescribe;
+    void addApi(List<ApiAddParam> apis);
 
     /**
-     * 是否上线
+     * 修改api
      */
-    private Boolean isOnline;
+    void updateApi(Long apiId, String describe);
 
-    private Date gmtCreated;
-
-    private Date gmtModified;
+    /**
+     * 删除api
+     */
+    void deleteApi(Long apiId);
 }

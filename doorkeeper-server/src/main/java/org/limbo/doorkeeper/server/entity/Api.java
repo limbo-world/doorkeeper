@@ -21,6 +21,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  *
  * 对应一个接口
@@ -40,20 +42,26 @@ public class Api {
     /**
      * 名称
      */
-    private String name;
+    private String apiName;
 
     /**
      * 描述
      */
-    private String describe;
+    private String apiDescribe;
 
     /**
      * 方法类型 get post
      */
-    private String method;
+    private String apiMethod;
 
     /**
      * ant风格url
      */
-    private String url;
+    private String apiUrl;
+
+    private Boolean isDeleted;
+
+    private Date gmtCreated;
+
+    private Date gmtModified;
 }

@@ -14,57 +14,36 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
+package org.limbo.doorkeeper.api.model.param;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-
-import java.util.Date;
 
 /**
  * @author Devil
- * @date 2020/11/18 7:08 PM
+ * @date 2020/11/19 7:29 PM
  */
 @Data
-@TableName("l_project")
-public class Project {
+public class ApiAddParam {
 
-    @TableId(type = IdType.AUTO)
     private Long projectId;
 
     /**
-     * 项目名称
+     * 名称
      */
-    private String projectName;
-
-    /**
-     * 编码
-     */
-    private String projectCode;
-
-    /**
-     * 秘钥
-     */
-    private String projectSecret;
+    private String name;
 
     /**
      * 描述
      */
-    private String projectDescribe;
+    private String describe;
 
     /**
-     * 是否删除
+     * 方法类型 get post
      */
-    private Boolean isDeleted;
+    private String method;
 
     /**
-     * 是否激活
+     * ant风格url
      */
-    private Boolean isActivated;
-
-    private Date gmtCreated;
-
-    private Date gmtModified;
+    private String url;
 }

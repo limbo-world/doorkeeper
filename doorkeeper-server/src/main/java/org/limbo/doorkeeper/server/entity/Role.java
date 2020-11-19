@@ -38,11 +38,11 @@ public class Role {
     /**
      * 角色名称
      */
-    private String name;
+    private String roleName;
     /**
      * 角色描述
      */
-    private String describe;
+    private String roleDescribe;
     /**
      * 默认角色会在用户创建的时候直接绑定
      */
