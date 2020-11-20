@@ -25,6 +25,8 @@ import lombok.Data;
 @Data
 public class PermissionUpdateParam {
 
+    private Long permissionId;
+
     /**
      * 权限名称
      */
