@@ -16,11 +16,16 @@
 
 package org.limbo.doorkeeper.server.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.exception.ParamException;
+import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.AccountAddParam;
+import org.limbo.doorkeeper.api.model.param.AccountQueryParam;
 import org.limbo.doorkeeper.api.model.param.AccountRoleAddParam;
+import org.limbo.doorkeeper.api.model.param.AccountUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.limbo.doorkeeper.server.dao.AccountMapper;
 import org.limbo.doorkeeper.server.dao.AccountRoleMapper;
@@ -29,6 +34,7 @@ import org.limbo.doorkeeper.server.entity.Account;
 import org.limbo.doorkeeper.server.entity.Role;
 import org.limbo.doorkeeper.server.service.AccountService;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -88,5 +94,26 @@ public class AccountServiceImpl implements AccountService {
         }
 
         return EnhancedBeanUtils.createAndCopy(po, AccountVO.class);
+    }
+
+    @Override
+    public Integer updateAccount(AccountUpdateParam param) {
+        return accountMapper.update(null, Wrappers.<Account>lambdaUpdate()
+                .set(param.getIsActivated() != null, Account::getIsActivated, param.getIsActivated())
+                .set(param.getIsSuperAdmin() != null, Account::getIsSuperAdmin, param.getIsSuperAdmin())
+                .in(Account::getAccountId, param.getAccountIds())
+        );
+    }
+
+    @Override
+    public Page<AccountVO> queryPage(AccountQueryParam param) {
+        com.baomidou.mybatisplus.extension.plugins.pagination.Page<Account> mpage = MyBatisPlusUtils.pageOf(param);
+        LambdaQueryWrapper<Account> condition = Wrappers.<Account>lambdaQuery()
+                .like(StringUtils.isNotBlank(param.getUsername()), Account::getUsername, param.getUsername());
+        mpage = accountMapper.selectPage(mpage, condition);
+
+        param.setTotal(mpage.getTotal());
+        param.setData(EnhancedBeanUtils.createAndCopyList(mpage.getRecords(), AccountVO.class));
+        return param;
     }
 }

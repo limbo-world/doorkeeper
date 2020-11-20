@@ -16,22 +16,26 @@
 
 package org.limbo.doorkeeper.api.model.param;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.limbo.doorkeeper.api.model.Page;
+import org.limbo.doorkeeper.api.model.vo.AccountVO;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Devil
  * @date 2020/11/19 3:27 PM
  */
 @Data
-public class AccountQueryParam {
+@EqualsAndHashCode(callSuper = true)
+public class AccountQueryParam extends Page<AccountVO> {
 
+    @NotNull(message = "对应项目为空")
+    @Schema(title = "项目编号", required = true)
     private Long projectId;
-    /**
-     * like匹配
-     */
+
+    @Schema(title = "账户名称", description = "like匹配")
     private String username;
-    /**
-     * like匹配
-     */
-    private String nick;
 }

@@ -16,23 +16,27 @@
 
 package org.limbo.doorkeeper.api.model.param;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+
+import javax.validation.constraints.NotEmpty;
+import java.util.List;
 
 /**
  * @author Devil
- * @date 2020/11/19 3:27 PM
+ * @date 2020/11/20 3:58 PM
  */
 @Data
-public class AccountGetParam {
+public class AccountUpdateParam {
 
-    private Long projectId;
-    /**
-     * 等于匹配
-     */
-    private Long accountId;
+    @NotEmpty(message = "请选择账户")
+    @Schema(title = "账户ID")
+    private List<Long> accountIds;
 
-    /**
-     * 等于匹配
-     */
-    private String username;
+    @Schema(title = "是否超级管理员")
+    private Boolean isSuperAdmin;
+
+    @Schema(title = "是否激活")
+    private Boolean isActivated;
+
 }
