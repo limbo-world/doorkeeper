@@ -36,8 +36,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 /**
  * @author Brozen
  * @date 2020/3/9 3:42 PM
@@ -70,6 +68,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         LambdaUpdateWrapper<Project> update = Wrappers.<Project>lambdaUpdate()
                 .set(StringUtils.isNotBlank(param.getProjectName()), Project::getProjectName, param.getProjectName())
+                .set(StringUtils.isNotBlank(param.getProjectSecret()), Project::getProjectSecret, param.getProjectSecret())
                 .set(StringUtils.isNotBlank(param.getProjectDescribe()), Project::getProjectDescribe, param.getProjectDescribe())
                 .eq(Project::getProjectId, param.getProjectId());
 
@@ -107,20 +106,11 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<ProjectVO> listProject() {
-        List<Project> allProjects = projectMapper.selectList(Wrappers.<Project>lambdaQuery()
-                .eq(Project::getIsDeleted, false)
-                .eq(Project::getIsActivated, true));
-        return EnhancedBeanUtils.createAndCopyList(allProjects, ProjectVO.class);
-    }
-
-    @Override
     public Page<ProjectVO> queryProjectPage(ProjectQueryParam param) {
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<Project> mpage = MyBatisPlusUtils.pageOf(param);
         LambdaQueryWrapper<Project> condition = Wrappers.<Project>lambdaQuery()
                 .like(StringUtils.isNotBlank(param.getName()), Project::getProjectName, param.getName())
-                .eq(Project::getIsDeleted, false)
-                .eq(Project::getIsActivated, true);
+                .eq(Project::getIsDeleted, false);
         mpage = projectMapper.selectPage(mpage, condition);
 
         param.setTotal(mpage.getTotal());

@@ -16,6 +16,7 @@
 
 package org.limbo.doorkeeper.api.model.param;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -26,18 +27,13 @@ import lombok.Data;
 public class ProjectUpdateParam {
 
     private Long projectId;
-    /**
-     * 项目名称
-     */
+
+    @Schema(title = "项目名称")
     private String projectName;
 
-    /**
-     * 秘钥
-     */
+    @Schema(title = "秘钥")
     private String projectSecret;
 
-    /**
-     * 描述
-     */
+    @Schema(title = "描述")
     private String projectDescribe;
 }

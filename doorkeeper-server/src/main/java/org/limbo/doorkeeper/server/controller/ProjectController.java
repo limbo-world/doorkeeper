@@ -18,8 +18,11 @@ package org.limbo.doorkeeper.server.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.ProjectAddParam;
+import org.limbo.doorkeeper.api.model.param.ProjectQueryParam;
+import org.limbo.doorkeeper.api.model.param.ProjectUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ProjectVO;
 import org.limbo.doorkeeper.server.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +55,32 @@ public class ProjectController {
     @Operation(summary = "删除项目")
     public Response<ProjectVO> deleteProject(@Validated @NotNull(message = "项目不存在") @PathVariable("projectId") Long projectId) {
         return Response.ok(projectService.deleteProject(projectId));
+    }
+
+    @GetMapping("/{projectId}/secret")
+    @Operation(summary = "获取项目秘钥")
+    public Response<String> getProjectSecret(@Validated @NotNull(message = "项目不存在") @PathVariable("projectId") Long projectId) {
+        return Response.ok(projectService.getSecret(projectId));
+    }
+
+    @GetMapping("/{projectId}")
+    @Operation(summary = "获取项目详情")
+    public Response<ProjectVO> getProject(@Validated @NotNull(message = "项目不存在") @PathVariable("projectId") Long projectId) {
+        return Response.ok(projectService.get(projectId));
+    }
+
+    @PutMapping("/{projectId}")
+    @Operation(summary = "更新项目")
+    public Response<Integer> updateProject(@Validated @NotNull(message = "项目不存在") @PathVariable("projectId") Long projectId,
+                                           @RequestBody ProjectUpdateParam project) {
+        project.setProjectId(projectId);
+        return Response.ok(projectService.updateProject(project));
+    }
+
+    @GetMapping
+    @Operation(summary = "获取项目秘钥")
+    public Response<Page<ProjectVO>> getProjects(ProjectQueryParam param) {
+        return Response.ok(projectService.queryProjectPage(param));
     }
 
 }

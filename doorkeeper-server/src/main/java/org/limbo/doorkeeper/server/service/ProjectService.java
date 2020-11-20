@@ -52,7 +52,7 @@ public interface ProjectService {
     ProjectVO deleteProject(Long projectId);
 
     /**
-     * 根据id 获取项目
+     * 根据id 获取项目 不会返回secret
      */
     ProjectVO get(Long projectId);
 
@@ -60,11 +60,6 @@ public interface ProjectService {
      * 获取秘钥
      */
     String getSecret(Long projectId);
-
-    /**
-     * 获取所有项目
-     */
-    List<ProjectVO> listProject();
 
     /**
      * 分页查询项目列表
