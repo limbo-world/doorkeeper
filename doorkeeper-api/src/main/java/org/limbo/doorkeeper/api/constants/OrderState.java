@@ -14,36 +14,45 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
-
-import lombok.Data;
+package org.limbo.doorkeeper.api.constants;
 
 /**
  * @author Devil
- * @date 2020/11/19 7:29 PM
+ * @date 2020/11/19 4:39 PM
  */
-@Data
-public class ApiAddParam {
-
-    private Long projectId;
-
+public enum OrderState implements IEnum<String> {
     /**
-     * 名称
+     * 工单创建
      */
-    private String apiName;
-
+    CREATE("create"),
     /**
-     * 描述
+     * 工单通过
      */
-    private String apiDescribe;
-
+    PASS("pass"),
     /**
-     * 方法类型 get post
+     * 工单拒绝
      */
-    private String apiMethod;
+    REFUSE("refuse"),
+    ;
 
-    /**
-     * ant风格url
-     */
-    private String apiUrl;
+
+    private String state;
+
+    OrderState(String state) {
+        this.state = state;
+    }
+
+    @Override
+    public String getValue() {
+        return state;
+    }
+
+    public static OrderState parse(String p) {
+        for (OrderState state : values()) {
+            if (state.is(p)) {
+                return state;
+            }
+        }
+        return null;
+    }
 }

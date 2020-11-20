@@ -20,30 +20,19 @@ import lombok.Data;
 
 /**
  * @author Devil
- * @date 2020/11/19 7:29 PM
+ * @date 2020/11/20 9:30 AM
  */
 @Data
-public class ApiAddParam {
+public class PermissionAddParam {
 
     private Long projectId;
-
     /**
-     * 名称
+     * 权限名称
      */
-    private String apiName;
+    private String permissionName;
 
     /**
      * 描述
      */
-    private String apiDescribe;
-
-    /**
-     * 方法类型 get post
-     */
-    private String apiMethod;
-
-    /**
-     * ant风格url
-     */
-    private String apiUrl;
+    private String permissionDescribe;
 }

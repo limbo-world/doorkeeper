@@ -14,45 +14,25 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.constants;
+package org.limbo.doorkeeper.server.service;
+
+import org.limbo.doorkeeper.api.model.param.PermissionApiAddParam;
+
+import java.util.List;
 
 /**
  * @author Devil
- * @date 2020/11/19 4:39 PM
+ * @date 2020/11/19 8:35 PM
  */
-public enum OrderState implements IEnum<String> {
+public interface PermissionApiService {
+
     /**
-     * 工单创建
+     * 为权限添加api
      */
-    CREATE("create"),
+    void addPermissionApi(List<PermissionApiAddParam> permissionApis);
+
     /**
-     * 工单通过
+     * 删除权限对应api
      */
-    PASS("pass"),
-    /**
-     * 工单拒绝
-     */
-    REFUSE("refuse"),
-    ;
-
-
-    private String state;
-
-    OrderState(String state) {
-        this.state = state;
-    }
-
-    @Override
-    public String getValue() {
-        return state;
-    }
-
-    public static OrderState parse(String p) {
-        for (OrderState state : values()) {
-            if (state.is(p)) {
-                return state;
-            }
-        }
-        return null;
-    }
+    void deletePermissionApi(List<Long> permissionApiIds);
 }

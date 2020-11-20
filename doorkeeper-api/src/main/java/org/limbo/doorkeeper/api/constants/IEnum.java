@@ -14,36 +14,21 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
+package org.limbo.doorkeeper.api.constants;
 
-import lombok.Data;
+import java.io.Serializable;
 
 /**
- * @author Devil
- * @date 2020/11/19 7:29 PM
+ * @author Brozen
+ * @date 2020/3/10 3:55 PM
+ * @email brozen@qq.com
  */
-@Data
-public class ApiAddParam {
+public interface IEnum<T extends Serializable>{
 
-    private Long projectId;
+    T getValue();
 
-    /**
-     * 名称
-     */
-    private String apiName;
+    default boolean is(T value) {
+        return this.getValue().equals(value);
+    }
 
-    /**
-     * 描述
-     */
-    private String apiDescribe;
-
-    /**
-     * 方法类型 get post
-     */
-    private String apiMethod;
-
-    /**
-     * ant风格url
-     */
-    private String apiUrl;
 }
