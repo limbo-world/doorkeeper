@@ -18,6 +18,8 @@ package org.limbo.doorkeeper.server.entity;
 
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  *
  * 给账户授予角色的时用的审核工单
@@ -44,4 +46,8 @@ public class RoleOrder {
      * 审核的用户id
      */
     private Long auditId;
+
+    private Date gmtCreated;
+
+    private Date gmtModified;
 }

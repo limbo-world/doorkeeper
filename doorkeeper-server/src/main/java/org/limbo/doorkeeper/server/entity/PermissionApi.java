@@ -22,6 +22,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import org.limbo.doorkeeper.api.constants.PermissionPolicy;
 
+import java.util.Date;
+
 /**
  *
  * 权限和api绑定关系
@@ -46,4 +48,8 @@ public class PermissionApi {
     private String policy;
 
     private Boolean isDeleted;
+
+    private Date gmtCreated;
+
+    private Date gmtModified;
 }

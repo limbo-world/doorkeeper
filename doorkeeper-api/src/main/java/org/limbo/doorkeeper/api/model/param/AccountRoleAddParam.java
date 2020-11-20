@@ -14,38 +14,19 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
+package org.limbo.doorkeeper.api.model.param;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import org.limbo.doorkeeper.api.constants.PermissionPolicy;
-
-import java.util.Date;
 
 /**
- *
- * 账户有哪些角色
- *
  * @author Devil
- * @date 2020/11/19 4:35 PM
+ * @date 2020/11/20 11:33 AM
  */
 @Data
-@TableName("l_account_role")
-public class AccountRole {
-
-    @TableId(type = IdType.AUTO)
-    private Long accountRoleId;
+public class AccountRoleAddParam {
 
     private Long accountId;
 
     private Long roleId;
-
-    private Boolean isDeleted;
-
-    private Date gmtCreated;
-
-    private Date gmtModified;
 
 }

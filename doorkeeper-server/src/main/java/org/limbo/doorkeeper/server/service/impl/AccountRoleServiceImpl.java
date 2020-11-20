@@ -17,35 +17,35 @@
 package org.limbo.doorkeeper.server.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import org.limbo.doorkeeper.api.model.param.RolePermissionAddParam;
-import org.limbo.doorkeeper.server.dao.RolePermissionMapper;
-import org.limbo.doorkeeper.server.entity.RolePermission;
-import org.limbo.doorkeeper.server.service.RolePermissionService;
+import lombok.Data;
+import org.limbo.doorkeeper.api.model.param.AccountRoleAddParam;
+import org.limbo.doorkeeper.server.dao.AccountRoleMapper;
+import org.limbo.doorkeeper.server.entity.AccountRole;
+import org.limbo.doorkeeper.server.service.AccountRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 /**
  * @author Devil
- * @date 2020/11/20 11:09 AM
+ * @date 2020/11/20 11:31 AM
  */
-@Service
-public class RolePermissionServiceImpl implements RolePermissionService {
+@Data
+public class AccountRoleServiceImpl implements AccountRoleService {
 
     @Autowired
-    private RolePermissionMapper rolePermissionMapper;
+    private AccountRoleMapper accountRoleMapper;
 
     @Override
-    public void addRolePermission(List<RolePermissionAddParam> params) {
-        rolePermissionMapper.batchInsertOrUpdate(params);
+    public void addAccountRole(List<AccountRoleAddParam> params) {
+        accountRoleMapper.batchInsertOrUpdate(params);
     }
 
     @Override
-    public void deleteRolePermission(List<Long> rolePermissionIds) {
-        rolePermissionMapper.update(null, Wrappers.<RolePermission>lambdaUpdate()
-                .set(RolePermission::getIsDeleted, true)
-                .in(RolePermission::getRolePermissionId, rolePermissionIds)
+    public void deleteAccountRole(List<Long> accountRoleIds) {
+        accountRoleMapper.update(null, Wrappers.<AccountRole>lambdaUpdate()
+                .set(AccountRole::getIsDeleted, true)
+                .in(AccountRole::getAccountRoleId, accountRoleIds)
         );
     }
 }

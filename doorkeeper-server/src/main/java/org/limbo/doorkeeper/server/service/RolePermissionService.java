@@ -28,10 +28,10 @@ public interface RolePermissionService {
     /**
      * 为角色添加权限
      */
-    void addPermissionApi(List<RolePermissionAddParam> params);
+    void addRolePermission(List<RolePermissionAddParam> params);
 
     /**
      * 删除角色权限
      */
-    void deletePermissionApi(List<Long> rolePermissionIds);
+    void deleteRolePermission(List<Long> rolePermissionIds);
 }
