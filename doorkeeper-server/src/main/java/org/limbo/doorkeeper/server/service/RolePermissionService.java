@@ -14,27 +14,24 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
+package org.limbo.doorkeeper.server.service;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
+import org.limbo.doorkeeper.api.model.param.RolePermissionAddParam;
+
+import java.util.List;
 
 /**
  * @author Devil
- * @date 2020/11/19 4:45 PM
+ * @date 2020/11/20 11:08 AM
  */
-@Data
-@TableName("l_role_permission")
-public class RolePermission {
+public interface RolePermissionService {
+    /**
+     * 为角色添加权限
+     */
+    void addPermissionApi(List<RolePermissionAddParam> params);
 
-    @TableId(type = IdType.AUTO)
-    private Long rolePermissionId;
-
-    private Long roleId;
-
-    private Long permissionId;
-
-    private Boolean isDeleted;
+    /**
+     * 删除角色权限
+     */
+    void deletePermissionApi(List<Long> rolePermissionIds);
 }

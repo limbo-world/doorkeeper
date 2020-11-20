@@ -14,27 +14,20 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
+package org.limbo.doorkeeper.server.dao;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.limbo.doorkeeper.api.model.param.RolePermissionAddParam;
+import org.limbo.doorkeeper.server.entity.RolePermission;
+
+import java.util.List;
 
 /**
  * @author Devil
- * @date 2020/11/19 4:45 PM
+ * @date 2020/11/20 11:12 AM
  */
-@Data
-@TableName("l_role_permission")
-public class RolePermission {
+public interface RolePermissionMapper extends BaseMapper<RolePermission> {
 
-    @TableId(type = IdType.AUTO)
-    private Long rolePermissionId;
+    void batchInsertOrUpdate(List<RolePermissionAddParam> rolePermissions);
 
-    private Long roleId;
-
-    private Long permissionId;
-
-    private Boolean isDeleted;
 }

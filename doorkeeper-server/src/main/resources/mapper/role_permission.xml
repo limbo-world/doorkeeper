@@ -16,14 +16,14 @@
   -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="org.limbo.doorkeeper.server.dao.PermissionApiMapper" >
+<mapper namespace="org.limbo.doorkeeper.server.dao.RolePermissionMapper" >
 
-    <insert id="batchInsertOrUpdate" parameterType="org.limbo.doorkeeper.api.model.param.PermissionApiAddParam">
-        INSERT INTO l_permission_api (
-          permission_id, api_id, policy
+    <insert id="batchInsertOrUpdate" parameterType="org.limbo.doorkeeper.api.model.param.RolePermissionAddParam">
+        INSERT INTO l_role_permission (
+          role_id, permission_id
         ) VALUES
-        <foreach collection="permissionApis" separator="," item="permissionApi">
-            ( #{permissionApi.permissionId}, #{permissionApi.apiId}, #{permissionApi.policy} )
+        <foreach collection="rolePermissions" separator="," item="rolePermission">
+            ( #{rolePermission.roleId}, #{rolePermission.permissionId} )
         </foreach>
         ON DUPLICATE KEY UPDATE
         is_deleted = true
