@@ -35,6 +35,13 @@
             <artifactId>swagger-annotations</artifactId>
             <version>${swagger3.version}</version>
         </dependency>
+
+        <!-- openfeign注解 -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-openfeign-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
