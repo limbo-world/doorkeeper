@@ -16,7 +16,7 @@
 
 package org.limbo.doorkeeper.server.service;
 
-import org.limbo.doorkeeper.api.model.param.AccountRegisterParam;
+import org.limbo.doorkeeper.api.model.param.AccountAddParam;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
 
 /**
@@ -29,5 +29,6 @@ public interface AccountService {
     /**
      * 注册用户
      */
-    AccountVO register(AccountRegisterParam param, Boolean isActivated);
+    AccountVO addAccount(AccountAddParam param);
+
 }

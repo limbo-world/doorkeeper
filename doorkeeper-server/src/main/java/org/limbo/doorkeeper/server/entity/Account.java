@@ -44,11 +44,7 @@ public class Account {
      */
     private Boolean isSuperAdmin;
     /**
-     * 账户是否删除
-     */
-    private Boolean isDeleted;
-    /**
-     * 是否激活
+     * 是否激活  未激活的账户没有权限
      */
     private Boolean isActivated;
 

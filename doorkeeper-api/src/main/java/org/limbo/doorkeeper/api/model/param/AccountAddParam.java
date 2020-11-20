@@ -16,6 +16,7 @@
 
 package org.limbo.doorkeeper.api.model.param;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -27,12 +28,20 @@ import javax.validation.constraints.Size;
  * @date 2020/11/19 3:09 PM
  */
 @Data
-public class AccountRegisterParam {
+public class AccountAddParam {
 
     @NotNull(message = "项目ID不能为空")
+    @Schema(title = "项目id", required = true)
     private Long projectId;
 
     @NotBlank(message = "用户名不可为空")
+    @Schema(title = "账户名称", required = true)
     private String username;
+
+    @Schema(title = "是否超管")
+    private Boolean isSuperAdmin;
+
+    @Schema(title = "是否激活")
+    private Boolean isActivated;
 
 }

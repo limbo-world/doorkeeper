@@ -29,7 +29,7 @@ import java.util.Date;
 @Data
 public class ProjectAddParam {
 
-    @NotBlank
+    @NotBlank(message = "项目名称不能为空")
     @Schema(title = "项目名称", required = true)
     private String projectName;
 

@@ -16,6 +16,7 @@
 
 package org.limbo.doorkeeper.api.model.param;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.limbo.doorkeeper.api.model.Page;
@@ -29,5 +30,6 @@ import org.limbo.doorkeeper.api.model.vo.ProjectVO;
 @EqualsAndHashCode(callSuper = true)
 public class ProjectQueryParam extends Page<ProjectVO> {
 
-    private String name;
+    @Schema(title = "项目名称")
+    private String projectName;
 }

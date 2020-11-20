@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.lang3.StringUtils;
+import org.limbo.doorkeeper.api.exception.ParamException;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.ProjectAddParam;
 import org.limbo.doorkeeper.api.model.param.ProjectQueryParam;
@@ -33,6 +34,7 @@ import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.limbo.doorkeeper.server.utils.UUIDUtils;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,8 +57,12 @@ public class ProjectServiceImpl implements ProjectService {
         if (StringUtils.isBlank(param.getProjectSecret())) {
             project.setProjectSecret(UUIDUtils.get());
         }
+        try {
+            projectMapper.insert(project);
+        } catch (DuplicateKeyException e) {
+            throw new ParamException("项目已存在");
+        }
 
-        projectMapper.insert(project);
         return EnhancedBeanUtils.createAndCopy(project, ProjectVO.class);
     }
 
@@ -109,7 +115,7 @@ public class ProjectServiceImpl implements ProjectService {
     public Page<ProjectVO> queryProjectPage(ProjectQueryParam param) {
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<Project> mpage = MyBatisPlusUtils.pageOf(param);
         LambdaQueryWrapper<Project> condition = Wrappers.<Project>lambdaQuery()
-                .like(StringUtils.isNotBlank(param.getName()), Project::getProjectName, param.getName())
+                .like(StringUtils.isNotBlank(param.getProjectName()), Project::getProjectName, param.getProjectName())
                 .eq(Project::getIsDeleted, false);
         mpage = projectMapper.selectPage(mpage, condition);
 

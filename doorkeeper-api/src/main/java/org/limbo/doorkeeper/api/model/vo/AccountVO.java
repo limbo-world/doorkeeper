@@ -16,8 +16,11 @@
 
 package org.limbo.doorkeeper.api.model.vo;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
@@ -27,20 +30,12 @@ import java.util.Date;
 @Data
 public class AccountVO {
 
-    private Long accountId;
-
+    @Schema(title = "项目id")
     private Long projectId;
 
+    @Schema(title = "账户名称")
     private String username;
 
-    private String nick;
-
-    private Date lastLogin;
-
+    @Schema(title = "是否超管")
     private Boolean isSuperAdmin;
-
-    private Boolean isDeleted;
-
-    // 账号是否激活
-    private Boolean isActivated;
 }
