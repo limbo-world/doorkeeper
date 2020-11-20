@@ -36,9 +36,13 @@ public class Account {
 
     private Long projectId;
     /**
-     * 账户
+     * 账户名称
      */
     private String username;
+    /**
+     * 账户描述
+     */
+    private String accountDescribe;
     /**
      * 是否超级管理员
      */

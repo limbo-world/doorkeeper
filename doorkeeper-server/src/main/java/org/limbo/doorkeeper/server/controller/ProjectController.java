@@ -63,12 +63,6 @@ public class ProjectController {
         return Response.ok(projectService.getSecret(projectId));
     }
 
-    @GetMapping("/{projectId}")
-    @Operation(summary = "获取项目详情")
-    public Response<ProjectVO> getProject(@Validated @NotNull(message = "项目不存在") @PathVariable("projectId") Long projectId) {
-        return Response.ok(projectService.get(projectId));
-    }
-
     @PutMapping("/{projectId}")
     @Operation(summary = "更新项目")
     public Response<Integer> updateProject(@Validated @NotNull(message = "项目不存在") @PathVariable("projectId") Long projectId,
@@ -78,7 +72,7 @@ public class ProjectController {
     }
 
     @GetMapping
-    @Operation(summary = "获取项目秘钥")
+    @Operation(summary = "分页获取项目列表")
     public Response<Page<ProjectVO>> getProjects(ProjectQueryParam param) {
         return Response.ok(projectService.queryProjectPage(param));
     }

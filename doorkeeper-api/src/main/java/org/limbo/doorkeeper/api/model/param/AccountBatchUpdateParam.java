@@ -27,7 +27,7 @@ import java.util.List;
  * @date 2020/11/20 3:58 PM
  */
 @Data
-public class AccountUpdateParam {
+public class AccountBatchUpdateParam {
 
     @NotEmpty(message = "请选择账户")
     @Schema(title = "账户ID")

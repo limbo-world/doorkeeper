@@ -16,6 +16,7 @@
 
 package org.limbo.doorkeeper.api.model.param;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.limbo.doorkeeper.api.model.Page;
@@ -31,7 +32,11 @@ import javax.validation.constraints.NotNull;
 @EqualsAndHashCode(callSuper = true)
 public class RoleQueryParam extends Page<RoleVO> {
 
-    @NotNull
+    @NotNull(message = "项目id不能为空")
+    @Schema(title = "项目id")
     private Long projectId;
+
+    @Schema(title = "角色名称", description = "模糊匹配")
+    private String roleName;
 
 }

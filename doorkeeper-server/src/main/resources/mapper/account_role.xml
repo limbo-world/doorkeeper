@@ -18,15 +18,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="org.limbo.doorkeeper.server.dao.AccountRoleMapper" >
 
-    <insert id="batchInsertOrUpdate" parameterType="org.limbo.doorkeeper.api.model.param.AccountRoleAddParam">
-        INSERT INTO l_account_role (
+    <insert id="batchInsertIgnore" parameterType="org.limbo.doorkeeper.api.model.param.AccountRoleAddParam">
+        INSERT ignore INTO l_account_role (
           account_id, role_id
         ) VALUES
         <foreach collection="accountRoles" separator="," item="accountRole">
             ( #{accountRole.accountId}, #{accountRole.roleId} )
         </foreach>
-        ON DUPLICATE KEY UPDATE
-        is_deleted = true
     </insert>
 
 </mapper>

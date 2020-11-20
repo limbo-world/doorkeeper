@@ -30,15 +30,11 @@ import java.util.List;
  */
 public interface RoleService {
 
-    Long addRole(RoleAddParam param);
+    RoleVO addRole(RoleAddParam param);
 
     Integer updateRole(RoleUpdateParam param);
 
-    Integer deleteRole(Long projectId, Long roleId);
-
-    List<RoleVO> listRole(Long projectId);
+    Integer deleteRole(List<Long> roleIds);
 
     Page<RoleVO> queryRole(RoleQueryParam param);
-
-    RoleVO getRole(Long projectId, Long roleId);
 }

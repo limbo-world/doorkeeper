@@ -48,7 +48,7 @@ public class Role {
 
     /**
      * 默认角色会在用户创建的时候直接绑定
-     * 角色初始化的时候 即使配置 needOrder 也会忽略
+     * 如果为 true 角色初始化的时候 即使配置 needOrder 也会忽略
      */
     private Boolean isDefault;
 

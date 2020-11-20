@@ -16,6 +16,7 @@
 
 package org.limbo.doorkeeper.api.model.vo;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -25,16 +26,22 @@ import lombok.Data;
 @Data
 public class RoleVO {
 
+    @Schema(title = "项目id")
+    private Long projectId;
+
+    @Schema(title = "角色id")
     private Long roleId;
 
-    /**
-     * 角色名称
-     */
-    private String name;
+    @Schema(title = "角色名称")
+    private String roleName;
 
-    /**
-     * 角色描述
-     */
-    private String describe;
+    @Schema(title = "角色描述")
+    private String roleDescribe;
+
+    @Schema(title = "是否默认添加")
+    private Boolean isDefault;
+
+    @Schema(title = "是否需要工单")
+    private Boolean needOrder;
 
 }

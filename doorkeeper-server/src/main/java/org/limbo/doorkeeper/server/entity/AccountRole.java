@@ -26,7 +26,7 @@ import java.util.Date;
 
 /**
  *
- * 账户有哪些角色
+ * 账户角色绑定关系
  *
  * @author Devil
  * @date 2020/11/19 4:35 PM
@@ -41,11 +41,5 @@ public class AccountRole {
     private Long accountId;
 
     private Long roleId;
-
-    private Boolean isDeleted;
-
-    private Date gmtCreated;
-
-    private Date gmtModified;
 
 }

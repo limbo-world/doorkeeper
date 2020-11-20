@@ -30,34 +30,21 @@ import javax.validation.constraints.Size;
 @Data
 public class RoleAddParam {
 
-    @NotNull
+    @NotNull(message = "项目不存在")
+    @Schema(title = "项目id")
     private Long projectId;
 
-    /**
-     *角色名称
-     */
-    @NotBlank
+    @NotBlank(message = "角色名称不能为空")
     @Schema(title = "角色名称")
-    private String name;
+    private String roleName;
 
-    /**
-     * 角色描述
-     */
     @Size(max = 150)
-    @Schema(title = "角色描述")
-    private String describe;
+    @Schema(title = "角色描述", maxLength = 150)
+    private String roleDescribe;
 
-    /**
-     * 默认角色会在用户创建的时候直接绑定
-     */
-    @NotNull
-    @Schema(title = "是否默认角色", description = "默认角色会在用户创建的时候直接绑定")
+    @Schema(title = "是否默认角色", description = "默认角色会在用户创建的时候直接绑定\n如果为 true 角色初始化的时候 即使配置 needOrder 也会忽略")
     private Boolean isDefault;
 
-    /**
-     * 授予角色的时候是否需要工单审核
-     */
-    @NotNull
     @Schema(title = "是否需要工单", description = "授予角色的时候是否需要工单审核")
     private Boolean needOrder;
 }

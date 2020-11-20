@@ -16,15 +16,23 @@
 
 package org.limbo.doorkeeper.server.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.RoleAddParam;
 import org.limbo.doorkeeper.api.model.param.RoleQueryParam;
 import org.limbo.doorkeeper.api.model.param.RoleUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
+import org.limbo.doorkeeper.server.dao.AccountRoleMapper;
 import org.limbo.doorkeeper.server.dao.RoleMapper;
+import org.limbo.doorkeeper.server.dao.RolePermissionMapper;
+import org.limbo.doorkeeper.server.entity.AccountRole;
 import org.limbo.doorkeeper.server.entity.Role;
+import org.limbo.doorkeeper.server.entity.RolePermission;
 import org.limbo.doorkeeper.server.service.RoleService;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,19 +50,24 @@ public class RoleServiceImpl implements RoleService {
     @Autowired
     private RoleMapper roleMapper;
 
+    @Autowired
+    private AccountRoleMapper accountRoleMapper;
+
+    @Autowired
+    private RolePermissionMapper rolePermissionMapper;
+
     @Override
     @Transactional
-    public Long addRole(RoleAddParam param) {
+    public RoleVO addRole(RoleAddParam param) {
         Role role = EnhancedBeanUtils.createAndCopy(param, Role.class);
         roleMapper.insert(role);
-        return role.getRoleId();
-
-        // todo 角色对应有哪些权限
+        return EnhancedBeanUtils.createAndCopy(role, RoleVO.class);
     }
 
     @Override
+    @Transactional
     public Integer updateRole(RoleUpdateParam param) {
-        Role role = roleMapper.getRole(param.getProjectId(), param.getRoleId());
+        Role role = roleMapper.selectById(param.getRoleId());
         Verifies.notNull(role, "角色不存在");
 
         EnhancedBeanUtils.copyPropertiesIgnoreNull(param, role);
@@ -62,38 +75,38 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public Integer deleteRole(Long projectId, Long roleId) {
-        Role role = roleMapper.getRole(projectId, roleId);
-        Verifies.notNull(role, "角色不存在");
+    @Transactional
+    public Integer deleteRole(List<Long> roleIds) {
 
-        return roleMapper.deleteRole(projectId, roleId);
-    }
+        Integer result = roleMapper.update(null, Wrappers.<Role>lambdaUpdate()
+                .set(Role::getIsDeleted, true)
+                .in(Role::getRoleId, roleIds)
+        );
 
-    @Override
-    public List<RoleVO> listRole(Long projectId) {
-        List<Role> roles = roleMapper.getRoles(projectId);
-        return EnhancedBeanUtils.createAndCopyList(roles, RoleVO.class);
+        // 删除账户角色绑定
+        accountRoleMapper.delete(Wrappers.<AccountRole>lambdaQuery()
+                .eq(AccountRole::getRoleId, roleIds)
+        );
+
+        // 删除角色权限绑定
+        rolePermissionMapper.delete(Wrappers.<RolePermission>lambdaQuery()
+                .eq(RolePermission::getRoleId, roleIds)
+        );
+
+        return result;
     }
 
     @Override
     public Page<RoleVO> queryRole(RoleQueryParam param) {
-        // 总数，若参数中total为正数，则不需要查询
-        long total = param.getTotal();
-        total = total < 0 ? roleMapper.countRole(param) : total;
-        param.setTotal(total);
+        com.baomidou.mybatisplus.extension.plugins.pagination.Page<Role> mpage = MyBatisPlusUtils.pageOf(param);
+        LambdaQueryWrapper<Role> condition = Wrappers.<Role>lambdaQuery()
+                .like(StringUtils.isNotBlank(param.getRoleName()), Role::getRoleName, param.getRoleName())
+                .eq(Role::getProjectId, param.getProjectId());
+        mpage = roleMapper.selectPage(mpage, condition);
 
-        // 分页数据
-        List<Role> roles = roleMapper.queryRole(param);
-        param.setData(EnhancedBeanUtils.createAndCopyList(roles, RoleVO.class));
+        param.setTotal(mpage.getTotal());
+        param.setData(EnhancedBeanUtils.createAndCopyList(mpage.getRecords(), RoleVO.class));
         return param;
-    }
-
-    @Override
-    public RoleVO getRole(Long projectId, Long roleId) {
-        Role role = roleMapper.getRole(projectId, roleId);
-        Verifies.notNull(role, "角色不存在");
-
-        return EnhancedBeanUtils.createAndCopy(role, RoleVO.class);
     }
 
 }

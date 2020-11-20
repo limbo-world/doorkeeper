@@ -16,14 +16,12 @@
 
 package org.limbo.doorkeeper.api.model;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Positive;
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,12 +31,6 @@ import java.util.List;
  */
 @Data
 public class Page<T> {
-    /**
-     * 查询关键字，可以不传，传了之后由实际执行查询的方法决定如何使用该字段
-     */
-    @Schema(name = "查询关键字")
-    private String keyword;
-
     /**
      * 页码，从1开始
      */
@@ -71,7 +63,7 @@ public class Page<T> {
     /**
      * 当前页数据
      */
-    private List<T> data;
+    private List<T> data = new ArrayList<>();
 
     /**
      * 是否还有下一页

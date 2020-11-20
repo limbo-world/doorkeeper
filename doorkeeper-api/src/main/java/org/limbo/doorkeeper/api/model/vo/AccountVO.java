@@ -33,6 +33,9 @@ public class AccountVO {
     @Schema(title = "项目id")
     private Long projectId;
 
+    @Schema(title = "账户id")
+    private Long accountId;
+
     @Schema(title = "账户名称")
     private String username;
 

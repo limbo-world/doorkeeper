@@ -21,8 +21,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.AccountAddParam;
+import org.limbo.doorkeeper.api.model.param.AccountBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.AccountQueryParam;
-import org.limbo.doorkeeper.api.model.param.AccountUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.limbo.doorkeeper.server.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +48,7 @@ public class AccountController {
 
     @PutMapping
     @Operation(summary = "修改账户")
-    public Response<Integer> update(@RequestBody AccountUpdateParam param) {
+    public Response<Integer> update(@RequestBody AccountBatchUpdateParam param) {
         return Response.ok(accountService.updateAccount(param));
     }
 

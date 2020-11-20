@@ -16,10 +16,8 @@
 
 package org.limbo.doorkeeper.server.service.impl;
 
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.limbo.doorkeeper.api.model.param.RolePermissionAddParam;
 import org.limbo.doorkeeper.server.dao.RolePermissionMapper;
-import org.limbo.doorkeeper.server.entity.RolePermission;
 import org.limbo.doorkeeper.server.service.RolePermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,14 +36,11 @@ public class RolePermissionServiceImpl implements RolePermissionService {
 
     @Override
     public void addRolePermission(List<RolePermissionAddParam> params) {
-        rolePermissionMapper.batchInsertOrUpdate(params);
+        rolePermissionMapper.batchInsertIgnore(params);
     }
 
     @Override
     public void deleteRolePermission(List<Long> rolePermissionIds) {
-        rolePermissionMapper.update(null, Wrappers.<RolePermission>lambdaUpdate()
-                .set(RolePermission::getIsDeleted, true)
-                .in(RolePermission::getRolePermissionId, rolePermissionIds)
-        );
+        rolePermissionMapper.deleteBatchIds(rolePermissionIds);
     }
 }

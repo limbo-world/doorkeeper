@@ -16,11 +16,9 @@
 
 package org.limbo.doorkeeper.server.service.impl;
 
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.Data;
 import org.limbo.doorkeeper.api.model.param.AccountRoleAddParam;
 import org.limbo.doorkeeper.server.dao.AccountRoleMapper;
-import org.limbo.doorkeeper.server.entity.AccountRole;
 import org.limbo.doorkeeper.server.service.AccountRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -38,14 +36,11 @@ public class AccountRoleServiceImpl implements AccountRoleService {
 
     @Override
     public void addAccountRole(List<AccountRoleAddParam> params) {
-        accountRoleMapper.batchInsertOrUpdate(params);
+        accountRoleMapper.batchInsertIgnore(params);
     }
 
     @Override
     public void deleteAccountRole(List<Long> accountRoleIds) {
-        accountRoleMapper.update(null, Wrappers.<AccountRole>lambdaUpdate()
-                .set(AccountRole::getIsDeleted, true)
-                .in(AccountRole::getAccountRoleId, accountRoleIds)
-        );
+        accountRoleMapper.deleteBatchIds(accountRoleIds);
     }
 }

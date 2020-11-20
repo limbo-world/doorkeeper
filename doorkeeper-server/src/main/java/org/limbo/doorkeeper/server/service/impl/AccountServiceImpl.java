@@ -25,7 +25,7 @@ import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.AccountAddParam;
 import org.limbo.doorkeeper.api.model.param.AccountQueryParam;
 import org.limbo.doorkeeper.api.model.param.AccountRoleAddParam;
-import org.limbo.doorkeeper.api.model.param.AccountUpdateParam;
+import org.limbo.doorkeeper.api.model.param.AccountBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.limbo.doorkeeper.server.dao.AccountMapper;
 import org.limbo.doorkeeper.server.dao.AccountRoleMapper;
@@ -66,9 +66,6 @@ public class AccountServiceImpl implements AccountService {
     public AccountVO addAccount(AccountAddParam param) {
         Account po = EnhancedBeanUtils.createAndCopy(param, Account.class);
 
-        // 判断用户名是否已存在
-        Verifies.verify(accountMapper.countByUsername(param.getProjectId(), param.getUsername()) == 0, "用户名已存在");
-
         try {
             accountMapper.insert(po);
         } catch (DuplicateKeyException e) {
@@ -90,14 +87,14 @@ public class AccountServiceImpl implements AccountService {
                 accountRole.setRoleId(role.getRoleId());
                 accountRoles.add(accountRole);
             }
-            accountRoleMapper.batchInsertOrUpdate(accountRoles);
+            accountRoleMapper.batchInsertIgnore(accountRoles);
         }
 
         return EnhancedBeanUtils.createAndCopy(po, AccountVO.class);
     }
 
     @Override
-    public Integer updateAccount(AccountUpdateParam param) {
+    public Integer updateAccount(AccountBatchUpdateParam param) {
         return accountMapper.update(null, Wrappers.<Account>lambdaUpdate()
                 .set(param.getIsActivated() != null, Account::getIsActivated, param.getIsActivated())
                 .set(param.getIsSuperAdmin() != null, Account::getIsSuperAdmin, param.getIsSuperAdmin())

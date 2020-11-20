@@ -24,6 +24,9 @@ import lombok.Data;
 import java.util.Date;
 
 /**
+ *
+ * 角色权限绑定关系
+ *
  * @author Devil
  * @date 2020/11/19 4:45 PM
  */
@@ -37,10 +40,4 @@ public class RolePermission {
     private Long roleId;
 
     private Long permissionId;
-
-    private Boolean isDeleted;
-
-    private Date gmtCreated;
-
-    private Date gmtModified;
 }
