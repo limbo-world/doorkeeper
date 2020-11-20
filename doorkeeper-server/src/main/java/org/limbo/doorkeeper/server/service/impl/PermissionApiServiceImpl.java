@@ -17,46 +17,35 @@
 package org.limbo.doorkeeper.server.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import org.limbo.doorkeeper.api.model.param.ApiAddParam;
-import org.limbo.doorkeeper.server.dao.ApiMapper;
-import org.limbo.doorkeeper.server.entity.Api;
-import org.limbo.doorkeeper.server.service.ApiService;
+import org.limbo.doorkeeper.api.model.param.PermissionApiAddParam;
+import org.limbo.doorkeeper.server.dao.PermissionApiMapper;
+import org.limbo.doorkeeper.server.entity.PermissionApi;
+import org.limbo.doorkeeper.server.service.PermissionApiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 /**
  * @author Devil
- * @date 2020/11/19 7:17 PM
+ * @date 2020/11/20 9:48 AM
  */
 @Service
-public class ApiServiceImpl implements ApiService {
+public class PermissionApiServiceImpl implements PermissionApiService {
 
     @Autowired
-    private ApiMapper apiMapper;
+    private PermissionApiMapper permissionApiMapper;
 
     @Override
-    public void addApi(List<ApiAddParam> apis) {
-        apiMapper.batchInsert(apis);
+    public void addPermissionApi(List<PermissionApiAddParam> permissionApis) {
+        permissionApiMapper.batchInsertOrUpdate(permissionApis);
     }
 
     @Override
-    public void updateApi(Long apiId, String describe) {
-        apiMapper.update(null, Wrappers.<Api>lambdaUpdate()
-                .set(Api::getApiDescribe, describe)
-                .eq(Api::getApiId, apiId)
-        );
-    }
-
-    @Override
-    @Transactional
-    public void deleteApi(Long apiId) {
-        // 删除api
-        apiMapper.update(null, Wrappers.<Api>lambdaUpdate()
-                .set(Api::getIsDeleted, true)
-                .eq(Api::getApiId, apiId)
+    public void deletePermissionApi(List<Long> permissionApiIds) {
+        permissionApiMapper.update(null, Wrappers.<PermissionApi>lambdaUpdate()
+                .set(PermissionApi::getIsDeleted, true)
+                .in(PermissionApi::getPermissionApiId, permissionApiIds)
         );
     }
 }

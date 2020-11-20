@@ -46,9 +46,11 @@ public class Permission {
     private String permissionDescribe;
 
     /**
-     * 是否上线
+     * 是否上线 下线权限不生效
      */
     private Boolean isOnline;
+
+    private Boolean isDeleted;
 
     private Date gmtCreated;
 

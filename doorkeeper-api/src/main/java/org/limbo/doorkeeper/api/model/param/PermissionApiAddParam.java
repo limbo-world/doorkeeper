@@ -17,33 +17,21 @@
 package org.limbo.doorkeeper.api.model.param;
 
 import lombok.Data;
+import org.limbo.doorkeeper.api.constants.PermissionPolicy;
 
 /**
  * @author Devil
- * @date 2020/11/19 7:29 PM
+ * @date 2020/11/20 9:52 AM
  */
 @Data
-public class ApiAddParam {
+public class PermissionApiAddParam {
 
-    private Long projectId;
+    private Long permissionId;
 
-    /**
-     * 名称
-     */
-    private String apiName;
+    private Long apiId;
 
     /**
-     * 描述
+     * @see PermissionPolicy
      */
-    private String apiDescribe;
-
-    /**
-     * 方法类型 get post
-     */
-    private String apiMethod;
-
-    /**
-     * ant风格url
-     */
-    private String apiUrl;
+    private String policy;
 }

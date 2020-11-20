@@ -14,36 +14,20 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
+package org.limbo.doorkeeper.server.dao;
 
-import lombok.Data;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.limbo.doorkeeper.api.model.param.PermissionApiAddParam;
+import org.limbo.doorkeeper.server.entity.PermissionApi;
+
+import java.util.List;
 
 /**
  * @author Devil
- * @date 2020/11/19 7:29 PM
+ * @date 2020/11/20 9:49 AM
  */
-@Data
-public class ApiAddParam {
+public interface PermissionApiMapper extends BaseMapper<PermissionApi> {
 
-    private Long projectId;
+    void batchInsertOrUpdate(List<PermissionApiAddParam> permissionApis);
 
-    /**
-     * 名称
-     */
-    private String apiName;
-
-    /**
-     * 描述
-     */
-    private String apiDescribe;
-
-    /**
-     * 方法类型 get post
-     */
-    private String apiMethod;
-
-    /**
-     * ant风格url
-     */
-    private String apiUrl;
 }

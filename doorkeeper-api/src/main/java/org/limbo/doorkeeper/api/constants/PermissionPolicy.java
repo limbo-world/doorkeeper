@@ -14,36 +14,45 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
-
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
-import org.limbo.doorkeeper.api.constants.PermissionPolicy;
+package org.limbo.doorkeeper.api.constants;
 
 /**
+ * 单独设置权限时的策略
  *
- * 权限和api绑定关系
- *
- * @author Devil
- * @date 2020/11/18 7:22 PM
+ * @author Brozen
+ * @date 2020/3/10 3:55 PM
+ * @email brozen@qq.com
  */
-@Data
-@TableName("l_permission_api")
-public class PermissionApi {
-
-    @TableId(type = IdType.AUTO)
-    private Long permissionApiId;
-
-    private Long permissionId;
-
-    private Long apiId;
+public enum PermissionPolicy implements IEnum<String> {
 
     /**
-     * @see PermissionPolicy
+     * 允许通过
      */
+    ALLOW("allow"),
+
+    /**
+     * 不允许通过
+     */
+    REFUSE("refuse"),
+    ;
+
     private String policy;
 
-    private Boolean isDeleted;
+    PermissionPolicy(String policy) {
+        this.policy = policy;
+    }
+
+    @Override
+    public String getValue() {
+        return policy;
+    }
+
+    public static PermissionPolicy parse(String p) {
+        for (PermissionPolicy policy : values()) {
+            if (policy.is(p)) {
+                return policy;
+            }
+        }
+        return null;
+    }
 }

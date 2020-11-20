@@ -16,16 +16,17 @@
   -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="org.limbo.doorkeeper.server.dao.ApiMapper" >
+<mapper namespace="org.limbo.doorkeeper.server.dao.PermissionApiMapper" >
 
-
-    <insert id="batchInsert" parameterType="org.limbo.doorkeeper.api.model.param.ApiAddParam">
+    <insert id="batchInsertOrUpdate" parameterType="org.limbo.doorkeeper.api.model.param.PermissionApiAddParam">
         INSERT INTO l_api (
-          project_id, api_name, api_describe, api_method, api_url
+          permission_id, api_id, policy
         ) VALUES
-        <foreach collection="apis" separator="," item="api">
-            ( #{api.projectId}, #{api.apiName}, #{api.apiDescribe}, #{api.apiMethod}, #{api.apiUrl} )
+        <foreach collection="permissionApis" separator="," item="permissionApi">
+            ( #{permissionApi.permissionId}, #{permissionApi.apiId}, #{permissionApi.policy} )
         </foreach>
+        ON DUPLICATE KEY UPDATE
+        is_deleted = true
     </insert>
 
 </mapper>

@@ -14,36 +14,41 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
+package org.limbo.doorkeeper.server.service;
 
-import lombok.Data;
+import org.limbo.doorkeeper.api.model.param.PermissionAddParam;
+import org.limbo.doorkeeper.api.model.param.PermissionUpdateParam;
+
+import java.util.List;
 
 /**
  * @author Devil
- * @date 2020/11/19 7:29 PM
+ * @date 2020/11/19 8:31 PM
  */
-@Data
-public class ApiAddParam {
-
-    private Long projectId;
+public interface PermissionService {
+    /**
+     * 新增权限
+     */
+    void addPermission(PermissionAddParam param);
 
     /**
-     * 名称
+     * 修改权限
      */
-    private String apiName;
+    void updatePermission(PermissionUpdateParam param);
 
     /**
-     * 描述
+     * 删除权限
      */
-    private String apiDescribe;
+    void deletePermission(List<Long> permissionIds);
 
     /**
-     * 方法类型 get post
+     * 权限上线
      */
-    private String apiMethod;
+    void permissionOnline(List<Long> permissionIds);
 
     /**
-     * ant风格url
+     * 权限下线
      */
-    private String apiUrl;
+    void permissionOffline(List<Long> permissionIds);
+
 }
