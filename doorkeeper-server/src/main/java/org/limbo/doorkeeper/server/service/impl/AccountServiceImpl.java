@@ -16,8 +16,28 @@
 
 package org.limbo.doorkeeper.server.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.apache.commons.collections4.CollectionUtils;
+import org.limbo.doorkeeper.api.model.param.AccountRegisterParam;
+import org.limbo.doorkeeper.api.model.param.AccountRoleAddParam;
+import org.limbo.doorkeeper.api.model.vo.AccountVO;
+import org.limbo.doorkeeper.server.dao.AccountMapper;
+import org.limbo.doorkeeper.server.dao.AccountRoleMapper;
+import org.limbo.doorkeeper.server.dao.RoleMapper;
+import org.limbo.doorkeeper.server.entity.Account;
+import org.limbo.doorkeeper.server.entity.AccountRole;
+import org.limbo.doorkeeper.server.entity.Role;
 import org.limbo.doorkeeper.server.service.AccountService;
+import org.limbo.doorkeeper.server.service.ProjectService;
+import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.utils.MD5Utils;
+import org.limbo.doorkeeper.server.utils.Verifies;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Brozen
@@ -27,4 +47,44 @@ import org.springframework.stereotype.Service;
 @Service
 public class AccountServiceImpl implements AccountService {
 
+    @Autowired
+    private AccountMapper accountMapper;
+
+    @Autowired
+    private RoleMapper roleMapper;
+
+    @Autowired
+    private AccountRoleMapper accountRoleMapper;
+
+    @Override
+    @Transactional
+    public AccountVO register(AccountRegisterParam param, Boolean isActivated) {
+        Account po = EnhancedBeanUtils.createAndCopy(param, Account.class);
+
+        // 判断用户名是否已存在
+        Verifies.verify(accountMapper.countByUsername(param.getProjectId(), param.getUsername()) == 0, "用户名已存在");
+
+        po.setIsActivated(isActivated);
+        accountMapper.insert(po);
+
+        // 找到项目中需要默认添加的角色
+        List<Role> roles = roleMapper.selectList(Wrappers.<Role>lambdaQuery()
+                .eq(Role::getProjectId, param.getProjectId())
+                .eq(Role::getIsDefault, true)
+                .eq(Role::getIsDeleted, false)
+        );
+
+        if (CollectionUtils.isNotEmpty(roles)) {
+            List<AccountRoleAddParam> accountRoles = new ArrayList<>();
+            for (Role role : roles) {
+                AccountRoleAddParam accountRole = new AccountRoleAddParam();
+                accountRole.setAccountId(po.getAccountId());
+                accountRole.setRoleId(role.getRoleId());
+                accountRoles.add(accountRole);
+            }
+            accountRoleMapper.batchInsertOrUpdate(accountRoles);
+        }
+
+        return EnhancedBeanUtils.createAndCopy(po, AccountVO.class);
+    }
 }

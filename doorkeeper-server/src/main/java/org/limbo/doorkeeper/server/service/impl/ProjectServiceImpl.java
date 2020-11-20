@@ -54,10 +54,11 @@ public class ProjectServiceImpl implements ProjectService {
     public ProjectVO addProject(ProjectAddParam param, Boolean isActivated) {
         Project project = EnhancedBeanUtils.createAndCopy(param, Project.class);
         project.setIsActivated(isActivated);
-        project.setProjectCode(UUIDUtils.get());
-        project.setProjectSecret(UUIDUtils.get());
+        if (StringUtils.isBlank(param.getProjectSecret())) {
+            project.setProjectSecret(UUIDUtils.get());
+        }
 
-        projectMapper.replace(project);
+        projectMapper.insert(project);
         return EnhancedBeanUtils.createAndCopy(project, ProjectVO.class);
     }
 
@@ -77,9 +78,8 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     @Transactional
-    public Project deleteProject(Long projectId) {
-        Project project = get(projectId);
-        // 假删除，如果是真删除，需要关联删除账户、角色、菜单、权限
+    public ProjectVO deleteProject(Long projectId) {
+        ProjectVO project = get(projectId);
         projectMapper.update(null, Wrappers.<Project>lambdaUpdate()
                 .set(Project::getIsDeleted, true)
                 .eq(Project::getProjectId, projectId)
@@ -88,25 +88,27 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Project get(Long projectId) {
-        return projectMapper.selectOne(columnNoSecret()
+    public ProjectVO get(Long projectId) {
+        Project project = projectMapper.selectOne(Wrappers.<Project>lambdaQuery()
                 .eq(Project::getProjectId, projectId)
-                .eq(Project::getIsDeleted, false)
-                .eq(Project::getIsActivated, true));
-    }
-
-    @Override
-    public Project get(String projectCode) {
-        return projectMapper.selectOne(Wrappers.<Project>lambdaQuery()
-                .eq(Project::getProjectCode, projectCode)
                 .eq(Project::getIsDeleted, false)
                 .eq(Project::getIsActivated, true)
         );
+        return EnhancedBeanUtils.createAndCopy(project, ProjectVO.class);
+    }
+
+    @Override
+    public String getSecret(Long projectId) {
+        Project project = projectMapper.selectOne(Wrappers.<Project>lambdaQuery()
+                .select(Project::getProjectSecret)
+                .eq(Project::getProjectId, projectId)
+        );
+        return project.getProjectSecret();
     }
 
     @Override
     public List<ProjectVO> listProject() {
-        List<Project> allProjects = projectMapper.selectList(columnNoSecret()
+        List<Project> allProjects = projectMapper.selectList(Wrappers.<Project>lambdaQuery()
                 .eq(Project::getIsDeleted, false)
                 .eq(Project::getIsActivated, true));
         return EnhancedBeanUtils.createAndCopyList(allProjects, ProjectVO.class);
@@ -115,7 +117,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Page<ProjectVO> queryProjectPage(ProjectQueryParam param) {
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<Project> mpage = MyBatisPlusUtils.pageOf(param);
-        LambdaQueryWrapper<Project> condition = columnNoSecret()
+        LambdaQueryWrapper<Project> condition = Wrappers.<Project>lambdaQuery()
                 .like(StringUtils.isNotBlank(param.getName()), Project::getProjectName, param.getName())
                 .eq(Project::getIsDeleted, false)
                 .eq(Project::getIsActivated, true);
@@ -126,15 +128,4 @@ public class ProjectServiceImpl implements ProjectService {
         return param;
     }
 
-    // 没有secret
-    private LambdaQueryWrapper<Project> columnNoSecret() {
-        return Wrappers.<Project>lambdaQuery().select(
-                Project::getProjectId,
-                Project::getProjectCode,
-                Project::getProjectName,
-                Project::getProjectDescribe,
-                Project::getGmtCreated,
-                Project::getGmtModified
-        );
-    }
 }

@@ -35,13 +35,4 @@ public class AccountRegisterParam {
     @NotBlank(message = "用户名不可为空")
     private String username;
 
-    @NotBlank(message = "密码不可为空")
-    private String password;
-
-    @NotBlank(message = "两次输入密码不一致")
-    private String confirmPassword;
-
-    @NotBlank(message = "昵称不可为空")
-    @Size(max = 32, message = "昵称长度不超过32个字符")
-    private String nick;
 }

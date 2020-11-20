@@ -21,4 +21,6 @@ package org.limbo.doorkeeper.server.controller;
  * @date 2020/11/20 10:41 AM
  */
 public class ApiController {
+
+
 }

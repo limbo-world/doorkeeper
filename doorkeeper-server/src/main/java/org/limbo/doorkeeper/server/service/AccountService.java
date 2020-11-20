@@ -16,10 +16,18 @@
 
 package org.limbo.doorkeeper.server.service;
 
+import org.limbo.doorkeeper.api.model.param.AccountRegisterParam;
+import org.limbo.doorkeeper.api.model.vo.AccountVO;
+
 /**
  * @author Brozen
  * @date 2020/2/27 5:41 PM
  * @email brozen@qq.com
  */
 public interface AccountService {
+
+    /**
+     * 注册用户
+     */
+    AccountVO register(AccountRegisterParam param, Boolean isActivated);
 }

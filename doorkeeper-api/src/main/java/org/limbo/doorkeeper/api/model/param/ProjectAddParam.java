@@ -16,8 +16,10 @@
 
 package org.limbo.doorkeeper.api.model.param;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
 /**
@@ -26,18 +28,14 @@ import java.util.Date;
  */
 @Data
 public class ProjectAddParam {
-    /**
-     * 项目名称
-     */
-    private String name;
 
-    /**
-     * 秘钥
-     */
-    private String secret;
+    @NotBlank
+    @Schema(title = "项目名称", required = true)
+    private String projectName;
 
-    /**
-     * 描述
-     */
-    private String describe;
+    @Schema(title = "秘钥")
+    private String projectSecret;
+
+    @Schema(title = "描述")
+    private String projectDescribe;
 }

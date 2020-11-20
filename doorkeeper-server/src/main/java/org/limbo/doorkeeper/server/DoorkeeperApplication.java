@@ -17,18 +17,21 @@
 
 package org.limbo.doorkeeper.server;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * @author liuqingtong
  * @date 2020/11/19 19:29
  */
 @SpringBootApplication
-@ComponentScan(excludeFilters = @ComponentScan.Filter(classes = Service.class))
+@EnableTransactionManagement
+@MapperScan("org.limbo.doorkeeper.server.dao")
 public class DoorkeeperApplication {
 
     public static void main(String[] args) {

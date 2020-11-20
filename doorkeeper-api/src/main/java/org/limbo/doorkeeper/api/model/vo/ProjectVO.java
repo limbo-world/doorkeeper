@@ -16,6 +16,7 @@
 
 package org.limbo.doorkeeper.api.model.vo;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -25,35 +26,20 @@ import lombok.Data;
 @Data
 public class ProjectVO {
 
+
+    @Schema(title = "项目id")
     private Long projectId;
-    /**
-     * 项目名称
-     */
-    private String name;
 
-    /**
-     * 编码
-     */
-    private String code;
+    @Schema(title = "项目名称")
+    private String projectName;
 
-    /**
-     * 秘钥
-     */
-    private String secret;
+    @Schema(title = "描述")
+    private String projectDescribe;
 
-    /**
-     * 描述
-     */
-    private String describe;
-
-    /**
-     * 是否删除
-     */
+    @Schema(title = "是否删除")
     private Boolean isDeleted;
 
-    /**
-     * 是否激活
-     */
+    @Schema(title = "是否激活")
     private Boolean isActivated;
 
 }

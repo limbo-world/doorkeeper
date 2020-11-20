@@ -36,21 +36,9 @@ public class Account {
 
     private Long projectId;
     /**
-     * 用户名
+     * 账户
      */
     private String username;
-    /**
-     * 密码
-     */
-    private String password;
-    /**
-     * 昵称
-     */
-    private String nickname;
-    /**
-     * 最后登录时间
-     */
-    private Date lastLogin;
     /**
      * 是否超级管理员
      */

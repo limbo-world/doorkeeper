@@ -21,7 +21,6 @@ import org.limbo.doorkeeper.api.model.param.ProjectAddParam;
 import org.limbo.doorkeeper.api.model.param.ProjectQueryParam;
 import org.limbo.doorkeeper.api.model.param.ProjectUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ProjectVO;
-import org.limbo.doorkeeper.server.entity.Project;
 
 import java.util.List;
 
@@ -49,35 +48,26 @@ public interface ProjectService {
 
     /**
      * 删除项目 假删除
-     * @param projectId
-     * @return
      */
-    Project deleteProject(Long projectId);
+    ProjectVO deleteProject(Long projectId);
 
     /**
      * 根据id 获取项目
-     * @param projectId
-     * @return
      */
-    Project get(Long projectId);
+    ProjectVO get(Long projectId);
 
     /**
-     * 根据code 获取项目
-     * @param projectCode
-     * @return
+     * 获取秘钥
      */
-    Project get(String projectCode);
+    String getSecret(Long projectId);
 
     /**
      * 获取所有项目
-     * @return
      */
     List<ProjectVO> listProject();
 
     /**
      * 分页查询项目列表
-     * @param param
-     * @return
      */
     Page<ProjectVO> queryProjectPage(ProjectQueryParam param);
 }

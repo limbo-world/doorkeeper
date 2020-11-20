@@ -40,11 +40,6 @@ public class Project {
     private String projectName;
 
     /**
-     * 编码
-     */
-    private String projectCode;
-
-    /**
      * 秘钥
      */
     private String projectSecret;

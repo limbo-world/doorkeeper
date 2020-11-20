@@ -27,11 +27,4 @@ import org.limbo.doorkeeper.server.entity.Project;
  * @email brozen@qq.com
  */
 public interface ProjectMapper extends BaseMapper<Project> {
-
-    @Insert("replace into l_project( project_code, project_secret, project_name, project_desc, is_deleted, is_activated )"
-            + "values ( #{projectCode}, #{projectSecret}, #{projectName}, #{projectDesc}, 0, 0 )")
-    @SelectKey(keyProperty = "projectId", before = false,
-            statement = "select LAST_INSERT_ID()", resultType = Long.class)
-    Integer replace(Project project);
-
 }

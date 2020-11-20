@@ -17,8 +17,9 @@
 package org.limbo.doorkeeper.server.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.*;
-import org.limbo.doorkeeper.api.model.param.AccountPasswordUpdateParam;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.limbo.doorkeeper.server.entity.Account;
 
 import java.util.List;
@@ -31,12 +32,6 @@ import java.util.List;
 public interface AccountMapper extends BaseMapper<Account> {
 
     String column = " account_id, project_id, username, nick, last_login, is_super_admin ";
-
-    @Insert("replace into l_account (project_id, username, password, nick )"
-            + "values (#{projectId}, #{username}, #{password}, #{nick})")
-    @SelectKey(keyProperty = "accountId", before = false,
-            statement = "select LAST_INSERT_ID()", resultType = Long.class)
-    Integer replace(Account po);
 
     @Select("select " + column + " from l_account where is_activated = 1 and is_deleted = 0 and project_id = #{projectId} and account_id = #{accountId}")
     Account getAccount(@Param("projectId") Long projectId,
@@ -73,11 +68,6 @@ public interface AccountMapper extends BaseMapper<Account> {
      * 更新基础信息，nick
      */
     void updateBaseInfo(Account account);
-
-    /**
-     * 更新密码
-     */
-    void updatePassword(AccountPasswordUpdateParam param);
 
     /**
      * 假删除
