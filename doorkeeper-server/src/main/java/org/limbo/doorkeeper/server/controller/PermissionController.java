@@ -14,30 +14,11 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
-
-import lombok.Data;
+package org.limbo.doorkeeper.server.controller;
 
 /**
  * @author Devil
- * @date 2020/11/19 3:29 PM
+ * @date 2020/11/20 10:41 AM
  */
-@Data
-public class ProjectUpdateParam {
-
-    private Long projectId;
-    /**
-     * 项目名称
-     */
-    private String projectName;
-
-    /**
-     * 秘钥
-     */
-    private String projectSecret;
-
-    /**
-     * 描述
-     */
-    private String projectDescribe;
+public class PermissionController {
 }

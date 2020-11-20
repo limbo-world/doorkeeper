@@ -54,8 +54,8 @@ public class ProjectServiceImpl implements ProjectService {
     public ProjectVO addProject(ProjectAddParam param, Boolean isActivated) {
         Project project = EnhancedBeanUtils.createAndCopy(param, Project.class);
         project.setIsActivated(isActivated);
-        project.setCode(UUIDUtils.get());
-        project.setSecret(UUIDUtils.get());
+        project.setProjectCode(UUIDUtils.get());
+        project.setProjectSecret(UUIDUtils.get());
 
         projectMapper.replace(project);
         return EnhancedBeanUtils.createAndCopy(project, ProjectVO.class);
@@ -68,8 +68,8 @@ public class ProjectServiceImpl implements ProjectService {
         Verifies.notNull(project, "项目不存在");
 
         LambdaUpdateWrapper<Project> update = Wrappers.<Project>lambdaUpdate()
-                .set(StringUtils.isNotBlank(param.getName()), Project::getName, param.getName())
-                .set(StringUtils.isNotBlank(param.getDescribe()), Project::getDescribe, param.getDescribe())
+                .set(StringUtils.isNotBlank(param.getProjectName()), Project::getProjectName, param.getProjectName())
+                .set(StringUtils.isNotBlank(param.getProjectDescribe()), Project::getProjectDescribe, param.getProjectDescribe())
                 .eq(Project::getProjectId, param.getProjectId());
 
         return projectMapper.update(null, update);
@@ -98,7 +98,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Project get(String projectCode) {
         return projectMapper.selectOne(Wrappers.<Project>lambdaQuery()
-                .eq(Project::getCode, projectCode)
+                .eq(Project::getProjectCode, projectCode)
                 .eq(Project::getIsDeleted, false)
                 .eq(Project::getIsActivated, true)
         );
@@ -116,7 +116,7 @@ public class ProjectServiceImpl implements ProjectService {
     public Page<ProjectVO> queryProjectPage(ProjectQueryParam param) {
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<Project> mpage = MyBatisPlusUtils.pageOf(param);
         LambdaQueryWrapper<Project> condition = columnNoSecret()
-                .like(StringUtils.isNotBlank(param.getName()), Project::getName, param.getName())
+                .like(StringUtils.isNotBlank(param.getName()), Project::getProjectName, param.getName())
                 .eq(Project::getIsDeleted, false)
                 .eq(Project::getIsActivated, true);
         mpage = projectMapper.selectPage(mpage, condition);
@@ -130,9 +130,9 @@ public class ProjectServiceImpl implements ProjectService {
     private LambdaQueryWrapper<Project> columnNoSecret() {
         return Wrappers.<Project>lambdaQuery().select(
                 Project::getProjectId,
-                Project::getCode,
-                Project::getName,
-                Project::getDescribe,
+                Project::getProjectCode,
+                Project::getProjectName,
+                Project::getProjectDescribe,
                 Project::getGmtCreated,
                 Project::getGmtModified
         );
