@@ -69,7 +69,7 @@ public class RoleController {
 
     @GetMapping
     @Operation(summary = "分页查询角色")
-    public Response<Page<RoleVO>> page(@RequestBody RoleQueryParam param) {
+    public Response<Page<RoleVO>> page(RoleQueryParam param) {
         return Response.ok(roleService.queryRole(param));
     }
 
