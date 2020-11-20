@@ -28,6 +28,13 @@
             <version>4.11</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- Swagger注解 -->
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>${swagger3.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
