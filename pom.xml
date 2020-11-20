@@ -11,6 +11,7 @@
         <module>doorkeeper-server</module>
         <module>doorkeeper-api</module>
         <module>doorkeeper-eureka</module>
+        <module>doorkeeper-admin</module>
     </modules>
 
     <packaging>pom</packaging>

@@ -2,4 +2,4 @@ spring:
   profiles:
     active: dev
   application:
-    name: doorkeeper-server
+    name: doorkeeper-admin
