@@ -17,6 +17,8 @@
 package org.limbo.doorkeeper.server.service;
 
 import org.limbo.doorkeeper.api.model.param.ApiAddParam;
+import org.limbo.doorkeeper.api.model.param.ApiUpdateParam;
+import org.limbo.doorkeeper.server.entity.Api;
 
 import java.util.List;
 
@@ -29,15 +31,15 @@ public interface ApiService {
     /**
      * 添加api
      */
-    void addApi(List<ApiAddParam> apis);
+    Api addApi(ApiAddParam param);
 
     /**
      * 修改api
      */
-    void updateApi(Long apiId, String describe);
+    int updateApi(ApiUpdateParam param);
 
     /**
      * 删除api
      */
-    void deleteApi(Long apiId);
+    void deleteApi(List<Long> apiIds);
 }

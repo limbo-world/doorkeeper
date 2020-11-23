@@ -16,7 +16,10 @@
 
 package org.limbo.doorkeeper.api.model.param;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+
+import javax.validation.constraints.NotEmpty;
 
 /**
  * @author Devil
@@ -25,15 +28,13 @@ import lombok.Data;
 @Data
 public class PermissionUpdateParam {
 
+    @NotEmpty(message = "请选择权限")
+    @Schema(title = "权限id", required = true)
     private Long permissionId;
 
-    /**
-     * 权限名称
-     */
+    @Schema(title = "权限名称")
     private String permissionName;
 
-    /**
-     * 描述
-     */
+    @Schema(title = "权限描述")
     private String permissionDescribe;
 }

@@ -19,32 +19,22 @@ package org.limbo.doorkeeper.api.model.param;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * @author Devil
- * @date 2020/11/19 7:29 PM
+ * @date 2020/11/20 9:31 AM
  */
 @Data
-public class ApiAddParam {
+public class PermissionBatchUpdateParam {
 
-    @NotNull(message = "项目id不能为空")
-    @Schema(title = "项目id", required = true)
-    private Long projectId;
+    @NotEmpty(message = "请选择权限")
+    @Schema(title = "权限id列表", required = true)
+    private List<Long> permissionIds;
 
-    @NotBlank(message = "api名称不能为空")
-    @Schema(title = "api名称", required = true)
-    private String apiName;
-
-    @Schema(title = "api描述")
-    private String apiDescribe;
-
-    @NotBlank(message = "类型不能为空")
-    @Schema(title = "类型 get post", required = true)
-    private String apiMethod;
-
-    @NotBlank(message = "url不能为空")
-    @Schema(title = "ant风格url", required = true)
-    private String apiUrl;
+    @NotNull(message = "请选择上下线状态")
+    @Schema(title = "上下线状态", required = true)
+    private Boolean isOnline;
 }

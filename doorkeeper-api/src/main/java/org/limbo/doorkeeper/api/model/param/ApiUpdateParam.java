@@ -19,32 +19,19 @@ package org.limbo.doorkeeper.api.model.param;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
 /**
  * @author Devil
  * @date 2020/11/19 7:29 PM
  */
 @Data
-public class ApiAddParam {
+public class ApiUpdateParam {
 
-    @NotNull(message = "项目id不能为空")
-    @Schema(title = "项目id", required = true)
-    private Long projectId;
+    private Long apiId;
 
-    @NotBlank(message = "api名称不能为空")
-    @Schema(title = "api名称", required = true)
+    @Schema(title = "api名称")
     private String apiName;
 
     @Schema(title = "api描述")
     private String apiDescribe;
 
-    @NotBlank(message = "类型不能为空")
-    @Schema(title = "类型 get post", required = true)
-    private String apiMethod;
-
-    @NotBlank(message = "url不能为空")
-    @Schema(title = "ant风格url", required = true)
-    private String apiUrl;
 }

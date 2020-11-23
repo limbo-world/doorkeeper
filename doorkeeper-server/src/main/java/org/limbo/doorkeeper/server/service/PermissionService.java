@@ -17,7 +17,9 @@
 package org.limbo.doorkeeper.server.service;
 
 import org.limbo.doorkeeper.api.model.param.PermissionAddParam;
+import org.limbo.doorkeeper.api.model.param.PermissionBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.PermissionUpdateParam;
+import org.limbo.doorkeeper.server.entity.Permission;
 
 import java.util.List;
 
@@ -29,12 +31,12 @@ public interface PermissionService {
     /**
      * 新增权限
      */
-    void addPermission(PermissionAddParam param);
+    Permission addPermission(PermissionAddParam param);
 
     /**
      * 修改权限
      */
-    void updatePermission(PermissionUpdateParam param);
+    int updatePermission(PermissionUpdateParam param);
 
     /**
      * 删除权限
@@ -42,13 +44,8 @@ public interface PermissionService {
     void deletePermission(List<Long> permissionIds);
 
     /**
-     * 权限上线
+     * 批量修改权限
      */
-    void permissionOnline(List<Long> permissionIds);
-
-    /**
-     * 权限下线
-     */
-    void permissionOffline(List<Long> permissionIds);
+    void batchUpdate(PermissionBatchUpdateParam param);
 
 }

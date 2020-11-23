@@ -18,9 +18,11 @@ package org.limbo.doorkeeper.server.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.limbo.doorkeeper.api.model.param.ApiAddParam;
+import org.limbo.doorkeeper.api.model.param.ApiUpdateParam;
 import org.limbo.doorkeeper.server.dao.ApiMapper;
 import org.limbo.doorkeeper.server.entity.Api;
 import org.limbo.doorkeeper.server.service.ApiService;
+import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,25 +40,30 @@ public class ApiServiceImpl implements ApiService {
     private ApiMapper apiMapper;
 
     @Override
-    public void addApi(List<ApiAddParam> apis) {
-        apiMapper.batchInsert(apis);
+    @Transactional
+    public Api addApi(ApiAddParam param) {
+        Api api = EnhancedBeanUtils.createAndCopy(param, Api.class);
+        apiMapper.insert(api);
+        return api;
     }
 
     @Override
-    public void updateApi(Long apiId, String describe) {
-        apiMapper.update(null, Wrappers.<Api>lambdaUpdate()
-                .set(Api::getApiDescribe, describe)
-                .eq(Api::getApiId, apiId)
+    @Transactional
+    public int updateApi(ApiUpdateParam param) {
+        return apiMapper.update(null, Wrappers.<Api>lambdaUpdate()
+                .set(Api::getApiDescribe, param.getApiDescribe())
+                .set(Api::getApiName, param.getApiName())
+                .eq(Api::getApiId, param.getApiId())
         );
     }
 
     @Override
     @Transactional
-    public void deleteApi(Long apiId) {
+    public void deleteApi(List<Long> apiIds) {
         // 删除api
         apiMapper.update(null, Wrappers.<Api>lambdaUpdate()
                 .set(Api::getIsDeleted, true)
-                .eq(Api::getApiId, apiId)
+                .in(Api::getApiId, apiIds)
         );
     }
 }

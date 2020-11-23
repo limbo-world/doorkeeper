@@ -19,6 +19,7 @@ package org.limbo.doorkeeper.server.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.param.PermissionAddParam;
+import org.limbo.doorkeeper.api.model.param.PermissionBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.PermissionUpdateParam;
 import org.limbo.doorkeeper.server.dao.PermissionMapper;
 import org.limbo.doorkeeper.server.entity.Permission;
@@ -42,15 +43,16 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     @Transactional
-    public void addPermission(PermissionAddParam param) {
+    public Permission addPermission(PermissionAddParam param) {
         Permission permission = EnhancedBeanUtils.createAndCopy(param, Permission.class);
         permissionMapper.insert(permission);
+        return permission;
     }
 
     @Override
     @Transactional
-    public void updatePermission(PermissionUpdateParam param) {
-        permissionMapper.update(null, Wrappers.<Permission>lambdaUpdate()
+    public int updatePermission(PermissionUpdateParam param) {
+        return permissionMapper.update(null, Wrappers.<Permission>lambdaUpdate()
                 .set(StringUtils.isNotBlank(param.getPermissionName()), Permission::getPermissionName, param.getPermissionName())
                 .set(StringUtils.isNotBlank(param.getPermissionDescribe()), Permission::getPermissionDescribe, param.getPermissionDescribe())
                 .eq(Permission::getPermissionId, param.getPermissionId())
@@ -66,18 +68,10 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public void permissionOnline(List<Long> permissionIds) {
+    public void batchUpdate(PermissionBatchUpdateParam param) {
         permissionMapper.update(null, Wrappers.<Permission>lambdaUpdate()
-                .set(Permission::getIsOnline, true)
-                .in(Permission::getPermissionId, permissionIds)
-        );
-    }
-
-    @Override
-    public void permissionOffline(List<Long> permissionIds) {
-        permissionMapper.update(null, Wrappers.<Permission>lambdaUpdate()
-                .set(Permission::getIsOnline, false)
-                .in(Permission::getPermissionId, permissionIds)
+                .set(Permission::getIsOnline, param.getIsOnline())
+                .in(Permission::getPermissionId, param.getPermissionIds())
         );
     }
 
