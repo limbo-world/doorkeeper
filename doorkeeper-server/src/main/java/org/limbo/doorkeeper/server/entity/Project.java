@@ -50,11 +50,6 @@ public class Project {
     private String projectDescribe;
 
     /**
-     * 是否删除
-     */
-    private Boolean isDeleted;
-
-    /**
      * 是否激活
      */
     private Boolean isActivated;

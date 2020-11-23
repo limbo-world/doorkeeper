@@ -16,7 +16,11 @@
 
 package org.limbo.doorkeeper.server.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import org.limbo.doorkeeper.api.constants.OrderState;
 
 import java.util.Date;
 
@@ -28,12 +32,16 @@ import java.util.Date;
  * @date 2020/11/19 4:12 PM
  */
 @Data
-public class RoleOrder {
+@TableName("l_account_role")
+public class AccountOrder {
+
+    @TableId(type = IdType.AUTO)
+    private Long accountOrderId;
 
     private Long projectId;
 
     /**
-     * 为哪个用户申请
+     * 哪个用户申请
      */
     private Long accountId;
 
@@ -46,6 +54,13 @@ public class RoleOrder {
      * 审核的用户id
      */
     private Long auditId;
+
+    /**
+     * 工单状态
+     *
+     * @see OrderState
+     */
+    private String state;
 
     private Date gmtCreated;
 

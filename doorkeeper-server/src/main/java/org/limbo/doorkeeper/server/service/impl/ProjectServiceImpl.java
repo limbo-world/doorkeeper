@@ -82,17 +82,6 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    @Transactional
-    public ProjectVO deleteProject(Long projectId) {
-        ProjectVO project = get(projectId);
-        projectMapper.update(null, Wrappers.<Project>lambdaUpdate()
-                .set(Project::getIsDeleted, true)
-                .eq(Project::getProjectId, projectId)
-        );
-        return project;
-    }
-
-    @Override
     public ProjectVO get(Long projectId) {
         Project project = projectMapper.selectOne(Wrappers.<Project>lambdaQuery()
                 .eq(Project::getProjectId, projectId)

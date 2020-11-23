@@ -45,11 +45,6 @@ public interface ProjectService {
     Integer updateProject(ProjectUpdateParam param);
 
     /**
-     * 删除项目 假删除
-     */
-    ProjectVO deleteProject(Long projectId);
-
-    /**
      * 根据id 获取项目 不会返回secret
      */
     ProjectVO get(Long projectId);

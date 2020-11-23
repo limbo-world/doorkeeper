@@ -50,13 +50,6 @@ public class ProjectController {
         return Response.ok(projectService.addProject(project, false));
     }
 
-
-    @DeleteMapping("/{projectId}")
-    @Operation(summary = "删除项目")
-    public Response<ProjectVO> deleteProject(@Validated @NotNull(message = "项目不存在") @PathVariable("projectId") Long projectId) {
-        return Response.ok(projectService.deleteProject(projectId));
-    }
-
     @GetMapping("/{projectId}/secret")
     @Operation(summary = "获取项目秘钥")
     public Response<String> getProjectSecret(@Validated @NotNull(message = "项目不存在") @PathVariable("projectId") Long projectId) {
