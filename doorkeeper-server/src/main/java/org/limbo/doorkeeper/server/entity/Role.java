@@ -53,11 +53,6 @@ public class Role {
     private Boolean isDefault;
 
     /**
-     * 授予角色的时候是否需要工单审核
-     */
-    private Boolean needOrder;
-
-    /**
      * 是否删除
      */
     private Boolean isDeleted;
