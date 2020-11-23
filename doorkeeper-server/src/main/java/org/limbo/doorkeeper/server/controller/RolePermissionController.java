@@ -18,6 +18,7 @@ package org.limbo.doorkeeper.server.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.RolePermissionAddParam;
 import org.limbo.doorkeeper.server.service.RolePermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,15 +40,16 @@ public class RolePermissionController {
 
     @PostMapping
     @Operation(summary = "绑定角色权限")
-    public void addRolePermission(@RequestBody List<RolePermissionAddParam> params) {
+    public Response<Boolean> addRolePermission(@RequestBody List<RolePermissionAddParam> params) {
         rolePermissionService.addRolePermission(params);
+        return Response.ok(true);
     }
 
 
     @DeleteMapping
     @Operation(summary = "删除角色权限")
-    public void deleteRolePermission(@RequestBody List<Long> rolePermissionIds){
-        rolePermissionService.deleteRolePermission(rolePermissionIds);
+    public Response<Integer> deleteRolePermission(@RequestBody List<Long> rolePermissionIds){
+        return Response.ok(rolePermissionService.deleteRolePermission(rolePermissionIds));
     }
 
 }

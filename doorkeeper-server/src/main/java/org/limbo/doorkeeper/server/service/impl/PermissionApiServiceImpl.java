@@ -16,10 +16,8 @@
 
 package org.limbo.doorkeeper.server.service.impl;
 
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.limbo.doorkeeper.api.model.param.PermissionApiAddParam;
 import org.limbo.doorkeeper.server.dao.PermissionApiMapper;
-import org.limbo.doorkeeper.server.entity.PermissionApi;
 import org.limbo.doorkeeper.server.service.PermissionApiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,14 +36,11 @@ public class PermissionApiServiceImpl implements PermissionApiService {
 
     @Override
     public void addPermissionApi(List<PermissionApiAddParam> permissionApis) {
-        permissionApiMapper.batchInsertOrUpdate(permissionApis);
+        permissionApiMapper.batchInsertOrIgnore(permissionApis);
     }
 
     @Override
-    public void deletePermissionApi(List<Long> permissionApiIds) {
-        permissionApiMapper.update(null, Wrappers.<PermissionApi>lambdaUpdate()
-                .set(PermissionApi::getIsDeleted, true)
-                .in(PermissionApi::getPermissionApiId, permissionApiIds)
-        );
+    public int deletePermissionApi(List<Long> permissionApiIds) {
+        return permissionApiMapper.deleteBatchIds(permissionApiIds);
     }
 }

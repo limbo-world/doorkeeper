@@ -34,5 +34,5 @@ public interface PermissionApiService {
     /**
      * 删除权限对应api
      */
-    void deletePermissionApi(List<Long> permissionApiIds);
+    int deletePermissionApi(List<Long> permissionApiIds);
 }

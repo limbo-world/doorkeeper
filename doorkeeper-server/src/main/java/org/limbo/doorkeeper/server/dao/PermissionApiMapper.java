@@ -28,6 +28,6 @@ import java.util.List;
  */
 public interface PermissionApiMapper extends BaseMapper<PermissionApi> {
 
-    void batchInsertOrUpdate(List<PermissionApiAddParam> permissionApis);
+    void batchInsertOrIgnore(List<PermissionApiAddParam> permissionApis);
 
 }

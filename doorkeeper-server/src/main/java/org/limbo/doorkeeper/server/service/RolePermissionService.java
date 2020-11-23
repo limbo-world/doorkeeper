@@ -33,5 +33,5 @@ public interface RolePermissionService {
     /**
      * 删除角色权限
      */
-    void deleteRolePermission(List<Long> rolePermissionIds);
+    int deleteRolePermission(List<Long> rolePermissionIds);
 }

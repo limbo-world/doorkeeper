@@ -47,9 +47,4 @@ public class PermissionApi {
      */
     private String policy;
 
-    private Boolean isDeleted;
-
-    private Date gmtCreated;
-
-    private Date gmtModified;
 }

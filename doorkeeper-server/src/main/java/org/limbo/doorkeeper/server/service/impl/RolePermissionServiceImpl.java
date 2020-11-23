@@ -40,7 +40,7 @@ public class RolePermissionServiceImpl implements RolePermissionService {
     }
 
     @Override
-    public void deleteRolePermission(List<Long> rolePermissionIds) {
-        rolePermissionMapper.deleteBatchIds(rolePermissionIds);
+    public int deleteRolePermission(List<Long> rolePermissionIds) {
+        return rolePermissionMapper.deleteBatchIds(rolePermissionIds);
     }
 }

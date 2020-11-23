@@ -18,6 +18,7 @@ package org.limbo.doorkeeper.server.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.PermissionApiAddParam;
 import org.limbo.doorkeeper.server.service.PermissionApiService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,14 +41,15 @@ public class PermissionApiController {
 
     @PostMapping
     @Operation(summary = "绑定权限api")
-    public void addPermissionApi(@RequestBody List<PermissionApiAddParam> permissionApis) {
+    public Response<Boolean> addPermissionApi(@RequestBody List<PermissionApiAddParam> permissionApis) {
         permissionApiService.addPermissionApi(permissionApis);
+        return Response.ok(true);
     }
 
 
     @DeleteMapping
     @Operation(summary = "删除权限api")
-    public void deletePermissionApi(@RequestBody List<Long> permissionApiIds){
-        permissionApiService.deletePermissionApi(permissionApiIds);
+    public Response<Integer> deletePermissionApi(@RequestBody List<Long> permissionApiIds){
+        return Response.ok(permissionApiService.deletePermissionApi(permissionApiIds));
     }
 }
