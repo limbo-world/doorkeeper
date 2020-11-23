@@ -42,4 +42,9 @@ public interface ApiService {
      * 删除api
      */
     void deleteApi(List<Long> apiIds);
+
+    /**
+     * 返回所有api
+     */
+    List<Api> all();
 }

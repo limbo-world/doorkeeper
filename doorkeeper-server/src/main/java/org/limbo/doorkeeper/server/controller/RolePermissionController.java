@@ -18,8 +18,8 @@ package org.limbo.doorkeeper.server.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.limbo.doorkeeper.api.model.param.PermissionApiAddParam;
-import org.limbo.doorkeeper.server.service.PermissionApiService;
+import org.limbo.doorkeeper.api.model.param.RolePermissionAddParam;
+import org.limbo.doorkeeper.server.service.RolePermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,27 +27,27 @@ import java.util.List;
 
 /**
  * @author Devil
- * @date 2020/11/20 10:41 AM
+ * @date 2020/11/23 10:31 AM
  */
-@Tag(name = "权限api关系")
+@Tag(name = "角色权限绑定")
 @RestController
-@RequestMapping("/permission-api")
-public class PermissionApiController {
+@RequestMapping("/role-permission")
+public class RolePermissionController {
 
     @Autowired
-    private PermissionApiService permissionApiService;
-
+    private RolePermissionService rolePermissionService;
 
     @PostMapping
-    @Operation(summary = "绑定权限api")
-    public void addPermissionApi(@RequestBody List<PermissionApiAddParam> permissionApis) {
-        permissionApiService.addPermissionApi(permissionApis);
+    @Operation(summary = "绑定角色权限")
+    public void addRolePermission(@RequestBody List<RolePermissionAddParam> params) {
+        rolePermissionService.addRolePermission(params);
     }
 
 
     @DeleteMapping
-    @Operation(summary = "删除权限api")
-    public void deletePermissionApi(@RequestBody List<Long> permissionApiIds){
-        permissionApiService.deletePermissionApi(permissionApiIds);
+    @Operation(summary = "删除角色权限")
+    public void deleteRolePermission(@RequestBody List<Long> rolePermissionIds){
+        rolePermissionService.deleteRolePermission(rolePermissionIds);
     }
+
 }

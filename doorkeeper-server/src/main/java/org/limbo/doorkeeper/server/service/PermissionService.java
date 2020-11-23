@@ -19,6 +19,7 @@ package org.limbo.doorkeeper.server.service;
 import org.limbo.doorkeeper.api.model.param.PermissionAddParam;
 import org.limbo.doorkeeper.api.model.param.PermissionBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.PermissionUpdateParam;
+import org.limbo.doorkeeper.server.entity.Api;
 import org.limbo.doorkeeper.server.entity.Permission;
 
 import java.util.List;
@@ -47,5 +48,10 @@ public interface PermissionService {
      * 批量修改权限
      */
     void batchUpdate(PermissionBatchUpdateParam param);
+
+    /**
+     * 返回所有权限
+     */
+    List<Permission> all();
 
 }

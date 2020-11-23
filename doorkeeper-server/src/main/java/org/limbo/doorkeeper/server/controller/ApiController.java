@@ -63,4 +63,10 @@ public class ApiController {
         return Response.ok(true);
     }
 
+    @GetMapping
+    @Operation(summary = "api列表")
+    public Response<List<Api>> list() {
+        return Response.ok(apiService.all());
+    }
+
 }

@@ -71,4 +71,9 @@ public class PermissionController {
         return Response.ok(true);
     }
 
+    @GetMapping
+    @Operation(summary = "权限列表")
+    public Response<List<Permission>> list() {
+        return Response.ok(permissionService.all());
+    }
 }

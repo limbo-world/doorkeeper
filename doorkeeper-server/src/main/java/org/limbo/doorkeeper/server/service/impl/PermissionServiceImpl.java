@@ -75,4 +75,9 @@ public class PermissionServiceImpl implements PermissionService {
         );
     }
 
+    @Override
+    public List<Permission> all() {
+        return permissionMapper.selectList(Wrappers.emptyWrapper());
+    }
+
 }

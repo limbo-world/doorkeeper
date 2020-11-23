@@ -66,4 +66,9 @@ public class ApiServiceImpl implements ApiService {
                 .in(Api::getApiId, apiIds)
         );
     }
+
+    @Override
+    public List<Api> all() {
+        return apiMapper.selectList(Wrappers.emptyWrapper());
+    }
 }
