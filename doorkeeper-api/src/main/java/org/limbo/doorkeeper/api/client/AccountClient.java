@@ -16,8 +16,6 @@
 
 package org.limbo.doorkeeper.api.client;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.limbo.doorkeeper.api.client.fallback.AccountClinentFallback;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
@@ -36,20 +34,16 @@ import org.springframework.web.bind.annotation.RequestBody;
  * @author liuqingtong
  * @date 2020/11/20 17:45
  */
-@Tag(name = "账户")
 @FeignClient(name = "doorkeeper-server", path = "/account", contextId = "accountClient", fallbackFactory = AccountClinentFallback.class)
 public interface AccountClient {
 
     @PostMapping
-    @Operation(summary = "新增账户")
     Response<AccountVO> add(@RequestBody AccountAddParam project);
 
     @PutMapping
-    @Operation(summary = "修改账户")
     Response<Integer> update(@RequestBody AccountBatchUpdateParam param);
 
     @GetMapping
-    @Operation(summary = "查询账户列表")
     Response<Page<AccountVO>> page(@SpringQueryMap AccountQueryParam param);
     
 }
