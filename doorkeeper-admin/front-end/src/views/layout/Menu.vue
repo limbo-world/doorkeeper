@@ -5,7 +5,7 @@
         <!-- LOGO -->
         <div class="logo-container">
             <img v-if="!isMenuHidden" class="logo-img" src="../../assets/images/logo.svg"/>
-            <img v-else class="logo-img" src="../../assets/images/logo-min.png"/>
+            <img v-else class="logo-img" src="../../assets/images/logo-mini.svg"/>
         </div>
 
         <scroll-view class="menu-scroll-content">

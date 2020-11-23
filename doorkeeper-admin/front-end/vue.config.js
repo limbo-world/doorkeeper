@@ -1,4 +1,7 @@
+const VueLoaderPlugin = require("vue-loader/lib/plugin");
+
 module.exports = {
+    lintOnSave: false,
     devServer: {
         port: 8080,
         disableHostCheck: true,
@@ -11,6 +14,15 @@ module.exports = {
             'vue-i18n': 'VueI18n',
             'element-ui': 'ELEMENT',
             'jsencrypt': 'JSEncrypt'
-        }
+        },
+        module: {
+            rules: [{
+                test: /\.vue$/,
+                loader: "vue-loader"
+            }]
+        },
+        plugins: [
+            new VueLoaderPlugin()
+        ]
     }
 };
