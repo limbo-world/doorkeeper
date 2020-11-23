@@ -82,16 +82,6 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public ProjectVO get(Long projectId) {
-        Project project = projectMapper.selectOne(Wrappers.<Project>lambdaQuery()
-                .eq(Project::getProjectId, projectId)
-                .eq(Project::getIsDeleted, false)
-                .eq(Project::getIsActivated, true)
-        );
-        return EnhancedBeanUtils.createAndCopy(project, ProjectVO.class);
-    }
-
-    @Override
     public String getSecret(Long projectId) {
         Project project = projectMapper.selectOne(Wrappers.<Project>lambdaQuery()
                 .select(Project::getProjectSecret)
@@ -104,8 +94,7 @@ public class ProjectServiceImpl implements ProjectService {
     public Page<ProjectVO> queryProjectPage(ProjectQueryParam param) {
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<Project> mpage = MyBatisPlusUtils.pageOf(param);
         LambdaQueryWrapper<Project> condition = Wrappers.<Project>lambdaQuery()
-                .like(StringUtils.isNotBlank(param.getProjectName()), Project::getProjectName, param.getProjectName())
-                .eq(Project::getIsDeleted, false);
+                .like(StringUtils.isNotBlank(param.getProjectName()), Project::getProjectName, param.getProjectName());
         mpage = projectMapper.selectPage(mpage, condition);
 
         param.setTotal(mpage.getTotal());

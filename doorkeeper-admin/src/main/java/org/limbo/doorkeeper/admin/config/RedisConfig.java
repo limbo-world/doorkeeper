@@ -14,38 +14,14 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.service;
+package org.limbo.doorkeeper.admin.config;
 
-import org.limbo.doorkeeper.api.model.param.ApiAddParam;
-import org.limbo.doorkeeper.api.model.param.ApiUpdateParam;
-import org.limbo.doorkeeper.api.model.vo.ApiVO;
-import org.limbo.doorkeeper.server.entity.Api;
-
-import java.util.List;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Devil
- * @date 2020/11/19 7:01 PM
+ * @date 2020/11/23 2:22 PM
  */
-public interface ApiService {
-
-    /**
-     * 添加api
-     */
-    ApiVO addApi(ApiAddParam param);
-
-    /**
-     * 修改api
-     */
-    int updateApi(ApiUpdateParam param);
-
-    /**
-     * 删除api
-     */
-    void deleteApi(List<Long> apiIds);
-
-    /**
-     * 返回所有api
-     */
-    List<ApiVO> all();
+@Configuration
+public class RedisConfig {
 }

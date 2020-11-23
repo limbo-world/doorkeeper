@@ -19,6 +19,7 @@ package org.limbo.doorkeeper.server.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.limbo.doorkeeper.api.model.param.ApiAddParam;
 import org.limbo.doorkeeper.api.model.param.ApiUpdateParam;
+import org.limbo.doorkeeper.api.model.vo.ApiVO;
 import org.limbo.doorkeeper.server.dao.ApiMapper;
 import org.limbo.doorkeeper.server.entity.Api;
 import org.limbo.doorkeeper.server.service.ApiService;
@@ -41,10 +42,10 @@ public class ApiServiceImpl implements ApiService {
 
     @Override
     @Transactional
-    public Api addApi(ApiAddParam param) {
+    public ApiVO addApi(ApiAddParam param) {
         Api api = EnhancedBeanUtils.createAndCopy(param, Api.class);
         apiMapper.insert(api);
-        return api;
+        return EnhancedBeanUtils.createAndCopy(api, ApiVO.class);
     }
 
     @Override
@@ -68,7 +69,7 @@ public class ApiServiceImpl implements ApiService {
     }
 
     @Override
-    public List<Api> all() {
-        return apiMapper.selectList(Wrappers.emptyWrapper());
+    public List<ApiVO> all() {
+        return EnhancedBeanUtils.createAndCopyList(apiMapper.selectList(Wrappers.emptyWrapper()), ApiVO.class);
     }
 }

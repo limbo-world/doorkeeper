@@ -14,38 +14,30 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.service;
+package org.limbo.doorkeeper.admin.entity;
 
-import org.limbo.doorkeeper.api.model.param.ApiAddParam;
-import org.limbo.doorkeeper.api.model.param.ApiUpdateParam;
-import org.limbo.doorkeeper.api.model.vo.ApiVO;
-import org.limbo.doorkeeper.server.entity.Api;
-
-import java.util.List;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 
 /**
- * @author Devil
- * @date 2020/11/19 7:01 PM
+ *
+ * admin项目管理员拥有哪些项目权限
+ *
+ * @author devil
+ * @date 2020/3/13
  */
-public interface ApiService {
+@Data
+@TableName("laa_account_project")
+public class AdminAccountProject {
 
-    /**
-     * 添加api
-     */
-    ApiVO addApi(ApiAddParam param);
+    @TableId(type = IdType.AUTO)
+    private Long id;
 
-    /**
-     * 修改api
-     */
-    int updateApi(ApiUpdateParam param);
+    private Long accountId;
 
-    /**
-     * 删除api
-     */
-    void deleteApi(List<Long> apiIds);
+    private Long projectId;
 
-    /**
-     * 返回所有api
-     */
-    List<ApiVO> all();
+    private String projectName;
 }

@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.admin.config;
+package org.limbo.doorkeeper.api.client.fallback;
 
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.context.annotation.Configuration;
+import org.limbo.doorkeeper.api.model.Response;
 
-/**
- * @author liuqingtong
- * @date 2020/11/20 19:59
- */
-@Configuration
-@EnableDiscoveryClient
-@EnableFeignClients(basePackages = "org.limbo.doorkeeper.api.client")
-public class EurekaConfig {
+public class Fallback {
+
+    static final Response SERVICE_UNAVAILABLE = Response.serviceError("服务暂不可用");
+
+    @SuppressWarnings("unchecked")
+    protected <T> Response<T> serviceUnavailable() {
+        return (Response<T>) SERVICE_UNAVAILABLE;
+    }
+
 }

@@ -221,6 +221,8 @@ public class WebConfig implements WebMvcConfigurer {
    1. 在authc_admin_db中依次执行`init/0_初始化DB表.sql`、`init/1_初始化DB数据.sql`；
    2. 在authc_db中依次执行`init/2_初始化Admin项目DB表.sql`、`init/3_初始化Admin项目DB数据.sql`；
 
+mvn clean package -Dmaven.test.skip=true
+
 3. 部署Authc Service  
    - 进入`limbo-authc-api/limbo-authc-api-dubbo`模块，修改`application.yaml`中的配置，修改authc_db数据库连接和Nacos(或zk)注册中心地址；
    > 项目中使用Nacos作为配置中心，application.yaml没有包含全部配置信息，全部配置参考sample.yaml  

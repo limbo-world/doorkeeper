@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.param.PermissionAddParam;
 import org.limbo.doorkeeper.api.model.param.PermissionBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.PermissionUpdateParam;
+import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.limbo.doorkeeper.server.dao.PermissionMapper;
 import org.limbo.doorkeeper.server.entity.Permission;
 import org.limbo.doorkeeper.server.service.PermissionService;
@@ -43,10 +44,10 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     @Transactional
-    public Permission addPermission(PermissionAddParam param) {
+    public PermissionVO addPermission(PermissionAddParam param) {
         Permission permission = EnhancedBeanUtils.createAndCopy(param, Permission.class);
         permissionMapper.insert(permission);
-        return permission;
+        return EnhancedBeanUtils.createAndCopy(permission, PermissionVO.class);
     }
 
     @Override
@@ -76,8 +77,8 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public List<Permission> all() {
-        return permissionMapper.selectList(Wrappers.emptyWrapper());
+    public List<PermissionVO> all() {
+        return EnhancedBeanUtils.createAndCopyList(permissionMapper.selectList(Wrappers.emptyWrapper()), PermissionVO.class);
     }
 
 }

@@ -45,11 +45,6 @@ public interface ProjectService {
     Integer updateProject(ProjectUpdateParam param);
 
     /**
-     * 根据id 获取项目 不会返回secret
-     */
-    ProjectVO get(Long projectId);
-
-    /**
      * 获取秘钥
      */
     String getSecret(Long projectId);

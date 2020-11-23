@@ -14,38 +14,34 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.service;
+package org.limbo.doorkeeper.api.model.vo;
 
-import org.limbo.doorkeeper.api.model.param.ApiAddParam;
-import org.limbo.doorkeeper.api.model.param.ApiUpdateParam;
-import org.limbo.doorkeeper.api.model.vo.ApiVO;
-import org.limbo.doorkeeper.server.entity.Api;
-
-import java.util.List;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
 
 /**
  * @author Devil
- * @date 2020/11/19 7:01 PM
+ * @date 2020/11/23 4:44 PM
  */
-public interface ApiService {
+@Data
+public class ApiVO {
 
-    /**
-     * 添加api
-     */
-    ApiVO addApi(ApiAddParam param);
+    @Schema(title = "api id")
+    private Long apiId;
 
-    /**
-     * 修改api
-     */
-    int updateApi(ApiUpdateParam param);
+    @Schema(title = "项目id")
+    private Long projectId;
 
-    /**
-     * 删除api
-     */
-    void deleteApi(List<Long> apiIds);
+    @Schema(title = "名称")
+    private String apiName;
 
-    /**
-     * 返回所有api
-     */
-    List<ApiVO> all();
+    @Schema(title = "描述")
+    private String apiDescribe;
+
+    @Schema(title = "描述 get post")
+    private String apiMethod;
+
+    @Schema(title = "ant风格url")
+    private String apiUrl;
+
 }

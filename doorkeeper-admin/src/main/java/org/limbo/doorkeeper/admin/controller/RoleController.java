@@ -14,48 +14,51 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.client;
+package org.limbo.doorkeeper.admin.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.limbo.doorkeeper.api.client.fallback.RoleClinentFallback;
+import org.limbo.doorkeeper.api.client.RoleClient;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.RoleAddParam;
 import org.limbo.doorkeeper.api.model.param.RoleQueryParam;
 import org.limbo.doorkeeper.api.model.param.RoleUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.cloud.openfeign.SpringQueryMap;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 /**
- * @author liuqingtong
- * @date 2020/11/20 17:50
+ * @author Devil
+ * @date 2020/11/20 4:25 PM
  */
-@Tag(name = "角色")
-@FeignClient(name = "doorkeeper-server", path = "/role", contextId = "roleClient", fallbackFactory = RoleClinentFallback.class)
-public interface RoleClient {
+@RestController
+@RequestMapping("/role")
+public class RoleController {
+
+    @Autowired
+    private RoleClient roleClient;
 
     @PostMapping
-    @Operation(summary = "新增角色")
-    Response<RoleVO> add(@RequestBody RoleAddParam param);
+    public Response<RoleVO> add(@RequestBody RoleAddParam param) {
+        return roleClient.add(param);
+    }
 
     @PutMapping("/{roleId}")
-    @Operation(summary = "修改角色")
-    Response<Integer> update(@PathVariable("roleId") Long roleId,
-                             @RequestBody RoleUpdateParam param);
+    public Response<Integer> update(@PathVariable("roleId") Long roleId, @RequestBody RoleUpdateParam param) {
+        return roleClient.update(roleId, param);
+    }
 
     @DeleteMapping
-    @Operation(summary = "删除角色")
-    Response<Integer> delete(@Schema(title = "角色ID") List<Long> roleIds);
+    public Response<Integer> delete(@NotEmpty(message = "角色不存在") List<Long> roleIds) {
+        return roleClient.delete(roleIds);
+    }
 
 
     @GetMapping
-    @Operation(summary = "分页查询角色")
-    Response<Page<RoleVO>> page(@SpringQueryMap RoleQueryParam param);
+    public Response<Page<RoleVO>> page(RoleQueryParam param) {
+        return roleClient.page(param);
+    }
 
 }

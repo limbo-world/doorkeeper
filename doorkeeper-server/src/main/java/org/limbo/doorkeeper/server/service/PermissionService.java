@@ -19,6 +19,7 @@ package org.limbo.doorkeeper.server.service;
 import org.limbo.doorkeeper.api.model.param.PermissionAddParam;
 import org.limbo.doorkeeper.api.model.param.PermissionBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.PermissionUpdateParam;
+import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.limbo.doorkeeper.server.entity.Api;
 import org.limbo.doorkeeper.server.entity.Permission;
 
@@ -32,7 +33,7 @@ public interface PermissionService {
     /**
      * 新增权限
      */
-    Permission addPermission(PermissionAddParam param);
+    PermissionVO addPermission(PermissionAddParam param);
 
     /**
      * 修改权限
@@ -52,6 +53,6 @@ public interface PermissionService {
     /**
      * 返回所有权限
      */
-    List<Permission> all();
+    List<PermissionVO> all();
 
 }

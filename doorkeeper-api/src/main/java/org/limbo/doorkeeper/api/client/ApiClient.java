@@ -14,38 +14,34 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.service;
+package org.limbo.doorkeeper.api.client;
 
+import org.limbo.doorkeeper.api.client.fallback.ApiClientFallback;
+import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.ApiAddParam;
 import org.limbo.doorkeeper.api.model.param.ApiUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ApiVO;
-import org.limbo.doorkeeper.server.entity.Api;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 /**
  * @author Devil
- * @date 2020/11/19 7:01 PM
+ * @date 2020/11/23 4:42 PM
  */
-public interface ApiService {
+@FeignClient(name = "doorkeeper-server", path = "/api", contextId = "apiClient", fallbackFactory = ApiClientFallback.class)
+public interface ApiClient {
 
-    /**
-     * 添加api
-     */
-    ApiVO addApi(ApiAddParam param);
+    @PostMapping
+    Response<ApiVO> add(@RequestBody ApiAddParam param);
 
-    /**
-     * 修改api
-     */
-    int updateApi(ApiUpdateParam param);
+    @PutMapping("/{apiId}")
+    Response<Integer> update(@PathVariable("apiId") Long apiId, @RequestBody ApiUpdateParam param);
 
-    /**
-     * 删除api
-     */
-    void deleteApi(List<Long> apiIds);
+    @DeleteMapping
+    Response<Boolean> delete(@RequestBody List<Long> apiIds);
 
-    /**
-     * 返回所有api
-     */
-    List<ApiVO> all();
+    @GetMapping
+    Response<List<ApiVO>> list();
 }

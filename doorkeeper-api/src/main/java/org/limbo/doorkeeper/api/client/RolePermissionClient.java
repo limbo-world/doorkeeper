@@ -16,11 +16,9 @@
 
 package org.limbo.doorkeeper.api.client;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.limbo.doorkeeper.api.client.fallback.PermissionApiClientFallback;
+import org.limbo.doorkeeper.api.client.fallback.RolePermissionClientFallback;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.PermissionApiAddParam;
+import org.limbo.doorkeeper.api.model.param.RolePermissionAddParam;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,21 +27,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 
 /**
- * @author liuqingtong
- * @date 2020/11/20 11:59
+ * @author Devil
+ * @date 2020/11/23 4:43 PM
  */
-@Tag(name = "权限api")
-@FeignClient(name = "doorkeeper-server", path = "/permission-api", contextId = "permissionApiClient", fallbackFactory = PermissionApiClientFallback.class)
-public interface PermissionApiClient {
-
+@FeignClient(name = "doorkeeper-server", path = "/role-permission", contextId = "rolePermissionClient", fallbackFactory = RolePermissionClientFallback.class)
+public interface RolePermissionClient {
     @PostMapping
-    @Operation(summary = "绑定权限api")
-    Response<Boolean> addPermissionApi(@RequestBody List<PermissionApiAddParam> permissionApis);
+    Response<Boolean> addRolePermission(@RequestBody List<RolePermissionAddParam> params);
 
 
     @DeleteMapping
-    @Operation(summary = "删除权限api")
-    Response<Integer> deletePermissionApi(@RequestBody List<Long> permissionApiIds);
-
-
+    Response<Integer> deleteRolePermission(@RequestBody List<Long> rolePermissionIds);
 }

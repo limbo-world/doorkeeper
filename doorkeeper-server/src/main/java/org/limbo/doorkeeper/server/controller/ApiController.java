@@ -21,6 +21,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.ApiAddParam;
 import org.limbo.doorkeeper.api.model.param.ApiUpdateParam;
+import org.limbo.doorkeeper.api.model.vo.ApiVO;
 import org.limbo.doorkeeper.server.entity.Api;
 import org.limbo.doorkeeper.server.service.ApiService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,7 @@ public class ApiController {
 
     @PostMapping
     @Operation(summary = "新增api")
-    public Response<Api> add(@RequestBody ApiAddParam param) {
+    public Response<ApiVO> add(@RequestBody ApiAddParam param) {
         return Response.ok(apiService.addApi(param));
     }
 
@@ -65,7 +66,7 @@ public class ApiController {
 
     @GetMapping
     @Operation(summary = "api列表")
-    public Response<List<Api>> list() {
+    public Response<List<ApiVO>> list() {
         return Response.ok(apiService.all());
     }
 
