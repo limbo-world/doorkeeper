@@ -6,7 +6,7 @@
         </div>
         <el-dropdown>
             <span class="el-dropdown-link" style="cursor: pointer">
-                你好，{{user && user.account.accountNick}} <i class="el-icon-arrow-down el-icon--right"></i>
+                你好，{{user && user.account.nickname}} <i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item v-for="project in accountProjects" :key="project.projectId">

@@ -80,7 +80,7 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public AbstractSession login(LoginParam param) {
-//        Verifies.verify(verifyCaptcha(param.getCaptchaToken(), param.getCaptcha()), "验证码错误！");
+        Verifies.verify(verifyCaptcha(param.getCaptchaToken(), param.getCaptcha()), "验证码错误！");
 
         AdminAccount adminAccount = adminAccountMapper.selectOne(Wrappers.<AdminAccount>lambdaQuery()
                 .eq(AdminAccount::getUsername, param.getUsername())
@@ -105,6 +105,7 @@ public class LoginServiceImpl implements LoginService {
                 project.setAccountId(adminAccount.getAccountId());
                 project.setProjectId(projectVO.getProjectId());
                 project.setProjectName(projectVO.getProjectName());
+                projects.add(project);
             }
         } else {
             projects = adminAccountProjectMapper.getByAccount(adminAccount.getAccountId());

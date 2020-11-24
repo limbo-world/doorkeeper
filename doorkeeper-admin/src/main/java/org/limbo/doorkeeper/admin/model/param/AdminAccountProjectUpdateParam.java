@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.admin.service;
+package org.limbo.doorkeeper.admin.model.param;
 
-import org.limbo.doorkeeper.admin.entity.AdminAccountProject;
+import lombok.Data;
 
 import java.util.List;
 
 /**
  * @author Devil
- * @date 2020/11/24 10:25 AM
+ * @date 2020/11/24 2:42 PM
  */
-public interface AdminAccountProjectService {
+@Data
+public class AdminAccountProjectUpdateParam {
 
-
-    List<AdminAccountProject> getByAccount(Long accountId);
-
-    AdminAccountProject getByAccountProject(Long accountId, Long projectId);
-
-    void updateAccountProjects(Long accountId, List<Long> projectIds);
+    List<Long> projectIds;
 }

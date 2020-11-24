@@ -16,12 +16,22 @@
 
 package org.limbo.doorkeeper.admin.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.apache.commons.collections4.CollectionUtils;
+import org.limbo.doorkeeper.admin.dao.AdminAccountMapper;
 import org.limbo.doorkeeper.admin.dao.AdminAccountProjectMapper;
+import org.limbo.doorkeeper.admin.entity.AdminAccount;
 import org.limbo.doorkeeper.admin.entity.AdminAccountProject;
 import org.limbo.doorkeeper.admin.service.AdminAccountProjectService;
+import org.limbo.doorkeeper.admin.utils.MyBatisPlusUtils;
+import org.limbo.doorkeeper.api.client.ProjectClient;
+import org.limbo.doorkeeper.api.model.Response;
+import org.limbo.doorkeeper.api.model.vo.ProjectVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,15 +42,52 @@ import java.util.List;
 public class AdminAccountProjectServiceImpl implements AdminAccountProjectService {
 
     @Autowired
+    private AdminAccountMapper adminAccountMapper;
+    @Autowired
     private AdminAccountProjectMapper adminAccountProjectMapper;
+    @Autowired
+    private ProjectClient projectClient;
 
     @Override
     public List<AdminAccountProject> getByAccount(Long accountId) {
+        AdminAccount adminAccount = adminAccountMapper.selectById(accountId);
+        if (adminAccount.getIsAdmin()) {
+            Response<List<ProjectVO>> all = projectClient.getAll();
+            List<AdminAccountProject> projects = new ArrayList<>();
+            for (ProjectVO projectVO : all.getData()) {
+                AdminAccountProject project = new AdminAccountProject();
+                project.setAccountId(adminAccount.getAccountId());
+                project.setProjectId(projectVO.getProjectId());
+                project.setProjectName(projectVO.getProjectName());
+                projects.add(project);
+            }
+            return projects;
+        }
         return adminAccountProjectMapper.getByAccount(accountId);
     }
 
     @Override
     public AdminAccountProject getByAccountProject(Long accountId, Long projectId) {
         return adminAccountProjectMapper.getByAccountProject(accountId, projectId);
+    }
+
+    @Override
+    @Transactional
+    public void updateAccountProjects(Long accountId, List<Long> projectIds) {
+        // 先删后增
+        adminAccountProjectMapper.delete(Wrappers.<AdminAccountProject>lambdaQuery().eq(AdminAccountProject::getAccountId, accountId));
+
+        if (CollectionUtils.isEmpty(projectIds)) return;
+
+        List<AdminAccountProject> pos = new ArrayList<>();
+        for (Long projectId : projectIds) {
+            AdminAccountProject po = new AdminAccountProject();
+            po.setAccountId(accountId);
+            po.setProjectId(projectId);
+//            po.setProjectName(projectId); // todo
+            pos.add(po);
+        }
+
+        MyBatisPlusUtils.batchSave(pos, AdminAccountProject.class);
     }
 }
