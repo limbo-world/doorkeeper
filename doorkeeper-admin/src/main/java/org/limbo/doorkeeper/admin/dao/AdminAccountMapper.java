@@ -14,22 +14,14 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.admin.service;
+package org.limbo.doorkeeper.admin.dao;
 
-import org.limbo.doorkeeper.admin.model.param.LoginParam;
-import org.limbo.doorkeeper.admin.model.vo.CaptchaVO;
-import org.limbo.doorkeeper.admin.session.support.AbstractSession;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.limbo.doorkeeper.admin.entity.AdminAccount;
 
 /**
  * @author Devil
- * @date 2020/11/23 8:03 PM
+ * @date 2020/11/24 10:54 AM
  */
-public interface LoginService {
-
-    AbstractSession login(LoginParam param);
-
-    /**
-     * 生成验证码
-     */
-    CaptchaVO generateCaptcha();
+public interface AdminAccountMapper extends BaseMapper<AdminAccount> {
 }

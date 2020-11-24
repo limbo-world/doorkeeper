@@ -14,22 +14,35 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.admin.service;
+package org.limbo.doorkeeper.admin.controller;
 
 import org.limbo.doorkeeper.admin.model.param.LoginParam;
 import org.limbo.doorkeeper.admin.model.vo.CaptchaVO;
+import org.limbo.doorkeeper.admin.service.LoginService;
 import org.limbo.doorkeeper.admin.session.support.AbstractSession;
+import org.limbo.doorkeeper.api.model.Response;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 /**
- * @author Devil
- * @date 2020/11/23 8:03 PM
+ * @author devil
+ * @date 2020/3/11
  */
-public interface LoginService {
+@RestController
+@RequestMapping("/login")
+public class LoginController extends BaseController {
 
-    AbstractSession login(LoginParam param);
+    @Autowired
+    private LoginService loginService;
 
-    /**
-     * 生成验证码
-     */
-    CaptchaVO generateCaptcha();
+
+    @PostMapping
+    public Response<AbstractSession> login(@RequestBody LoginParam param) {
+        return Response.ok(loginService.login(param));
+    }
+
+    @GetMapping("captcha")
+    public Response<CaptchaVO> captcha() {
+        return Response.ok(loginService.generateCaptcha());
+    }
 }

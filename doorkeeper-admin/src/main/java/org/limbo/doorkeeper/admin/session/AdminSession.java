@@ -14,22 +14,29 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.admin.service;
+package org.limbo.doorkeeper.admin.session;
 
-import org.limbo.doorkeeper.admin.model.param.LoginParam;
-import org.limbo.doorkeeper.admin.model.vo.CaptchaVO;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.limbo.doorkeeper.admin.session.support.AbstractSession;
+import org.limbo.doorkeeper.admin.session.support.SecurityDigest;
+import org.limbo.doorkeeper.admin.session.support.SessionAccount;
 
 /**
  * @author Devil
- * @date 2020/11/23 8:03 PM
+ * @date 2020/11/24 10:05 AM
  */
-public interface LoginService {
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class AdminSession extends AbstractSession {
 
-    AbstractSession login(LoginParam param);
+    private SessionAccount account;
 
-    /**
-     * 生成验证码
-     */
-    CaptchaVO generateCaptcha();
+    public AdminSession() {
+    }
+
+    public AdminSession(String sessionId, SecurityDigest securityDigest, SessionAccount sessionAccount) {
+        super(sessionId, securityDigest);
+        this.account = sessionAccount;
+    }
 }

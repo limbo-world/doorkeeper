@@ -3,8 +3,8 @@
     <el-container class="login">
         <el-main>
             <el-row>
-                <el-col :xs="1" :sm="4" :md="8" :lg="12" :xl="12" class="justify-end">
-                    <img src="../../assets/images/logo.svg" />
+                <el-col :xs="1" :sm="4" :md="8" :lg="12" :xl="12" style="display: flex; justify-content: center;">
+                    <img src="../../assets/images/logo.svg" style="width: 50%" />
                 </el-col>
                 <el-col :xs="22" :sm="16" :md="12" :lg="8" :xl="8">
                     <el-form :model="loginForm" :rules="loginFormRule" ref="loginForm" label-position="top"
@@ -104,17 +104,8 @@
 
                     this.$store.dispatch('session/login', this.loginForm).then(() => {
                         this.loadMenus().then(menus => {
-                            let m = menus.find(m => !!MenuRoute[m.menuCode] || (m.children && m.children.find(mc => !!MenuRoute[mc.menuCode])));
-                            let path = m ? MenuRoute[m.menuCode] : null;
-
-                            // 默认只有二级菜单，这里检测一次children
-                            if (!path && m.children) {
-                                m = m.children.find(mc => !!MenuRoute[mc.menuCode]);
-                                path = m ? MenuRoute[m.menuCode] : null;
-                            }
-
                             this.$router.push({
-                                path: path ? path : '/home',
+                                path: '/home',
                             });
                         }).catch(err => {
                             this.$message.error('加载菜单失败！' + err.msg);

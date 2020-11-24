@@ -38,6 +38,8 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * @author Brozen
  * @date 2020/3/9 3:42 PM
@@ -91,15 +93,34 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    public List<ProjectVO> all() {
+        List<Project> allProjects = projectMapper.selectList(columnNoSecret()
+                .eq(Project::getIsActivated, true)
+        );
+        return EnhancedBeanUtils.createAndCopyList(allProjects, ProjectVO.class);
+    }
+
+    @Override
     public Page<ProjectVO> queryProjectPage(ProjectQueryParam param) {
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<Project> mpage = MyBatisPlusUtils.pageOf(param);
-        LambdaQueryWrapper<Project> condition = Wrappers.<Project>lambdaQuery()
+        LambdaQueryWrapper<Project> condition = columnNoSecret()
                 .like(StringUtils.isNotBlank(param.getProjectName()), Project::getProjectName, param.getProjectName());
         mpage = projectMapper.selectPage(mpage, condition);
 
         param.setTotal(mpage.getTotal());
         param.setData(EnhancedBeanUtils.createAndCopyList(mpage.getRecords(), ProjectVO.class));
         return param;
+    }
+
+    // 没有secret
+    private LambdaQueryWrapper<Project> columnNoSecret() {
+        return Wrappers.<Project>lambdaQuery().select(
+                Project::getProjectId,
+                Project::getProjectName,
+                Project::getProjectDescribe,
+                Project::getGmtCreated,
+                Project::getGmtModified
+        );
     }
 
 }

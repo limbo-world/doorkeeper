@@ -14,42 +14,25 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.admin.entity;
+package org.limbo.doorkeeper.admin.session.support;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
-import java.util.Date;
-
 /**
- * @author devil
- * @date 2020/3/13
+ * @author Devil
+ * @date 2020/11/23 8:16 PM
  */
 @Data
-@TableName("laa_account")
-public class AdminAccount {
+public class AbstractSession {
 
-    @TableId(type = IdType.INPUT)
-    private Long accountId;
+    protected String sessionId;
 
-    private String username;
+    protected SecurityDigest securityDigest;
 
-    private String password;
+    public AbstractSession() {} // 用于json
 
-    private String nickname;
-
-    private Date lastLogin;
-
-    private Boolean isSuperAdmin;
-
-    /**
-     * 是否为管理员
-     */
-    private Boolean isAdmin;
-
-    private Date gmtCreated;
-
-    private Date gmtModified;
+    public AbstractSession(String sessionId, SecurityDigest securityDigest) {
+        this.sessionId = sessionId;
+        this.securityDigest = securityDigest;
+    }
 }

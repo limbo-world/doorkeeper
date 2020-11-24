@@ -16,20 +16,17 @@
 
 package org.limbo.doorkeeper.admin.service;
 
-import org.limbo.doorkeeper.admin.model.param.LoginParam;
-import org.limbo.doorkeeper.admin.model.vo.CaptchaVO;
-import org.limbo.doorkeeper.admin.session.support.AbstractSession;
+import org.limbo.doorkeeper.admin.entity.AdminAccountProject;
+
+import java.util.List;
 
 /**
  * @author Devil
- * @date 2020/11/23 8:03 PM
+ * @date 2020/11/24 10:25 AM
  */
-public interface LoginService {
+public interface AdminAccountProjectService {
 
-    AbstractSession login(LoginParam param);
+    List<AdminAccountProject> getByAccount(Long accountId);
 
-    /**
-     * 生成验证码
-     */
-    CaptchaVO generateCaptcha();
+    AdminAccountProject getByAccountProject(Long accountId, Long projectId);
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.admin.session;
+package org.limbo.doorkeeper.admin.session.support;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.limbo.doorkeeper.admin.utils.RSAUtils;

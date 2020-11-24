@@ -14,25 +14,20 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.admin.session;
-
-import lombok.Data;
+package org.limbo.doorkeeper.admin.constants;
 
 /**
  * @author Devil
- * @date 2020/11/23 8:16 PM
+ * @date 2020/11/24 10:13 AM
  */
-@Data
-public class AbstractSession {
+public interface WebConstants {
+    /**
+     * 会话 header
+     */
+    String SESSION_HEADER = "Doorkeeper-Session";
 
-    protected String sessionId;
-
-    protected SecurityDigest securityDigest;
-
-    public AbstractSession() {} // 用于json
-
-    public AbstractSession(String sessionId, SecurityDigest securityDigest) {
-        this.sessionId = sessionId;
-        this.securityDigest = securityDigest;
-    }
+    /**
+     * 签名 header
+     */
+    String SIGN_NAME = "Doorkeeper-Sign";
 }

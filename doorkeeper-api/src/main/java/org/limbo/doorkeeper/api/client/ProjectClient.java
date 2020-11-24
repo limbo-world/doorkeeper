@@ -16,8 +16,6 @@
 
 package org.limbo.doorkeeper.api.client;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.limbo.doorkeeper.api.client.fallback.ProjectClientFallback;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
@@ -29,29 +27,29 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * @author liuqingtong
  * @date 2020/11/20 17:47
  */
-@Tag(name = "项目", description = "只有管理端可以调用")
 @FeignClient(name = "doorkeeper-server", path = "/project", contextId = "projectClient", fallbackFactory = ProjectClientFallback.class)
 public interface ProjectClient {
 
     @PostMapping
-    @Operation(summary = "新增项目")
     Response<ProjectVO> addProject(@RequestBody ProjectAddParam project);
 
+    @GetMapping
+    Response<List<ProjectVO>> getAll();
+
+    @GetMapping("/query")
+    Response<Page<ProjectVO>> getProjects(@SpringQueryMap ProjectQueryParam param);
+
     @GetMapping("/{projectId}/secret")
-    @Operation(summary = "获取项目秘钥")
     Response<String> getProjectSecret(@PathVariable("projectId") Long projectId);
 
     @PutMapping("/{projectId}")
-    @Operation(summary = "更新项目")
     Response<Integer> updateProject(@PathVariable("projectId") Long projectId,
                                     @RequestBody ProjectUpdateParam project);
-
-    @GetMapping
-    @Operation(summary = "分页获取项目列表")
-    Response<Page<ProjectVO>> getProjects(@SpringQueryMap ProjectQueryParam param);
     
 }

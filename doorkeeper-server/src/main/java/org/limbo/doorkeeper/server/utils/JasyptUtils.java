@@ -48,7 +48,7 @@ public class JasyptUtils {
 
     public static void main(String[] args) {
         // 加密
-        System.out.println(encryptPwd("7777777", "root"));
+        System.out.println(encryptPwd("7777777", "devil"));
         // 解密
         System.out.println(decyptPwd("admin", "Fw46Qg5BdW1KThZaTqe75Q=="));
     }

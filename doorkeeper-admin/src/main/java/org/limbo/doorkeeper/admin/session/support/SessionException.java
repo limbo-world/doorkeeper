@@ -14,30 +14,29 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.admin.session;
-
-import lombok.Data;
+package org.limbo.doorkeeper.admin.session.support;
 
 /**
  * @author Devil
- * @date 2020/11/23 8:17 PM
+ * @date 2020/11/23 8:18 PM
  */
-@Data
-public class SessionAccount {
-    // 账户唯一ID
-    private Long accountId;
+public class SessionException extends RuntimeException {
 
-    // 账户昵称
-    private String accountNick;
+    private static String msg = "无有效会话";
 
-    // 账户所属项目，admin项目的projectId
-    private Long accountProjectId;
+    public SessionException() {
+        super(msg);
+    }
 
-    // 当前用户所选的项目
-    private Long currentProjectId;
+    public SessionException(String msg) {
+        super(msg);
+    }
 
-    private String currentProjectName;
+    public SessionException(Throwable cause) {
+        super(msg, cause);
+    }
 
-    // 是否为超级管理员
-    private Boolean isSuperAdmin;
+    public SessionException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
 }

@@ -18,14 +18,13 @@ package org.limbo.doorkeeper.admin;
 
 import org.limbo.doorkeeper.admin.config.RedisConfig;
 import org.limbo.doorkeeper.admin.config.WebConfig;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.hystrix.EnableHystrix;
 import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -33,11 +32,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * @author liuqingtong
  * @date 2020/11/20 19:57
  */
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"org.limbo.doorkeeper"})
 @EnableTransactionManagement
 @EnableDiscoveryClient
 @EnableHystrix
 @EnableFeignClients(basePackages = "org.limbo.doorkeeper.api.client")
+@MapperScan("org.limbo.doorkeeper.admin.dao")
 @Import({WebConfig.class, RedisConfig.class})
 public class DoorkeeperAdminApplication {
 

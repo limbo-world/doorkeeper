@@ -31,6 +31,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * @author Devil
@@ -51,6 +52,18 @@ public class ProjectController {
         return Response.ok(projectService.addProject(project, false));
     }
 
+    @GetMapping
+    @Operation(summary = "获取所有项目")
+    public Response<List<ProjectVO>> getAll() {
+        return Response.ok(projectService.all());
+    }
+
+    @GetMapping("/query")
+    @Operation(summary = "分页获取项目列表")
+    public Response<Page<ProjectVO>> getProjects(ProjectQueryParam param) {
+        return Response.ok(projectService.queryProjectPage(param));
+    }
+
     @GetMapping("/{projectId}/secret")
     @Operation(summary = "获取项目秘钥")
     public Response<String> getProjectSecret(@Validated @NotNull(message = "项目不存在") @PathVariable("projectId") Long projectId) {
@@ -63,12 +76,6 @@ public class ProjectController {
                                            @RequestBody ProjectUpdateParam project) {
         project.setProjectId(projectId);
         return Response.ok(projectService.updateProject(project));
-    }
-
-    @GetMapping
-    @Operation(summary = "分页获取项目列表")
-    public Response<Page<ProjectVO>> getProjects(ProjectQueryParam param) {
-        return Response.ok(projectService.queryProjectPage(param));
     }
 
 }

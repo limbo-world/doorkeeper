@@ -36,9 +36,6 @@ public class ProjectVO {
     @Schema(title = "描述")
     private String projectDescribe;
 
-    @Schema(title = "是否删除")
-    private Boolean isDeleted;
-
     @Schema(title = "是否激活")
     private Boolean isActivated;
 

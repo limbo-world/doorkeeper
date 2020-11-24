@@ -44,9 +44,13 @@ public class Account {
      */
     private String accountDescribe;
     /**
-     * 是否超级管理员
+     * 是否超级管理员 项目唯一 主要用于修改别的账号为管理员
      */
     private Boolean isSuperAdmin;
+    /**
+     * 是否管理员
+     */
+    private Boolean isAdmin;
     /**
      * 是否激活  未激活的账户没有权限
      */

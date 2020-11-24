@@ -95,12 +95,9 @@ export default {
 
             // 从后台异步获取菜单
             return new Promise((resolve, reject) => {
-                http.get('/session/menus').then(response => {
-                    const menuArr = response.data;
-                    const menus = organizeMenu(menuArr);
-                    commit('setMenu', menus);
-                    resolve(menus);
-                }).catch(reject);
+                const menus = organizeMenu();
+                commit('setMenu', menus);
+                resolve(menus);
             });
         },
 
@@ -118,21 +115,6 @@ export default {
 
 
 
-const organizeMenu = menus => {
-    const parent = menus.filter(m => m.parentMenuCode == null);
-    parent.forEach(m => {
-        m.children = [];
-        m.route = MenuRoute[m.menuCode];
-    });
-
-    menus.forEach(m => {
-        if (m.parentMenuCode == null) {
-            return;
-        }
-
-        const p = parent.find(p => p.menuCode === m.parentMenuCode);
-        p.children.push(m);
-        m.route = MenuRoute[m.menuCode];
-    });
-    return parent;
+const organizeMenu = () => {
+    return MenuRoute;
 };

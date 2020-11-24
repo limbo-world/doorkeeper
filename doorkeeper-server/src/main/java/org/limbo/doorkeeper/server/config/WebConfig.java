@@ -14,23 +14,16 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.admin.config;
+package org.limbo.doorkeeper.server.config;
 
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.admin.session.RedisSessionDAO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
-import org.springframework.core.env.Environment;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.DateFormatter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -40,29 +33,11 @@ import java.text.SimpleDateFormat;
 
 /**
  * @author Devil
- * @date 2020/11/23 2:21 PM
+ * @date 2020/11/24 11:49 AM
  */
 @Slf4j
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-
-    @Autowired
-    private RedisSessionDAO redisSessionDAO;
-
-    @Bean
-    public SpringBeanContext SpringBeanContext(ApplicationContext applicationContext, Environment environment) {
-        SpringBeanContext springBeanContext = new SpringBeanContext();
-        springBeanContext.setApplicationContext(applicationContext);
-        springBeanContext.setEnvironment(environment);
-        return springBeanContext;
-    }
-
-    @Bean
-    @Lazy(false)
-    @Order(Ordered.HIGHEST_PRECEDENCE)
-    public SpringBeanContext springBeanContext() {
-        return new SpringBeanContext();
-    }
 
     /**
      * json 返回结果处理

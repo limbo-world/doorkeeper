@@ -16,6 +16,10 @@
 
 package org.limbo.doorkeeper.admin.controller;
 
+import org.limbo.doorkeeper.admin.constants.WebConstants;
+import org.limbo.doorkeeper.admin.session.AdminSession;
+import org.limbo.doorkeeper.admin.session.RedisSessionDAO;
+import org.limbo.doorkeeper.admin.session.support.SessionAccount;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,6 +33,17 @@ public class BaseController {
     @Autowired
     protected HttpServletRequest request;
 
+    @Autowired
+    protected RedisSessionDAO sessionDAO;
+
+    protected AdminSession getSession() {
+        String sessionId = request.getHeader(WebConstants.SESSION_HEADER);
+        return sessionDAO.readSession(sessionId);
+    }
+
+    protected SessionAccount getSessionAccount() {
+        return getSession().getAccount();
+    }
 
     protected String clientIp() {
         if (request.getHeader("x-forwarded-for") == null) {

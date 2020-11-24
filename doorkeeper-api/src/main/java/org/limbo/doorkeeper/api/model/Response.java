@@ -16,7 +16,8 @@
 
 package org.limbo.doorkeeper.api.model;
 
-import lombok.Getter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.limbo.doorkeeper.api.constants.ResponseCode;
 
 import java.io.Serializable;
@@ -26,16 +27,17 @@ import java.io.Serializable;
  * @date 2020/3/5 10:51 AM
  * @email brozen@qq.com
  */
-@Getter
+@Data
+@NoArgsConstructor
 public class Response<T> implements Serializable {
 
     private static final long serialVersionUID = -7844608116500392515L;
 
-    private final int code;
+    private int code;
 
-    private final String msg;
+    private String msg;
 
-    private final T data;
+    private T data;
 
     public Response(T data) {
         this(ResponseCode.OK, null, data);

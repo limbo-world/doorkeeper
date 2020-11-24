@@ -22,6 +22,8 @@ import org.limbo.doorkeeper.api.model.param.ProjectQueryParam;
 import org.limbo.doorkeeper.api.model.param.ProjectUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ProjectVO;
 
+import java.util.List;
+
 /**
  * @author Brozen
  * @date 2020/3/9 3:42 PM
@@ -48,6 +50,8 @@ public interface ProjectService {
      * 获取秘钥
      */
     String getSecret(Long projectId);
+
+    List<ProjectVO> all();
 
     /**
      * 分页查询项目列表

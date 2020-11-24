@@ -7,6 +7,12 @@ jasypt:
     password: 7777777
 
 spring:
+  # redis用于管理会话
+  redis:
+    host: 10.219.192.172
+    port: 6379
+    password: ENC(Hd/NWS3hUezXfRPWFjbQBw==)
+    database: 0
   # DB
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
@@ -19,6 +25,23 @@ spring:
 mybatis-plus:
   mapper-locations: classpath*:mybatis/mapper/*.xml
 
+# feigh自带断路器,但是默认是没有打开的
+feign:
+  hystrix:
+    enabled: true               # 打开断路器
+    polling-interval-ms: 2000   # 刷新间隔
+
+### Hystrix 配置
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            # 熔断器超时时间，默认：1000/毫秒 由于bean装配懒加载机制等，首次feign请求会比较慢，容易出现超时
+            timeoutInMilliseconds: 5000
+
+# 注册发现
 eureka:
   client:
     service-url:

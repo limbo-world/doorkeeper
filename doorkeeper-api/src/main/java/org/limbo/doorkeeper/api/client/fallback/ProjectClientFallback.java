@@ -27,6 +27,8 @@ import org.limbo.doorkeeper.api.model.param.ProjectUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ProjectVO;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * @author Devil
  * @date 2020/11/23 3:34 PM
@@ -40,6 +42,11 @@ public class ProjectClientFallback extends Fallback implements FallbackFactory<P
         return new ProjectClient() {
             @Override
             public Response<ProjectVO> addProject(ProjectAddParam project) {
+                return serviceUnavailable();
+            }
+
+            @Override
+            public Response<List<ProjectVO>> getAll() {
                 return serviceUnavailable();
             }
 

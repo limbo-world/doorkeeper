@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.admin.session;
+package org.limbo.doorkeeper.admin.session.support;
 
 import lombok.Data;
 

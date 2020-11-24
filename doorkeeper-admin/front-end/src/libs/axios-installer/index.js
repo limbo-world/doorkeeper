@@ -1,4 +1,4 @@
-import { Message, MessageBox, Loading } from 'element-ui';
+import {Loading, Message, MessageBox} from 'element-ui';
 import store from '../vuex-installer/index';
 
 const request = axios.create({
@@ -6,8 +6,8 @@ const request = axios.create({
     timeout: 120000 // request timeout
 });
 
-request.sessionHeader = "Limbo-Authc-Session";
-request.signHeader = "Limbo-Authc-Sign";
+request.sessionHeader = "Doorkeeper-Session";
+request.signHeader = "Doorkeeper-Sign";
 request.encrypt = new JSEncrypt();
 
 // 请求拦截器，设置登录认证header
