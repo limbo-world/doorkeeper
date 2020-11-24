@@ -21,11 +21,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.RequestInterceptor;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.admin.constants.WebConstants;
 import org.limbo.doorkeeper.admin.session.AdminSession;
 import org.limbo.doorkeeper.admin.session.RedisSessionDAO;
-import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.admin.session.SessionInterceptor;
+import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
@@ -60,6 +59,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Autowired
     private SessionInterceptor sessionInterceptor;
+
+    @Autowired
+    private DoorkeeperProperties doorkeeperProperties;
 
     @Bean
     public SpringBeanContext SpringBeanContext(ApplicationContext applicationContext, Environment environment) {
@@ -114,7 +116,7 @@ public class WebConfig implements WebMvcConfigurer {
         return requestTemplate -> {
             ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
             HttpServletRequest request = attributes.getRequest();
-            String sessionId = request.getHeader(WebConstants.SESSION_HEADER);
+            String sessionId = request.getHeader(doorkeeperProperties.getSession().getHeaderName());
             AdminSession adminSession = redisSessionDAO.readSessionMayNull(sessionId);
             requestTemplate.header(DoorkeeperConstants.DOORKEEPER_PROJECT_HEADER, adminSession.getAccount().getProjectId().toString());
             requestTemplate.header(DoorkeeperConstants.DOORKEEPER_ACCOUNT_HEADER, adminSession.getAccount().getAccountId().toString());
