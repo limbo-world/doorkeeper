@@ -9,10 +9,6 @@
                 <el-form-item label="描述">
                     <el-input type="textarea" v-model="role.roleDesc"></el-input>
                 </el-form-item>
-                <el-form-item label="菜单列表" >
-                    <menu-tree :menuCodeList="selectedMenuCode" :selectable="true" :searchable="true"
-                               ref="menuTree"></menu-tree>
-                </el-form-item>
                 <el-form-item label="权限策略">
                     <el-button type="primary" icon="el-icon-plus" @click="addPermPolicyVisible = true">添加策略</el-button>
                 </el-form-item>
@@ -71,14 +67,7 @@
 
 <script>
 
-    import MenuTree from './MenuTree';
-
     export default {
-
-        components: {
-            MenuTree,
-        },
-
         props: {
             role: {
                 type: Object,
@@ -141,7 +130,6 @@
                         this.loadPermissions().then(() => {
                             this.loading = true;
                             Promise.all([
-                                this.$refs.menuTree.loadMenus(),
                                 (newValue.roleId ? this.loadRole(newId) : this.$immediate()),
                             ]).then(() => this.loading = false);
                         }).finally(() => this.loading = false);
@@ -213,8 +201,6 @@
                         delete role.permissions;
                         delete role.accounts;
 
-                        const $menuTree = this.$refs.menuTree;
-                        role.menuCodeList = $menuTree.selectedMenuCodeList;
                         role.permPolicies = this.permPolicies.map(p => {
                             return {
                                 permCode: p.permCode,

@@ -42,7 +42,7 @@ public class ProjectController {
         return projectClient.addProject(param);
     }
 
-    @GetMapping
+    @GetMapping("query")
     public Response<Page<ProjectVO>> query(ProjectQueryParam param) {
         return projectClient.getProjects(param);
     }

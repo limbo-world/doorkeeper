@@ -26,7 +26,7 @@ export const MenuRoute = [{
         "menuCode": "003001",
         "menuName": "Api列表",
         "icon": "el-icon-connection",
-        "route": "/authorization/permission"
+        "route": "/authorization/api"
     }, {
         "menuCode": "003002",
         "menuName": "权限列表",
@@ -37,15 +37,5 @@ export const MenuRoute = [{
         "menuName": "角色列表",
         "icon": "el-icon-postcard",
         "route": "/authorization/role"
-    }]
-},{
-    "menuCode": "004",
-    "menuName": "日志",
-    "icon": "fa fa-file",
-    "children": [{
-        "menuCode": "004001",
-        "menuName": "操作日志",
-        "icon": "fa fa-file-alt",
-        "route": "/log/b-log"
     }]
 }];

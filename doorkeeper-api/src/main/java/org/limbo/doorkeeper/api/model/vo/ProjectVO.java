@@ -19,6 +19,8 @@ package org.limbo.doorkeeper.api.model.vo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * @author Devil
  * @date 2020/11/19 3:29 PM
@@ -38,5 +40,11 @@ public class ProjectVO {
 
     @Schema(title = "是否激活")
     private Boolean isActivated;
+
+    @Schema(title = "创建时间")
+    private Date gmtCreated;
+
+    @Schema(title = "更新时间")
+    private Date gmtModified;
 
 }

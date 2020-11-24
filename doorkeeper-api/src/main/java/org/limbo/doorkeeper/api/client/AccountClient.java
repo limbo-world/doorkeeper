@@ -43,7 +43,7 @@ public interface AccountClient {
     @PutMapping
     Response<Integer> update(@RequestBody AccountBatchUpdateParam param);
 
-    @GetMapping
+    @GetMapping("/query")
     Response<Page<AccountVO>> page(@SpringQueryMap AccountQueryParam param);
     
 }

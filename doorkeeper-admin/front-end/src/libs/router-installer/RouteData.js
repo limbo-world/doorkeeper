@@ -59,12 +59,12 @@ export default [
                 redirect: '/authorization/permission',
                 children: [
                     {
-                        path: '/authorization/permission',
-                        component: _import('authorization/Permission')
+                        path: '/authorization/api',
+                        component: _import('authorization/Api')
                     },
                     {
-                        path: '/authorization/menu',
-                        component: _import('authorization/Menu')
+                        path: '/authorization/permission',
+                        component: _import('authorization/Permission')
                     },
                     {
                         path: '/authorization/role',

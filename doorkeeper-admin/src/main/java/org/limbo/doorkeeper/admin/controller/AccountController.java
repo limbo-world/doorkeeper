@@ -47,7 +47,7 @@ public class AccountController {
         return accountClient.update(param);
     }
 
-    @GetMapping
+    @GetMapping("/query")
     public Response<Page<AccountVO>> page(AccountQueryParam param) {
         return accountClient.page(param);
     }

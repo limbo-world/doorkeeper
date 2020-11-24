@@ -17,11 +17,6 @@
                 <!--<el-table-column type="selection" width="55"></el-table-column>-->
                 <el-table-column align="left" prop="roleName" label="名称"></el-table-column>
                 <el-table-column align="center" prop="roleDesc" label="描述信息"></el-table-column>
-                <el-table-column align="center" prop="menus" label="授权访问菜单">
-                    <template slot-scope="scope">
-                        <el-link type="primary" @click="showRoleMenuTree(scope.row)">点击查看</el-link>
-                    </template>
-                </el-table-column>
                 <el-table-column align="center" prop="accounts" label="授权用户">
                     <template slot-scope="scope">
                         <el-link type="primary" @click="grantRole(scope.row)">点击修改授权</el-link>
@@ -63,10 +58,6 @@
             </span>
         </el-dialog>
 
-        <el-dialog title="已授权菜单" :visible.sync="menuTreeVisible" width="500px" @close="$refs.menuTree.clearData()">
-            <menu-tree ref="menuTree" :menu-code-list="selectedMenuCodeList" :selectable="false"></menu-tree>
-        </el-dialog>
-
     </el-container>
 </template>
 
@@ -76,11 +67,10 @@
     import { mapActions } from 'vuex';
     import RoleEdit from './RoleEdit';
     import RoleGrant from './RoleGrant';
-    import MenuTree from './MenuTree';
 
     export default {
         components: {
-            RoleEdit, RoleGrant, MenuTree
+            RoleEdit, RoleGrant,
         },
 
         data() {
@@ -98,7 +88,6 @@
                 dialogOpened: false,
                 dialogOpenMode: 'add',
 
-                menuTreeVisible: false,
                 selectedMenuCodeList: [],
             }
         },
@@ -205,17 +194,6 @@
                     this.dialogOpened = false;
                     this.loadRoles()
                 }).catch(err => err);
-            },
-
-            showRoleMenuTree(role) {
-                this.menuTreeVisible = true;
-
-                this.$ajax.get(`/role/${role.roleId}`).then(response => {
-                    role = response.data;
-                    this.$refs.menuTree.loadMenus().then(() => {
-                        this.selectedMenuCodeList = role.menus ? role.menus.map(m => m.menuCode) : [];
-                    });
-                }).finally();
             },
         }
 

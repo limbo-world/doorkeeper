@@ -52,7 +52,7 @@ public class AccountController {
         return Response.ok(accountService.updateAccount(param));
     }
 
-    @GetMapping
+    @GetMapping("/query")
     @Operation(summary = "查询账户列表")
     public Response<Page<AccountVO>> page(AccountQueryParam param) {
         return Response.ok(accountService.queryPage(param));

@@ -18,10 +18,8 @@
         <el-main>
             <el-row>
                 <el-table :data="accounts" size="mini">
-                    <!--<el-table-column prop="projectId" label="项目ID"></el-table-column>-->
-                    <!--<el-table-column prop="accountId" label="账户ID"></el-table-column>-->
+                    <el-table-column prop="accountId" label="账户ID"></el-table-column>
                     <el-table-column prop="username" label="用户名" width="120px"></el-table-column>
-                    <el-table-column prop="nick" label="昵称" align="center"></el-table-column>
                     <el-table-column v-if="isAdminProjectSelected" label="项目绑定" align="center" width="100px">
                         <template slot-scope="scope">
                             <el-link v-if="!scope.row.isSuperAdmin && isAdminProjectSelected"
@@ -35,7 +33,6 @@
                             <el-link v-if="!scope.row.isSuperAdmin" type="primary" @click="openGrantDialog(scope.row)">点击授权角色</el-link>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="lastLogin" label="上次登录时间" align="center"></el-table-column>
                     <el-table-column prop="isSuperAdmin" label="超级管理员" align="center" width="80">
                         <template slot-scope="scope">
                             {{ scope.row.isSuperAdmin ? "是" : "否"}}

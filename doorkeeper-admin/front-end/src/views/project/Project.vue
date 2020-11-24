@@ -17,9 +17,8 @@
         <el-main>
             <el-table :data="projects" size="mini">
                 <el-table-column prop="projectId" label="项目ID"></el-table-column>
-                <el-table-column prop="projectCode" label="项目编码"></el-table-column>
                 <el-table-column prop="projectName" label="项目名称"></el-table-column>
-                <el-table-column prop="projectDesc" label="项目描述"></el-table-column>
+                <el-table-column prop="projectDescribe" label="项目描述"></el-table-column>
                 <el-table-column label="secret">
                     <template slot-scope="scope">
                         <div class="operations" v-if="scope.row.projectSecret">
@@ -60,14 +59,14 @@
         <el-dialog title="编辑" :visible.sync="dialogOpened" width="50%" class="edit-dialog" :before-close="preventCloseWhenProcessing">
             <el-form :model="project" label-width="80px" size="mini" class="edit-form"
                      :rules="rules" ref="editForm">
-                <el-form-item v-if="!project.projectId" label="项目编码">
-                    <el-input v-model="project.projectCode" placeholder="项目编码，用于区分项目的唯一标识，不填写将自动生成"></el-input>
-                </el-form-item>
-                <el-form-item label="项目名称" class="is-required">
+                <el-form-item label="项目名称">
                     <el-input v-model="project.projectName" placeholder="项目名称"></el-input>
                 </el-form-item>
+                <el-form-item label="项目秘钥">
+                    <el-input v-model="project.projectSecret" placeholder="项目秘钥"></el-input>
+                </el-form-item>
                 <el-form-item label="项目描述">
-                    <el-input type="textarea" v-model="project.projectDesc" placeholder="权限描述"></el-input>
+                    <el-input type="textarea" v-model="project.projectDescribe" placeholder="项目描述"></el-input>
                 </el-form-item>
             </el-form>
             <el-footer class="text-right">
@@ -101,7 +100,9 @@
 
                 projects: [],
 
-                project: {},
+                project: {
+                    projectSecret: ""
+                },
                 dialogOpened: false,
                 dialogProcessing: false,
             }
