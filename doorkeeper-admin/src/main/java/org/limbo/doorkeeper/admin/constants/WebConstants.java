@@ -21,13 +21,5 @@ package org.limbo.doorkeeper.admin.constants;
  * @date 2020/11/24 10:13 AM
  */
 public interface WebConstants {
-    /**
-     * 会话 header
-     */
-    String SESSION_HEADER = "Doorkeeper-Session";
-
-    /**
-     * 签名 header
-     */
-    String SIGN_NAME = "Doorkeeper-Sign";
+    
 }

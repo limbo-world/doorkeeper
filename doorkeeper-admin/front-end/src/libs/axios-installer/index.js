@@ -2,12 +2,12 @@ import {Loading, Message, MessageBox} from 'element-ui';
 import store from '../vuex-installer/index';
 
 const request = axios.create({
-    baseURL: "/api", // api的base_url 配置后，请求会拼接对应uri
+    baseURL: process.env.VUE_APP_baseUrl, // api的base_url 配置后，请求会拼接对应uri
     timeout: 120000 // request timeout
 });
 
-request.sessionHeader = "Doorkeeper-Session";
-request.signHeader = "Doorkeeper-Sign";
+request.sessionHeader = process.env.VUE_APP_sessionHeaderName;
+request.signHeader = process.env.VUE_APP_signHeaderName;
 request.encrypt = new JSEncrypt();
 
 // 请求拦截器，设置登录认证header

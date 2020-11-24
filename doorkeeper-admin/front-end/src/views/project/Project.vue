@@ -38,7 +38,7 @@
                         <div class="operations">
                             <template v-if="!scope.row.isDefault && !isAdminProject(scope.row.projectId)">
                                 <i class="el-icon-edit" @click="() =>{
-                                    project = scope.row;
+                                    project = {...scope.row};
                                     dialogOpened = true;
                                 }"></i>
                                 <i class="el-icon-delete" @click="deleteProject(scope.row)"></i>

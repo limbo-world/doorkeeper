@@ -55,9 +55,11 @@ export default {
                         type: 'error',
                         duration: 5 * 1000
                     });
+                    return Promise.reject();
                 }
                 commit('setUser', response.data);
                 setSessionUserCache(response.data);
+                return Promise.resolve();
             });
         },
 
@@ -83,6 +85,7 @@ export default {
                 // 有会话 设置到state中，并更新sessionCache
                 commit('setUser', response.data);
                 setSessionUserCache(response.data);
+                return Promise.resolve();
             });
         },
 
@@ -90,7 +93,7 @@ export default {
         loadMenus({ state, commit }) {
             // 已经加载完成时不再加载
             if (state.menus && state.menus.length > 0) {
-                return new Promise(resolve => resolve(state.menus));
+                return Promise.resolve(state.menus);
             }
 
             // 从后台异步获取菜单
