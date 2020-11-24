@@ -16,6 +16,7 @@
 
 package org.limbo.doorkeeper.admin.controller;
 
+import org.limbo.doorkeeper.admin.config.DoorkeeperProperties;
 import org.limbo.doorkeeper.admin.constants.WebConstants;
 import org.limbo.doorkeeper.admin.session.AdminSession;
 import org.limbo.doorkeeper.admin.session.RedisSessionDAO;
@@ -36,8 +37,11 @@ public class BaseController {
     @Autowired
     protected RedisSessionDAO sessionDAO;
 
+    @Autowired
+    protected DoorkeeperProperties doorkeeperProperties;
+
     protected AdminSession getSession() {
-        String sessionId = request.getHeader(WebConstants.SESSION_HEADER);
+        String sessionId = request.getHeader(doorkeeperProperties.getSession().getHeaderName());
         return sessionDAO.readSession(sessionId);
     }
 

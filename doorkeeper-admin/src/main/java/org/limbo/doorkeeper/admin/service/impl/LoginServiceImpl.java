@@ -103,12 +103,14 @@ public class LoginServiceImpl implements LoginService {
         if (adminAccount.getIsAdmin()) { // 管理员有所有项目权限
             Response<List<ProjectVO>> all = projectClient.getAll();
             projects = new ArrayList<>();
-            for (ProjectVO projectVO : all.getData()) {
-                AdminAccountProject project = new AdminAccountProject();
-                project.setAccountId(adminAccount.getAccountId());
-                project.setProjectId(projectVO.getProjectId());
-                project.setProjectName(projectVO.getProjectName());
-                projects.add(project);
+            if (CollectionUtils.isNotEmpty(all.getData())) {
+                for (ProjectVO projectVO : all.getData()) {
+                    AdminAccountProject project = new AdminAccountProject();
+                    project.setAccountId(adminAccount.getAccountId());
+                    project.setProjectId(projectVO.getProjectId());
+                    project.setProjectName(projectVO.getProjectName());
+                    projects.add(project);
+                }
             }
         } else {
             projects = adminAccountProjectMapper.getByAccount(adminAccount.getAccountId());
