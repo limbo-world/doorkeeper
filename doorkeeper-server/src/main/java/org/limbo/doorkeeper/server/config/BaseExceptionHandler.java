@@ -19,6 +19,7 @@ package org.limbo.doorkeeper.server.config;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.exception.ParamException;
 import org.limbo.doorkeeper.api.model.Response;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -30,9 +31,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class BaseExceptionHandler {
 
+    @ExceptionHandler(value = { BindException.class })
+    public Response handBind(BindException e) {
+        return Response.paramError(e.getBindingResult().getFieldError().getDefaultMessage());
+    }
+
     @ExceptionHandler(value = { ParamException.class })
     public Response handVerify(ParamException e) {
-        log.info("校验异常 {}", e.getMessage());
+        log.info("参数异常 {}", e.getMessage());
         return Response.paramError(e.getMessage());
     }
 

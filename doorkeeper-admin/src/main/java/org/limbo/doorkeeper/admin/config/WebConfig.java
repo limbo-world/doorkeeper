@@ -19,8 +19,12 @@ package org.limbo.doorkeeper.admin.config;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.RequestInterceptor;
 import lombok.extern.slf4j.Slf4j;
+import org.limbo.doorkeeper.admin.constants.WebConstants;
+import org.limbo.doorkeeper.admin.session.AdminSession;
 import org.limbo.doorkeeper.admin.session.RedisSessionDAO;
+import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
@@ -34,8 +38,11 @@ import org.springframework.core.env.Environment;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.DateFormatter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 
 /**
@@ -94,6 +101,19 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public PaginationInterceptor paginationInterceptor() {
         return new PaginationInterceptor();
+    }
+
+
+    @Bean("doorkeeperInterceptor")
+    public RequestInterceptor getRequestInterceptor() {
+        return requestTemplate -> {
+            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            HttpServletRequest request = attributes.getRequest();
+            String sessionId = request.getHeader(WebConstants.SESSION_HEADER);
+            AdminSession adminSession = redisSessionDAO.readSessionMayNull(sessionId);
+            requestTemplate.header(DoorkeeperConstants.DOORKEEPER_PROJECT_HEADER, adminSession.getAccount().getProjectId().toString());
+            requestTemplate.header(DoorkeeperConstants.DOORKEEPER_ACCOUNT_HEADER, adminSession.getAccount().getAccountId().toString());
+        };
     }
 
 }

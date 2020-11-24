@@ -14,34 +14,20 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.vo;
-
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.util.Date;
+package org.limbo.doorkeeper.api.constants;
 
 /**
  * @author Devil
- * @date 2020/11/19 3:11 PM
+ * @date 2020/11/24 5:18 PM
  */
-@Data
-public class AccountVO {
+public interface DoorkeeperConstants {
+    /**
+     * 请求header 获取 项目id
+     */
+    String DOORKEEPER_PROJECT_HEADER = "Doorkeeper_Project";
 
-    @Schema(title = "项目id")
-    private Long projectId;
-
-    @Schema(title = "账户id")
-    private Long accountId;
-
-    @Schema(title = "账户名称")
-    private String username;
-
-    @Schema(title = "是否超管")
-    private Boolean isSuperAdmin;
-
-    @Schema(title = "是否管理员")
-    private Boolean isAdmin;
+    /**
+     * 请求header 获取 账户id
+     */
+    String DOORKEEPER_ACCOUNT_HEADER = "Doorkeeper_Account";
 }

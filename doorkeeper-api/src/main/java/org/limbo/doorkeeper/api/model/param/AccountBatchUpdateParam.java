@@ -33,10 +33,7 @@ public class AccountBatchUpdateParam {
     @Schema(title = "账户ID")
     private List<Long> accountIds;
 
-    @Schema(title = "是否超级管理员")
-    private Boolean isSuperAdmin;
-
-    @Schema(title = "是否激活")
-    private Boolean isActivated;
+    @Schema(title = "是否管理员")
+    private Boolean isAdmin;
 
 }

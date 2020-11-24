@@ -49,11 +49,6 @@ public class Project {
      */
     private String projectDescribe;
 
-    /**
-     * 是否激活
-     */
-    private Boolean isActivated;
-
     private Date gmtCreated;
 
     private Date gmtModified;

@@ -37,6 +37,7 @@ import org.limbo.doorkeeper.admin.session.support.SessionAccount;
 import org.limbo.doorkeeper.admin.utils.MD5Utils;
 import org.limbo.doorkeeper.admin.utils.UUIDUtils;
 import org.limbo.doorkeeper.admin.utils.Verifies;
+import org.limbo.doorkeeper.api.client.AccountClient;
 import org.limbo.doorkeeper.api.client.ProjectClient;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.vo.ProjectVO;
@@ -78,6 +79,9 @@ public class LoginServiceImpl implements LoginService {
     @Autowired
     private ProjectClient projectClient;
 
+    @Autowired
+    private AccountClient accountClient;
+
     @Override
     public AbstractSession login(LoginParam param) {
         Verifies.verify(verifyCaptcha(param.getCaptchaToken(), param.getCaptcha()), "验证码错误！");
@@ -88,9 +92,8 @@ public class LoginServiceImpl implements LoginService {
         Verifies.notNull(adminAccount, "账户不存在");
         Verifies.verify(MD5Utils.verify(param.getPassword(), adminAccount.getPassword()), "用户名或密码错误！");
 
-
-
         SessionAccount sessionAccount = new SessionAccount();
+        sessionAccount.setProjectId(adminAccount.getProjectId());
         sessionAccount.setAccountId(adminAccount.getAccountId());
         sessionAccount.setNickname(adminAccount.getNickname());
         sessionAccount.setIsSuperAdmin(adminAccount.getIsSuperAdmin());

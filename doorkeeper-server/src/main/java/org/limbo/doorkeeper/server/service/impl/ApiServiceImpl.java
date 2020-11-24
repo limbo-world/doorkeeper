@@ -17,13 +17,19 @@
 package org.limbo.doorkeeper.server.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.apache.commons.lang3.StringUtils;
+import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.ApiAddParam;
+import org.limbo.doorkeeper.api.model.param.ApiQueryParam;
 import org.limbo.doorkeeper.api.model.param.ApiUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ApiVO;
 import org.limbo.doorkeeper.server.dao.ApiMapper;
+import org.limbo.doorkeeper.server.dao.PermissionApiMapper;
 import org.limbo.doorkeeper.server.entity.Api;
+import org.limbo.doorkeeper.server.entity.PermissionApi;
 import org.limbo.doorkeeper.server.service.ApiService;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +45,9 @@ public class ApiServiceImpl implements ApiService {
 
     @Autowired
     private ApiMapper apiMapper;
+
+    @Autowired
+    private PermissionApiMapper permissionApiMapper;
 
     @Override
     @Transactional
@@ -66,10 +75,28 @@ public class ApiServiceImpl implements ApiService {
                 .set(Api::getIsDeleted, true)
                 .in(Api::getApiId, apiIds)
         );
+
+        // 删除绑定
+        permissionApiMapper.delete(Wrappers.<PermissionApi>lambdaQuery().in(PermissionApi::getApiId, apiIds));
     }
 
     @Override
     public List<ApiVO> all() {
         return EnhancedBeanUtils.createAndCopyList(apiMapper.selectList(Wrappers.emptyWrapper()), ApiVO.class);
+    }
+
+    @Override
+    public Page<ApiVO> queryPage(ApiQueryParam param) {
+        com.baomidou.mybatisplus.extension.plugins.pagination.Page<Api> mpage = MyBatisPlusUtils.pageOf(param);
+        mpage = apiMapper.selectPage(mpage, Wrappers.<Api>lambdaQuery()
+                .eq(param.getProjectId() != null, Api::getProjectId, param.getProjectId())
+                .eq(StringUtils.isNotBlank(param.getApiMethod()), Api::getApiMethod, param.getApiMethod())
+                .like(StringUtils.isNotBlank(param.getApiName()), Api::getApiName, param.getApiName())
+                .like(StringUtils.isNotBlank(param.getApiUrl()), Api::getApiUrl, param.getApiUrl())
+        );
+
+        param.setTotal(mpage.getTotal());
+        param.setData(EnhancedBeanUtils.createAndCopyList(mpage.getRecords(), ApiVO.class));
+        return param;
     }
 }

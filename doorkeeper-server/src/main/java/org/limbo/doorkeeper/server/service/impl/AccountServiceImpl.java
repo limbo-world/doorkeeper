@@ -23,9 +23,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.exception.ParamException;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.AccountAddParam;
+import org.limbo.doorkeeper.api.model.param.AccountBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.AccountQueryParam;
 import org.limbo.doorkeeper.api.model.param.AccountRoleAddParam;
-import org.limbo.doorkeeper.api.model.param.AccountBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.limbo.doorkeeper.server.dao.AccountMapper;
 import org.limbo.doorkeeper.server.dao.AccountRoleMapper;
@@ -35,7 +35,6 @@ import org.limbo.doorkeeper.server.entity.Role;
 import org.limbo.doorkeeper.server.service.AccountService;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
-import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -96,8 +95,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Integer updateAccount(AccountBatchUpdateParam param) {
         return accountMapper.update(null, Wrappers.<Account>lambdaUpdate()
-                .set(param.getIsActivated() != null, Account::getIsActivated, param.getIsActivated())
-                .set(param.getIsSuperAdmin() != null, Account::getIsSuperAdmin, param.getIsSuperAdmin())
+                .set(param.getIsAdmin() != null, Account::getIsAdmin, param.getIsAdmin())
                 .in(Account::getAccountId, param.getAccountIds())
         );
     }

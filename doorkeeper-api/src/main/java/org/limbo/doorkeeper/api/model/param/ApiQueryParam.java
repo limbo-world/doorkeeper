@@ -14,44 +14,34 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.admin.entity;
+package org.limbo.doorkeeper.api.model.param;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.limbo.doorkeeper.api.model.Page;
+import org.limbo.doorkeeper.api.model.vo.ApiVO;
 
-import java.util.Date;
+import javax.validation.constraints.NotNull;
 
 /**
- * @author devil
- * @date 2020/3/13
+ * @author Devil
+ * @date 2020/11/24 3:55 PM
  */
 @Data
-@TableName("laa_account")
-public class AdminAccount {
+@EqualsAndHashCode(callSuper = true)
+public class ApiQueryParam extends Page<ApiVO> {
 
-    @TableId(type = IdType.INPUT)
-    private Long accountId;
-
+    @NotNull(message = "请选择项目")
+    @Schema(title = "项目id", required = true)
     private Long projectId;
 
-    private String username;
+    @Schema(title = "名称")
+    private String apiName;
 
-    private String password;
+    @Schema(title = "方法类型 get post")
+    private String apiMethod;
 
-    private String nickname;
-
-    private Date lastLogin;
-
-    private Boolean isSuperAdmin;
-
-    /**
-     * 是否为管理员
-     */
-    private Boolean isAdmin;
-
-    private Date gmtCreated;
-
-    private Date gmtModified;
+    @Schema(title = "ant风格url")
+    private String apiUrl;
 }

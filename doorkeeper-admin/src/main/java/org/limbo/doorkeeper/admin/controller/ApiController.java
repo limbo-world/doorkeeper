@@ -17,8 +17,10 @@
 package org.limbo.doorkeeper.admin.controller;
 
 import org.limbo.doorkeeper.api.client.ApiClient;
+import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.ApiAddParam;
+import org.limbo.doorkeeper.api.model.param.ApiQueryParam;
 import org.limbo.doorkeeper.api.model.param.ApiUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ApiVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +57,11 @@ public class ApiController {
     @GetMapping
     public Response<List<ApiVO>> list() {
         return apiClient.list();
+    }
+
+    @GetMapping("/query")
+    public Response<Page<ApiVO>> page(ApiQueryParam param) {
+        return apiClient.page(param);
     }
 
 }

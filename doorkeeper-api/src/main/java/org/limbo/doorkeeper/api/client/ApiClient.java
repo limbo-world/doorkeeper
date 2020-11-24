@@ -17,11 +17,14 @@
 package org.limbo.doorkeeper.api.client;
 
 import org.limbo.doorkeeper.api.client.fallback.ApiClientFallback;
+import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.ApiAddParam;
+import org.limbo.doorkeeper.api.model.param.ApiQueryParam;
 import org.limbo.doorkeeper.api.model.param.ApiUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ApiVO;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,6 +36,12 @@ import java.util.List;
 @FeignClient(name = "doorkeeper-server", path = "/api", contextId = "apiClient", fallbackFactory = ApiClientFallback.class)
 public interface ApiClient {
 
+    @GetMapping
+    Response<List<ApiVO>> list();
+
+    @GetMapping("/query")
+    Response<Page<ApiVO>> page(@SpringQueryMap ApiQueryParam param);
+
     @PostMapping
     Response<ApiVO> add(@RequestBody ApiAddParam param);
 
@@ -41,7 +50,4 @@ public interface ApiClient {
 
     @DeleteMapping
     Response<Boolean> delete(@RequestBody List<Long> apiIds);
-
-    @GetMapping
-    Response<List<ApiVO>> list();
 }

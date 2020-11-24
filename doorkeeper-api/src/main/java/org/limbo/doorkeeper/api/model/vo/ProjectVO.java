@@ -38,9 +38,6 @@ public class ProjectVO {
     @Schema(title = "描述")
     private String projectDescribe;
 
-    @Schema(title = "是否激活")
-    private Boolean isActivated;
-
     @Schema(title = "创建时间")
     private Date gmtCreated;
 

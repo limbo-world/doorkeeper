@@ -19,8 +19,10 @@ package org.limbo.doorkeeper.api.client.fallback;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.client.ApiClient;
+import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.ApiAddParam;
+import org.limbo.doorkeeper.api.model.param.ApiQueryParam;
 import org.limbo.doorkeeper.api.model.param.ApiUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ApiVO;
 import org.springframework.stereotype.Component;
@@ -55,6 +57,11 @@ public class ApiClientFallback extends Fallback implements FallbackFactory<ApiCl
 
             @Override
             public Response<List<ApiVO>> list() {
+                return serviceUnavailable();
+            }
+
+            @Override
+            public Response<Page<ApiVO>> page(ApiQueryParam param) {
                 return serviceUnavailable();
             }
         };

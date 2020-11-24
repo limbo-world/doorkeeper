@@ -38,10 +38,7 @@ public class AccountAddParam {
     @Schema(title = "账户名称", required = true)
     private String username;
 
-    @Schema(title = "是否超管")
-    private Boolean isSuperAdmin;
-
-    @Schema(title = "是否激活")
-    private Boolean isActivated;
+    @Schema(title = "是否管理员")
+    private Boolean isAdmin;
 
 }

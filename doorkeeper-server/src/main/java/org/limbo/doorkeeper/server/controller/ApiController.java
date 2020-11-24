@@ -18,11 +18,12 @@ package org.limbo.doorkeeper.server.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.ApiAddParam;
+import org.limbo.doorkeeper.api.model.param.ApiQueryParam;
 import org.limbo.doorkeeper.api.model.param.ApiUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ApiVO;
-import org.limbo.doorkeeper.server.entity.Api;
 import org.limbo.doorkeeper.server.service.ApiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -42,6 +43,18 @@ public class ApiController {
 
     @Autowired
     private ApiService apiService;
+
+    @GetMapping
+    @Operation(summary = "api列表")
+    public Response<List<ApiVO>> list() {
+        return Response.ok(apiService.all());
+    }
+
+    @GetMapping("/query")
+    @Operation(summary = "分页查询api列表")
+    public Response<Page<ApiVO>> page(@Validated ApiQueryParam param) {
+        return Response.ok(apiService.queryPage(param));
+    }
 
     @PostMapping
     @Operation(summary = "新增api")
@@ -64,10 +77,6 @@ public class ApiController {
         return Response.ok(true);
     }
 
-    @GetMapping
-    @Operation(summary = "api列表")
-    public Response<List<ApiVO>> list() {
-        return Response.ok(apiService.all());
-    }
+
 
 }

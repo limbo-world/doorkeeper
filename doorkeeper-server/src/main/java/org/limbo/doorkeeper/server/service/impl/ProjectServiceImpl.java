@@ -53,9 +53,8 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     @Transactional
-    public ProjectVO addProject(ProjectAddParam param, Boolean isActivated) {
+    public ProjectVO addProject(ProjectAddParam param) {
         Project project = EnhancedBeanUtils.createAndCopy(param, Project.class);
-        project.setIsActivated(isActivated);
         if (StringUtils.isBlank(param.getProjectSecret())) {
             project.setProjectSecret(UUIDUtils.get());
         }
@@ -94,9 +93,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public List<ProjectVO> all() {
-        List<Project> allProjects = projectMapper.selectList(columnNoSecret()
-                .eq(Project::getIsActivated, true)
-        );
+        List<Project> allProjects = projectMapper.selectList(columnNoSecret());
         return EnhancedBeanUtils.createAndCopyList(allProjects, ProjectVO.class);
     }
 

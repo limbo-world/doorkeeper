@@ -45,11 +45,10 @@ public class ProjectController {
     @Autowired
     private ProjectService projectService;
 
-
     @PostMapping
     @Operation(summary = "新增项目")
     public Response<ProjectVO> addProject(@RequestBody ProjectAddParam project) {
-        return Response.ok(projectService.addProject(project, false));
+        return Response.ok(projectService.addProject(project));
     }
 
     @GetMapping

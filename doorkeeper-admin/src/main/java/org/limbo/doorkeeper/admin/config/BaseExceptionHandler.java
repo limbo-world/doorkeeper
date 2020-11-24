@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.admin.session.support.SessionException;
 import org.limbo.doorkeeper.api.exception.ParamException;
 import org.limbo.doorkeeper.api.model.Response;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.ModelAndView;
@@ -34,6 +35,17 @@ import java.sql.SQLException;
 @RestControllerAdvice
 public class BaseExceptionHandler {
 
+    @ExceptionHandler(value = { BindException.class })
+    public Response handBind(BindException e) {
+        return Response.paramError(e.getBindingResult().getFieldError().getDefaultMessage());
+    }
+
+    @ExceptionHandler(value = { ParamException.class })
+    public Response handVerify(ParamException e) {
+        log.info("参数异常 {}", e.getMessage());
+        return new Response(e.getMessage());
+    }
+
     @ExceptionHandler(SQLException.class)
     public ModelAndView handSql(Exception ex){
         log.info("SQL Exception {}", ex.getMessage());
@@ -41,12 +53,6 @@ public class BaseExceptionHandler {
         mv.addObject("message", ex.getMessage());
         mv.setViewName("/sql_error.html");
         return mv;
-    }
-
-    @ExceptionHandler(value = { ParamException.class })
-    public Response handVerify(ParamException e) {
-        log.info("校验异常 {}", e.getMessage());
-        return new Response(e.getMessage());
     }
 
     @ExceptionHandler(value = { SessionException.class })

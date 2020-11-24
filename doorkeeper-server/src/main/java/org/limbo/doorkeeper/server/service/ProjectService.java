@@ -33,16 +33,11 @@ public interface ProjectService {
 
     /**
      * 添加项目
-     * @param param
-     * @param isActivated
-     * @return
      */
-    ProjectVO addProject(ProjectAddParam param, Boolean isActivated);
+    ProjectVO addProject(ProjectAddParam param);
 
     /**
      * 更新项目
-     * @param param
-     * @return
      */
     Integer updateProject(ProjectUpdateParam param);
 

@@ -24,6 +24,9 @@ import lombok.Data;
  */
 @Data
 public class SessionAccount {
+
+
+    private Long projectId;
     /**
      * 账户唯一ID
      */

@@ -16,9 +16,13 @@
 
 package org.limbo.doorkeeper.server.service;
 
+import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.ApiAddParam;
+import org.limbo.doorkeeper.api.model.param.ApiQueryParam;
 import org.limbo.doorkeeper.api.model.param.ApiUpdateParam;
+import org.limbo.doorkeeper.api.model.param.ProjectQueryParam;
 import org.limbo.doorkeeper.api.model.vo.ApiVO;
+import org.limbo.doorkeeper.api.model.vo.ProjectVO;
 import org.limbo.doorkeeper.server.entity.Api;
 
 import java.util.List;
@@ -48,4 +52,9 @@ public interface ApiService {
      * 返回所有api
      */
     List<ApiVO> all();
+
+    /**
+     * 分页查询列表
+     */
+    Page<ApiVO> queryPage(ApiQueryParam param);
 }

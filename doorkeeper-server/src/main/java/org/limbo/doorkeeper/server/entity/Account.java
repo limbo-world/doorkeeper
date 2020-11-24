@@ -51,10 +51,6 @@ public class Account {
      * 是否管理员
      */
     private Boolean isAdmin;
-    /**
-     * 是否激活  未激活的账户没有权限
-     */
-    private Boolean isActivated;
 
     private Date gmtCreated;
 

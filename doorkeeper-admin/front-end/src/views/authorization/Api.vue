@@ -1,40 +1,50 @@
+<!--
+  - Copyright 2020-2024 Limbo Team (https://github.com/limbo-world).
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  - 	http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
 <template>
     <el-container class="permission-page">
         <el-header class="padding-top-xs" height="50px">
             <el-form ref="searchForm" :inline="true" size="mini">
-                <el-form-item label="名称/编码/描述">
-                    <el-input v-model="queryForm.keyword" placeholder="输入关键字"></el-input>
+                <el-form-item label="名称">
+                    <el-input v-model="queryForm.apiName" placeholder="输入API名称"></el-input>
                 </el-form-item>
-                <el-form-item label="API">
-                    <el-input v-model="queryForm.api" placeholder="输入API路径"></el-input>
+                <el-form-item label="类型">
+                    <el-select v-model="queryForm.apiMethod" placeholder="请选择">
+                        <el-option key="GET" label="GET" value="GET"></el-option>
+                        <el-option key="POST" label="POST" value="POST"></el-option>
+                        <el-option key="PUT" label="PUT" value="PUT"></el-option>
+                        <el-option key="DELETE" label="DELETE" value="DELETE"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="Url">
+                    <el-input v-model="queryForm.apiUrl" placeholder="输入API路径"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="loadPermissions" size="mini" icon="el-icon-search">查询</el-button>
-                    <el-button type="primary" @click="addPermission" size="mini" icon="el-icon-circle-plus">添加权限</el-button>
+                    <el-button type="primary" @click="loadApis" size="mini" icon="el-icon-search">查询</el-button>
+                    <el-button type="primary" @click="addPermission" size="mini" icon="el-icon-circle-plus">添加</el-button>
                 </el-form-item>
             </el-form>
         </el-header>
 
         <el-main>
-            <el-table :data="permissions" size="mini">
-                <el-table-column prop="permCode" label="编码"></el-table-column>
-                <el-table-column prop="permName" label="名称"></el-table-column>
-                <el-table-column prop="permDesc" label="描述信息"></el-table-column>
-                <el-table-column prop="isOnline" label="是否已启用" height="30px">
-                    <template slot-scope="scope">
-                        <div class="el-form--mini">
-                            <el-switch :value="scope.row.isOnline" class="block el-switch--mini" size="mini"
-                                       @change="permissionOnlineChanged(scope.row)"></el-switch>
-                        </div>
-                    </template>
-                </el-table-column>
-                <el-table-column label="API列表" width="300px">
-                    <template slot-scope="scope">
-                        <div v-for="api in scope.row.apiList" :key="api">
-                            {{api}}
-                        </div>
-                    </template>
-                </el-table-column>
+            <el-table :data="apis" size="mini">
+                <el-table-column prop="apiName" label="名称"></el-table-column>
+                <el-table-column prop="apiMethod" label="类型"></el-table-column>
+                <el-table-column prop="apiUrl" label="url"></el-table-column>
+                <el-table-column prop="apiDescribe" label="描述"></el-table-column>
                 <el-table-column label="操作" width="120" align="center">
                     <template slot-scope="scope">
                         <div class="operations">
@@ -53,7 +63,7 @@
 
         <el-footer>
             <el-pagination :page-size="queryForm.size" :total="queryForm.total" :current-page.sync="queryForm.current"
-                           layout="prev, pager, next" background @current-change="loadPermissions">
+                           layout="prev, pager, next" background @current-change="loadApis">
             </el-pagination>
         </el-footer>
 
@@ -91,7 +101,7 @@
                     total: -1
                 },
 
-                permissions: [],
+                apis: [],
 
                 permission: {},
                 dialogOpened: false,
@@ -102,27 +112,20 @@
         created() {
             pages.permission = this;
 
-            this.loadPermissions();
+            this.loadApis();
         },
 
         methods: {
             ...mapActions('ui', ['startProgress', 'stopProgress']),
 
-            loadPermissions() {
+            loadApis() {
                 this.startProgress({ speed: 'fast' });
-                this.$ajax.get('/permission/query', {
+                this.$ajax.get('/api/query', {
                     params: this.queryForm
                 }).then(response => {
                     const page = response.data;
                     this.queryForm.total = page.total >= 0 ? page.total : this.queryForm.total;
-
-                    const permissions = page.data;
-                    permissions.forEach(p => {
-                        if (!p.apiList) {
-                            p.apiList = p.api ? p.api.split(',') : [];
-                        }
-                    });
-                    this.permissions = permissions;
+                    this.apis = page.data;
                 }).finally(() => this.stopProgress());
             },
 
@@ -131,7 +134,7 @@
                 perm.isOnline = !perm.isOnline;
                 this.$ajax.put(`/permission/${perm.permCode}`, perm).then(response => {
                     this.$message.success(`已修改${perm.isOnline ? '上线' : '下线'}`);
-                    this.loadPermissions();
+                    this.loadApis();
                 }).finally(() => loading.close());
             },
 
@@ -166,7 +169,7 @@
             dialogConfirm() {
                 this.$refs.permissionEdit.savePermission().then(() => {
                     this.dialogOpened = false;
-                    this.loadPermissions();
+                    this.loadApis();
                 });
             },
 
@@ -174,7 +177,7 @@
                 this.$ajax.delete(`/permission/${perm.permCode}`)
                     .then(() => {
                         this.$message.success('删除成功。');
-                        this.loadPermissions();
+                        this.loadApis();
                     })
             },
 
