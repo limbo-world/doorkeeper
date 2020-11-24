@@ -25,6 +25,7 @@ import org.limbo.doorkeeper.admin.constants.WebConstants;
 import org.limbo.doorkeeper.admin.session.AdminSession;
 import org.limbo.doorkeeper.admin.session.RedisSessionDAO;
 import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.admin.session.SessionInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
@@ -40,6 +41,7 @@ import org.springframework.format.datetime.DateFormatter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.servlet.http.HttpServletRequest;
@@ -55,6 +57,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Autowired
     private RedisSessionDAO redisSessionDAO;
+
+    @Autowired
+    private SessionInterceptor sessionInterceptor;
 
     @Bean
     public SpringBeanContext SpringBeanContext(ApplicationContext applicationContext, Environment environment) {
@@ -116,4 +121,9 @@ public class WebConfig implements WebMvcConfigurer {
         };
     }
 
+    @Override
+
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(sessionInterceptor);
+    }
 }

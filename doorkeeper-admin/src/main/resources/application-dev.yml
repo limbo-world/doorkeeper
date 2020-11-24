@@ -49,3 +49,11 @@ eureka:
   instance:
     prefer-ip-address: true
 
+doorkeeper:
+  session:
+    header-name: Doorkeeper-Session-Dev
+    session-duration: 1d
+  sign:
+    header-name: Doorkeeper-Sign-Dev
+  api:
+    certificate: 123567890
