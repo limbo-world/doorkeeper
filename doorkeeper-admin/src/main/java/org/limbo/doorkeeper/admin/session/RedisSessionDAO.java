@@ -32,12 +32,16 @@ import java.util.concurrent.TimeUnit;
  */
 public class RedisSessionDAO extends AbstractSessionDAO<AdminSession> {
 
-    private RedissonClient redissonClient;
+    private final RedissonClient redissonClient;
 
-    private String sessionPrefix;
+    private final String sessionPrefix;
 
     public RedisSessionDAO(RedissonClient redissonClient) {
-        super(2, TimeUnit.HOURS);
+        this(redissonClient, 2, TimeUnit.HOURS);
+    }
+
+    public RedisSessionDAO(RedissonClient redissonClient, long expiry, TimeUnit timeUnit) {
+        super(expiry, timeUnit);
         this.redissonClient = redissonClient;
         this.sessionPrefix = "Doorkeeper-Session-";
     }

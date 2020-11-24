@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.admin.session.RedisSessionDAO;
+import org.limbo.doorkeeper.admin.session.SessionInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
@@ -34,6 +35,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.DateFormatter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.text.SimpleDateFormat;
@@ -48,6 +50,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Autowired
     private RedisSessionDAO redisSessionDAO;
+
+    @Autowired
+    private SessionInterceptor sessionInterceptor;
 
     @Bean
     public SpringBeanContext SpringBeanContext(ApplicationContext applicationContext, Environment environment) {
@@ -96,4 +101,9 @@ public class WebConfig implements WebMvcConfigurer {
         return new PaginationInterceptor();
     }
 
+    @Override
+
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(sessionInterceptor);
+    }
 }

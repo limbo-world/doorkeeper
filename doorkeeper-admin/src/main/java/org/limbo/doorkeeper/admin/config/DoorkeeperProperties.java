@@ -19,6 +19,8 @@ package org.limbo.doorkeeper.admin.config;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.time.Duration;
+
 /**
  * @author Brozen
  * @date 2020/3/11 10:12 AM
@@ -27,6 +29,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 @ConfigurationProperties(prefix = "doorkeeper")
 public class DoorkeeperProperties {
+
+    private Session session = new Session();
 
     private Sign sign = new Sign();
 
@@ -38,6 +42,19 @@ public class DoorkeeperProperties {
 
     private String projectSecret;
 
+
+    @Data
+    public static class Session {
+        /**
+         * 会话header name
+         */
+        private String headerName = "Doorkeeper-Session";
+
+        /**
+         * 回话有效期
+         */
+        private Duration sessionDuration = Duration.ofHours(1);
+    }
 
 
     @Data

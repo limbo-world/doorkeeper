@@ -17,7 +17,6 @@
 package org.limbo.doorkeeper.admin.config;
 
 import org.apache.commons.lang3.StringUtils;
-import org.limbo.doorkeeper.admin.session.RedisSessionDAO;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
@@ -51,11 +50,6 @@ public class RedisConfig {
         }
 
         return Redisson.create(config);
-    }
-
-    @Bean
-    public RedisSessionDAO adminSessionDAO(RedissonClient redissonClient) {
-        return new RedisSessionDAO(redissonClient);
     }
 
 }
