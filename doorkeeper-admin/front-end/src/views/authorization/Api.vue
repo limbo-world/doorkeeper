@@ -15,7 +15,7 @@
   -->
 
 <template>
-    <el-container class="permission-page">
+    <el-container class="api-page">
         <el-header class="padding-top-xs" height="50px">
             <el-form ref="searchForm" :inline="true" size="mini">
                 <el-form-item label="名称">
@@ -162,7 +162,6 @@
             },
 
             deleteApi(apiIds) {
-                console.log(apiIds)
                 this.$confirm('确认删除Api?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -186,8 +185,8 @@
 
 
 
-<style lang="scss">
-    .permission-page {
+<style lang="scss" scoped>
+    .api-page {
         .el-table {
             .cell {
                 min-height: 22px;

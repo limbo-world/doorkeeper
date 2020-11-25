@@ -16,8 +16,10 @@
 
 package org.limbo.doorkeeper.server.service;
 
+import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.PermissionAddParam;
 import org.limbo.doorkeeper.api.model.param.PermissionBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.PermissionQueryParam;
 import org.limbo.doorkeeper.api.model.param.PermissionUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.limbo.doorkeeper.server.entity.Api;
@@ -54,5 +56,7 @@ public interface PermissionService {
      * 返回所有权限
      */
     List<PermissionVO> all(Long projectId);
+
+    Page<PermissionVO> queryPage(Long projectId, PermissionQueryParam param);
 
 }

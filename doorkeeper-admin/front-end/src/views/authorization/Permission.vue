@@ -2,11 +2,8 @@
     <el-container class="permission-page">
         <el-header class="padding-top-xs" height="50px">
             <el-form ref="searchForm" :inline="true" size="mini">
-                <el-form-item label="名称/编码/描述">
-                    <el-input v-model="queryForm.keyword" placeholder="输入关键字"></el-input>
-                </el-form-item>
-                <el-form-item label="API">
-                    <el-input v-model="queryForm.api" placeholder="输入API路径"></el-input>
+                <el-form-item label="名称">
+                    <el-input v-model="queryForm.permissionName" placeholder="输入名称"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="loadPermissions" size="mini" icon="el-icon-search">查询</el-button>
@@ -59,7 +56,7 @@
 
 
         <el-dialog :title="`${dialogOpenMode === 'add' ? '新增' : '修改'}权限`" @close="dialogCancel"
-                   :visible.sync="dialogOpened" width="50%" class="edit-dialog">
+                   :visible.sync="dialogOpened" width="70%" class="edit-dialog" @opened="beforeDialogOpen">
             <permission-edit :permission="permission" ref="permissionEdit" :view-mode="dialogOpenMode === 'view'"></permission-edit>
             <el-footer class="text-right">
                 <el-button @click="dialogCancel">取 消</el-button>
@@ -126,6 +123,10 @@
                 }).finally(() => this.stopProgress());
             },
 
+            beforeDialogOpen() {
+                this.$refs.permissionEdit.preOpen();
+            },
+
             permissionOnlineChanged(perm) {
                 const loading = this.$loading();
                 perm.isOnline = !perm.isOnline;
@@ -185,7 +186,7 @@
 
 
 
-<style lang="scss">
+<style lang="scss" scoped>
     .permission-page {
         .el-table {
             .cell {

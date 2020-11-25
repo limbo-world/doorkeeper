@@ -1,33 +1,27 @@
 <template>
     <el-container>
         <el-main>
-            <el-form :model="permission" label-width="80px" size="mini" class="edit-form"
+            <el-form :model="permission" label-position="left" label-width="80px" size="mini" class="edit-form"
                      :rules="rules" ref="editForm" :disabled="!!viewMode">
-                <el-form-item label="编码">
-                    <el-input v-model="permission.permCode" placeholder="权限编码，用于区分权限的唯一标识，不填写将自动生成"></el-input>
-                </el-form-item>
-                <el-form-item label="名称" prop="permName" :rules="{required: true, message: '请填写名称', trigger: 'blur'}">
-                    <el-input v-model="permission.permName" placeholder="权限名称"></el-input>
+                <el-form-item label="名称" prop="permissionName"
+                              :rules="{required: true, message: '请填写名称', trigger: 'blur'}">
+                    <el-input v-model="permission.permissionName" placeholder="权限名称"></el-input>
                 </el-form-item>
                 <el-form-item label="描述">
-                    <el-input type="textarea" v-model="permission.permDesc" placeholder="权限描述"></el-input>
+                    <el-input type="textarea" v-model="permission.permissionDescribe" placeholder="权限描述"></el-input>
                 </el-form-item>
-                <el-form-item label="API列表" >
-                    <div class="pointer flex align-center">
-                        <el-select v-model="httpMethod" placeholder="请求方式" class="max-width-100 margin-right-xs">
-                            <el-option v-for="m in httpMethods" :key="m" :label="m" :value="m"></el-option>
-                        </el-select>
-                        <el-input v-model="api" placeholder="API路径，支持Ant风格" class="max-width-300"
-                                  @keyup.enter.native="addApi" @keyup.up.native="prevHttpMethod"
-                                  @keyup.down.native="nextHttpMethod"></el-input>
-                        <i class="el-icon-plus margin-left-xs" @click="addApi"></i>
-                    </div>
-                </el-form-item>
-                <el-form-item label=" ">
-                    <el-tag v-for="(a, idx) in permission.apiList" :key="a" class="margin-right-xs margin-bottom-xs"
-                            closable @close="permission.apiList.splice(idx, 1)">
-                        {{a}}
-                    </el-tag>
+                <el-form-item label="API列表">
+                    <el-transfer filterable filter-placeholder="搜索"
+                                 :titles="['未选', '已选']" :render-content="renderFunc"
+                                 @left-check-change="leftCheckChange" @right-check-change="rightCheckChange"
+                                 v-model="transferValue" :data="apis">
+                        <el-button class="transfer-footer" slot="left-footer" size="small" @click="allowApi">放行
+                        </el-button>
+                        <el-button class="transfer-footer" slot="left-footer" size="small" @click="refuseApi">拦截
+                        </el-button>
+                        <el-button class="transfer-footer" slot="right-footer" size="small" @click="deleteApi">删除
+                        </el-button>
+                    </el-transfer>
                 </el-form-item>
             </el-form>
         </el-main>
@@ -36,19 +30,11 @@
 
 
 <script>
-    const HttpMethods = [
-        'GET', 'POST', 'PUT', 'DELETE'
-    ];
-
     export default {
         props: {
             permission: {
                 type: Object,
-                default: () => {
-                    return {
-                        apiList: []
-                    };
-                }
+                default: {}
             },
 
             viewMode: {
@@ -59,9 +45,11 @@
 
         data() {
             return {
-                httpMethods: HttpMethods,
-                httpMethod: '',
-                api: ''
+                apis: [],
+                hasApis: [],
+                leftSelect: [],
+                rightSelect: [],
+                transferValue: [],
             };
         },
 
@@ -71,39 +59,74 @@
 
         methods: {
 
-            prevHttpMethod() {
-                if (this.httpMethod) {
-                    let idx = HttpMethods.indexOf(this.httpMethod);
-                    this.httpMethod = idx === 0 ? '' : HttpMethods[idx - 1];
+            preOpen() {
+                // 加载所有api
+                this.$ajax.get('/api').then(response => {
+                    response.data.forEach(api => {
+                        api.label = api.apiName;
+                        api.key = api.apiId;
+                        this.apis.push(api)
+                    });
+                });
+
+                // 如果传递了权限ID 查询对应权限的所以已有的api
+            },
+            renderFunc(h, option) {
+                if ('allow' === option.policy) {
+                    return <span style='color: green;'>{option.label}</span>;
+                } else if ('refuse' === option.policy) {
+                    return <span style='color: red;'>{option.label}</span>;
                 } else {
-                    this.httpMethod = HttpMethods[HttpMethods.length - 1];
+                    return <span>{option.label}</span>;
                 }
             },
-
-            nextHttpMethod() {
-                if (this.httpMethod) {
-                    let idx = HttpMethods.indexOf(this.httpMethod);
-                    this.httpMethod = idx === HttpMethods.length - 1 ? '' : HttpMethods[idx + 1];
-                } else {
-                    this.httpMethod = HttpMethods[0];
-                }
+            leftCheckChange(keys, key) {
+                this.leftSelect = keys;
+            },
+            rightCheckChange(keys, key) {
+                this.rightSelect = keys;
+            },
+            allowApi() {
+                this.leftSelect.forEach(k => {
+                    for (let api of this.apis) {
+                        if (k === api.apiId) {
+                            api.policy = 'allow';
+                            this.hasApis.push(api);
+                            this.transferValue.push(api.apiId);
+                            break
+                        }
+                    }
+                });
+                this.$forceUpdate();
+            },
+            refuseApi() {
+                this.leftSelect.forEach(k => {
+                    for (let api of this.apis) {
+                        if (k === api.apiId) {
+                            api.policy = 'refuse';
+                            this.hasApis.push(api);
+                            this.transferValue.push(api.apiId);
+                            break
+                        }
+                    }
+                });
+                this.$forceUpdate();
+            },
+            deleteApi() {
+                this.rightSelect.forEach(k => {
+                    for (let idx in this.hasApis) {
+                        let api = this.hasApis[idx];
+                        if (k === api.apiId) {
+                            delete api.policy;
+                            this.hasApis.splice(idx, 1);
+                            this.transferValue.splice(idx, 1);
+                            break
+                        }
+                    }
+                });
+                this.$forceUpdate();
             },
 
-            addApi() {
-                let api = this.api;
-                if (!api) {
-                    this.$message.warning('请填写API');
-                    return;
-                }
-
-                if (this.httpMethod) {
-                    api = this.httpMethod + ' ' + api;
-                }
-
-                this.permission.apiList.push(api);
-                this.api = '';
-                this.httpMethod = '';
-            },
 
             clearData() {
                 this.permission = {
@@ -151,3 +174,19 @@
         }
     }
 </script>
+
+<style lang="scss">
+    .edit-form {
+        .el-transfer-panel {
+            width: 350px;
+            margin-right: 10px;
+            .el-transfer-panel__item.el-checkbox{
+                margin-left:0;
+                display: block;
+            }
+        }
+        .el-transfer__buttons {
+            display: none;
+        }
+    }
+</style>

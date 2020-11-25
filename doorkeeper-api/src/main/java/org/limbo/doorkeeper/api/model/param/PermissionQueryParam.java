@@ -14,30 +14,22 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.vo;
+package org.limbo.doorkeeper.api.model.param;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.limbo.doorkeeper.api.model.Page;
+import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 
 /**
  * @author Devil
- * @date 2020/11/19 4:06 PM
+ * @date 2020/11/19 3:27 PM
  */
 @Data
-public class PermissionVO {
+@EqualsAndHashCode(callSuper = true)
+public class PermissionQueryParam extends Page<PermissionVO> {
 
-    private Long projectId;
-    /**
-     * 权限名称
-     */
+    @Schema(title = "权限名称", description = "like匹配")
     private String permissionName;
-
-    /**
-     * 描述
-     */
-    private String permissionDescribe;
-
-    /**
-     * 是否上线
-     */
-    private Boolean isOnline;
 }

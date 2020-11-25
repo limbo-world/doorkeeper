@@ -17,9 +17,11 @@
 package org.limbo.doorkeeper.admin.controller;
 
 import org.limbo.doorkeeper.api.client.PermissionClient;
+import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.PermissionAddParam;
 import org.limbo.doorkeeper.api.model.param.PermissionBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.PermissionQueryParam;
 import org.limbo.doorkeeper.api.model.param.PermissionUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,5 +63,10 @@ public class PermissionController {
     @GetMapping
     public Response<List<PermissionVO>> list() {
         return permissionClient.list();
+    }
+
+    @GetMapping("/query")
+    public Response<Page<PermissionVO>> query(PermissionQueryParam param) {
+        return permissionClient.query(param);
     }
 }

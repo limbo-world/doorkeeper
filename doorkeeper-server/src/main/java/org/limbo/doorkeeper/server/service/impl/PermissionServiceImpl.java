@@ -18,14 +18,18 @@ package org.limbo.doorkeeper.server.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.lang3.StringUtils;
+import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.PermissionAddParam;
 import org.limbo.doorkeeper.api.model.param.PermissionBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.PermissionQueryParam;
 import org.limbo.doorkeeper.api.model.param.PermissionUpdateParam;
+import org.limbo.doorkeeper.api.model.vo.ApiVO;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.limbo.doorkeeper.server.dao.PermissionMapper;
 import org.limbo.doorkeeper.server.entity.Permission;
 import org.limbo.doorkeeper.server.service.PermissionService;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -87,6 +91,20 @@ public class PermissionServiceImpl implements PermissionService {
                 .eq(Permission::getIsDeleted, false)
         );
         return EnhancedBeanUtils.createAndCopyList(permissions, PermissionVO.class);
+    }
+
+    @Override
+    public Page<PermissionVO> queryPage(Long projectId, PermissionQueryParam param) {
+        com.baomidou.mybatisplus.extension.plugins.pagination.Page<Permission> mpage = MyBatisPlusUtils.pageOf(param);
+        mpage = permissionMapper.selectPage(mpage, Wrappers.<Permission>lambdaQuery()
+                .eq(Permission::getProjectId, projectId)
+                .eq(Permission::getIsDeleted, false)
+                .like(StringUtils.isNotBlank(param.getPermissionName()), Permission::getPermissionName, param.getPermissionName())
+        );
+
+        param.setTotal(mpage.getTotal());
+        param.setData(EnhancedBeanUtils.createAndCopyList(mpage.getRecords(), PermissionVO.class));
+        return param;
     }
 
 }

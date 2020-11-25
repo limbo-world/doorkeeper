@@ -19,9 +19,11 @@ package org.limbo.doorkeeper.api.client.fallback;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.client.PermissionClient;
+import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.PermissionAddParam;
 import org.limbo.doorkeeper.api.model.param.PermissionBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.PermissionQueryParam;
 import org.limbo.doorkeeper.api.model.param.PermissionUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.springframework.stereotype.Component;
@@ -61,6 +63,11 @@ public class PermissionClientFallback extends Fallback implements FallbackFactor
 
             @Override
             public Response<List<PermissionVO>> list() {
+                return serviceUnavailable();
+            }
+
+            @Override
+            public Response<Page<PermissionVO>> query(PermissionQueryParam param) {
                 return serviceUnavailable();
             }
         };

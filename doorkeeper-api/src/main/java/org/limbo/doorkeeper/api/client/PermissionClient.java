@@ -16,14 +16,16 @@
 
 package org.limbo.doorkeeper.api.client;
 
-import org.limbo.doorkeeper.api.client.fallback.ApiClientFallback;
 import org.limbo.doorkeeper.api.client.fallback.PermissionClientFallback;
+import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.PermissionAddParam;
 import org.limbo.doorkeeper.api.model.param.PermissionBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.PermissionQueryParam;
 import org.limbo.doorkeeper.api.model.param.PermissionUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -49,4 +51,7 @@ public interface PermissionClient {
 
     @GetMapping
     Response<List<PermissionVO>> list();
+
+    @GetMapping("/query")
+    Response<Page<PermissionVO>> query(@SpringQueryMap PermissionQueryParam param);
 }

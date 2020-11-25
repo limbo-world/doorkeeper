@@ -19,9 +19,11 @@ package org.limbo.doorkeeper.server.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.PermissionAddParam;
 import org.limbo.doorkeeper.api.model.param.PermissionBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.PermissionQueryParam;
 import org.limbo.doorkeeper.api.model.param.PermissionUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.limbo.doorkeeper.server.service.PermissionService;
@@ -73,8 +75,14 @@ public class PermissionController extends BaseController {
     }
 
     @GetMapping
-    @Operation(summary = "权限列表")
+    @Operation(summary = "所有权限")
     public Response<List<PermissionVO>> list() {
         return Response.ok(permissionService.all(getProjectId()));
+    }
+
+    @GetMapping("/query")
+    @Operation(summary = "分页查询权限列表")
+    public Response<Page<PermissionVO>> query(PermissionQueryParam param) {
+        return Response.ok(permissionService.queryPage(getProjectId(), param));
     }
 }
