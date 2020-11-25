@@ -29,10 +29,10 @@ public interface PermissionApiService {
     /**
      * 为权限添加api
      */
-    void addPermissionApi(List<PermissionApiAddParam> permissionApis);
+    void addPermissionApi(Long projectId, List<PermissionApiAddParam> permissionApis);
 
     /**
      * 删除权限对应api
      */
-    int deletePermissionApi(List<Long> permissionApiIds);
+    int deletePermissionApi(Long projectId, List<Long> permissionApiIds);
 }

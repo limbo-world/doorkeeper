@@ -31,6 +31,12 @@ feign:
     enabled: true               # 打开断路器
     polling-interval-ms: 2000   # 刷新间隔
 
+# 提前创建，而不是在第一次调用的时候创建
+ribbon:
+  eager-load:
+    enabled：true
+    clients：doorkeeper-server
+
 ### Hystrix 配置
 hystrix:
   command:
@@ -45,7 +51,7 @@ hystrix:
 eureka:
   client:
     service-url:
-      defaultZone: http://127.0.0.1:8000/eureka/
+      defaultZone: http://10.219.192.172:8001/eureka/
   instance:
     prefer-ip-address: true
 

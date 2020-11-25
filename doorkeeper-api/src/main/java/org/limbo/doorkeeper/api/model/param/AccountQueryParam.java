@@ -32,10 +32,6 @@ import javax.validation.constraints.NotNull;
 @EqualsAndHashCode(callSuper = true)
 public class AccountQueryParam extends Page<AccountVO> {
 
-    @NotNull(message = "对应项目为空")
-    @Schema(title = "项目编号", required = true)
-    private Long projectId;
-
     @Schema(title = "账户名称", description = "like匹配")
     private String username;
 }

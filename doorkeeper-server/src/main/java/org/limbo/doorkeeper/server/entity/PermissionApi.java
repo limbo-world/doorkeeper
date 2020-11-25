@@ -38,6 +38,8 @@ public class PermissionApi {
     @TableId(type = IdType.AUTO)
     private Long permissionApiId;
 
+    private Long projectId;
+
     private Long permissionId;
 
     private Long apiId;

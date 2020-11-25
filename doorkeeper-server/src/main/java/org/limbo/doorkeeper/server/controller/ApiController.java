@@ -39,7 +39,7 @@ import java.util.List;
 @Tag(name = "api")
 @RestController
 @RequestMapping("/api")
-public class ApiController {
+public class ApiController extends BaseController {
 
     @Autowired
     private ApiService apiService;
@@ -47,19 +47,19 @@ public class ApiController {
     @GetMapping
     @Operation(summary = "api列表")
     public Response<List<ApiVO>> list() {
-        return Response.ok(apiService.all());
+        return Response.ok(apiService.all(getProjectId()));
     }
 
     @GetMapping("/query")
     @Operation(summary = "分页查询api列表")
     public Response<Page<ApiVO>> page(@Validated ApiQueryParam param) {
-        return Response.ok(apiService.queryPage(param));
+        return Response.ok(apiService.queryPage(getProjectId(), param));
     }
 
     @PostMapping
     @Operation(summary = "新增api")
     public Response<ApiVO> add(@RequestBody ApiAddParam param) {
-        return Response.ok(apiService.addApi(param));
+        return Response.ok(apiService.addApi(getProjectId(), param));
     }
 
     @PutMapping("/{apiId}")
@@ -67,13 +67,13 @@ public class ApiController {
     public Response<Integer> update(@Validated @NotNull(message = "api不存在") @PathVariable("apiId") Long apiId,
                                     @RequestBody ApiUpdateParam param) {
         param.setApiId(apiId);
-        return Response.ok(apiService.updateApi(param));
+        return Response.ok(apiService.updateApi(getProjectId(), param));
     }
 
     @DeleteMapping
     @Operation(summary = "批量删除api")
     public Response<Boolean> delete(@RequestBody List<Long> apiIds) {
-        apiService.deleteApi(apiIds);
+        apiService.deleteApi(getProjectId(), apiIds);
         return Response.ok(true);
     }
 

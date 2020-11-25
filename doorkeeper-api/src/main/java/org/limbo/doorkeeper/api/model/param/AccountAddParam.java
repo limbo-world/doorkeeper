@@ -30,10 +30,6 @@ import javax.validation.constraints.Size;
 @Data
 public class AccountAddParam {
 
-    @NotNull(message = "项目ID不能为空")
-    @Schema(title = "项目id", required = true)
-    private Long projectId;
-
     @NotBlank(message = "用户名不可为空")
     @Schema(title = "账户名称", required = true)
     private String username;

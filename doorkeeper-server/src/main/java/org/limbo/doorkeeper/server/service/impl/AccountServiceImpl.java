@@ -62,9 +62,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public AccountVO addAccount(AccountAddParam param) {
+    public AccountVO addAccount(Long projectId, AccountAddParam param) {
         Account po = EnhancedBeanUtils.createAndCopy(param, Account.class);
-
+        po.setProjectId(projectId);
         try {
             accountMapper.insert(po);
         } catch (DuplicateKeyException e) {
@@ -73,7 +73,7 @@ public class AccountServiceImpl implements AccountService {
 
         // 找到项目中需要默认添加的角色
         List<Role> roles = roleMapper.selectList(Wrappers.<Role>lambdaQuery()
-                .eq(Role::getProjectId, param.getProjectId())
+                .eq(Role::getProjectId, projectId)
                 .eq(Role::getIsDefault, true)
                 .eq(Role::getIsDeleted, false)
         );
@@ -93,17 +93,19 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Integer updateAccount(AccountBatchUpdateParam param) {
+    public Integer updateAccount(Long projectId, AccountBatchUpdateParam param) {
         return accountMapper.update(null, Wrappers.<Account>lambdaUpdate()
                 .set(param.getIsAdmin() != null, Account::getIsAdmin, param.getIsAdmin())
+                .eq(Account::getProjectId, projectId)
                 .in(Account::getAccountId, param.getAccountIds())
         );
     }
 
     @Override
-    public Page<AccountVO> queryPage(AccountQueryParam param) {
+    public Page<AccountVO> queryPage(Long projectId, AccountQueryParam param) {
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<Account> mpage = MyBatisPlusUtils.pageOf(param);
         LambdaQueryWrapper<Account> condition = Wrappers.<Account>lambdaQuery()
+                .eq(Account::getProjectId, projectId)
                 .like(StringUtils.isNotBlank(param.getUsername()), Account::getUsername, param.getUsername());
         mpage = accountMapper.selectPage(mpage, condition);
 

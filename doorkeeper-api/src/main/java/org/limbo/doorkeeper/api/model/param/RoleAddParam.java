@@ -30,10 +30,6 @@ import javax.validation.constraints.Size;
 @Data
 public class RoleAddParam {
 
-    @NotNull(message = "项目不存在")
-    @Schema(title = "项目id")
-    private Long projectId;
-
     @NotBlank(message = "角色名称不能为空")
     @Schema(title = "角色名称")
     private String roleName;

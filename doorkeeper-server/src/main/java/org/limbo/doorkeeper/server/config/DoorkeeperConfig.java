@@ -14,24 +14,21 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
+package org.limbo.doorkeeper.server.config;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-
-import javax.validation.constraints.NotNull;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Devil
- * @date 2020/11/20 9:30 AM
+ * @date 2020/11/25 10:22 AM
  */
-@Data
-public class PermissionAddParam {
+@Configuration
+public class DoorkeeperConfig {
 
-    @NotNull(message = "权限名称不能为空")
-    @Schema(title = "权限名称", required = true)
-    private String permissionName;
-
-    @Schema(title = "权限描述")
-    private String permissionDescribe;
+    @Bean
+    public DoorkeeperInterceptor doorkeeperInterceptor() {
+        return new DoorkeeperInterceptor();
+    }
+    
 }

@@ -18,12 +18,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="org.limbo.doorkeeper.server.dao.PermissionApiMapper" >
 
-    <insert id="batchInsertOrIgnore" parameterType="org.limbo.doorkeeper.api.model.param.PermissionApiAddParam">
+    <insert id="batchInsertOrIgnore" parameterType="org.limbo.doorkeeper.server.entity.PermissionApi">
         INSERT ignore INTO l_permission_api (
-          permission_id, api_id, policy
+          project_id, permission_id, api_id, policy
         ) VALUES
         <foreach collection="permissionApis" separator="," item="permissionApi">
-            ( #{permissionApi.permissionId}, #{permissionApi.apiId}, #{permissionApi.policy} )
+            ( #{permissionApi.projectId}, #{permissionApi.permissionId}, #{permissionApi.apiId}, #{permissionApi.policy} )
         </foreach>
     </insert>
 

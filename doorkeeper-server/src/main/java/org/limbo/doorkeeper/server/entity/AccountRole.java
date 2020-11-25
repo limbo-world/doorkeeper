@@ -38,6 +38,8 @@ public class AccountRole {
     @TableId(type = IdType.AUTO)
     private Long accountRoleId;
 
+    private Long projectId;
+
     private Long accountId;
 
     private Long roleId;

@@ -37,6 +37,8 @@ public class RolePermission {
     @TableId(type = IdType.AUTO)
     private Long rolePermissionId;
 
+    private Long projectId;
+
     private Long roleId;
 
     private Long permissionId;

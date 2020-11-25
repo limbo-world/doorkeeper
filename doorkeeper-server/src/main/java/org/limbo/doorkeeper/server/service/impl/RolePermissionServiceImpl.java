@@ -16,9 +16,13 @@
 
 package org.limbo.doorkeeper.server.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.model.param.RolePermissionAddParam;
 import org.limbo.doorkeeper.server.dao.RolePermissionMapper;
+import org.limbo.doorkeeper.server.entity.RolePermission;
 import org.limbo.doorkeeper.server.service.RolePermissionService;
+import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,12 +39,22 @@ public class RolePermissionServiceImpl implements RolePermissionService {
     private RolePermissionMapper rolePermissionMapper;
 
     @Override
-    public void addRolePermission(List<RolePermissionAddParam> params) {
-        rolePermissionMapper.batchInsertIgnore(params);
+    public void addRolePermission(Long projectId, List<RolePermissionAddParam> params) {
+        if (CollectionUtils.isEmpty(params)) {
+            return;
+        }
+        List<RolePermission> rolePermissions = EnhancedBeanUtils.createAndCopyList(params, RolePermission.class);
+        for (RolePermission rolePermission : rolePermissions) {
+            rolePermission.setProjectId(projectId);
+        }
+        rolePermissionMapper.batchInsertIgnore(rolePermissions);
     }
 
     @Override
-    public int deleteRolePermission(List<Long> rolePermissionIds) {
-        return rolePermissionMapper.deleteBatchIds(rolePermissionIds);
+    public int deleteRolePermission(Long projectId, List<Long> rolePermissionIds) {
+        return rolePermissionMapper.delete(Wrappers.<RolePermission>lambdaQuery()
+                .eq(RolePermission::getProjectId, projectId)
+                .in(RolePermission::getRolePermissionId, rolePermissionIds)
+        );
     }
 }

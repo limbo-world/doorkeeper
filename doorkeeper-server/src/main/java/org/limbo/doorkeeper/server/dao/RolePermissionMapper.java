@@ -30,6 +30,6 @@ import java.util.List;
  */
 public interface RolePermissionMapper extends BaseMapper<RolePermission> {
 
-    void batchInsertIgnore(List<RolePermissionAddParam> rolePermissions);
+    void batchInsertIgnore(List<RolePermission> rolePermissions);
 
 }

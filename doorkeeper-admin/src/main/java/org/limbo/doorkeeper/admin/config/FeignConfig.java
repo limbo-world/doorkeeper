@@ -17,7 +17,6 @@
 package org.limbo.doorkeeper.admin.config;
 
 import feign.RequestInterceptor;
-import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.admin.session.AdminSession;
 import org.limbo.doorkeeper.admin.session.RedisSessionDAO;
 import org.limbo.doorkeeper.admin.support.feign.FeignHeaderTransferHystrixConcurrencyStrategy;
@@ -32,7 +31,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 /**
@@ -62,8 +60,10 @@ public class FeignConfig {
                     })
                     .map(AdminSession::getAccount)
                     .ifPresent(account ->{
-                        requestTemplate.header(DoorkeeperConstants.DOORKEEPER_PROJECT_HEADER, Strings.valueOf(account.getProjectId()));
-                        requestTemplate.header(DoorkeeperConstants.DOORKEEPER_ACCOUNT_HEADER, Strings.valueOf(account.getAccountId()));
+                        requestTemplate.header(DoorkeeperConstants.PROJECT_HEADER, Strings.valueOf(doorkeeperProperties.getProjectId()));
+                        requestTemplate.header(DoorkeeperConstants.PROJECT_SECRET_HEADER, doorkeeperProperties.getProjectSecret());
+                        requestTemplate.header(DoorkeeperConstants.PROJECT_PARAM_HEADER, Strings.valueOf(account.getCurrentProjectId()));
+                        requestTemplate.header(DoorkeeperConstants.ACCOUNT_HEADER, Strings.valueOf(account.getAccountId()));
                     });
     }
 

@@ -44,41 +44,48 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     @Transactional
-    public PermissionVO addPermission(PermissionAddParam param) {
+    public PermissionVO addPermission(Long projectId, PermissionAddParam param) {
         Permission permission = EnhancedBeanUtils.createAndCopy(param, Permission.class);
+        permission.setProjectId(projectId);
         permissionMapper.insert(permission);
         return EnhancedBeanUtils.createAndCopy(permission, PermissionVO.class);
     }
 
     @Override
     @Transactional
-    public int updatePermission(PermissionUpdateParam param) {
+    public int updatePermission(Long projectId, PermissionUpdateParam param) {
         return permissionMapper.update(null, Wrappers.<Permission>lambdaUpdate()
                 .set(StringUtils.isNotBlank(param.getPermissionName()), Permission::getPermissionName, param.getPermissionName())
                 .set(StringUtils.isNotBlank(param.getPermissionDescribe()), Permission::getPermissionDescribe, param.getPermissionDescribe())
                 .eq(Permission::getPermissionId, param.getPermissionId())
+                .eq(Permission::getProjectId, projectId)
         );
     }
 
     @Override
-    public void deletePermission(List<Long> permissionIds) {
+    public void deletePermission(Long projectId, List<Long> permissionIds) {
         permissionMapper.update(null, Wrappers.<Permission>lambdaUpdate()
                 .set(Permission::getIsDeleted, true)
                 .in(Permission::getPermissionId, permissionIds)
+                .eq(Permission::getProjectId, projectId)
         );
     }
 
     @Override
-    public void batchUpdate(PermissionBatchUpdateParam param) {
+    public void batchUpdate(Long projectId, PermissionBatchUpdateParam param) {
         permissionMapper.update(null, Wrappers.<Permission>lambdaUpdate()
                 .set(Permission::getIsOnline, param.getIsOnline())
                 .in(Permission::getPermissionId, param.getPermissionIds())
+                .eq(Permission::getProjectId, projectId)
         );
     }
 
     @Override
-    public List<PermissionVO> all() {
-        return EnhancedBeanUtils.createAndCopyList(permissionMapper.selectList(Wrappers.emptyWrapper()), PermissionVO.class);
+    public List<PermissionVO> all(Long projectId) {
+        List<Permission> permissions = permissionMapper.selectList(Wrappers.<Permission>lambdaQuery()
+                .eq(Permission::getProjectId, projectId)
+        );
+        return EnhancedBeanUtils.createAndCopyList(permissions, PermissionVO.class);
     }
 
 }

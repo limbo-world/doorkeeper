@@ -32,16 +32,16 @@ public interface AccountService {
     /**
      * 注册用户
      */
-    AccountVO addAccount(AccountAddParam param);
+    AccountVO addAccount(Long projectId, AccountAddParam param);
 
     /**
      * 更新账户
      */
-    Integer updateAccount(AccountBatchUpdateParam param);
+    Integer updateAccount(Long projectId, AccountBatchUpdateParam param);
 
     /**
      * 分页查询
      */
-    Page<AccountVO> queryPage(AccountQueryParam param);
+    Page<AccountVO> queryPage(Long projectId, AccountQueryParam param);
 
 }

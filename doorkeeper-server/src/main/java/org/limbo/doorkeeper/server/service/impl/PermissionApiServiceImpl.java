@@ -16,9 +16,13 @@
 
 package org.limbo.doorkeeper.server.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.model.param.PermissionApiAddParam;
 import org.limbo.doorkeeper.server.dao.PermissionApiMapper;
+import org.limbo.doorkeeper.server.entity.PermissionApi;
 import org.limbo.doorkeeper.server.service.PermissionApiService;
+import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,12 +39,23 @@ public class PermissionApiServiceImpl implements PermissionApiService {
     private PermissionApiMapper permissionApiMapper;
 
     @Override
-    public void addPermissionApi(List<PermissionApiAddParam> permissionApis) {
+    public void addPermissionApi(Long projectId, List<PermissionApiAddParam> param) {
+        if (CollectionUtils.isEmpty(param)) {
+            return;
+        }
+        List<PermissionApi> permissionApis = EnhancedBeanUtils.createAndCopyList(param, PermissionApi.class);
+
+        for (PermissionApi permissionApi : permissionApis) {
+            permissionApi.setProjectId(projectId);
+        }
         permissionApiMapper.batchInsertOrIgnore(permissionApis);
     }
 
     @Override
-    public int deletePermissionApi(List<Long> permissionApiIds) {
-        return permissionApiMapper.deleteBatchIds(permissionApiIds);
+    public int deletePermissionApi(Long projectId, List<Long> permissionApiIds) {
+        return permissionApiMapper.delete(Wrappers.<PermissionApi>lambdaQuery()
+                .in(PermissionApi::getPermissionApiId, permissionApiIds)
+                .eq(PermissionApi::getProjectId, projectId)
+        );
     }
 }

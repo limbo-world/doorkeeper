@@ -32,10 +32,6 @@ import javax.validation.constraints.NotNull;
 @EqualsAndHashCode(callSuper = true)
 public class ApiQueryParam extends Page<ApiVO> {
 
-    @NotNull(message = "请选择项目")
-    @Schema(title = "项目id", required = true)
-    private Long projectId;
-
     @Schema(title = "名称")
     private String apiName;
 

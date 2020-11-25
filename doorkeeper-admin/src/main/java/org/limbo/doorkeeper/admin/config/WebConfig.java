@@ -106,15 +106,6 @@ public class WebConfig implements WebMvcConfigurer {
         return new PaginationInterceptor();
     }
 
-
-    /*@Bean("doorkeeperInterceptor")
-    public RequestInterceptor getRequestInterceptor() {
-        return requestTemplate -> {
-            requestTemplate.header(DoorkeeperConstants.DOORKEEPER_PROJECT_HEADER, doorkeeperProperties.getProjectId().toString());
-            requestTemplate.header(DoorkeeperConstants.DOORKEEPER_PROJECT_SECRET_HEADER, doorkeeperProperties.getProjectSecret());
-        };
-    }*/
-
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(sessionInterceptor).excludePathPatterns("/login/**");

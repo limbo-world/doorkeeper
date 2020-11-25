@@ -33,7 +33,7 @@ import java.util.List;
 @Tag(name = "角色权限绑定")
 @RestController
 @RequestMapping("/role-permission")
-public class RolePermissionController {
+public class RolePermissionController extends BaseController {
 
     @Autowired
     private RolePermissionService rolePermissionService;
@@ -41,7 +41,7 @@ public class RolePermissionController {
     @PostMapping
     @Operation(summary = "绑定角色权限")
     public Response<Boolean> addRolePermission(@RequestBody List<RolePermissionAddParam> params) {
-        rolePermissionService.addRolePermission(params);
+        rolePermissionService.addRolePermission(getProjectId(), params);
         return Response.ok(true);
     }
 
@@ -49,7 +49,7 @@ public class RolePermissionController {
     @DeleteMapping
     @Operation(summary = "删除角色权限")
     public Response<Integer> deleteRolePermission(@RequestBody List<Long> rolePermissionIds){
-        return Response.ok(rolePermissionService.deleteRolePermission(rolePermissionIds));
+        return Response.ok(rolePermissionService.deleteRolePermission(getProjectId(), rolePermissionIds));
     }
 
 }

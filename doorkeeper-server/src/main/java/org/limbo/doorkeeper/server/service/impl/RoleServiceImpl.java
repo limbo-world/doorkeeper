@@ -58,50 +58,58 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     @Transactional
-    public RoleVO addRole(RoleAddParam param) {
+    public RoleVO addRole(Long projectId, RoleAddParam param) {
         Role role = EnhancedBeanUtils.createAndCopy(param, Role.class);
+        role.setProjectId(projectId);
         roleMapper.insert(role);
         return EnhancedBeanUtils.createAndCopy(role, RoleVO.class);
     }
 
     @Override
     @Transactional
-    public Integer updateRole(RoleUpdateParam param) {
+    public Integer updateRole(Long projectId, RoleUpdateParam param) {
         Role role = roleMapper.selectById(param.getRoleId());
         Verifies.notNull(role, "角色不存在");
-
-        EnhancedBeanUtils.copyPropertiesIgnoreNull(param, role);
-        return roleMapper.updateById(role);
+        return roleMapper.update(null, Wrappers.<Role>lambdaUpdate()
+                .set(StringUtils.isNotBlank(param.getRoleName()), Role::getRoleName, param.getRoleName())
+                .set(StringUtils.isNotBlank(param.getRoleDescribe()), Role::getRoleDescribe, param.getRoleDescribe())
+                .set(param.getIsDefault() != null, Role::getIsDefault, param.getIsDefault())
+                .eq(Role::getProjectId, projectId)
+                .eq(Role::getRoleId, param.getRoleId())
+        );
     }
 
     @Override
     @Transactional
-    public Integer deleteRole(List<Long> roleIds) {
+    public Integer deleteRole(Long projectId, List<Long> roleIds) {
 
         Integer result = roleMapper.update(null, Wrappers.<Role>lambdaUpdate()
                 .set(Role::getIsDeleted, true)
                 .in(Role::getRoleId, roleIds)
+                .eq(Role::getProjectId, projectId)
         );
 
         // 删除账户角色绑定
         accountRoleMapper.delete(Wrappers.<AccountRole>lambdaQuery()
                 .eq(AccountRole::getRoleId, roleIds)
+                .eq(AccountRole::getProjectId, projectId)
         );
 
         // 删除角色权限绑定
         rolePermissionMapper.delete(Wrappers.<RolePermission>lambdaQuery()
                 .eq(RolePermission::getRoleId, roleIds)
+                .eq(RolePermission::getProjectId, projectId)
         );
 
         return result;
     }
 
     @Override
-    public Page<RoleVO> queryRole(RoleQueryParam param) {
+    public Page<RoleVO> queryRole(Long projectId, RoleQueryParam param) {
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<Role> mpage = MyBatisPlusUtils.pageOf(param);
         LambdaQueryWrapper<Role> condition = Wrappers.<Role>lambdaQuery()
                 .like(StringUtils.isNotBlank(param.getRoleName()), Role::getRoleName, param.getRoleName())
-                .eq(Role::getProjectId, param.getProjectId());
+                .eq(Role::getProjectId, projectId);
         mpage = roleMapper.selectPage(mpage, condition);
 
         param.setTotal(mpage.getTotal());

@@ -33,7 +33,7 @@ import java.util.List;
 @Tag(name = "权限api关系")
 @RestController
 @RequestMapping("/permission-api")
-public class PermissionApiController {
+public class PermissionApiController extends BaseController {
 
     @Autowired
     private PermissionApiService permissionApiService;
@@ -42,7 +42,7 @@ public class PermissionApiController {
     @PostMapping
     @Operation(summary = "绑定权限api")
     public Response<Boolean> addPermissionApi(@RequestBody List<PermissionApiAddParam> permissionApis) {
-        permissionApiService.addPermissionApi(permissionApis);
+        permissionApiService.addPermissionApi(getProjectId(), permissionApis);
         return Response.ok(true);
     }
 
@@ -50,6 +50,6 @@ public class PermissionApiController {
     @DeleteMapping
     @Operation(summary = "删除权限api")
     public Response<Integer> deletePermissionApi(@RequestBody List<Long> permissionApiIds){
-        return Response.ok(permissionApiService.deletePermissionApi(permissionApiIds));
+        return Response.ok(permissionApiService.deletePermissionApi(getProjectId(), permissionApiIds));
     }
 }

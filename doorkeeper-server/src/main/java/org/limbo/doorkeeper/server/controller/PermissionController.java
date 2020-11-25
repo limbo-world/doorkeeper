@@ -24,7 +24,6 @@ import org.limbo.doorkeeper.api.model.param.PermissionAddParam;
 import org.limbo.doorkeeper.api.model.param.PermissionBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.PermissionUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
-import org.limbo.doorkeeper.server.entity.Permission;
 import org.limbo.doorkeeper.server.service.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -40,7 +39,7 @@ import java.util.List;
 @Tag(name = "权限")
 @RestController
 @RequestMapping("/permission")
-public class PermissionController {
+public class PermissionController extends BaseController {
 
     @Autowired
     private PermissionService permissionService;
@@ -48,7 +47,7 @@ public class PermissionController {
     @PostMapping
     @Operation(summary = "新增权限")
     public Response<PermissionVO> add(@RequestBody PermissionAddParam param) {
-        return Response.ok(permissionService.addPermission(param));
+        return Response.ok(permissionService.addPermission(getProjectId(), param));
     }
 
     @PutMapping("/{permissionId}")
@@ -56,26 +55,26 @@ public class PermissionController {
     public Response<Integer> update(@Validated @NotNull(message = "权限不存在") @PathVariable("permissionId") Long permissionId,
                                     @RequestBody PermissionUpdateParam param) {
         param.setPermissionId(permissionId);
-        return Response.ok(permissionService.updatePermission(param));
+        return Response.ok(permissionService.updatePermission(getProjectId(), param));
     }
 
     @PutMapping
     @Operation(summary = "批量修改权限")
     public Response<Boolean> batchUpdate(@RequestBody PermissionBatchUpdateParam param) {
-        permissionService.batchUpdate(param);
+        permissionService.batchUpdate(getProjectId(), param);
         return Response.ok(true);
     }
 
     @DeleteMapping
     @Operation(summary = "批量删除权限")
     public Response<Boolean> delete(@RequestBody @Schema(title = "权限id列表", required = true) List<Long> permissionIds) {
-        permissionService.deletePermission(permissionIds);
+        permissionService.deletePermission(getProjectId(), permissionIds);
         return Response.ok(true);
     }
 
     @GetMapping
     @Operation(summary = "权限列表")
     public Response<List<PermissionVO>> list() {
-        return Response.ok(permissionService.all());
+        return Response.ok(permissionService.all(getProjectId()));
     }
 }

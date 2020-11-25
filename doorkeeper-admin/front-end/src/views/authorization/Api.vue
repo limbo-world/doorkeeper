@@ -22,7 +22,7 @@
                     <el-input v-model="queryForm.apiName" placeholder="输入API名称"></el-input>
                 </el-form-item>
                 <el-form-item label="类型">
-                    <el-select v-model="queryForm.apiMethod" placeholder="请选择">
+                    <el-select v-model="queryForm.apiMethod" clearable placeholder="请选择">
                         <el-option key="GET" label="GET" value="GET"></el-option>
                         <el-option key="POST" label="POST" value="POST"></el-option>
                         <el-option key="PUT" label="PUT" value="PUT"></el-option>
@@ -48,12 +48,9 @@
                 <el-table-column label="操作" width="120" align="center">
                     <template slot-scope="scope">
                         <div class="operations">
-                            <template v-if="!scope.row.isDefault">
+                            <template>
                                 <i class="el-icon-edit" @click="editPermission(scope.row)"></i>
                                 <i class="el-icon-delete" @click="deletePermission(scope.row)"></i>
-                            </template>
-                            <template v-else>
-                                <i class="el-icon-view" @click="viewPermission(scope.row)"></i>
                             </template>
                         </div>
                     </template>
@@ -68,9 +65,9 @@
         </el-footer>
 
 
-        <el-dialog :title="`${dialogOpenMode === 'add' ? '新增' : '修改'}权限`" @close="dialogCancel"
+        <el-dialog :title="`${dialogOpenMode === 'add' ? '新增' : '修改'}Api`" @close="dialogCancel"
                    :visible.sync="dialogOpened" width="50%" class="edit-dialog">
-            <permission-edit :permission="permission" ref="permissionEdit" :view-mode="dialogOpenMode === 'view'"></permission-edit>
+            <api-edit :api="api" ref="apiEdit" :add-mode="dialogOpenMode === 'add'"></api-edit>
             <el-footer class="text-right">
                 <el-button @click="dialogCancel">取 消</el-button>
                 <el-button type="primary" @click="dialogConfirm">确 定</el-button>
@@ -83,19 +80,20 @@
 
 
 <script>
-    import { mapActions } from 'vuex';
-    import PermissionEdit from './PermissionEdit';
+    import { mapState, mapMutations, mapActions } from 'vuex';
+    import ApiEdit from './ApiEdit';
 
     export default {
         components: {
-            PermissionEdit
+            ApiEdit
         },
 
         data() {
             return {
                 queryForm: {
-                    keyword: '',
-                    api: '',
+                    apiUrl: '',
+                    apiName: '',
+                    apiMethod: '',
                     current: 1,
                     size: 10,
                     total: -1
@@ -103,10 +101,14 @@
 
                 apis: [],
 
-                permission: {},
+                api: {},
                 dialogOpened: false,
                 dialogOpenMode: 'add',
             }
+        },
+
+        computed:{
+            ...mapState('session', ['user']),
         },
 
         created() {
@@ -129,45 +131,25 @@
                 }).finally(() => this.stopProgress());
             },
 
-            permissionOnlineChanged(perm) {
-                const loading = this.$loading();
-                perm.isOnline = !perm.isOnline;
-                this.$ajax.put(`/permission/${perm.permCode}`, perm).then(response => {
-                    this.$message.success(`已修改${perm.isOnline ? '上线' : '下线'}`);
-                    this.loadApis();
-                }).finally(() => loading.close());
-            },
-
             addPermission() {
-                this.permission = {
-                    permCode: '',
-                    permName: '',
-                    apiList: [],
-                    isAdd: true,
-                };
+                this.api = {};
                 this.dialogOpenMode = 'add';
                 this.dialogOpened = true;
             },
 
-            editPermission(perm) {
-                this.permission = perm;
+            editPermission(api) {
+                this.api = api;
                 this.dialogOpenMode = 'update';
                 this.dialogOpened = true;
             },
 
-            viewPermission(perm) {
-                this.permission = perm;
-                this.dialogOpenMode = 'view';
-                this.dialogOpened = true;
-            },
-
             dialogCancel() {
-                this.$refs.permissionEdit.clearData();
+                this.$refs.apiEdit.clearData();
                 this.dialogOpened = false;
             },
 
             dialogConfirm() {
-                this.$refs.permissionEdit.savePermission().then(() => {
+                this.$refs.apiEdit.confirmEdit().then(() => {
                     this.dialogOpened = false;
                     this.loadApis();
                 });

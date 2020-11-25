@@ -41,7 +41,7 @@ import java.util.List;
 @Tag(name = "角色")
 @RestController
 @RequestMapping("/role")
-public class RoleController {
+public class RoleController extends BaseController {
 
     @Autowired
     private RoleService roleService;
@@ -49,7 +49,7 @@ public class RoleController {
     @PostMapping
     @Operation(summary = "新增角色")
     public Response<RoleVO> add(@RequestBody RoleAddParam param) {
-        return Response.ok(roleService.addRole(param));
+        return Response.ok(roleService.addRole(getProjectId(), param));
     }
 
     @PutMapping("/{roleId}")
@@ -57,20 +57,20 @@ public class RoleController {
     public Response<Integer> update(@Validated @NotNull(message = "角色不存在") @PathVariable("roleId") Long roleId,
                                    @RequestBody RoleUpdateParam param) {
         param.setRoleId(roleId);
-        return Response.ok(roleService.updateRole(param));
+        return Response.ok(roleService.updateRole(getProjectId(), param));
     }
 
     @DeleteMapping
     @Operation(summary = "删除角色")
     public Response<Integer> delete(@Validated @NotEmpty(message = "角色不存在") @Schema(title = "角色ID") List<Long> roleIds) {
-        return Response.ok(roleService.deleteRole(roleIds));
+        return Response.ok(roleService.deleteRole(getProjectId(), roleIds));
     }
 
 
     @GetMapping
     @Operation(summary = "分页查询角色")
     public Response<Page<RoleVO>> page(RoleQueryParam param) {
-        return Response.ok(roleService.queryRole(param));
+        return Response.ok(roleService.queryRole(getProjectId(), param));
     }
 
 }

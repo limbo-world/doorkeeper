@@ -30,11 +30,11 @@ import java.util.List;
  */
 public interface RoleService {
 
-    RoleVO addRole(RoleAddParam param);
+    RoleVO addRole(Long projectId, RoleAddParam param);
 
-    Integer updateRole(RoleUpdateParam param);
+    Integer updateRole(Long projectId, RoleUpdateParam param);
 
-    Integer deleteRole(List<Long> roleIds);
+    Integer deleteRole(Long projectId, List<Long> roleIds);
 
-    Page<RoleVO> queryRole(RoleQueryParam param);
+    Page<RoleVO> queryRole(Long projectId, RoleQueryParam param);
 }

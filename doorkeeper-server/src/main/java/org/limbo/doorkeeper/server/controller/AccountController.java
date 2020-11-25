@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "账户")
 @RestController
 @RequestMapping("/account")
-public class AccountController {
+public class AccountController extends BaseController {
 
     @Autowired
     private AccountService accountService;
@@ -43,19 +43,19 @@ public class AccountController {
     @PostMapping
     @Operation(summary = "新增账户")
     public Response<AccountVO> add(@RequestBody AccountAddParam param) {
-        return Response.ok(accountService.addAccount(param));
+        return Response.ok(accountService.addAccount(getProjectId(), param));
     }
 
     @PutMapping
     @Operation(summary = "修改账户")
     public Response<Integer> update(@RequestBody AccountBatchUpdateParam param) {
-        return Response.ok(accountService.updateAccount(param));
+        return Response.ok(accountService.updateAccount(getProjectId(), param));
     }
 
     @GetMapping("/query")
     @Operation(summary = "查询账户列表")
     public Response<Page<AccountVO>> page(AccountQueryParam param) {
-        return Response.ok(accountService.queryPage(param));
+        return Response.ok(accountService.queryPage(getProjectId(), param));
     }
 
 }

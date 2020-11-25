@@ -14,32 +14,26 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model;
+package org.limbo.doorkeeper.server.controller;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
+import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.server.utils.Verifies;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.validation.constraints.NotNull;
+import javax.servlet.http.HttpServletRequest;
 
 /**
- *
- * 公共参数
- *
  * @author Devil
- * @date 2020/11/24 8:21 PM
+ * @date 2020/11/25 10:58 AM
  */
-@Data
-public class Param {
+public class BaseController {
 
-    @NotNull(message = "请选择项目")
-    @Schema(title = "项目ID", required = true)
-    private Long projectId;
+    @Autowired
+    protected HttpServletRequest request;
 
-    public Param() {
+    protected Long getProjectId() {
+        Object projectId = request.getAttribute(DoorkeeperConstants.PROJECT_PARAM_HEADER);
+        Verifies.notNull(projectId, "项目ID不能为空");
+        return (Long) projectId;
     }
-
-    public Param(Long projectId) {
-        this.projectId = projectId;
-    }
-
 }

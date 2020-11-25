@@ -49,6 +49,11 @@ public class Project {
      */
     private String projectDescribe;
 
+    /**
+     * 是否为管理端项目
+     */
+    private Boolean isAdmin;
+
     private Date gmtCreated;
 
     private Date gmtModified;

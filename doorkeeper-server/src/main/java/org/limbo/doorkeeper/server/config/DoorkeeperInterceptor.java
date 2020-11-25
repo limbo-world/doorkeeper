@@ -16,6 +16,11 @@
 
 package org.limbo.doorkeeper.server.config;
 
+import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.server.dao.ProjectMapper;
+import org.limbo.doorkeeper.server.entity.Project;
+import org.limbo.doorkeeper.server.utils.Verifies;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,12 +32,22 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class DoorkeeperInterceptor implements HandlerInterceptor {
 
+    @Autowired
+    private ProjectMapper projectMapper;
 
-    /**
-     * 判断 如果当前项目为 admin 放行所有接口 否则只开放鉴权接口
-     */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        // 判断是否为 admin 项目
+        String projectId = request.getHeader(DoorkeeperConstants.PROJECT_HEADER);
+        String secret = request.getHeader(DoorkeeperConstants.PROJECT_SECRET_HEADER);
+
+        Project project = projectMapper.selectById(Long.valueOf(projectId));
+        Verifies.verify(project.getProjectSecret().equals(secret), "项目认证失败");
+
+        Long projectParamId = project.getIsAdmin() ? Long.valueOf(request.getHeader(DoorkeeperConstants.PROJECT_PARAM_HEADER))
+                : Long.valueOf(request.getHeader(DoorkeeperConstants.PROJECT_HEADER));
+
+        request.setAttribute(DoorkeeperConstants.PROJECT_PARAM_HEADER, projectParamId);
         return true;
     }
 }

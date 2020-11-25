@@ -51,29 +51,32 @@ public class ApiServiceImpl implements ApiService {
 
     @Override
     @Transactional
-    public ApiVO addApi(ApiAddParam param) {
+    public ApiVO addApi(Long projectId, ApiAddParam param) {
         Api api = EnhancedBeanUtils.createAndCopy(param, Api.class);
+        api.setProjectId(projectId);
         apiMapper.insert(api);
         return EnhancedBeanUtils.createAndCopy(api, ApiVO.class);
     }
 
     @Override
     @Transactional
-    public int updateApi(ApiUpdateParam param) {
+    public int updateApi(Long projectId, ApiUpdateParam param) {
         return apiMapper.update(null, Wrappers.<Api>lambdaUpdate()
                 .set(Api::getApiDescribe, param.getApiDescribe())
                 .set(Api::getApiName, param.getApiName())
                 .eq(Api::getApiId, param.getApiId())
+                .eq(Api::getProjectId, projectId)
         );
     }
 
     @Override
     @Transactional
-    public void deleteApi(List<Long> apiIds) {
+    public void deleteApi(Long projectId, List<Long> apiIds) {
         // 删除api
         apiMapper.update(null, Wrappers.<Api>lambdaUpdate()
                 .set(Api::getIsDeleted, true)
                 .in(Api::getApiId, apiIds)
+                .eq(Api::getProjectId, projectId)
         );
 
         // 删除绑定
@@ -81,15 +84,15 @@ public class ApiServiceImpl implements ApiService {
     }
 
     @Override
-    public List<ApiVO> all() {
+    public List<ApiVO> all(Long projectId) {
         return EnhancedBeanUtils.createAndCopyList(apiMapper.selectList(Wrappers.emptyWrapper()), ApiVO.class);
     }
 
     @Override
-    public Page<ApiVO> queryPage(ApiQueryParam param) {
+    public Page<ApiVO> queryPage(Long projectId, ApiQueryParam param) {
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<Api> mpage = MyBatisPlusUtils.pageOf(param);
         mpage = apiMapper.selectPage(mpage, Wrappers.<Api>lambdaQuery()
-                .eq(param.getProjectId() != null, Api::getProjectId, param.getProjectId())
+                .eq(Api::getProjectId, projectId)
                 .eq(StringUtils.isNotBlank(param.getApiMethod()), Api::getApiMethod, param.getApiMethod())
                 .like(StringUtils.isNotBlank(param.getApiName()), Api::getApiName, param.getApiName())
                 .like(StringUtils.isNotBlank(param.getApiUrl()), Api::getApiUrl, param.getApiUrl())

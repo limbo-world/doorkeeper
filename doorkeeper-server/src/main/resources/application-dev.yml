@@ -34,7 +34,7 @@ mybatis-plus:
 eureka:
   client:
     service-url:
-      defaultZone: http://127.0.0.1:8000/eureka/
+      defaultZone: http://10.219.192.172:8001/eureka/
   instance:
     prefer-ip-address: true
 

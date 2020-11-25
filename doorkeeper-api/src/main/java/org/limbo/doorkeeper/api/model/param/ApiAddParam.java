@@ -29,10 +29,6 @@ import javax.validation.constraints.NotNull;
 @Data
 public class ApiAddParam {
 
-    @NotNull(message = "项目id不能为空")
-    @Schema(title = "项目id", required = true)
-    private Long projectId;
-
     @NotBlank(message = "api名称不能为空")
     @Schema(title = "api名称", required = true)
     private String apiName;

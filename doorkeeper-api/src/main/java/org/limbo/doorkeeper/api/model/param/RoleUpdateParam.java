@@ -30,21 +30,16 @@ import javax.validation.constraints.Size;
 @Data
 public class RoleUpdateParam {
 
+    @NotNull(message = "角色ID不能为空")
+    @Schema(name = "角色ID")
     private Long roleId;
 
-    @NotBlank
     @Schema(name = "角色名称")
-    private String name;
+    private String roleName;
 
-    @Size(max = 150)
     @Schema(name = "角色描述")
-    private String describe;
+    private String roleDescribe;
 
-    @NotNull
     @Schema(name = "默认角色会在用户创建的时候直接绑定")
     private Boolean isDefault;
-
-    @NotNull
-    @Schema(name = "授予角色的时候是否需要工单审核")
-    private Boolean needOrder;
 }

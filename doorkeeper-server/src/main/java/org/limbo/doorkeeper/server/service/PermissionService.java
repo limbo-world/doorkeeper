@@ -33,26 +33,26 @@ public interface PermissionService {
     /**
      * 新增权限
      */
-    PermissionVO addPermission(PermissionAddParam param);
+    PermissionVO addPermission(Long projectId, PermissionAddParam param);
 
     /**
      * 修改权限
      */
-    int updatePermission(PermissionUpdateParam param);
+    int updatePermission(Long projectId, PermissionUpdateParam param);
 
     /**
      * 删除权限
      */
-    void deletePermission(List<Long> permissionIds);
+    void deletePermission(Long projectId, List<Long> permissionIds);
 
     /**
      * 批量修改权限
      */
-    void batchUpdate(PermissionBatchUpdateParam param);
+    void batchUpdate(Long projectId, PermissionBatchUpdateParam param);
 
     /**
      * 返回所有权限
      */
-    List<PermissionVO> all();
+    List<PermissionVO> all(Long projectId);
 
 }

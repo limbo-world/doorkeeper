@@ -36,25 +36,25 @@ public interface ApiService {
     /**
      * 添加api
      */
-    ApiVO addApi(ApiAddParam param);
+    ApiVO addApi(Long projectId, ApiAddParam param);
 
     /**
      * 修改api
      */
-    int updateApi(ApiUpdateParam param);
+    int updateApi(Long projectId, ApiUpdateParam param);
 
     /**
      * 删除api
      */
-    void deleteApi(List<Long> apiIds);
+    void deleteApi(Long projectId, List<Long> apiIds);
 
     /**
      * 返回所有api
      */
-    List<ApiVO> all();
+    List<ApiVO> all(Long projectId);
 
     /**
      * 分页查询列表
      */
-    Page<ApiVO> queryPage(ApiQueryParam param);
+    Page<ApiVO> queryPage(Long projectId, ApiQueryParam param);
 }

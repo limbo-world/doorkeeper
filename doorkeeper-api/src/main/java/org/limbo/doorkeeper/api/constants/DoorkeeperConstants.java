@@ -24,15 +24,20 @@ public interface DoorkeeperConstants {
     /**
      * 请求header 获取 当前项目id
      */
-    String DOORKEEPER_PROJECT_HEADER = "Doorkeeper-Project";
+    String PROJECT_HEADER = "Doorkeeper-Project";
 
     /**
      * 请求header 获取 当前项目secret
      */
-    String DOORKEEPER_PROJECT_SECRET_HEADER = "Doorkeeper-Project-Secret";
+    String PROJECT_SECRET_HEADER = "Doorkeeper-Project-Secret";
+
+    /**
+     * 请求header 获取 当前操作的项目
+     */
+    String PROJECT_PARAM_HEADER = "Doorkeeper-Project-Param";
 
     /**
      * 请求header 获取 当前账户id
      */
-    String DOORKEEPER_ACCOUNT_HEADER = "Doorkeeper-Account";
+    String ACCOUNT_HEADER = "Doorkeeper-Account";
 }
