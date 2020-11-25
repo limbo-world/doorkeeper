@@ -110,19 +110,6 @@ public class WebConfig implements WebMvcConfigurer {
         return new PaginationInterceptor();
     }
 
-
-    @Bean("doorkeeperInterceptor")
-    public RequestInterceptor getRequestInterceptor() {
-        return requestTemplate -> {
-            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-            HttpServletRequest request = attributes.getRequest();
-            String sessionId = request.getHeader(doorkeeperProperties.getSession().getHeaderName());
-            AdminSession adminSession = redisSessionDAO.readSessionMayNull(sessionId);
-            requestTemplate.header(DoorkeeperConstants.DOORKEEPER_PROJECT_HEADER, adminSession.getAccount().getProjectId().toString());
-            requestTemplate.header(DoorkeeperConstants.DOORKEEPER_ACCOUNT_HEADER, adminSession.getAccount().getAccountId().toString());
-        };
-    }
-
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(sessionInterceptor).excludePathPatterns("/login/**");

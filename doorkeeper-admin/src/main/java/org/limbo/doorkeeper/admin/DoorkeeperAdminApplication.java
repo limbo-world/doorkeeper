@@ -23,8 +23,6 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.cloud.netflix.hystrix.EnableHystrix;
-import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -35,8 +33,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication(scanBasePackages = {"org.limbo.doorkeeper"})
 @EnableTransactionManagement
 @EnableDiscoveryClient
-@EnableHystrix
-@EnableFeignClients(basePackages = "org.limbo.doorkeeper.api.client")
 @MapperScan("org.limbo.doorkeeper.admin.dao")
 @Import({WebConfig.class, RedisConfig.class})
 public class DoorkeeperAdminApplication {
