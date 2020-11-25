@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.constants;
+package org.limbo.doorkeeper.server.config;
+
+import org.springframework.web.servlet.HandlerInterceptor;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author Devil
- * @date 2020/11/24 5:18 PM
+ * @date 2020/11/24 8:28 PM
  */
-public interface DoorkeeperConstants {
-    /**
-     * 请求header 获取 当前项目id
-     */
-    String DOORKEEPER_PROJECT_HEADER = "Doorkeeper-Project";
+public class DoorkeeperInterceptor implements HandlerInterceptor {
+
 
     /**
-     * 请求header 获取 当前项目secret
+     * 判断 如果当前项目为 admin 放行所有接口 否则只开放鉴权接口
      */
-    String DOORKEEPER_PROJECT_SECRET_HEADER = "Doorkeeper-Project-Secret";
-
-    /**
-     * 请求header 获取 当前账户id
-     */
-    String DOORKEEPER_ACCOUNT_HEADER = "Doorkeeper-Account";
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        return true;
+    }
 }

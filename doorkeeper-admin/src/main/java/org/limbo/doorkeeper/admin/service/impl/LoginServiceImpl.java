@@ -93,7 +93,6 @@ public class LoginServiceImpl implements LoginService {
         Verifies.verify(MD5Utils.verify(param.getPassword(), adminAccount.getPassword()), "用户名或密码错误！");
 
         SessionAccount sessionAccount = new SessionAccount();
-        sessionAccount.setProjectId(adminAccount.getProjectId());
         sessionAccount.setAccountId(adminAccount.getAccountId());
         sessionAccount.setNickname(adminAccount.getNickname());
         sessionAccount.setIsSuperAdmin(adminAccount.getIsSuperAdmin());

@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +28,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.DateFormatter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.text.SimpleDateFormat;
@@ -38,6 +40,9 @@ import java.text.SimpleDateFormat;
 @Slf4j
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
+    @Autowired
+    private DoorkeeperInterceptor doorkeeperInterceptor;
 
     /**
      * json 返回结果处理
@@ -69,6 +74,11 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public PaginationInterceptor paginationInterceptor() {
         return new PaginationInterceptor();
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(doorkeeperInterceptor);
     }
 
 }

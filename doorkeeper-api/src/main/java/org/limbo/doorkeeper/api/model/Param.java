@@ -14,42 +14,32 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.admin.entity;
+package org.limbo.doorkeeper.api.model;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.util.Date;
+import javax.validation.constraints.NotNull;
 
 /**
- * @author devil
- * @date 2020/3/13
+ *
+ * 公共参数
+ *
+ * @author Devil
+ * @date 2020/11/24 8:21 PM
  */
 @Data
-@TableName("laa_account")
-public class AdminAccount {
+public class Param {
 
-    @TableId(type = IdType.INPUT)
-    private Long accountId;
+    @NotNull(message = "请选择项目")
+    @Schema(title = "项目ID", required = true)
+    private Long projectId;
 
-    private String username;
+    public Param() {
+    }
 
-    private String password;
+    public Param(Long projectId) {
+        this.projectId = projectId;
+    }
 
-    private String nickname;
-
-    private Date lastLogin;
-
-    private Boolean isSuperAdmin;
-
-    /**
-     * 是否为管理员
-     */
-    private Boolean isAdmin;
-
-    private Date gmtCreated;
-
-    private Date gmtModified;
 }

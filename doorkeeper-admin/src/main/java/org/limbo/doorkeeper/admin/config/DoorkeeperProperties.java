@@ -38,8 +38,6 @@ public class DoorkeeperProperties {
 
     private Long projectId;
 
-    private String projectCode;
-
     private String projectSecret;
 
 
