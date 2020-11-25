@@ -21,7 +21,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.RequestInterceptor;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.admin.session.AdminSession;
 import org.limbo.doorkeeper.admin.session.RedisSessionDAO;
 import org.limbo.doorkeeper.admin.session.SessionInterceptor;
 import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
@@ -38,12 +37,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.DateFormatter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 
 /**
@@ -109,6 +105,15 @@ public class WebConfig implements WebMvcConfigurer {
     public PaginationInterceptor paginationInterceptor() {
         return new PaginationInterceptor();
     }
+
+
+    /*@Bean("doorkeeperInterceptor")
+    public RequestInterceptor getRequestInterceptor() {
+        return requestTemplate -> {
+            requestTemplate.header(DoorkeeperConstants.DOORKEEPER_PROJECT_HEADER, doorkeeperProperties.getProjectId().toString());
+            requestTemplate.header(DoorkeeperConstants.DOORKEEPER_PROJECT_SECRET_HEADER, doorkeeperProperties.getProjectSecret());
+        };
+    }*/
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
