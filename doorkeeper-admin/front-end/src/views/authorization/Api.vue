@@ -50,7 +50,10 @@
                         <div class="operations">
                             <template>
                                 <i class="el-icon-edit" @click="editPermission(scope.row)"></i>
-                                <i class="el-icon-delete" @click="deletePermission(scope.row)"></i>
+                                <i class="el-icon-delete" @click="() => {
+                                    apiIds = [scope.row.apiId]
+                                    deleteApi(apiIds)
+                                }"></i>
                             </template>
                         </div>
                     </template>
@@ -65,9 +68,9 @@
         </el-footer>
 
 
-        <el-dialog :title="`${dialogOpenMode === 'add' ? '新增' : '修改'}Api`" @close="dialogCancel"
+        <el-dialog :title="`${dialogOpenAddMode === 'add' ? '新增' : '修改'}Api`" @close="dialogCancel"
                    :visible.sync="dialogOpened" width="50%" class="edit-dialog">
-            <api-edit :api="api" ref="apiEdit" :add-mode="dialogOpenMode === 'add'"></api-edit>
+            <api-edit :api="api" ref="apiEdit" :add-mode="dialogOpenAddMode"></api-edit>
             <el-footer class="text-right">
                 <el-button @click="dialogCancel">取 消</el-button>
                 <el-button type="primary" @click="dialogConfirm">确 定</el-button>
@@ -103,7 +106,7 @@
 
                 api: {},
                 dialogOpened: false,
-                dialogOpenMode: 'add',
+                dialogOpenAddMode: false,
             }
         },
 
@@ -133,13 +136,13 @@
 
             addPermission() {
                 this.api = {};
-                this.dialogOpenMode = 'add';
+                this.dialogOpenAddMode = true;
                 this.dialogOpened = true;
             },
 
             editPermission(api) {
                 this.api = api;
-                this.dialogOpenMode = 'update';
+                this.dialogOpenAddMode = false;
                 this.dialogOpened = true;
             },
 
@@ -151,16 +154,29 @@
             dialogConfirm() {
                 this.$refs.apiEdit.confirmEdit().then(() => {
                     this.dialogOpened = false;
+                    if (this.dialogOpenAddMode)  {
+                        this.queryForm.total = -1;
+                    }
                     this.loadApis();
                 });
             },
 
-            deletePermission(perm) {
-                this.$ajax.delete(`/permission/${perm.permCode}`)
-                    .then(() => {
-                        this.$message.success('删除成功。');
-                        this.loadApis();
-                    })
+            deleteApi(apiIds) {
+                console.log(apiIds)
+                this.$confirm('确认删除Api?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$ajax.delete(`/api`, {data: apiIds})
+                        .then(() => {
+                            this.$message. success('删除成功。');
+                            this.queryForm.total = -1;
+                            this.loadApis();
+                        });
+                }).catch(() => {
+                    this.$message.info("已取消删除");
+                });
             },
 
         }

@@ -50,6 +50,7 @@ public class MyBatisPlusUtils {
     private static Map<Class, String> poTableNameCache = new ConcurrentHashMap<>(16);
 
     /**
+     * 如果前端传来total表示不需要进行总数统计
      * 将自己的Page对象转换为MyBatisPlus可用的Page对象
      * 因为自己的Page对象用于在dubbo调用时传参，进行序列化方便；
      * 而MyBatisPlus的Page中存在大量属性，而且很多属性没有Getter和Setter，不利于序列化，因此不用；
