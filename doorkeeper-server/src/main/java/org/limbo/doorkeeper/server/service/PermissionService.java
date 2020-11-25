@@ -43,12 +43,12 @@ public interface PermissionService {
     /**
      * 删除权限
      */
-    void deletePermission(Long projectId, List<Long> permissionIds);
+    int deletePermission(Long projectId, List<Long> permissionIds);
 
     /**
      * 批量修改权限
      */
-    void batchUpdate(Long projectId, PermissionBatchUpdateParam param);
+    int batchUpdate(Long projectId, PermissionBatchUpdateParam param);
 
     /**
      * 返回所有权限

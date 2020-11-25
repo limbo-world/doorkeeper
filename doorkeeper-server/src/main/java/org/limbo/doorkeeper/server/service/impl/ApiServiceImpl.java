@@ -62,8 +62,8 @@ public class ApiServiceImpl implements ApiService {
     @Transactional
     public int updateApi(Long projectId, ApiUpdateParam param) {
         return apiMapper.update(null, Wrappers.<Api>lambdaUpdate()
-                .set(Api::getApiDescribe, param.getApiDescribe())
-                .set(Api::getApiName, param.getApiName())
+                .set(StringUtils.isNotBlank(param.getApiDescribe()), Api::getApiDescribe, param.getApiDescribe())
+                .set(StringUtils.isNotBlank(param.getApiName()), Api::getApiName, param.getApiName())
                 .eq(Api::getApiId, param.getApiId())
                 .eq(Api::getProjectId, projectId)
         );
@@ -85,7 +85,11 @@ public class ApiServiceImpl implements ApiService {
 
     @Override
     public List<ApiVO> all(Long projectId) {
-        return EnhancedBeanUtils.createAndCopyList(apiMapper.selectList(Wrappers.emptyWrapper()), ApiVO.class);
+        List<Api> apis = apiMapper.selectList(Wrappers.<Api>lambdaQuery()
+                .eq(Api::getProjectId, projectId)
+                .eq(Api::getIsDeleted, false)
+        );
+        return EnhancedBeanUtils.createAndCopyList(apis, ApiVO.class);
     }
 
     @Override
@@ -93,6 +97,7 @@ public class ApiServiceImpl implements ApiService {
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<Api> mpage = MyBatisPlusUtils.pageOf(param);
         mpage = apiMapper.selectPage(mpage, Wrappers.<Api>lambdaQuery()
                 .eq(Api::getProjectId, projectId)
+                .eq(Api::getIsDeleted, false)
                 .eq(StringUtils.isNotBlank(param.getApiMethod()), Api::getApiMethod, param.getApiMethod())
                 .like(StringUtils.isNotBlank(param.getApiName()), Api::getApiName, param.getApiName())
                 .like(StringUtils.isNotBlank(param.getApiUrl()), Api::getApiUrl, param.getApiUrl())

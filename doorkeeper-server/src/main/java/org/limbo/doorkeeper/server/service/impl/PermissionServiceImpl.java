@@ -63,8 +63,8 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public void deletePermission(Long projectId, List<Long> permissionIds) {
-        permissionMapper.update(null, Wrappers.<Permission>lambdaUpdate()
+    public int deletePermission(Long projectId, List<Long> permissionIds) {
+        return permissionMapper.update(null, Wrappers.<Permission>lambdaUpdate()
                 .set(Permission::getIsDeleted, true)
                 .in(Permission::getPermissionId, permissionIds)
                 .eq(Permission::getProjectId, projectId)
@@ -72,8 +72,8 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public void batchUpdate(Long projectId, PermissionBatchUpdateParam param) {
-        permissionMapper.update(null, Wrappers.<Permission>lambdaUpdate()
+    public int batchUpdate(Long projectId, PermissionBatchUpdateParam param) {
+        return permissionMapper.update(null, Wrappers.<Permission>lambdaUpdate()
                 .set(Permission::getIsOnline, param.getIsOnline())
                 .in(Permission::getPermissionId, param.getPermissionIds())
                 .eq(Permission::getProjectId, projectId)
@@ -84,6 +84,7 @@ public class PermissionServiceImpl implements PermissionService {
     public List<PermissionVO> all(Long projectId) {
         List<Permission> permissions = permissionMapper.selectList(Wrappers.<Permission>lambdaQuery()
                 .eq(Permission::getProjectId, projectId)
+                .eq(Permission::getIsDeleted, false)
         );
         return EnhancedBeanUtils.createAndCopyList(permissions, PermissionVO.class);
     }

@@ -109,7 +109,8 @@ public class RoleServiceImpl implements RoleService {
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<Role> mpage = MyBatisPlusUtils.pageOf(param);
         LambdaQueryWrapper<Role> condition = Wrappers.<Role>lambdaQuery()
                 .like(StringUtils.isNotBlank(param.getRoleName()), Role::getRoleName, param.getRoleName())
-                .eq(Role::getProjectId, projectId);
+                .eq(Role::getProjectId, projectId)
+                .eq(Role::getIsDeleted, false);
         mpage = roleMapper.selectPage(mpage, condition);
 
         param.setTotal(mpage.getTotal());
