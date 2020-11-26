@@ -14,30 +14,18 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.admin.entity;
+package org.limbo.doorkeeper.admin.model.param;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 /**
- *
- * admin项目管理员拥有哪些项目权限
- *
- * @author devil
- * @date 2020/3/13
+ * @author Devil
+ * @date 2020/11/26 3:32 PM
  */
 @Data
-@TableName("laa_account_project")
-public class AdminAccountProject {
-
-    @TableId(type = IdType.AUTO)
-    private Long accountProjectId;
-
-    private Long accountId;
+public class AdminAccountProjectQueryParam {
 
     private Long projectId;
 
-    private String projectName;
+    private Long accountId;
 }

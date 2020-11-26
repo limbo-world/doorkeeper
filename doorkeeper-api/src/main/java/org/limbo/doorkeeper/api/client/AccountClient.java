@@ -30,6 +30,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.List;
+
 /**
  * @author liuqingtong
  * @date 2020/11/20 17:45
@@ -45,5 +47,7 @@ public interface AccountClient {
 
     @GetMapping("/query")
     Response<Page<AccountVO>> page(@SpringQueryMap AccountQueryParam param);
-    
+
+    @GetMapping
+    Response<List<AccountVO>> list();
 }

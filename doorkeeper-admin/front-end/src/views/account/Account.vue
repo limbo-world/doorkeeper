@@ -2,15 +2,12 @@
     <el-container class="account-page">
         <el-header class="padding-top-xs" height="50px">
             <el-form ref="searchForm" :inline="true" size="mini">
-                <el-form-item label="昵称">
+                <el-form-item label="账号">
                     <el-input v-model="queryParam.nick" placeholder="输入昵称" @input="resetPageParam"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="loadAccounts" size="mini" icon="el-icon-search">查询</el-button>
-                    <el-button v-if="isAdminProjectSelected" type="primary" @click="() =>{
-                            dialogOpened = true;
-                        }" size="mini" icon="el-icon-circle-plus">添加管理员
-                    </el-button>
+                    <el-button type="primary" @click="addAccount" size="mini" icon="el-icon-circle-plus">新增</el-button>
                 </el-form-item>
             </el-form>
         </el-header>
@@ -18,24 +15,12 @@
         <el-main>
             <el-row>
                 <el-table :data="accounts" size="mini">
-                    <el-table-column prop="accountId" label="账户ID"></el-table-column>
-                    <el-table-column prop="username" label="用户名" width="120px"></el-table-column>
-                    <el-table-column v-if="isAdminProjectSelected" label="项目绑定" align="center" width="100px">
+                    <el-table-column prop="accountId" label="ID"></el-table-column>
+                    <el-table-column prop="username" label="账号"></el-table-column>
+                    <el-table-column prop="accountDescribe" label="描述"></el-table-column>
+                    <el-table-column prop="isAdmin" label="管理员" align="center" width="80">
                         <template slot-scope="scope">
-                            <el-link v-if="!scope.row.isSuperAdmin && isAdminProjectSelected"
-                                     type="primary" @click="showProjectDialog(scope.row)">
-                                点击绑定项目
-                            </el-link>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="授权" align="center" width="100px">
-                        <template slot-scope="scope">
-                            <el-link v-if="!scope.row.isSuperAdmin" type="primary" @click="openGrantDialog(scope.row)">点击授权角色</el-link>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="isSuperAdmin" label="超级管理员" align="center" width="80">
-                        <template slot-scope="scope">
-                            {{ scope.row.isSuperAdmin ? "是" : "否"}}
+                            {{ scope.row.isAdmin ? "是" : "否"}}
                         </template>
                     </el-table-column>
                     <el-table-column label="操作" align="center">
@@ -76,7 +61,6 @@
 
         <el-dialog title="授权" :visible.sync="grantDialogOpened" width="50%" class="edit-dialog"
                    @close="closeGrantDialog">
-            <account-grant :account-id="grantAccountId" @cancel="closeEditDialog(false)" ref="grant"/>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="closeGrantDialog">取 消</el-button>
                 <el-button type="primary" @click="confirmGrantDialog">确 定</el-button>
@@ -90,13 +74,11 @@
 <script>
 
     import AccountEdit from './AccountEdit';
-    import AccountGrant from './AccountGrant';
-    import AccountProject from './AccountProject';
     import { mapState, mapActions } from 'vuex';
 
     export default {
         components: {
-            AccountEdit, AccountProject, AccountGrant
+            AccountEdit,
         },
 
         data() {

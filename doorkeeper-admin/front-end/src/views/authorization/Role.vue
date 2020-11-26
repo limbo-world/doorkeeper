@@ -1,3 +1,19 @@
+<!--
+  - Copyright 2020-2024 Limbo Team (https://github.com/limbo-world).
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  - 	http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
 <template>
     <el-container class="menu-page">
         <el-header class="padding-top-xs" height="50px">
@@ -7,7 +23,7 @@
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="loadRoles(true)" size="mini" icon="el-icon-search">查询</el-button>
-                    <el-button type="primary" @click="addRole" size="mini" icon="el-icon-circle-plus">添加角色</el-button>
+                    <el-button type="primary" @click="addRole" size="mini" icon="el-icon-circle-plus">新增</el-button>
                 </el-form-item>
             </el-form>
         </el-header>
@@ -39,13 +55,11 @@
 
 
         <el-dialog :title="`${dialogOpenMode}角色`" :visible.sync="dialogOpened" width="70%" class="edit-dialog"
-                   @close="closeEditDialog(false)" @opened="beforeDialogOpen">
-            <role-edit v-if="dialogOpenMode !== 'grant'" :role="role" @cancel="closeEditDialog(false)"
-                       @confirm="closeEditDialog(true)" ref="roleEdit" :open-mode="dialogOpenMode">
-            </role-edit>
+                   @close="dialogCancel" @opened="beforeDialogOpen">
+            <role-edit :role="role" ref="roleEdit" :open-mode="dialogOpenMode"></role-edit>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogCancel">取 消</el-button>
-                <el-button type="primary" @click="dialogConfirm">确 定</el-button>
+                <el-button type="primary" v-if="'查看' !== dialogOpenMode" @click="dialogConfirm">确 定</el-button>
             </span>
         </el-dialog>
 
@@ -66,7 +80,6 @@
         data() {
             return {
                 queryForm: {
-                    keyword: '',
                     current: 1,
                     size: 10,
                     total: -1
@@ -132,14 +145,6 @@
                 this.$refs.roleEdit.preOpen();
             },
 
-            closeEditDialog(refresh) {
-                this.role = {};
-                this.dialogOpened = false;
-                if (refresh) {
-                    this.loadRoles();
-                }
-            },
-
             deleteRole(roleIds) {
                 this.$confirm('确认删除?', '提示', {
                     confirmButtonText: '确定',
@@ -156,15 +161,9 @@
                 });
             },
 
-            dialogCancel(refresh) {
-                const prom = this.$immediate(() => this.$refs.roleEdit.clearData());
-                prom.then(() => {
-                    this.role = {};
-                    this.dialogOpened = false;
-                    if (refresh) {
-                        this.loadRoles()
-                    }
-                }).catch(err => err);
+            dialogCancel() {
+                this.$refs.roleEdit.clearData();
+                this.dialogOpened = false;
             },
 
             dialogConfirm() {

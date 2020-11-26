@@ -22,6 +22,7 @@ import org.limbo.doorkeeper.admin.dao.AdminAccountMapper;
 import org.limbo.doorkeeper.admin.dao.AdminAccountProjectMapper;
 import org.limbo.doorkeeper.admin.entity.AdminAccount;
 import org.limbo.doorkeeper.admin.entity.AdminAccountProject;
+import org.limbo.doorkeeper.admin.model.param.AdminAccountProjectQueryParam;
 import org.limbo.doorkeeper.admin.service.AdminAccountProjectService;
 import org.limbo.doorkeeper.admin.utils.MyBatisPlusUtils;
 import org.limbo.doorkeeper.api.client.ProjectClient;
@@ -64,6 +65,14 @@ public class AdminAccountProjectServiceImpl implements AdminAccountProjectServic
             return projects;
         }
         return adminAccountProjectMapper.getByAccount(accountId);
+    }
+
+    @Override
+    public List<AdminAccountProject> list(AdminAccountProjectQueryParam param) {
+        return adminAccountProjectMapper.selectList(Wrappers.<AdminAccountProject>lambdaQuery()
+                .eq(param.getProjectId() != null, AdminAccountProject::getProjectId, param.getProjectId())
+                .eq(param.getAccountId() != null, AdminAccountProject::getAccountId, param.getAccountId())
+        );
     }
 
     @Override

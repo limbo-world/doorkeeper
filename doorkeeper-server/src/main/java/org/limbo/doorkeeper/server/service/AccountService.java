@@ -22,6 +22,8 @@ import org.limbo.doorkeeper.api.model.param.AccountQueryParam;
 import org.limbo.doorkeeper.api.model.param.AccountBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
 
+import java.util.List;
+
 /**
  * @author Brozen
  * @date 2020/2/27 5:41 PM
@@ -43,5 +45,8 @@ public interface AccountService {
      * 分页查询
      */
     Page<AccountVO> queryPage(Long projectId, AccountQueryParam param);
+
+
+    List<AccountVO> list(Long projectId);
 
 }

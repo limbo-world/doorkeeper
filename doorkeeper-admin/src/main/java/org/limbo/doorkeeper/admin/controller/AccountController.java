@@ -16,6 +16,7 @@
 
 package org.limbo.doorkeeper.admin.controller;
 
+import org.limbo.doorkeeper.admin.model.vo.AdminAccountVO;
 import org.limbo.doorkeeper.api.client.AccountClient;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
@@ -23,8 +24,11 @@ import org.limbo.doorkeeper.api.model.param.AccountAddParam;
 import org.limbo.doorkeeper.api.model.param.AccountBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.AccountQueryParam;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
+import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author Devil
@@ -50,6 +54,11 @@ public class AccountController {
     @GetMapping("/query")
     public Response<Page<AccountVO>> page(AccountQueryParam param) {
         return accountClient.page(param);
+    }
+
+    @GetMapping
+    public Response<List<AccountVO>> list() {
+        return accountClient.list();
     }
 
 }

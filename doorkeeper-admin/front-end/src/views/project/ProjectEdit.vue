@@ -15,23 +15,23 @@
   -->
 
 <template>
-    <el-container class="page-role-edit" v-loading="loading">
+    <el-container class="page-project-edit" v-loading="loading">
         <el-main>
-            <el-form :model="role" label-width="80px" size="mini" class="edit-form"
+            <el-form :model="project" label-width="80px" size="mini" class="edit-form"
                      :rules="rules" ref="editForm" :disabled="'查看' === openMode">
-                <el-form-item label="名称" prop="roleName" :rules="{required: true, message: '请填写名称', trigger: 'blur'}">
-                    <el-input v-model="role.roleName"></el-input>
+                <el-form-item label="名称" prop="projectName" :rules="{required: true, message: '请填写名称', trigger: 'blur'}">
+                    <el-input v-model="project.projectName" placeholder="项目名称"></el-input>
+                </el-form-item>
+                <el-form-item label="秘钥" prop="projectSecret" :rules="{required: true, message: '请填写秘钥', trigger: 'blur'}">
+                    <el-input v-model="project.projectSecret" placeholder="秘钥"></el-input>
                 </el-form-item>
                 <el-form-item label="描述">
-                    <el-input type="textarea" v-model="role.roleDescribe"></el-input>
+                    <el-input type="textarea" v-model="project.projectDescribe"></el-input>
                 </el-form-item>
-                <el-form-item label="默认角色">
-                    <el-switch v-model="role.isDefault" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
-                </el-form-item>
-                <el-form-item label="权限">
+                <el-form-item label="账号">
                     <el-transfer filterable filter-placeholder="搜索"
-                                 :titles="['未选', '已选']" @change="permissionChange"
-                                 v-model="transferValue" :data="permissions">
+                                 :titles="['未选', '已选']" @change="accountChange"
+                                 v-model="transferValue" :data="accounts">
                     </el-transfer>
                 </el-form-item>
             </el-form>
@@ -44,7 +44,7 @@
 
     export default {
         props: {
-            role: {
+            project: {
                 type: Object,
                 default() {}
             },
@@ -57,34 +57,34 @@
 
         data() {
             return {
-                permissions: [],
+                accounts: [],
                 transferValue: []
             };
         },
 
         created() {
-            pages.roleEdit = this;
+            pages.projectEdit = this;
         },
 
         methods: {
             preOpen() {
-                Promise.all([this.loadAllPermission(), this.loadRolePermission()]).then((result) => {
-                    const allPermission = result[0].data;
-                    const hasPermission = result[1].data;
+                Promise.all([this.loadAllAccount(), this.loadAccountProject()]).then((result) => {
+                    const allAccount = result[0].data;
+                    const hasAccount = result[1].data;
 
-                    allPermission.forEach(permission => {
-                        permission.label = permission.permissionName;
-                        permission.key = permission.permissionId;
+                    allAccount.forEach(account => {
+                        account.label = account.username;
+                        account.key = account.accountId;
                     });
 
-                    this.permissions = allPermission;
+                    this.accounts = allAccount;
 
-                    if (hasPermission && hasPermission.length > 0) {
-                        hasPermission.forEach(k => {
-                            for (let permission of this.permissions) {
-                                if (k.permissionId === permission.permissionId) {
-                                    permission.rolePermissionId = k.rolePermissionId
-                                    this.transferValue.push(permission.permissionId);
+                    if (hasAccount && hasAccount.length > 0) {
+                        hasAccount.forEach(k => {
+                            for (let account of this.accounts) {
+                                if (k.accountId === account.accountId) {
+                                    permission.accountProjectId = k.accountProjectId
+                                    this.transferValue.push(account.accountId);
                                     break
                                 }
                             }
@@ -93,19 +93,19 @@
                     this.$forceUpdate();
                 })
             },
-            loadAllPermission() {
-                return this.$ajax.get('/permission');
+            loadAllAccount() {
+                return this.$ajax.get('/account');
             },
-            loadRolePermission() {
+            loadAccountProject() {
                 if (!this.role.roleId) {
                     return new Promise((resolve, reject) => {
                         resolve({data: [], code: 200})
                     })
                 }
-                return this.$ajax.get('/role-permission', {params: {roleId: this.role.roleId}});
+                return this.$ajax.get('/account-project', {params: {project: this.project.projectId}});
             },
 
-            permissionChange(value, direction, movedKeys) { // value 右边剩余的key direction 方向 movedKeys 移动的key
+            accountChange(value, direction, movedKeys) { // value 右边剩余的key direction 方向 movedKeys 移动的key
                 if ('left' === direction) {
                     movedKeys.forEach(k => {
                         for (let permission of this.permissions) {
@@ -189,7 +189,7 @@
 
 
 <style lang="scss">
-    .page-role-edit {
+    .page-project-edit {
         .el-transfer-panel {
             width: 300px;
             margin-right: 10px;

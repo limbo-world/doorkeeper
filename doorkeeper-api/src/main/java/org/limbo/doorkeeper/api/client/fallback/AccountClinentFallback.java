@@ -27,6 +27,8 @@ import org.limbo.doorkeeper.api.model.param.AccountQueryParam;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * @author Devil
  * @date 2020/11/23 4:23 PM
@@ -50,6 +52,11 @@ public class AccountClinentFallback extends Fallback implements FallbackFactory<
 
             @Override
             public Response<Page<AccountVO>> page(AccountQueryParam param) {
+                return serviceUnavailable();
+            }
+
+            @Override
+            public Response<List<AccountVO>> list() {
                 return serviceUnavailable();
             }
         };

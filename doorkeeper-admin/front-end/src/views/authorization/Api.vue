@@ -34,7 +34,7 @@
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="loadApis(true)" size="mini" icon="el-icon-search">查询</el-button>
-                    <el-button type="primary" @click="addPermission" size="mini" icon="el-icon-circle-plus">添加</el-button>
+                    <el-button type="primary" @click="addPermission" size="mini" icon="el-icon-circle-plus">新增</el-button>
                 </el-form-item>
             </el-form>
         </el-header>

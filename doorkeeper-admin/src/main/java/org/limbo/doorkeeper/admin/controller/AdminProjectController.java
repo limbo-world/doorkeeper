@@ -17,6 +17,7 @@
 package org.limbo.doorkeeper.admin.controller;
 
 import org.limbo.doorkeeper.admin.entity.AdminAccountProject;
+import org.limbo.doorkeeper.admin.model.param.AdminAccountProjectQueryParam;
 import org.limbo.doorkeeper.admin.model.param.AdminAccountProjectUpdateParam;
 import org.limbo.doorkeeper.admin.service.AdminAccountProjectService;
 import org.limbo.doorkeeper.api.model.Response;
@@ -38,12 +39,9 @@ public class AdminProjectController extends BaseController {
     @Autowired
     private AdminAccountProjectService adminAccountProjectService;
 
-    /**
-     * 获取管理员拥有哪些项目
-     */
-    @GetMapping("/{accountId}")
-    public Response<List<AdminAccountProject>> list(@Validated @PathVariable("accountId") @NotNull(message = "账户") Long accountId) {
-        return Response.ok(adminAccountProjectService.getByAccount(accountId));
+    @GetMapping
+    public Response<List<AdminAccountProject>> list(AdminAccountProjectQueryParam param) {
+        return Response.ok(adminAccountProjectService.list(param));
     }
 
     /**

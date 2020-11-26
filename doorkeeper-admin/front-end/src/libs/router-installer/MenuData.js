@@ -16,7 +16,7 @@ export const MenuRoute = [{
         "menuCode": "002001",
         "menuName": "账户列表",
         "icon": "el-icon-user",
-        "route": "/authentication/account"
+        "route": "/account/account"
     }]
 }, {
     "menuCode": "003",
@@ -30,7 +30,7 @@ export const MenuRoute = [{
     }, {
         "menuCode": "003002",
         "menuName": "权限列表",
-        "icon": "el-icon-connection",
+        "icon": "el-icon-coin",
         "route": "/authorization/permission"
     }, {
         "menuCode": "003003",

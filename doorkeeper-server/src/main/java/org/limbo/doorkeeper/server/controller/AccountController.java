@@ -28,6 +28,8 @@ import org.limbo.doorkeeper.server.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * @author Devil
  * @date 2020/11/20 3:32 PM
@@ -56,6 +58,12 @@ public class AccountController extends BaseController {
     @Operation(summary = "查询账户列表")
     public Response<Page<AccountVO>> page(AccountQueryParam param) {
         return Response.ok(accountService.queryPage(getProjectId(), param));
+    }
+
+    @GetMapping
+    @Operation(summary = "所以账户列表")
+    public Response<List<AccountVO>> list() {
+        return Response.ok(accountService.list(getProjectId()));
     }
 
 }

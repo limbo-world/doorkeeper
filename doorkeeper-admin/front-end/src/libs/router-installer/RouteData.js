@@ -41,13 +41,13 @@ export default [
 
             // 认证管理
             {
-                path: '/authentication',
+                path: '/account',
                 component: RouterView,
-                redirect: '/authentication/account',
+                redirect: '/account/account',
                 children: [
                     {
-                        path: '/authentication/account',
-                        component: _import('authentication/Account'),
+                        path: '/account/account',
+                        component: _import('account/Account'),
                     },
                 ]
             },
