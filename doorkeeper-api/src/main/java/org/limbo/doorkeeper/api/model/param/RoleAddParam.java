@@ -34,7 +34,6 @@ public class RoleAddParam {
     @Schema(title = "角色名称")
     private String roleName;
 
-    @Size(max = 150)
     @Schema(title = "角色描述", maxLength = 150)
     private String roleDescribe;
 

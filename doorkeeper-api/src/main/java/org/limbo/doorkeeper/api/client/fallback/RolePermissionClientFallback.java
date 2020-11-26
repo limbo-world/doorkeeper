@@ -21,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.client.RolePermissionClient;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.RolePermissionAddParam;
+import org.limbo.doorkeeper.api.model.param.RolePermissionQueryParam;
+import org.limbo.doorkeeper.api.model.vo.RolePermissionVO;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -36,6 +38,11 @@ public class RolePermissionClientFallback extends Fallback implements FallbackFa
     public RolePermissionClient create(Throwable throwable) {
         log.error("服务调用失败", throwable);
         return new RolePermissionClient() {
+            @Override
+            public Response<List<RolePermissionVO>> list(RolePermissionQueryParam param) {
+                return serviceUnavailable();
+            }
+
             @Override
             public Response<Boolean> addRolePermission(List<RolePermissionAddParam> params) {
                 return serviceUnavailable();

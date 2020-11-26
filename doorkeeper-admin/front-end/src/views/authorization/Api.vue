@@ -33,7 +33,7 @@
                     <el-input v-model="queryForm.apiUrl" placeholder="输入API路径"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="loadApis" size="mini" icon="el-icon-search">查询</el-button>
+                    <el-button type="primary" @click="loadApis(true)" size="mini" icon="el-icon-search">查询</el-button>
                     <el-button type="primary" @click="addPermission" size="mini" icon="el-icon-circle-plus">添加</el-button>
                 </el-form-item>
             </el-form>
@@ -123,7 +123,16 @@
         methods: {
             ...mapActions('ui', ['startProgress', 'stopProgress']),
 
-            loadApis() {
+            initPageForm() {
+                this.queryForm.current = 1;
+                this.queryForm.size = 10;
+                this.queryForm.total = -1;
+            },
+
+            loadApis(initPage) {
+                if (initPage) {
+                    this.initPageForm();
+                }
                 this.startProgress({ speed: 'fast' });
                 this.$ajax.get('/api/query', {
                     params: this.queryForm
@@ -155,7 +164,7 @@
                 this.$refs.apiEdit.confirmEdit().then(() => {
                     this.dialogOpened = false;
                     if (this.dialogOpenAddMode)  {
-                        this.queryForm.total = -1;
+                        this.initPageForm();
                     }
                     this.loadApis();
                 });
@@ -170,8 +179,7 @@
                     this.$ajax.delete(`/api`, {data: apiIds})
                         .then(() => {
                             this.$message. success('删除成功。');
-                            this.queryForm.total = -1;
-                            this.loadApis();
+                            this.loadApis(true);
                         });
                 }).catch(() => {
                     this.$message.info("已取消删除");

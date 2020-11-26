@@ -118,4 +118,12 @@ public class RoleServiceImpl implements RoleService {
         return param;
     }
 
+    @Override
+    public List<RoleVO> list(Long projectId) {
+        List<Role> roles = roleMapper.selectList(Wrappers.<Role>lambdaQuery()
+                .eq(Role::getProjectId, projectId)
+        );
+        return EnhancedBeanUtils.createAndCopyList(roles, RoleVO.class);
+    }
+
 }

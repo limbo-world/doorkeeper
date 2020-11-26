@@ -2,11 +2,11 @@
     <el-container class="menu-page">
         <el-header class="padding-top-xs" height="50px">
             <el-form :inline="true" size="mini">
-                <el-form-item label="名称/编码">
-                    <el-input v-model="queryForm.keyword" placeholder="输入关键字" @input="initPageParam"></el-input>
+                <el-form-item label="名称">
+                    <el-input v-model="queryForm.roleName" placeholder="请输入名称"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="loadRoles" size="mini" icon="el-icon-search">查询</el-button>
+                    <el-button type="primary" @click="loadRoles(true)" size="mini" icon="el-icon-search">查询</el-button>
                     <el-button type="primary" @click="addRole" size="mini" icon="el-icon-circle-plus">添加角色</el-button>
                 </el-form-item>
             </el-form>
@@ -45,13 +45,11 @@
         </el-footer>
 
 
-        <el-dialog :title="dialogTitle" :visible.sync="dialogOpened" width="50%" class="edit-dialog"
+        <el-dialog :title="`${dialogOpenMode}角色`" :visible.sync="dialogOpened" width="50%" class="edit-dialog"
                    @close="closeEditDialog(false)">
             <role-edit v-if="dialogOpenMode !== 'grant'" :role="role" @cancel="closeEditDialog(false)"
-                       @confirm="closeEditDialog(true)" ref="roleEdit" :view-mode="dialogOpenMode === 'view'">
+                       @confirm="closeEditDialog(true)" ref="roleEdit" :open-mode="dialogOpenMode">
             </role-edit>
-            <role-grant v-else :role="role" ref="roleGrant"></role-grant>
-
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogCancel">取 消</el-button>
                 <el-button type="primary" @click="dialogConfirm">确 定</el-button>
@@ -66,11 +64,10 @@
 <script>
     import { mapActions } from 'vuex';
     import RoleEdit from './RoleEdit';
-    import RoleGrant from './RoleGrant';
 
     export default {
         components: {
-            RoleEdit, RoleGrant,
+            RoleEdit,
         },
 
         data() {
@@ -86,17 +83,7 @@
 
                 role: {},
                 dialogOpened: false,
-                dialogOpenMode: 'add',
-
-                selectedMenuCodeList: [],
-            }
-        },
-
-        computed: {
-            dialogTitle() {
-                return this.dialogOpenMode === 'add' ? '新增角色'
-                        : this.dialogOpened === 'update' ? '修改角色'
-                        : this.dialogOpenMode === 'grant' ? '授权角色 - ' + this.role.roleName : '未知操作';
+                dialogOpenMode: '',
             }
         },
 
@@ -109,13 +96,16 @@
         methods: {
             ...mapActions('ui', ['startProgress', 'stopProgress']),
 
-            initPageParam() {
+            initPageForm() {
                 this.queryForm.current = 1;
                 this.queryForm.size = 10;
                 this.queryForm.total = -1;
             },
 
-            loadRoles() {
+            loadRoles(initPage) {
+                if (initPage) {
+                    this.initPageForm();
+                }
                 this.startProgress();
                 this.$ajax.get('/role/query', {
                     params: this.queryForm
@@ -128,24 +118,20 @@
             },
 
             addRole() {
-                this.role = {
-                    roleName: '',
-                    menus: [],
-                    accounts: [],
-                };
-                this.dialogOpenMode = 'add';
+                this.role = {};
+                this.dialogOpenMode = '新增';
                 this.dialogOpened = true;
             },
 
             editRole(role) {
                 this.role = role;
-                this.dialogOpenMode = 'update';
+                this.dialogOpenMode = '修改';
                 this.dialogOpened = true;
             },
 
             viewRole(role) {
                 this.role = role;
-                this.dialogOpenMode = 'view';
+                this.dialogOpenMode = '查看';
                 this.dialogOpened = true;
             },
 
@@ -173,9 +159,7 @@
             },
 
             dialogCancel(refresh) {
-                const prom = this.dialogOpenMode === 'grant'
-                    ? this.$immediate(() => this.$refs.roleGrant.clearData())
-                    : this.$immediate(() => this.$refs.roleEdit.clearData());
+                const prom = this.$immediate(() => this.$refs.roleEdit.clearData());
                 prom.then(() => {
                     this.role = {};
                     this.dialogOpened = false;
@@ -186,9 +170,7 @@
             },
 
             dialogConfirm() {
-                const prom = this.dialogOpenMode === 'grant'
-                    ? this.$refs.roleGrant.saveGrant()
-                    : this.$refs.roleEdit.saveRole();
+                const prom = this.$refs.roleEdit.saveRole();
                 prom.then(() => {
                     this.role = {};
                     this.dialogOpened = false;

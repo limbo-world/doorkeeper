@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
+package org.limbo.doorkeeper.admin.service;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
+import org.limbo.doorkeeper.admin.model.param.AdminRoleAddParam;
+import org.limbo.doorkeeper.admin.model.param.AdminRoleUpdateParam;
+import org.limbo.doorkeeper.api.model.Response;
+import org.limbo.doorkeeper.api.model.vo.RoleVO;
 
 /**
  * @author Devil
- * @date 2020/11/19 3:27 PM
+ * @date 2020/11/26 9:45 AM
  */
-@Data
-public class PermissionApiQueryParam {
+public interface RoleService {
 
-    @Schema(title = "权限id")
-    private Long permissionId;
+    Response<RoleVO> add(AdminRoleAddParam param);
+
+    Response<Integer> update(Long roleId, AdminRoleUpdateParam param);
 }

@@ -2,65 +2,22 @@
     <el-container class="page-role-edit" v-loading="loading">
         <el-main>
             <el-form :model="role" label-width="80px" size="mini" class="edit-form"
-                     :rules="rules" ref="editForm" :disabled="viewMode">
+                     :rules="rules" ref="editForm" :disabled="'查看' === openMode">
                 <el-form-item label="名称" prop="roleName" :rules="{required: true, message: '请填写名称', trigger: 'blur'}">
                     <el-input v-model="role.roleName"></el-input>
                 </el-form-item>
                 <el-form-item label="描述">
-                    <el-input type="textarea" v-model="role.roleDesc"></el-input>
+                    <el-input type="textarea" v-model="role.roleDescribe"></el-input>
                 </el-form-item>
-                <el-form-item label="权限策略">
-                    <el-button type="primary" icon="el-icon-plus" @click="addPermPolicyVisible = true">添加策略</el-button>
+                <el-form-item label="默认角色">
+                    <!--<el-input type="textarea" v-model="role.roleDescribe"></el-input>-->
                 </el-form-item>
-                <el-card class="box-card">
-                    <el-table :data="permPolicies" border size="mini">
-                        <el-table-column label="权限编码" prop="permCode"></el-table-column>
-                        <el-table-column label="权限名称" prop="permName"></el-table-column>
-                        <el-table-column label="策略" align="center" width="200px">
-                            <template slot-scope="scope">
-                                <el-switch v-model="scope.row.allowed"
-                                           active-color="#13ce66" inactive-color="#ff4949"
-                                           active-text="允许" inactive-text="拒绝"></el-switch>
-                            </template>
-                        </el-table-column>
-                        <el-table-column width="35px" v-if="!viewMode">
-                            <template slot-scope="scope">
-                                <i class="el-icon-delete pointer" @click="permPolicies.splice(scope.$index, 1)"></i>
-                            </template>
-                        </el-table-column>
-                    </el-table>
-                </el-card>
+                <el-form-item label="权限">
+                    <el-transfer filterable filter-placeholder="搜索" v-model="transferValue" :data="permissions">
+                    </el-transfer>
+                </el-form-item>
             </el-form>
         </el-main>
-
-        <el-dialog title="添加权限策略" :visible.sync="addPermPolicyVisible" :append-to-body="true" class="add-perm-policy-dialog">
-            <el-row>
-                <el-form label-width="80px" size="mini">
-                    <el-form-item label="权限">
-                        <el-input v-model="permPolicy.permSearchKeyword" class="max-width-200" suffix-icon="el-icon-search"></el-input>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-radio-group v-model="permPolicy.permCode">
-                            <el-radio v-for="p in toAddPolicyPermissions" :key="p.permCode" :label="p.permCode"
-                                      :disabled="permPolicyAvailable(p.permCode)">
-                                {{p.permName}}
-                            </el-radio>
-                        </el-radio-group>
-                    </el-form-item>
-                    <el-form-item label="策略">
-                        <el-switch v-model="permPolicy.allowed"
-                                   active-color="#13ce66" inactive-color="#ff4949"
-                                   active-text="允许" inactive-text="拒绝"></el-switch>
-                    </el-form-item>
-                </el-form>
-            </el-row>
-
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="addPermPolicyVisible = false">取 消</el-button>
-                <el-button type="primary" @click="addPermPolicy">确 定</el-button>
-            </span>
-        </el-dialog>
-
     </el-container>
 </template>
 
@@ -71,14 +28,10 @@
         props: {
             role: {
                 type: Object,
-                default() {
-                    return {
-                        menuCodeList: []
-                    }
-                }
+                default() {}
             },
 
-            viewMode: {
+            openMode: {
                 type: Boolean,
                 default: true,
             }
@@ -86,56 +39,9 @@
 
         data() {
             return {
-                loading: true,
-
-                // 权限
-                permSearchKeyword: '',
-
-                // 权限策略
                 permissions: [],
-                addPermPolicyVisible: false,
-                permPolicy: {
-                    permSearchKeyword: '',
-                    permCode: '',
-                    allowed: true,
-                },
-                permPolicies: [],
+                transferValue: []
             };
-        },
-
-        computed: {
-            selectedMenuCode() {
-                return this.role.menus ? this.role.menus.map(m => m.menuCode) : [];
-            },
-            toAddPolicyPermissions() {
-                const keyword = this.permPolicy.permSearchKeyword;
-                if (!keyword) {
-                    return this.permissions;
-                } else {
-                    return this.permissions.filter(p => p.permName.indexOf(keyword) >= 0);
-                }
-            }
-        },
-
-        watch: {
-            role: {
-                immediate: true,
-                handler(newValue, oldValue) {
-                    const newId = newValue && newValue.roleId;
-                    const oldId = oldValue && oldValue.roleId;
-                    if (oldValue == null || newId !== oldId) {
-                        this.clearData();
-
-                        this.loading = true;
-                        this.loadPermissions().then(() => {
-                            this.loading = true;
-                            Promise.all([
-                                (newValue.roleId ? this.loadRole(newId) : this.$immediate()),
-                            ]).then(() => this.loading = false);
-                        }).finally(() => this.loading = false);
-                    }
-                }
-            }
         },
 
         created() {
@@ -240,9 +146,11 @@
 
 
 <style lang="scss">
-    .add-perm-policy-dialog {
-        .el-radio {
-            margin: 10px 30px 10px 0;
+    .page-role-edit {
+        .add-perm-policy-dialog {
+            .el-radio {
+                margin: 10px 30px 10px 0;
+            }
         }
     }
 </style>

@@ -24,8 +24,8 @@ import lombok.Data;
  * @date 2020/11/19 3:27 PM
  */
 @Data
-public class PermissionApiQueryParam {
+public class RolePermissionQueryParam {
 
-    @Schema(title = "权限id")
-    private Long permissionId;
+    @Schema(title = "角色id")
+    private Long roleId;
 }

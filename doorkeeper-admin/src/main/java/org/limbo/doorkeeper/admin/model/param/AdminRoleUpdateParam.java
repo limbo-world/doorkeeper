@@ -14,18 +14,29 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
+package org.limbo.doorkeeper.admin.model.param;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.limbo.doorkeeper.api.model.param.RolePermissionAddParam;
+
+import java.util.List;
 
 /**
  * @author Devil
- * @date 2020/11/19 3:27 PM
+ * @date 2020/11/26 9:43 AM
  */
 @Data
-public class PermissionApiQueryParam {
+public class AdminRoleUpdateParam {
 
-    @Schema(title = "权限id")
-    private Long permissionId;
+    private Long roleId;
+
+    private String roleName;
+
+    private String roleDescribe;
+
+    private Boolean isDefault;
+
+    private List<RolePermissionAddParam> addRolePermissions;
+
+    private List<Long> deleteRolePermissionIds;
 }

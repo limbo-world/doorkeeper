@@ -17,6 +17,8 @@
 package org.limbo.doorkeeper.server.service;
 
 import org.limbo.doorkeeper.api.model.param.RolePermissionAddParam;
+import org.limbo.doorkeeper.api.model.param.RolePermissionQueryParam;
+import org.limbo.doorkeeper.api.model.vo.RolePermissionVO;
 
 import java.util.List;
 
@@ -25,6 +27,10 @@ import java.util.List;
  * @date 2020/11/20 11:08 AM
  */
 public interface RolePermissionService {
+    /**
+     * 查询列表
+     */
+    List<RolePermissionVO> list(Long projectId, RolePermissionQueryParam param);
     /**
      * 为角色添加权限
      */

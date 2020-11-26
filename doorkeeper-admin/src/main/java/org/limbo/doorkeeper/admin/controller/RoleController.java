@@ -16,17 +16,20 @@
 
 package org.limbo.doorkeeper.admin.controller;
 
+import org.limbo.doorkeeper.admin.model.param.AdminRoleAddParam;
+import org.limbo.doorkeeper.admin.model.param.AdminRoleUpdateParam;
+import org.limbo.doorkeeper.admin.service.RoleService;
 import org.limbo.doorkeeper.api.client.RoleClient;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.RoleAddParam;
 import org.limbo.doorkeeper.api.model.param.RoleQueryParam;
-import org.limbo.doorkeeper.api.model.param.RoleUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -40,14 +43,18 @@ public class RoleController {
     @Autowired
     private RoleClient roleClient;
 
+    @Autowired
+    private RoleService roleService;
+
     @PostMapping
-    public Response<RoleVO> add(@RequestBody RoleAddParam param) {
-        return roleClient.add(param);
+    public Response<RoleVO> add(@RequestBody AdminRoleAddParam param) {
+        return roleService.add(param);
     }
 
     @PutMapping("/{roleId}")
-    public Response<Integer> update(@PathVariable("roleId") Long roleId, @RequestBody RoleUpdateParam param) {
-        return roleClient.update(roleId, param);
+    public Response<Integer> update(@Validated @NotNull(message = "角色不存在") @PathVariable("roleId") Long roleId,
+                                    @RequestBody AdminRoleUpdateParam param) {
+        return roleService.update(roleId, param);
     }
 
     @DeleteMapping
@@ -56,9 +63,14 @@ public class RoleController {
     }
 
 
-    @GetMapping
+    @GetMapping("/query")
     public Response<Page<RoleVO>> page(RoleQueryParam param) {
         return roleClient.page(param);
+    }
+
+    @GetMapping
+    public Response<List<RoleVO>> list() {
+        return roleClient.list();
     }
 
 }

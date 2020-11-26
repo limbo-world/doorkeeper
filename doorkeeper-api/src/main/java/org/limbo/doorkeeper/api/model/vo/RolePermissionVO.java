@@ -14,18 +14,28 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
+package org.limbo.doorkeeper.api.model.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
  * @author Devil
- * @date 2020/11/19 3:27 PM
+ * @date 2020/11/19 4:06 PM
  */
 @Data
-public class PermissionApiQueryParam {
+public class RolePermissionVO {
 
-    @Schema(title = "权限id")
+    @Schema(title = "角色权限id")
+    private Long rolePermissionId;
+
+    @Schema(title = "项目ID")
+    private Long projectId;
+
+    @Schema(title = "角色ID")
+    private Long roleId;
+
+    @Schema(title = "权限ID")
     private Long permissionId;
+
 }

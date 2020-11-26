@@ -16,9 +16,7 @@
 
 package org.limbo.doorkeeper.api.client;
 
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.limbo.doorkeeper.api.client.fallback.RoleClinentFallback;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
@@ -36,26 +34,24 @@ import java.util.List;
  * @author liuqingtong
  * @date 2020/11/20 17:50
  */
-@Tag(name = "角色")
 @FeignClient(name = "doorkeeper-server", path = "/role", contextId = "roleClient", fallbackFactory = RoleClinentFallback.class)
 public interface RoleClient {
 
     @PostMapping
-    @Operation(summary = "新增角色")
     Response<RoleVO> add(@RequestBody RoleAddParam param);
 
     @PutMapping("/{roleId}")
-    @Operation(summary = "修改角色")
     Response<Integer> update(@PathVariable("roleId") Long roleId,
                              @RequestBody RoleUpdateParam param);
 
     @DeleteMapping
-    @Operation(summary = "删除角色")
     Response<Integer> delete(@Schema(title = "角色ID") List<Long> roleIds);
 
 
-    @GetMapping
-    @Operation(summary = "分页查询角色")
+    @GetMapping("/query")
     Response<Page<RoleVO>> page(@SpringQueryMap RoleQueryParam param);
+
+    @GetMapping
+    Response<List<RoleVO>> list();
 
 }
