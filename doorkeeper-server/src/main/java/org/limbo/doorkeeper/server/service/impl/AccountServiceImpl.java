@@ -113,4 +113,13 @@ public class AccountServiceImpl implements AccountService {
         param.setData(EnhancedBeanUtils.createAndCopyList(mpage.getRecords(), AccountVO.class));
         return param;
     }
+
+    @Override
+    public AccountVO getAccount(Long projectId, Long accountId) {
+        Account account = accountMapper.selectOne(Wrappers.<Account>lambdaQuery()
+                .eq(Account::getProjectId, projectId)
+                .eq(Account::getAccountId, accountId));
+
+        return null == account ? null : EnhancedBeanUtils.createAndCopy(account, AccountVO.class);
+    }
 }

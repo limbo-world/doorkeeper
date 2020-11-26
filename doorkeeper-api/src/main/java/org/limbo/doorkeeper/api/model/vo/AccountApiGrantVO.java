@@ -14,39 +14,27 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
+package org.limbo.doorkeeper.api.model.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import org.limbo.doorkeeper.api.constants.PermissionPolicy;
 
-import java.util.Date;
+import java.util.List;
 
 /**
- *
- * 权限和api绑定关系
- *
- * @author Devil
- * @date 2020/11/18 7:22 PM
+ * @author liuqingtong
+ * @date 2020/11/25 19:07
  */
 @Data
-@TableName("l_permission_api")
-public class PermissionApi {
+public class AccountApiGrantVO {
 
-    @TableId(type = IdType.AUTO)
-    private Long permissionApiId;
+    @Schema(name = "用户ID")
+    private Long accountId;
 
-    private Long projectId;
+    @Schema(name = "用户授权访问的api")
+    private List<ApiVO> allowedApis;
 
-    private Long permissionId;
-
-    private Long apiId;
-
-    /**
-     * @see PermissionPolicy
-     */
-    private PermissionPolicy policy;
+    @Schema(name = "用户禁止访问的api")
+    private List<ApiVO> refusedApis;
 
 }

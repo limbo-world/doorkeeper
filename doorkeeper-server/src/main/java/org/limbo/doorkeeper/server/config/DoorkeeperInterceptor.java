@@ -42,6 +42,7 @@ public class DoorkeeperInterceptor implements HandlerInterceptor {
         String secret = request.getHeader(DoorkeeperConstants.PROJECT_SECRET_HEADER);
 
         Project project = projectMapper.selectById(Long.valueOf(projectId));
+        Verifies.notNull(project, "项目认证失败");
         Verifies.verify(project.getProjectSecret().equals(secret), "项目认证失败");
 
         Long projectParamId = project.getIsAdmin() ? Long.valueOf(request.getHeader(DoorkeeperConstants.PROJECT_PARAM_HEADER))
