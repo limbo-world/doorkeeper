@@ -1,12 +1,28 @@
+<!--
+  - Copyright 2020-2024 Limbo Team (https://github.com/limbo-world).
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  - 	http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
 <template>
     <el-container class="account-page">
         <el-header class="padding-top-xs" height="50px">
             <el-form ref="searchForm" :inline="true" size="mini">
                 <el-form-item label="账号">
-                    <el-input v-model="queryParam.nick" placeholder="输入昵称" @input="resetPageParam"></el-input>
+                    <el-input v-model="queryForm.nickname" placeholder="输入账号"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="loadAccounts" size="mini" icon="el-icon-search">查询</el-button>
+                    <el-button type="primary" @click="loadAccounts(true)" size="mini" icon="el-icon-search">查询</el-button>
                     <el-button type="primary" @click="addAccount" size="mini" icon="el-icon-circle-plus">新增</el-button>
                 </el-form-item>
             </el-form>
@@ -18,15 +34,35 @@
                     <el-table-column prop="accountId" label="ID"></el-table-column>
                     <el-table-column prop="username" label="账号"></el-table-column>
                     <el-table-column prop="accountDescribe" label="描述"></el-table-column>
-                    <el-table-column prop="isAdmin" label="管理员" align="center" width="80">
+                    <el-table-column prop="isAdmin" label="等级" align="center" width="80">
                         <template slot-scope="scope">
-                            {{ scope.row.isAdmin ? "是" : "否"}}
+                            {{ scope.row.isAdmin ? (scope.row.isSuperAdmin ? "超级管理员" : "管理员") : "普通用户"}}
                         </template>
                     </el-table-column>
-                    <el-table-column label="操作" align="center">
+                    <el-table-column prop="lastLogin" label="最后登录时间" width="120"></el-table-column>
+                    <el-table-column label="绑定角色" align="center" width="80">
                         <template slot-scope="scope">
                             <div class="operations">
-                                <i v-if="!scope.row.isSuperAdmin && isAdminProjectSelected" class="el-icon-delete" @click="deleteAccount(scope.row)"></i>
+                                <i class="el-icon-edit" @click="editRole(scope.row)"></i>
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="绑定项目" align="center" width="80">
+                        <template slot-scope="scope">
+                            <div class="operations">
+                                <!--<i v-if="!scope.row.isSuperAdmin && isAdminProjectSelected" class="el-icon-delete" @click="deleteAccount(scope.row)"></i>-->
+                                <i class="el-icon-edit" @click="editRole(scope.row)"></i>
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="操作" align="center" width="100">
+                        <template slot-scope="scope">
+                            <div class="operations">
+                                <!--<i v-if="!scope.row.isSuperAdmin && isAdminProjectSelected" class="el-icon-delete" @click="deleteAccount(scope.row)"></i>-->
+                                <i class="el-icon-edit" @click="editRole(scope.row)"></i>
+                                <i class="el-icon-delete" @click="() => {
+                                deleteRole([scope.row.roleId])
+                            }"></i>
                             </div>
                         </template>
                     </el-table-column>
@@ -35,9 +71,9 @@
         </el-main>
 
         <el-footer>
-            <el-pagination background layout="prev, pager, next" :total="queryParam.total"
-                           :current-page.sync="queryParam.current"
-                           :page-size="queryParam.size" @current-change="loadAccounts">
+            <el-pagination background layout="prev, pager, next" :total="queryForm.total"
+                           :current-page.sync="queryForm.current"
+                           :page-size="queryForm.size" @current-change="loadAccounts">
             </el-pagination>
         </el-footer>
 
@@ -74,7 +110,7 @@
 <script>
 
     import AccountEdit from './AccountEdit';
-    import { mapState, mapActions } from 'vuex';
+    import {mapActions, mapState} from 'vuex';
 
     export default {
         components: {
@@ -83,8 +119,7 @@
 
         data() {
             return {
-                queryParam: {
-                    nick: '',
+                queryForm: {
                     current: 1,
                     size: 10,
                     total: -1,
@@ -93,7 +128,9 @@
                 accounts: [],
 
                 account: {},
-                dialogOpened: false,
+                accountDialogOpened: false,
+                roleDialogOpened: false,
+                projectDialogOpened: false,
 
                 projectDialogOpened: false,
 
@@ -121,18 +158,19 @@
         methods: {
             ...mapActions('ui', ['startProgress', 'stopProgress']),
 
-            resetPageParam() {
-                this.queryParam.current = 1;
-                this.queryParam.total = -1;
+            resetPageForm() {
+                this.queryForm.current = 1;
+                this.queryForm.total = -1;
             },
 
-            loadAccounts() {
+            loadAccounts(resetPage) {
+                if (resetPage) {
+                    this.resetPageForm();
+                }
                 this.startProgress();
-                return this.$ajax.get('/account/query', {params: this.queryParam}).then(response => {
+                return this.$ajax.get('/account/query', {params: this.queryForm}).then(response => {
                     const page = response.data;
-                    if (page.total > -1) {
-                        this.queryParam.total = page.total;
-                    }
+                    this.queryForm.total = page.total >= 0 ? page.total : this.queryForm.total;
                     this.accounts = page.data;
                 }).finally(() => this.stopProgress());
             },
@@ -142,60 +180,38 @@
                 this.dialogOpened = false;
             },
 
-            deleteAccount(account) {
-                this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    this.$ajax.delete(`/admin/${account.accountId}`).then(() => {
-                        this.$message.success('删除成功。');
-                        this.loadAccounts();
-                    });
-                }).catch(() => {});
+            addAccount() {
+                this.account = {};
+                this.dialogOpenMode = '新增';
+                this.dialogOpened = true;
             },
-
-            dialogConfirm() {
-                this.$refs.accountEdit.saveAccount().then(() => {
-                    this.dialogOpened = false;
-                    this.loadAccounts();
-                });
-            },
-
-            // ----------------- 项目绑定
-            showProjectDialog(account) {
+            editAccount(account) {
                 this.account = account;
-                this.projectDialogOpened = true;
-                if (this.$refs.projectEdit) {
-                    this.$refs.projectEdit.loadProjects();
-                }
-            },
-            projectDialogConfirm() {
-                this.$refs.projectEdit.saveAccountProjects().then(() => {
-                    this.projectDialogOpened = false;
-                    this.$message.success('绑定成功。');
-                });
+                this.dialogOpenMode = '修改';
+                this.dialogOpened = true;
             },
 
-
-            // -------------------  授权相关
-            openGrantDialog(account) {
-                this.grantAccountId = account.accountId;
-                this.grantDialogOpened = true;
+            viewRole(project) {
+                this.project = project;
+                this.dialogOpenMode = '查看';
+                this.dialogOpened = true;
+            },
+            editRole(project) {
+                this.project = project;
+                this.dialogOpenMode = '修改';
+                this.dialogOpened = true;
             },
 
-            confirmGrantDialog() {
-                const loading = this.$loading();
-                this.$refs.grant.saveGrant().then(() => {
-                    this.closeGrantDialog();
-                }).finally(() => loading.close());
+            viewProject(project) {
+                this.project = project;
+                this.dialogOpenMode = '查看';
+                this.dialogOpened = true;
             },
-
-            closeGrantDialog() {
-                this.grantDialogOpened = false;
-                this.grantAccountId = null;
-                this.$refs.grant.clearData();
-            }
+            editProject(project) {
+                this.project = project;
+                this.dialogOpenMode = '修改';
+                this.dialogOpened = true;
+            },
         }
 
     }

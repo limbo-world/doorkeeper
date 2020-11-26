@@ -3,10 +3,10 @@
         <el-header class="padding-top-xs" height="50px">
             <el-form ref="searchForm" :inline="true" size="mini">
                 <el-form-item label="项目名称">
-                    <el-input v-model="queryParam.projectName" placeholder="输入项目名称"></el-input>
+                    <el-input v-model="queryForm.projectName" placeholder="输入项目名称"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="loadProjects" size="mini" icon="el-icon-search">查询</el-button>
+                    <el-button type="primary" @click="loadProjects(true)" size="mini" icon="el-icon-search">查询</el-button>
                     <el-button type="primary" @click="() =>{
                             dialogOpened = true;
                         }" size="mini" icon="el-icon-circle-plus">新增</el-button>
@@ -50,8 +50,8 @@
         </el-main>
 
         <el-footer>
-            <el-pagination background layout="prev, pager, next" :total="queryParam.total" :page-size="queryParam.size"
-                           :current-page.sync="queryParam.current" @current-change="loadProjects">
+            <el-pagination background layout="prev, pager, next" :total="queryForm.total" :page-size="queryForm.size"
+                           :current-page.sync="queryForm.current" @current-change="loadProjects">
             </el-pagination>
         </el-footer>
 
@@ -91,7 +91,7 @@
     export default {
         data() {
             return {
-                queryParam: {
+                queryForm: {
                     projectName: '',
                     current: 1,
                     size: 10,
@@ -120,14 +120,19 @@
         methods: {
             ...mapActions('ui', ['startProgress', 'stopProgress']),
 
-            loadProjects() {
-                this.startProgress();
-                this.$ajax.get('/project/query', {params: this.queryParam}).then(response => {
-                    const page = response.data;
-                    if (page.total > -1) {
-                        this.queryParam.total = page.total;
-                    }
+            resetPageForm() {
+                this.queryForm.current = 1;
+                this.queryForm.total = -1;
+            },
 
+            loadProjects(resetPage) {
+                if (resetPage) {
+                    this.resetPageForm();
+                }
+                this.startProgress();
+                this.$ajax.get('/project/query', {params: this.queryForm}).then(response => {
+                    const page = response.data;
+                    this.queryForm.total = page.total >= 0 ? page.total : this.queryForm.total;
                     this.projects = page.data;
                 }).finally(() => this.stopProgress());
             },

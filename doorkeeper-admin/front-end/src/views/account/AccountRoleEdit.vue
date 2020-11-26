@@ -17,13 +17,19 @@
 <template>
     <el-container>
         <el-main>
-            <el-form :model="account" label-width="120px" size="mini" class="edit-account-form"
+            <el-form :model="account" label-width="120px" size="mini" class="edit-form"
                      :rules="rules" ref="editForm">
-                <el-form-item label="描述">
-                    <el-input type="textarea" v-model="account.accountDescribe"></el-input>
+                <el-form-item label="登录用户名" prop="username">
+                    <el-input v-model="account.username" :maxlength="50"></el-input>
                 </el-form-item>
-                <el-form-item label="管理员">
-                    <el-switch v-model="role.isAdmin" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+                <el-form-item label="登录密码" prop="password">
+                    <el-input v-model="account.password" :maxlength="50" type="password"></el-input>
+                </el-form-item>
+                <el-form-item label="确认登录密码" prop="confirmPassword">
+                    <el-input v-model="account.confirmPassword" :maxlength="50" type="password"></el-input>
+                </el-form-item>
+                <el-form-item label="昵称" prop="nick">
+                    <el-input v-model="account.nick" :maxlength="32"></el-input>
                 </el-form-item>
             </el-form>
         </el-main>

@@ -102,15 +102,14 @@
         methods: {
             ...mapActions('ui', ['startProgress', 'stopProgress']),
 
-            initPageForm() {
+            resetPageForm() {
                 this.queryForm.current = 1;
-                this.queryForm.size = 10;
                 this.queryForm.total = -1;
             },
 
-            loadRoles(initPage) {
-                if (initPage) {
-                    this.initPageForm();
+            loadRoles(resetPage) {
+                if (resetPage) {
+                    this.resetPageForm();
                 }
                 this.startProgress();
                 this.$ajax.get('/role/query', {
@@ -171,7 +170,7 @@
                     this.role = {};
                     this.dialogOpened = false;
                     if ('新增' === this.dialogOpenMode) {
-                        this.initPageForm()
+                        this.resetPageForm()
                     }
                     this.loadRoles()
                 }).catch(err => err);

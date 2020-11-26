@@ -123,15 +123,14 @@
         methods: {
             ...mapActions('ui', ['startProgress', 'stopProgress']),
 
-            initPageForm() {
+            resetPageForm() {
                 this.queryForm.current = 1;
-                this.queryForm.size = 10;
                 this.queryForm.total = -1;
             },
 
-            loadApis(initPage) {
-                if (initPage) {
-                    this.initPageForm();
+            loadApis(resetPage) {
+                if (resetPage) {
+                    this.resetPageForm();
                 }
                 this.startProgress({ speed: 'fast' });
                 this.$ajax.get('/api/query', {
@@ -164,7 +163,7 @@
                 this.$refs.apiEdit.confirmEdit().then(() => {
                     this.dialogOpened = false;
                     if (this.dialogOpenAddMode)  {
-                        this.initPageForm();
+                        this.resetPageForm();
                     }
                     this.loadApis();
                 });

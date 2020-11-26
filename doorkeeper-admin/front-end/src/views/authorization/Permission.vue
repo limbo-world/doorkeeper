@@ -87,8 +87,6 @@
         data() {
             return {
                 queryForm: {
-                    keyword: '',
-                    api: '',
                     current: 1,
                     size: 10,
                     total: -1
@@ -111,15 +109,14 @@
         methods: {
             ...mapActions('ui', ['startProgress', 'stopProgress']),
 
-            initPageForm() {
+            resetPageForm() {
                 this.queryForm.current = 1;
-                this.queryForm.size = 10;
                 this.queryForm.total = -1;
             },
 
-            loadPermissions(initPage) {
-                if (initPage) {
-                    this.initPageForm();
+            loadPermissions(resetPage) {
+                if (resetPage) {
+                    this.resetPageForm();
                 }
                 this.startProgress({ speed: 'fast' });
                 this.$ajax.get('/permission/query', {
@@ -172,7 +169,7 @@
                     this.permission = {}
                     this.dialogOpened = false;
                     if ('新增' === this.dialogOpenMode) {
-                        this.initPageForm()
+                        this.resetPageForm()
                     }
                     this.loadPermissions();
                 });
