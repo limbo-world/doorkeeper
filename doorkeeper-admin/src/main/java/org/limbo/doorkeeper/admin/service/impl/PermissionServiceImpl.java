@@ -25,6 +25,7 @@ import org.limbo.doorkeeper.api.client.PermissionApiClient;
 import org.limbo.doorkeeper.api.client.PermissionClient;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.PermissionAddParam;
+import org.limbo.doorkeeper.api.model.param.PermissionApiAddParam;
 import org.limbo.doorkeeper.api.model.param.PermissionUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,10 @@ public class PermissionServiceImpl implements PermissionService {
         }
 
         if (CollectionUtils.isNotEmpty(param.getPermissionApis())) {
+            PermissionVO permissionVO = permissionVOResponse.getData();
+            for (PermissionApiAddParam permissionApiAddParam : param.getPermissionApis()) {
+                permissionApiAddParam.setPermissionId(permissionVO.getPermissionId());
+            }
             permissionApiClient.addPermissionApi(param.getPermissionApis());
         }
 
@@ -66,10 +71,17 @@ public class PermissionServiceImpl implements PermissionService {
         Response<Integer> update = permissionClient.update(permissionId, permission);
 
         // 删除权限
-        Response<Integer> integerResponse = permissionApiClient.deletePermissionApi(param.getDeletePermissionApiIds());
+        if (CollectionUtils.isNotEmpty(param.getDeletePermissionApiIds())) {
+            permissionApiClient.deletePermissionApi(param.getDeletePermissionApiIds());
+        }
 
         // 新增权限
-        Response<Boolean> booleanResponse = permissionApiClient.addPermissionApi(param.getAddApis());
+        if (CollectionUtils.isNotEmpty(param.getAddPermissionApis())) {
+            for (PermissionApiAddParam permissionApiAddParam : param.getAddPermissionApis()) {
+                permissionApiAddParam.setPermissionId(permissionId);
+            }
+            permissionApiClient.addPermissionApi(param.getAddPermissionApis());
+        }
 
         return update;
     }

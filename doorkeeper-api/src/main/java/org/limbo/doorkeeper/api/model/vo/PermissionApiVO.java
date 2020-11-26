@@ -26,6 +26,9 @@ import lombok.Data;
 @Data
 public class PermissionApiVO {
 
+    @Schema(title = "权限Api id")
+    private Long permissionApiId;
+
     @Schema(title = "项目ID")
     private Long projectId;
 
@@ -33,7 +36,7 @@ public class PermissionApiVO {
     private Long permissionId;
 
     @Schema(title = "api id")
-    private String apiId;
+    private Long apiId;
 
     @Schema(title = "策略")
     private String policy;

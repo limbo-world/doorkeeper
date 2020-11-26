@@ -50,7 +50,7 @@
             <permission-edit :permission="permission" ref="permissionEdit" :open-mode="dialogOpenMode"></permission-edit>
             <el-footer class="text-right">
                 <el-button @click="dialogCancel">取 消</el-button>
-                <el-button type="primary" @click="dialogConfirm">确 定</el-button>
+                <el-button type="primary" v-if="'查看' !== dialogOpenMode" @click="dialogConfirm">确 定</el-button>
             </el-footer>
         </el-dialog>
 
@@ -102,14 +102,7 @@
                 }).then(response => {
                     const page = response.data;
                     this.queryForm.total = page.total >= 0 ? page.total : this.queryForm.total;
-
-                    const permissions = page.data;
-                    permissions.forEach(p => {
-                        if (!p.apiList) {
-                            p.apiList = p.api ? p.api.split(',') : [];
-                        }
-                    });
-                    this.permissions = permissions;
+                    this.permissions = page.data;
                 }).finally(() => this.stopProgress());
             },
 

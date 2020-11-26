@@ -27,6 +27,7 @@ import org.limbo.doorkeeper.api.model.param.PermissionQueryParam;
 import org.limbo.doorkeeper.api.model.param.PermissionUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
@@ -52,7 +53,8 @@ public class PermissionController {
     }
 
     @PutMapping("/{permissionId}")
-    public Response<Integer> update(@NotNull @PathVariable("permissionId") Long permissionId, @RequestBody AdminPermissionUpdateParam param) {
+    public Response<Integer> update(@Validated @NotNull(message = "权限不存在") @PathVariable("permissionId") Long permissionId,
+                                    @RequestBody AdminPermissionUpdateParam param) {
         return permissionService.update(permissionId, param);
     }
 

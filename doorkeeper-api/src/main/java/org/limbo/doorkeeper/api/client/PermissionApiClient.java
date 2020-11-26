@@ -16,14 +16,13 @@
 
 package org.limbo.doorkeeper.api.client;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.limbo.doorkeeper.api.client.fallback.PermissionApiClientFallback;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.PermissionApiAddParam;
 import org.limbo.doorkeeper.api.model.param.PermissionApiQueryParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionApiVO;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,7 +38,7 @@ import java.util.List;
 public interface PermissionApiClient {
 
     @GetMapping
-    Response<List<PermissionApiVO>> list(PermissionApiQueryParam param);
+    Response<List<PermissionApiVO>> list(@SpringQueryMap PermissionApiQueryParam param);
 
     @PostMapping
     Response<Boolean> addPermissionApi(@RequestBody List<PermissionApiAddParam> permissionApis);

@@ -32,7 +32,7 @@ public class AdminPermissionUpdateParam {
 
     private String permissionDescribe;
 
-    private List<PermissionApiAddParam> addApis;
+    private List<PermissionApiAddParam> addPermissionApis;
 
     private List<Long> deletePermissionApiIds;
 }

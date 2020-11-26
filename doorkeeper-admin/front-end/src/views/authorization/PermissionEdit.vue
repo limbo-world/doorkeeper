@@ -2,7 +2,7 @@
     <el-container>
         <el-main>
             <el-form :model="permission" label-position="left" label-width="80px" size="mini" class="edit-form"
-                     :rules="rules" ref="editForm" :disabled="!!viewMode">
+                     :rules="rules" ref="editForm" :disabled="'查看' === openMode">
                 <el-form-item label="名称" prop="permissionName"
                               :rules="{required: true, message: '请填写名称', trigger: 'blur'}">
                     <el-input v-model="permission.permissionName" placeholder="权限名称"></el-input>
@@ -68,11 +68,13 @@
 
                     this.apis = result[0].data;
 
+                    // 如果传递了权限ID 查询对应权限的所以已有的api
                     if (hasApi && hasApi.length > 0) {
                         hasApi.forEach(k => {
                             for (let api of this.apis) {
-                                if (k === api.apiId) {
+                                if (k.apiId === api.apiId) {
                                     api.policy = k.policy;
+                                    api.permissionApiId = k.permissionApiId
                                     this.hasApis.push(api);
                                     this.transferValue.push(api.apiId);
                                     break
@@ -80,8 +82,9 @@
                             }
                         });
                     }
+                    this.$forceUpdate();
                 });
-                // 如果传递了权限ID 查询对应权限的所以已有的api
+
             },
             renderFunc(h, option) {
                 if ('allow' === option.policy) {
@@ -102,6 +105,7 @@
                 this.leftSelect.forEach(k => {
                     for (let api of this.apis) {
                         if (k === api.apiId) {
+                            delete api.delPermissionApiId;
                             api.policy = 'allow';
                             this.hasApis.push(api);
                             this.transferValue.push(api.apiId);
@@ -115,6 +119,7 @@
                 this.leftSelect.forEach(k => {
                     for (let api of this.apis) {
                         if (k === api.apiId) {
+                            delete api.delPermissionApiId;
                             api.policy = 'refuse';
                             this.hasApis.push(api);
                             this.transferValue.push(api.apiId);
@@ -129,6 +134,9 @@
                     for (let idx in this.hasApis) {
                         let api = this.hasApis[idx];
                         if (k === api.apiId) {
+                            // 往左边删除的时候，如果有 permissonApiId 需要清空
+                            api.delPermissionApiId = api.permissionApiId
+                            delete api.permissionApiId;
                             delete api.policy;
                             this.hasApis.splice(idx, 1);
                             this.transferValue.splice(idx, 1);
@@ -147,14 +155,18 @@
                         resolve({data: [], code: 200})
                     })
                 }
-                return this.$ajax.get('/permission-api');
+                return this.$ajax.get('/permission-api', {params: {permissionId: this.permission.permissionId}});
             },
 
 
             clearData() {
-                this.permission = {
-                    apiList: []
-                };
+                // 初始化数据
+                this.permission = {};
+                this.apis = [];
+                this.hasApis = [];
+                this.leftSelect = [];
+                this.rightSelect = [];
+                this.transferValue = [];
 
                 if (this.$refs.editForm) {
                     this.$refs.editForm.clearValidate();
@@ -189,7 +201,16 @@
             },
 
             doUpdatePermission(permission) {
-                return this.$ajax.put(`/permission/${permission.permCode}`, permission);
+                // 找出apis 有permissionApiId但是不在已选框内的
+                let delIds = [];
+                this.apis.forEach(api => {
+                    if (api.delPermissionApiId) {
+                        delIds.push(api.delPermissionApiId);
+                    }
+                });
+                permission.addPermissionApis = this.hasApis;
+                permission.deletePermissionApiIds = delIds;
+                return this.$ajax.put(`/permission/${permission.permissionId}`, permission);
             },
         }
     }
