@@ -97,7 +97,7 @@
                 return this.$ajax.get('/account');
             },
             loadAccountProject() {
-                if (!this.role.roleId) {
+                if (!this.project.projectId) {
                     return new Promise((resolve, reject) => {
                         resolve({data: [], code: 200})
                     })
