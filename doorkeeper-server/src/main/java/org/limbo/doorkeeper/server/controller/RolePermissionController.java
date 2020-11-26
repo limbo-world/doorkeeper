@@ -20,6 +20,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.RolePermissionAddParam;
+import org.limbo.doorkeeper.api.model.param.RolePermissionQueryParam;
+import org.limbo.doorkeeper.api.model.vo.RolePermissionVO;
 import org.limbo.doorkeeper.server.service.RolePermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +39,12 @@ public class RolePermissionController extends BaseController {
 
     @Autowired
     private RolePermissionService rolePermissionService;
+
+    @GetMapping
+    @Operation(summary = "获取角色权限")
+    public Response<List<RolePermissionVO>> list(RolePermissionQueryParam param) {
+        return Response.ok(rolePermissionService.list(getProjectId(), param));
+    }
 
     @PostMapping
     @Operation(summary = "绑定角色权限")

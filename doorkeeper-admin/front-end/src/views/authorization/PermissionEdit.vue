@@ -66,7 +66,7 @@
                         api.key = api.apiId;
                     });
 
-                    this.apis = result[0].data;
+                    this.apis = allApi;
 
                     // 如果传递了权限ID 查询对应权限的所以已有的api
                     if (hasApi && hasApi.length > 0) {
@@ -105,7 +105,6 @@
                 this.leftSelect.forEach(k => {
                     for (let api of this.apis) {
                         if (k === api.apiId) {
-                            delete api.delPermissionApiId;
                             api.policy = 'allow';
                             this.hasApis.push(api);
                             this.transferValue.push(api.apiId);
@@ -119,7 +118,6 @@
                 this.leftSelect.forEach(k => {
                     for (let api of this.apis) {
                         if (k === api.apiId) {
-                            delete api.delPermissionApiId;
                             api.policy = 'refuse';
                             this.hasApis.push(api);
                             this.transferValue.push(api.apiId);

@@ -19,6 +19,8 @@ package org.limbo.doorkeeper.server.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.model.param.RolePermissionAddParam;
+import org.limbo.doorkeeper.api.model.param.RolePermissionQueryParam;
+import org.limbo.doorkeeper.api.model.vo.RolePermissionVO;
 import org.limbo.doorkeeper.server.dao.RolePermissionMapper;
 import org.limbo.doorkeeper.server.entity.RolePermission;
 import org.limbo.doorkeeper.server.service.RolePermissionService;
@@ -37,6 +39,15 @@ public class RolePermissionServiceImpl implements RolePermissionService {
 
     @Autowired
     private RolePermissionMapper rolePermissionMapper;
+
+    @Override
+    public List<RolePermissionVO> list(Long projectId, RolePermissionQueryParam param) {
+        List<RolePermission> rolePermissions = rolePermissionMapper.selectList(Wrappers.<RolePermission>lambdaQuery()
+                .eq(RolePermission::getProjectId, projectId)
+                .eq(RolePermission::getRoleId, param.getRoleId())
+        );
+        return EnhancedBeanUtils.createAndCopyList(rolePermissions, RolePermissionVO.class);
+    }
 
     @Override
     public void addRolePermission(Long projectId, List<RolePermissionAddParam> params) {

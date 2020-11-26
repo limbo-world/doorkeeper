@@ -19,6 +19,8 @@ package org.limbo.doorkeeper.admin.controller;
 import org.limbo.doorkeeper.api.client.RolePermissionClient;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.RolePermissionAddParam;
+import org.limbo.doorkeeper.api.model.param.RolePermissionQueryParam;
+import org.limbo.doorkeeper.api.model.vo.RolePermissionVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +36,11 @@ public class RolePermissionController {
 
     @Autowired
     private RolePermissionClient rolePermissionClient;
+
+    @GetMapping
+    public Response<List<RolePermissionVO>> list(RolePermissionQueryParam param) {
+        return rolePermissionClient.list(param);
+    }
 
     @PostMapping
     public Response<Boolean> addRolePermission(@RequestBody List<RolePermissionAddParam> params) {

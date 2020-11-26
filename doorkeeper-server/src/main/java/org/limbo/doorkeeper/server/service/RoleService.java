@@ -37,4 +37,6 @@ public interface RoleService {
     Integer deleteRole(Long projectId, List<Long> roleIds);
 
     Page<RoleVO> queryRole(Long projectId, RoleQueryParam param);
+
+    List<RoleVO> list(Long projectId);
 }

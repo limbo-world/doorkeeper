@@ -6,7 +6,7 @@
                     <el-input v-model="queryForm.permissionName" placeholder="输入名称"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="loadPermissions" size="mini" icon="el-icon-search">查询</el-button>
+                    <el-button type="primary" @click="loadPermissions(true)" size="mini" icon="el-icon-search">查询</el-button>
                     <el-button type="primary" @click="addPermission" size="mini" icon="el-icon-circle-plus">添加权限</el-button>
                 </el-form-item>
             </el-form>
@@ -95,7 +95,16 @@
         methods: {
             ...mapActions('ui', ['startProgress', 'stopProgress']),
 
-            loadPermissions() {
+            initPageForm() {
+                this.queryForm.current = 1;
+                this.queryForm.size = 10;
+                this.queryForm.total = -1;
+            },
+
+            loadPermissions(initPage) {
+                if (initPage) {
+                    this.initPageForm();
+                }
                 this.startProgress({ speed: 'fast' });
                 this.$ajax.get('/permission/query', {
                     params: this.queryForm
@@ -144,9 +153,10 @@
 
             dialogConfirm() {
                 this.$refs.permissionEdit.confirmEdit().then(() => {
+                    this.permission = {}
                     this.dialogOpened = false;
                     if ('新增' === this.dialogOpenMode) {
-                        this.queryForm.total = -1;
+                        this.initPageForm()
                     }
                     this.loadPermissions();
                 });
@@ -161,8 +171,7 @@
                     this.$ajax.delete(`/permission`, {data: permissionIds})
                         .then(() => {
                             this.$message. success('删除成功。');
-                            this.queryForm.total = -1;
-                            this.loadPermissions();
+                            this.loadPermissions(true);
                         });
                 }).catch(() => {
                     this.$message.info("已取消删除");

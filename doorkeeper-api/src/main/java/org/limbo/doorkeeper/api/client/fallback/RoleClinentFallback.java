@@ -59,6 +59,11 @@ public class RoleClinentFallback extends Fallback implements FallbackFactory<Rol
             public Response<Page<RoleVO>> page(RoleQueryParam param) {
                 return serviceUnavailable();
             }
+
+            @Override
+            public Response<List<RoleVO>> list() {
+                return serviceUnavailable();
+            }
         };
     }
 }

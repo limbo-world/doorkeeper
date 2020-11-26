@@ -19,8 +19,12 @@ package org.limbo.doorkeeper.api.client;
 import org.limbo.doorkeeper.api.client.fallback.RolePermissionClientFallback;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.RolePermissionAddParam;
+import org.limbo.doorkeeper.api.model.param.RolePermissionQueryParam;
+import org.limbo.doorkeeper.api.model.vo.RolePermissionVO;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -32,6 +36,10 @@ import java.util.List;
  */
 @FeignClient(name = "doorkeeper-server", path = "/role-permission", contextId = "rolePermissionClient", fallbackFactory = RolePermissionClientFallback.class)
 public interface RolePermissionClient {
+
+    @GetMapping
+    Response<List<RolePermissionVO>> list(@SpringQueryMap RolePermissionQueryParam param);
+
     @PostMapping
     Response<Boolean> addRolePermission(@RequestBody List<RolePermissionAddParam> params);
 
