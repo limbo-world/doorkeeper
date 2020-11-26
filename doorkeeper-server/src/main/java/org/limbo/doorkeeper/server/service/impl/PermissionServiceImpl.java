@@ -23,8 +23,12 @@ import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.*;
 import org.limbo.doorkeeper.api.model.vo.ApiVO;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
+import org.limbo.doorkeeper.server.dao.PermissionApiMapper;
 import org.limbo.doorkeeper.server.dao.PermissionMapper;
+import org.limbo.doorkeeper.server.dao.RolePermissionMapper;
 import org.limbo.doorkeeper.server.entity.Permission;
+import org.limbo.doorkeeper.server.entity.PermissionApi;
+import org.limbo.doorkeeper.server.entity.RolePermission;
 import org.limbo.doorkeeper.server.service.PermissionApiService;
 import org.limbo.doorkeeper.server.service.PermissionService;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
@@ -46,7 +50,10 @@ public class PermissionServiceImpl implements PermissionService {
     private PermissionMapper permissionMapper;
 
     @Autowired
-    private PermissionApiService permissionApiService;
+    private PermissionApiMapper permissionApiMapper;
+
+    @Autowired
+    private RolePermissionMapper rolePermissionMapper;
 
     @Override
     @Transactional
@@ -69,7 +76,20 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
+    @Transactional
     public int deletePermission(Long projectId, List<Long> permissionIds) {
+        // 删除权限api
+        permissionApiMapper.delete(Wrappers.<PermissionApi>lambdaQuery()
+                .eq(PermissionApi::getProjectId, projectId)
+                .in(PermissionApi::getPermissionId, permissionIds)
+        );
+
+        // 删除角色权限
+        rolePermissionMapper.delete(Wrappers.<RolePermission>lambdaQuery()
+                .eq(RolePermission::getProjectId, projectId)
+                .in(RolePermission::getPermissionId, permissionIds)
+        );
+
         return permissionMapper.update(null, Wrappers.<Permission>lambdaUpdate()
                 .set(Permission::getIsDeleted, true)
                 .in(Permission::getPermissionId, permissionIds)
