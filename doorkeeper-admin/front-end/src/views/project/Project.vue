@@ -3,11 +3,13 @@
         <el-header class="padding-top-xs" height="50px">
             <el-form ref="searchForm" :inline="true" size="mini">
                 <el-form-item label="项目名称">
-                    <el-input v-model="queryForm.projectName" placeholder="输入项目名称"></el-input>
+                    <el-input v-model="queryParam.projectName" placeholder="输入项目名称"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="loadProjects(true)" size="mini" icon="el-icon-search">查询</el-button>
-                    <el-button type="primary" @click="addProject" size="mini" icon="el-icon-circle-plus">新增</el-button>
+                    <el-button type="primary" @click="loadProjects" size="mini" icon="el-icon-search">查询</el-button>
+                    <el-button type="primary" @click="() =>{
+                            dialogOpened = true;
+                        }" size="mini" icon="el-icon-circle-plus">新增</el-button>
                 </el-form-item>
             </el-form>
         </el-header>
@@ -34,11 +36,13 @@
                 <el-table-column label="操作">
                     <template slot-scope="scope">
                         <div class="operations">
-                            <i class="el-icon-view" @click="viewProject(scope.row)"></i>
-                            <i class="el-icon-edit" @click="editProject(scope.row)"></i>
-                            <i class="el-icon-delete" @click="() => {
-                                deleteProject([scope.row.projectId])
-                            }"></i>
+                            <template v-if="!scope.row.isDefault && !isAdminProject(scope.row.projectId)">
+                                <i class="el-icon-edit" @click="() =>{
+                                    project = {...scope.row};
+                                    dialogOpened = true;
+                                }"></i>
+                                <i class="el-icon-delete" @click="deleteProject(scope.row)"></i>
+                            </template>
                         </div>
                     </template>
                 </el-table-column>
@@ -46,18 +50,32 @@
         </el-main>
 
         <el-footer>
-            <el-pagination background layout="prev, pager, next" :total="queryForm.total" :page-size="queryForm.size"
-                           :current-page.sync="queryForm.current" @current-change="loadProjects">
+            <el-pagination background layout="prev, pager, next" :total="queryParam.total" :page-size="queryParam.size"
+                           :current-page.sync="queryParam.current" @current-change="loadProjects">
             </el-pagination>
         </el-footer>
 
 
-        <el-dialog :title="`${dialogOpenMode}项目`" :visible.sync="dialogOpened" width="70%" class="edit-dialog"
-                   @close="dialogCancel" @opened="beforeDialogOpen">
-            <project-edit :project="project" ref="projectEdit" :open-mode="dialogOpenMode"></project-edit>
+        <el-dialog title="编辑" :visible.sync="dialogOpened" width="50%" class="edit-dialog" :before-close="preventCloseWhenProcessing">
+            <el-form :model="project" label-width="80px" size="mini" class="edit-form"
+                     :rules="rules" ref="editForm">
+                <el-form-item label="项目名称">
+                    <el-input v-model="project.projectName" placeholder="项目名称"></el-input>
+                </el-form-item>
+                <el-form-item label="项目秘钥">
+                    <el-input v-model="project.projectSecret" placeholder="项目秘钥"></el-input>
+                </el-form-item>
+                <el-form-item label="项目描述">
+                    <el-input type="textarea" v-model="project.projectDescribe" placeholder="项目描述"></el-input>
+                </el-form-item>
+            </el-form>
             <el-footer class="text-right">
-                <el-button @click="dialogCancel">取 消</el-button>
-                <el-button type="primary" v-if="'查看' !== dialogOpenMode" @click="dialogConfirm">确 定</el-button>
+                <el-button @click="() => {
+                    project = {};
+                    dialogOpened = false;
+                }" :disabled="dialogProcessing">取 消</el-button>
+                <el-button type="primary" @click="editProject" :loading="dialogProcessing"
+                           :disabled="dialogProcessing">确 定</el-button>
             </el-footer>
         </el-dialog>
 
@@ -67,17 +85,13 @@
 
 
 <script>
-    import ProjectEdit from './ProjectEdit';
+
     import { mapState, mapActions } from 'vuex';
 
     export default {
-        components: {
-            ProjectEdit,
-        },
-
         data() {
             return {
-                queryForm: {
+                queryParam: {
                     projectName: '',
                     current: 1,
                     size: 10,
@@ -86,8 +100,8 @@
 
                 projects: [],
 
-                project: {},
-                dialogOpenMode: '',
+                project: {
+                },
                 dialogOpened: false,
                 dialogProcessing: false,
             }
@@ -106,20 +120,14 @@
         methods: {
             ...mapActions('ui', ['startProgress', 'stopProgress']),
 
-            initPageForm() {
-                this.queryForm.current = 1;
-                this.queryForm.size = 10;
-                this.queryForm.total = -1;
-            },
-
-            loadProjects(initPage) {
-                if (initPage) {
-                    this.initPageForm();
-                }
+            loadProjects() {
                 this.startProgress();
-                this.$ajax.get('/project/query', {params: this.queryForm}).then(response => {
+                this.$ajax.get('/project/query', {params: this.queryParam}).then(response => {
                     const page = response.data;
-                    this.queryForm.total = page.total >= 0 ? page.total : this.queryForm.total;
+                    if (page.total > -1) {
+                        this.queryParam.total = page.total;
+                    }
+
                     this.projects = page.data;
                 }).finally(() => this.stopProgress());
             },
@@ -140,22 +148,8 @@
                 Vue.set(this.projects, idx, project);
             },
 
-            addProject() {
-                this.project = {};
-                this.dialogOpenMode = '新增';
-                this.dialogOpened = true;
-            },
-
-            editProject(project) {
-                this.project = project;
-                this.dialogOpenMode = '修改';
-                this.dialogOpened = true;
-            },
-
-            viewProject(project) {
-                this.project = project;
-                this.dialogOpenMode = '查看';
-                this.dialogOpened = true;
+            isAdminProject(projectId) {
+                return this.user.account.accountProjectId === projectId;
             },
 
             editProject() {
@@ -183,37 +177,26 @@
 
             },
 
-            deleteProject(projectIds) {
-                this.$confirm('确认删除?', '提示', {
+            deleteProject(project) {
+                this.$confirm('此操作将永久删除该项目, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    this.$ajax.delete(`/project`, {data: projectIds}).then(() => {
+                    this.$ajax.delete(`/project/${project.projectId}`).then(() => {
                         this.$message.success('删除成功。');
-                        this.loadProjects(true);
+                        this.loadProjects();
                     })
                 }).catch(err => err);
             },
 
-            dialogCancel() {
-                this.$refs.projectEdit.clearData();
+            preventCloseWhenProcessing() {
+                if (this.dialogProcessing) {
+                    return false;
+                }
+
+                this.project = {};
                 this.dialogOpened = false;
-            },
-
-            beforeDialogOpen() {
-                this.$refs.projectEdit.preOpen();
-            },
-
-            dialogConfirm() {
-                this.$refs.projectEdit.confirmEdit().then(() => {
-                    this.project = {};
-                    this.dialogOpened = false;
-                    if ('新增' === this.dialogOpenMode) {
-                        this.initPageForm()
-                    }
-                    this.loadProjects();
-                });
             }
         }
 

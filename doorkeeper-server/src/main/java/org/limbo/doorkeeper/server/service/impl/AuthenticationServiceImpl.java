@@ -21,10 +21,12 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.PermissionPolicy;
 import org.limbo.doorkeeper.api.model.param.AuthenticationCheckParam;
-import org.limbo.doorkeeper.api.model.vo.*;
+import org.limbo.doorkeeper.api.model.vo.AccountApiGrantVO;
+import org.limbo.doorkeeper.api.model.vo.ApiVO;
+import org.limbo.doorkeeper.api.model.vo.PermissionVO;
+import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.server.dao.*;
 import org.limbo.doorkeeper.server.entity.*;
-import org.limbo.doorkeeper.server.service.AccountService;
 import org.limbo.doorkeeper.server.service.AuthenticationService;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +49,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private static final ThreadLocal<AntPathMatcher> PATH_MATCHER = ThreadLocal.withInitial(AntPathMatcher::new);
 
     @Autowired
-    private AccountService accountService;
+    private AccountMapper accountMapper;
 
     @Autowired
     private AuthenticationService _this;
@@ -72,7 +74,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public Boolean accessAllowed(Long projectId, AuthenticationCheckParam param) {
-        AccountVO account = accountService.getAccount(projectId, param.getAccountId());
+        Account account = accountMapper.getProjcetAccountById(projectId, param.getAccountId());
         if (account == null) {
             return false;
         }
@@ -80,8 +82,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return false;
         }
 
-        // 超级管理员拥有全部权限
-        if (account.getIsSuperAdmin()) {
+        // 管理员拥有全部权限
+        if (account.getIsAdmin()) {
             return true;
         }
 

@@ -18,6 +18,7 @@ package org.limbo.doorkeeper.server.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.AuthenticationCheckParam;
 import org.limbo.doorkeeper.server.service.AuthenticationService;
@@ -30,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author liuqingtong
  * @date 2020/11/24 19:34
  */
-@Log4j
+@Slf4j
 @RestController
 @RequestMapping("/auth")
 public class AuthenticationController extends BaseController {

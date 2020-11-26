@@ -18,10 +18,9 @@ package org.limbo.doorkeeper.server.service;
 
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.AccountAddParam;
-import org.limbo.doorkeeper.api.model.param.AccountQueryParam;
 import org.limbo.doorkeeper.api.model.param.AccountBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.AccountQueryParam;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
-import org.limbo.doorkeeper.server.entity.Account;
 
 import java.util.List;
 
@@ -46,11 +45,6 @@ public interface AccountService {
      * 分页查询
      */
     Page<AccountVO> queryPage(Long projectId, AccountQueryParam param);
-
-    /**
-     * 获取用户账户
-     */
-    AccountVO getAccount(Long projectId, Long accountId);
 
 
     List<AccountVO> list(Long projectId);

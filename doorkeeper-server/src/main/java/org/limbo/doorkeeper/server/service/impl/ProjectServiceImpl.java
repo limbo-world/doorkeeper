@@ -26,7 +26,9 @@ import org.limbo.doorkeeper.api.model.param.ProjectAddParam;
 import org.limbo.doorkeeper.api.model.param.ProjectQueryParam;
 import org.limbo.doorkeeper.api.model.param.ProjectUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ProjectVO;
+import org.limbo.doorkeeper.server.dao.AccountMapper;
 import org.limbo.doorkeeper.server.dao.ProjectMapper;
+import org.limbo.doorkeeper.server.entity.Account;
 import org.limbo.doorkeeper.server.entity.Project;
 import org.limbo.doorkeeper.server.service.ProjectService;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
@@ -51,6 +53,9 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     private ProjectMapper projectMapper;
 
+    @Autowired
+    private AccountMapper accountMapper;
+
     @Override
     @Transactional
     public ProjectVO addProject(ProjectAddParam param) {
@@ -63,6 +68,15 @@ public class ProjectServiceImpl implements ProjectService {
         } catch (DuplicateKeyException e) {
             throw new ParamException("项目已存在");
         }
+
+        // 创建超级管理员
+        Account account = new Account();
+        account.setProjectId(project.getProjectId());
+        account.setUsername("admin");
+        account.setIsSuperAdmin(true);
+        account.setIsAdmin(true);
+
+        accountMapper.insert(account);
 
         return EnhancedBeanUtils.createAndCopy(project, ProjectVO.class);
     }
