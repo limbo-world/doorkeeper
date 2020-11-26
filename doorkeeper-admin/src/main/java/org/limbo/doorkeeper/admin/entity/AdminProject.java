@@ -14,14 +14,30 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.admin.dao;
+package org.limbo.doorkeeper.admin.entity;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.limbo.doorkeeper.admin.entity.AdminAccount;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 
 /**
- * @author Devil
- * @date 2020/11/24 10:54 AM
+ *
+ * admin项目管理员拥有哪些项目权限
+ *
+ * @author devil
+ * @date 2020/3/13
  */
-public interface AdminAccountMapper extends BaseMapper<AdminAccount> {
+@Data
+@TableName("laa_admin_project")
+public class AdminProject {
+
+    @TableId(type = IdType.AUTO)
+    private Long accountProjectId;
+
+    private Long accountId;
+
+    private Long projectId;
+
+    private String projectName;
 }

@@ -24,6 +24,7 @@ import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.AccountAddParam;
 import org.limbo.doorkeeper.api.model.param.AccountBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.AccountQueryParam;
+import org.limbo.doorkeeper.api.model.param.AccountUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.springframework.stereotype.Component;
 
@@ -46,7 +47,12 @@ public class AccountClinentFallback extends Fallback implements FallbackFactory<
             }
 
             @Override
-            public Response<Integer> update(AccountBatchUpdateParam param) {
+            public Response<Integer> batchUpdate(AccountBatchUpdateParam param) {
+                return serviceUnavailable();
+            }
+
+            @Override
+            public Response<Integer> update(Long accountId, AccountUpdateParam param) {
                 return serviceUnavailable();
             }
 
@@ -57,6 +63,11 @@ public class AccountClinentFallback extends Fallback implements FallbackFactory<
 
             @Override
             public Response<List<AccountVO>> list() {
+                return serviceUnavailable();
+            }
+
+            @Override
+            public Response<AccountVO> get(Long accountId) {
                 return serviceUnavailable();
             }
         };

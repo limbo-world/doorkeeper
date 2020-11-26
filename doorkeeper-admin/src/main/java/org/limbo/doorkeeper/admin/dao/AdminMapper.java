@@ -14,27 +14,14 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.admin.model.param;
+package org.limbo.doorkeeper.admin.dao;
 
-import lombok.Data;
-import org.limbo.doorkeeper.admin.entity.AdminProject;
-
-import javax.validation.constraints.NotBlank;
-import java.util.List;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.limbo.doorkeeper.admin.entity.Admin;
 
 /**
  * @author Devil
- * @date 2020/11/19 3:29 PM
+ * @date 2020/11/24 10:54 AM
  */
-@Data
-public class AdminProjectAddParam {
-
-    @NotBlank(message = "项目名称不能为空")
-    private String projectName;
-
-    private String projectSecret;
-
-    private String projectDescribe;
-
-    private List<AdminProject> accountProjects;
+public interface AdminMapper extends BaseMapper<Admin> {
 }

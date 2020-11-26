@@ -22,13 +22,11 @@ import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.AccountAddParam;
 import org.limbo.doorkeeper.api.model.param.AccountBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.AccountQueryParam;
+import org.limbo.doorkeeper.api.model.param.AccountUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -40,14 +38,20 @@ import java.util.List;
 public interface AccountClient {
 
     @PostMapping
-    Response<AccountVO> add(@RequestBody AccountAddParam project);
+    Response<AccountVO> add(@RequestBody AccountAddParam param);
 
     @PutMapping
-    Response<Integer> update(@RequestBody AccountBatchUpdateParam param);
+    Response<Integer> batchUpdate(@RequestBody AccountBatchUpdateParam param);
+
+    @PutMapping("/{accountId}")
+    Response<Integer> update(@PathVariable("accountId") Long accountId, @RequestBody AccountUpdateParam param);
 
     @GetMapping("/query")
     Response<Page<AccountVO>> page(@SpringQueryMap AccountQueryParam param);
 
     @GetMapping
     Response<List<AccountVO>> list();
+
+    @GetMapping("/{accountId}")
+    Response<AccountVO> get(@PathVariable("accountId") Long accountId);
 }

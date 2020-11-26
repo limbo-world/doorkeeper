@@ -19,7 +19,7 @@ package org.limbo.doorkeeper.admin.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
-import org.limbo.doorkeeper.admin.entity.AdminAccountProject;
+import org.limbo.doorkeeper.admin.entity.AdminProject;
 
 import java.util.List;
 
@@ -27,12 +27,12 @@ import java.util.List;
  * @author Devil
  * @date 2020/11/24 10:27 AM
  */
-public interface AdminAccountProjectMapper extends BaseMapper<AdminAccountProject> {
+public interface AdminProjectMapper extends BaseMapper<AdminProject> {
 
     @Select(" select * from laa_admin_project where account_id = #{accountId}")
-    List<AdminAccountProject> getByAccount(@Param("accountId") Long accountId);
+    List<AdminProject> getByAccount(@Param("accountId") Long accountId);
 
     @Select(" select * from laa_admin_project where account_id = #{accountId} and project_id = #{projectId}")
-    AdminAccountProject getByAccountProject(@Param("accountId") Long accountId, @Param("projectId") Long projectId);
+    AdminProject getByAccountProject(@Param("accountId") Long accountId, @Param("projectId") Long projectId);
 
 }

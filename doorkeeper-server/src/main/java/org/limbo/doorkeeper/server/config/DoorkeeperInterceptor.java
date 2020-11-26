@@ -16,6 +16,7 @@
 
 package org.limbo.doorkeeper.server.config;
 
+import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.dao.ProjectMapper;
 import org.limbo.doorkeeper.server.entity.Project;
@@ -38,16 +39,23 @@ public class DoorkeeperInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         // 判断是否为 admin 项目
-        String projectId = request.getHeader(DoorkeeperConstants.PROJECT_HEADER);
+        String projectIdStr = request.getHeader(DoorkeeperConstants.PROJECT_HEADER);
         String secret = request.getHeader(DoorkeeperConstants.PROJECT_SECRET_HEADER);
+        Verifies.notBlank(projectIdStr, "项目认证失败");
+        Verifies.notBlank(secret, "项目认证失败");
 
-        Project project = projectMapper.selectById(Long.valueOf(projectId));
+        Long projectId = Long.valueOf(projectIdStr);
+        Project project = projectMapper.selectById(projectId);
         Verifies.notNull(project, "项目认证失败");
         Verifies.verify(project.getProjectSecret().equals(secret), "项目认证失败");
 
-        Long projectParamId = project.getIsAdmin() ? Long.valueOf(request.getHeader(DoorkeeperConstants.PROJECT_PARAM_HEADER))
-                : Long.valueOf(request.getHeader(DoorkeeperConstants.PROJECT_HEADER));
-
+        String projectParamIdStr = request.getHeader(DoorkeeperConstants.PROJECT_PARAM_HEADER);
+        Long projectParamId;
+        if (StringUtils.isBlank(projectParamIdStr)) {
+            projectParamId = projectId;
+        } else {
+            projectParamId = project.getIsAdmin() ? Long.valueOf(projectParamIdStr) : projectId;
+        }
         request.setAttribute(DoorkeeperConstants.PROJECT_PARAM_HEADER, projectParamId);
         return true;
     }

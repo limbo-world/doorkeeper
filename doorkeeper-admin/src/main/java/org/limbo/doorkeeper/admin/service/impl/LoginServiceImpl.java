@@ -23,10 +23,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.limbo.doorkeeper.admin.dao.AdminAccountMapper;
-import org.limbo.doorkeeper.admin.dao.AdminAccountProjectMapper;
-import org.limbo.doorkeeper.admin.entity.AdminAccount;
-import org.limbo.doorkeeper.admin.entity.AdminAccountProject;
+import org.limbo.doorkeeper.admin.dao.AdminMapper;
+import org.limbo.doorkeeper.admin.dao.AdminProjectMapper;
+import org.limbo.doorkeeper.admin.entity.Admin;
+import org.limbo.doorkeeper.admin.entity.AdminProject;
 import org.limbo.doorkeeper.admin.model.param.LoginParam;
 import org.limbo.doorkeeper.admin.model.vo.CaptchaVO;
 import org.limbo.doorkeeper.admin.service.LoginService;
@@ -40,6 +40,7 @@ import org.limbo.doorkeeper.admin.utils.Verifies;
 import org.limbo.doorkeeper.api.client.AccountClient;
 import org.limbo.doorkeeper.api.client.ProjectClient;
 import org.limbo.doorkeeper.api.model.Response;
+import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.limbo.doorkeeper.api.model.vo.ProjectVO;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
@@ -71,10 +72,10 @@ public class LoginServiceImpl implements LoginService {
     private RedisSessionDAO sessionDAO;
 
     @Autowired
-    private AdminAccountMapper adminAccountMapper;
+    private AdminMapper adminMapper;
 
     @Autowired
-    private AdminAccountProjectMapper adminAccountProjectMapper;
+    private AdminProjectMapper adminProjectMapper;
 
     @Autowired
     private ProjectClient projectClient;
@@ -86,33 +87,38 @@ public class LoginServiceImpl implements LoginService {
     public AbstractSession login(LoginParam param) {
         Verifies.verify(verifyCaptcha(param.getCaptchaToken(), param.getCaptcha()), "验证码错误！");
 
-        AdminAccount adminAccount = adminAccountMapper.selectOne(Wrappers.<AdminAccount>lambdaQuery()
-                .eq(AdminAccount::getUsername, param.getUsername())
+        Admin admin = adminMapper.selectOne(Wrappers.<Admin>lambdaQuery()
+                .eq(Admin::getUsername, param.getUsername())
         );
-        Verifies.notNull(adminAccount, "账户不存在");
-        Verifies.verify(MD5Utils.verify(param.getPassword(), adminAccount.getPassword()), "用户名或密码错误！");
+        Verifies.notNull(admin, "账户不存在");
+        Verifies.verify(MD5Utils.verify(param.getPassword(), admin.getPassword()), "用户名或密码错误！");
+
+        Response<AccountVO> accountVOResponse = accountClient.get(admin.getAccountId());
+        Verifies.verify(accountVOResponse.ok(), "账户不存在");
+        Verifies.notNull(accountVOResponse.getData(), "账户不存在");
 
         SessionAccount sessionAccount = new SessionAccount();
-        sessionAccount.setAccountId(adminAccount.getAccountId());
-        sessionAccount.setNickname(adminAccount.getNickname());
-        sessionAccount.setIsSuperAdmin(adminAccount.getIsSuperAdmin());
-        sessionAccount.setIsAdmin(adminAccount.getIsAdmin());
+        sessionAccount.setProjectId(accountVOResponse.getData().getProjectId());
+        sessionAccount.setAccountId(admin.getAccountId());
+        sessionAccount.setNickname(admin.getNickname());
+        sessionAccount.setIsSuperAdmin(admin.getIsSuperAdmin());
+        sessionAccount.setIsAdmin(admin.getIsAdmin());
 
-        List<AdminAccountProject> projects;
-        if (adminAccount.getIsAdmin()) { // 管理员有所有项目权限
+        List<AdminProject> projects;
+        if (admin.getIsAdmin()) { // 管理员有所有项目权限
             Response<List<ProjectVO>> all = projectClient.getAll();
             projects = new ArrayList<>();
             if (CollectionUtils.isNotEmpty(all.getData())) {
                 for (ProjectVO projectVO : all.getData()) {
-                    AdminAccountProject project = new AdminAccountProject();
-                    project.setAccountId(adminAccount.getAccountId());
+                    AdminProject project = new AdminProject();
+                    project.setAccountId(admin.getAccountId());
                     project.setProjectId(projectVO.getProjectId());
                     project.setProjectName(projectVO.getProjectName());
                     projects.add(project);
                 }
             }
         } else {
-            projects = adminAccountProjectMapper.getByAccount(adminAccount.getAccountId());
+            projects = adminProjectMapper.getByAccount(admin.getAccountId());
         }
 
         if (CollectionUtils.isNotEmpty(projects)) {

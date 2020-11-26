@@ -23,11 +23,14 @@ import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.AccountAddParam;
 import org.limbo.doorkeeper.api.model.param.AccountBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.AccountQueryParam;
+import org.limbo.doorkeeper.api.model.param.AccountUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.limbo.doorkeeper.server.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -49,9 +52,17 @@ public class AccountController extends BaseController {
     }
 
     @PutMapping
+    @Operation(summary = "批量修改账户")
+    public Response<Integer> batchUpdate(@RequestBody AccountBatchUpdateParam param) {
+        return Response.ok(accountService.batchUpdate(getProjectId(), param));
+    }
+
+    @PutMapping("/{accountId}")
     @Operation(summary = "修改账户")
-    public Response<Integer> update(@RequestBody AccountBatchUpdateParam param) {
-        return Response.ok(accountService.updateAccount(getProjectId(), param));
+    public Response<Integer> update(@Validated @NotNull(message = "账户不存在") @PathVariable("accountId") Long accountId,
+                                    @RequestBody AccountUpdateParam param) {
+        param.setAccountId(accountId);
+        return Response.ok(accountService.update(getProjectId(), param));
     }
 
     @GetMapping("/query")
@@ -64,6 +75,12 @@ public class AccountController extends BaseController {
     @Operation(summary = "所以账户列表")
     public Response<List<AccountVO>> list() {
         return Response.ok(accountService.list(getProjectId()));
+    }
+
+    @GetMapping("/{accountId}")
+    @Operation(summary = "查询指定账户")
+    public Response<AccountVO> get(@Validated @NotNull(message = "账户不存在") @PathVariable("accountId") Long accountId) {
+        return Response.ok(accountService.get(getProjectId(), accountId));
     }
 
 }

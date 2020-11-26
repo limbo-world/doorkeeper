@@ -14,27 +14,20 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.admin.model.param;
+package org.limbo.doorkeeper.admin.service;
 
-import lombok.Data;
-import org.limbo.doorkeeper.admin.entity.AdminProject;
-
-import javax.validation.constraints.NotBlank;
-import java.util.List;
+import org.limbo.doorkeeper.admin.model.param.AdminAddParam;
+import org.limbo.doorkeeper.admin.model.param.AdminUpdateParam;
+import org.limbo.doorkeeper.api.model.Response;
+import org.limbo.doorkeeper.api.model.vo.AccountVO;
 
 /**
  * @author Devil
- * @date 2020/11/19 3:29 PM
+ * @date 2020/11/26 7:52 PM
  */
-@Data
-public class AdminProjectAddParam {
+public interface AdminService {
 
-    @NotBlank(message = "项目名称不能为空")
-    private String projectName;
+    Response<AccountVO> add(AdminAddParam param);
 
-    private String projectSecret;
-
-    private String projectDescribe;
-
-    private List<AdminProject> accountProjects;
+    Response<Integer> update(AdminUpdateParam param);
 }

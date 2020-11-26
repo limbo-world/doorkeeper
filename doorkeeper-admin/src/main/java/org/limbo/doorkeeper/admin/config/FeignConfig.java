@@ -51,20 +51,21 @@ public class FeignConfig {
 
     @Bean("doorkeeperInterceptor")
     public RequestInterceptor getRequestInterceptor() {
-        return requestTemplate ->
+        return requestTemplate -> {
+            requestTemplate.header(DoorkeeperConstants.PROJECT_HEADER, Strings.valueOf(doorkeeperProperties.getProjectId()));
+            requestTemplate.header(DoorkeeperConstants.PROJECT_SECRET_HEADER, doorkeeperProperties.getProjectSecret());
             Optional.ofNullable((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
                     .map(ServletRequestAttributes::getRequest)
-                    .map(request ->{
+                    .map(request -> {
                         String sessionId = request.getHeader(doorkeeperProperties.getSession().getHeaderName());
                         return redisSessionDAO.readSessionMayNull(sessionId);
                     })
                     .map(AdminSession::getAccount)
-                    .ifPresent(account ->{
-                        requestTemplate.header(DoorkeeperConstants.PROJECT_HEADER, Strings.valueOf(doorkeeperProperties.getProjectId()));
-                        requestTemplate.header(DoorkeeperConstants.PROJECT_SECRET_HEADER, doorkeeperProperties.getProjectSecret());
+                    .ifPresent(account -> {
                         requestTemplate.header(DoorkeeperConstants.PROJECT_PARAM_HEADER, Strings.valueOf(account.getCurrentProjectId()));
                         requestTemplate.header(DoorkeeperConstants.ACCOUNT_HEADER, Strings.valueOf(account.getAccountId()));
                     });
+        };
     }
 
     @Bean

@@ -17,8 +17,8 @@
 package org.limbo.doorkeeper.admin.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.admin.entity.AdminAccountProject;
-import org.limbo.doorkeeper.admin.service.AdminAccountProjectService;
+import org.limbo.doorkeeper.admin.entity.AdminProject;
+import org.limbo.doorkeeper.admin.service.AdminProjectService;
 import org.limbo.doorkeeper.admin.session.AdminSession;
 import org.limbo.doorkeeper.admin.session.support.SessionAccount;
 import org.limbo.doorkeeper.api.client.ProjectClient;
@@ -42,7 +42,7 @@ public class SessionController extends BaseController {
     @Autowired
     private ProjectClient projectClient;
     @Autowired
-    private AdminAccountProjectService adminAccountProjectService;
+    private AdminProjectService adminProjectService;
 
     @GetMapping
     public Response<AdminSession> session() {
@@ -69,7 +69,7 @@ public class SessionController extends BaseController {
 
         if (!session.getAccount().getIsAdmin()) {
             // 检测是否有项目的操作权限
-            AdminAccountProject accountProject = adminAccountProjectService.getByAccountProject(account.getAccountId(), projectId);
+            AdminProject accountProject = adminProjectService.getByAccountProject(account.getAccountId(), projectId);
             if (accountProject == null) {
                 return Response.paramError("无权操作此项目！");
             }

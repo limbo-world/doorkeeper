@@ -16,9 +16,9 @@
 
 package org.limbo.doorkeeper.admin.controller;
 
-import org.limbo.doorkeeper.admin.entity.AdminAccountProject;
+import org.limbo.doorkeeper.admin.entity.AdminProject;
 import org.limbo.doorkeeper.admin.model.param.AdminProjectUpdateParam;
-import org.limbo.doorkeeper.admin.service.AdminAccountProjectService;
+import org.limbo.doorkeeper.admin.service.AdminProjectService;
 import org.limbo.doorkeeper.api.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -36,14 +36,14 @@ import java.util.List;
 public class AdminProjectController extends BaseController {
 
     @Autowired
-    private AdminAccountProjectService adminAccountProjectService;
+    private AdminProjectService adminProjectService;
 
     /**
      * 获取管理员拥有哪些未删除的项目
      */
     @GetMapping("/{accountId}")
-    public Response<List<AdminAccountProject>> list(@Validated @PathVariable("accountId") @NotNull(message = "账户") Long accountId) {
-        return Response.ok(adminAccountProjectService.getByAccount(accountId));
+    public Response<List<AdminProject>> list(@Validated @PathVariable("accountId") @NotNull(message = "账户") Long accountId) {
+        return Response.ok(adminProjectService.getByAccount(accountId));
     }
 
     /**
@@ -53,7 +53,7 @@ public class AdminProjectController extends BaseController {
     public Response<Boolean> update(
             @RequestBody @Validated AdminProjectUpdateParam param,
             @Validated @PathVariable("accountId") @NotNull(message = "账户不存在") Long accountId) {
-        adminAccountProjectService.updateAccountProjects(accountId, param.getProjectIds());
+        adminProjectService.updateAccountProjects(accountId, param.getProjectIds());
         return Response.ok(true);
     }
 

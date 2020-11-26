@@ -16,47 +16,38 @@
 
 package org.limbo.doorkeeper.admin.controller;
 
-import org.limbo.doorkeeper.api.client.AccountClient;
-import org.limbo.doorkeeper.api.model.Page;
+import org.limbo.doorkeeper.admin.model.param.AdminAddParam;
+import org.limbo.doorkeeper.admin.model.param.AdminUpdateParam;
+import org.limbo.doorkeeper.admin.service.AdminService;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.AccountAddParam;
-import org.limbo.doorkeeper.api.model.param.AccountBatchUpdateParam;
-import org.limbo.doorkeeper.api.model.param.AccountQueryParam;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Devil
- * @date 2020/11/23 4:22 PM
+ * @date 2020/11/26 7:52 PM
  */
 @RestController
-@RequestMapping("/account")
-public class AccountController {
+@RequestMapping("/admin")
+public class AdminController {
 
     @Autowired
-    private AccountClient accountClient;
+    private AdminService adminService;
 
     @PostMapping
-    public Response<AccountVO> add(@RequestBody AccountAddParam param) {
-        return accountClient.add(param);
+    public Response<AccountVO> add(@RequestBody AdminAddParam param) {
+        return adminService.add(param);
     }
 
-    @PutMapping
-    public Response<Integer> batchUpdate(@RequestBody AccountBatchUpdateParam param) {
-        return accountClient.batchUpdate(param);
-    }
-
-    @GetMapping("/query")
-    public Response<Page<AccountVO>> page(AccountQueryParam param) {
-        return accountClient.page(param);
-    }
-
-    @GetMapping
-    public Response<List<AccountVO>> list() {
-        return accountClient.list();
+    @PutMapping("/{accountId}")
+    public Response<Integer> update(@Validated @NotNull(message = "账户不存在") @PathVariable("accountId") Long accountId,
+                                    @RequestBody AdminUpdateParam param) {
+        param.setAccountId(accountId);
+        return adminService.update(param);
     }
 
 }

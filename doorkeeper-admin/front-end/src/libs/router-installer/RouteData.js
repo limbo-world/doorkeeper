@@ -47,7 +47,7 @@ export default [
                 children: [
                     {
                         path: '/account/account',
-                        component: _import('account/Account'),
+                        component: _import('account/AccountPack'),
                     },
                 ]
             },

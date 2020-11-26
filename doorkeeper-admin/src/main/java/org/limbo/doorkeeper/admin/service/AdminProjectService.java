@@ -16,7 +16,7 @@
 
 package org.limbo.doorkeeper.admin.service;
 
-import org.limbo.doorkeeper.admin.entity.AdminAccountProject;
+import org.limbo.doorkeeper.admin.entity.AdminProject;
 import org.limbo.doorkeeper.admin.model.param.AdminProjectQueryParam;
 
 import java.util.List;
@@ -25,14 +25,14 @@ import java.util.List;
  * @author Devil
  * @date 2020/11/24 10:25 AM
  */
-public interface AdminAccountProjectService {
+public interface AdminProjectService {
 
 
-    List<AdminAccountProject> getByAccount(Long accountId);
+    List<AdminProject> getByAccount(Long accountId);
 
-    List<AdminAccountProject> list(AdminProjectQueryParam param);
+    List<AdminProject> list(AdminProjectQueryParam param);
 
-    AdminAccountProject getByAccountProject(Long accountId, Long projectId);
+    AdminProject getByAccountProject(Long accountId, Long projectId);
 
     void updateAccountProjects(Long accountId, List<Long> projectIds);
 }

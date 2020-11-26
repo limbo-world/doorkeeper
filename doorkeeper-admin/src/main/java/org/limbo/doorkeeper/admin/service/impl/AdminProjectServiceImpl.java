@@ -18,12 +18,12 @@ package org.limbo.doorkeeper.admin.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
-import org.limbo.doorkeeper.admin.dao.AdminAccountMapper;
-import org.limbo.doorkeeper.admin.dao.AdminAccountProjectMapper;
-import org.limbo.doorkeeper.admin.entity.AdminAccount;
-import org.limbo.doorkeeper.admin.entity.AdminAccountProject;
+import org.limbo.doorkeeper.admin.dao.AdminMapper;
+import org.limbo.doorkeeper.admin.dao.AdminProjectMapper;
+import org.limbo.doorkeeper.admin.entity.Admin;
+import org.limbo.doorkeeper.admin.entity.AdminProject;
 import org.limbo.doorkeeper.admin.model.param.AdminProjectQueryParam;
-import org.limbo.doorkeeper.admin.service.AdminAccountProjectService;
+import org.limbo.doorkeeper.admin.service.AdminProjectService;
 import org.limbo.doorkeeper.admin.utils.MyBatisPlusUtils;
 import org.limbo.doorkeeper.api.client.ProjectClient;
 import org.limbo.doorkeeper.api.model.Response;
@@ -40,63 +40,63 @@ import java.util.List;
  * @date 2020/11/24 10:25 AM
  */
 @Service
-public class AdminAccountProjectServiceImpl implements AdminAccountProjectService {
+public class AdminProjectServiceImpl implements AdminProjectService {
 
     @Autowired
-    private AdminAccountMapper adminAccountMapper;
+    private AdminMapper adminMapper;
     @Autowired
-    private AdminAccountProjectMapper adminAccountProjectMapper;
+    private AdminProjectMapper adminProjectMapper;
     @Autowired
     private ProjectClient projectClient;
 
     @Override
-    public List<AdminAccountProject> getByAccount(Long accountId) {
-        AdminAccount adminAccount = adminAccountMapper.selectById(accountId);
-        if (adminAccount.getIsAdmin()) {
+    public List<AdminProject> getByAccount(Long accountId) {
+        Admin admin = adminMapper.selectById(accountId);
+        if (admin.getIsAdmin()) {
             Response<List<ProjectVO>> all = projectClient.getAll();
-            List<AdminAccountProject> projects = new ArrayList<>();
+            List<AdminProject> projects = new ArrayList<>();
             for (ProjectVO projectVO : all.getData()) {
-                AdminAccountProject project = new AdminAccountProject();
-                project.setAccountId(adminAccount.getAccountId());
+                AdminProject project = new AdminProject();
+                project.setAccountId(admin.getAccountId());
                 project.setProjectId(projectVO.getProjectId());
                 project.setProjectName(projectVO.getProjectName());
                 projects.add(project);
             }
             return projects;
         }
-        return adminAccountProjectMapper.getByAccount(accountId);
+        return adminProjectMapper.getByAccount(accountId);
     }
 
     @Override
-    public List<AdminAccountProject> list(AdminProjectQueryParam param) {
-        return adminAccountProjectMapper.selectList(Wrappers.<AdminAccountProject>lambdaQuery()
-                .eq(param.getProjectId() != null, AdminAccountProject::getProjectId, param.getProjectId())
-                .eq(param.getAccountId() != null, AdminAccountProject::getAccountId, param.getAccountId())
+    public List<AdminProject> list(AdminProjectQueryParam param) {
+        return adminProjectMapper.selectList(Wrappers.<AdminProject>lambdaQuery()
+                .eq(param.getProjectId() != null, AdminProject::getProjectId, param.getProjectId())
+                .eq(param.getAccountId() != null, AdminProject::getAccountId, param.getAccountId())
         );
     }
 
     @Override
-    public AdminAccountProject getByAccountProject(Long accountId, Long projectId) {
-        return adminAccountProjectMapper.getByAccountProject(accountId, projectId);
+    public AdminProject getByAccountProject(Long accountId, Long projectId) {
+        return adminProjectMapper.getByAccountProject(accountId, projectId);
     }
 
     @Override
     @Transactional
     public void updateAccountProjects(Long accountId, List<Long> projectIds) {
         // 先删后增
-        adminAccountProjectMapper.delete(Wrappers.<AdminAccountProject>lambdaQuery().eq(AdminAccountProject::getAccountId, accountId));
+        adminProjectMapper.delete(Wrappers.<AdminProject>lambdaQuery().eq(AdminProject::getAccountId, accountId));
 
         if (CollectionUtils.isEmpty(projectIds)) return;
 
-        List<AdminAccountProject> pos = new ArrayList<>();
+        List<AdminProject> pos = new ArrayList<>();
         for (Long projectId : projectIds) {
-            AdminAccountProject po = new AdminAccountProject();
+            AdminProject po = new AdminProject();
             po.setAccountId(accountId);
             po.setProjectId(projectId);
 //            po.setProjectName(projectId); // todo
             pos.add(po);
         }
 
-        MyBatisPlusUtils.batchSave(pos, AdminAccountProject.class);
+        MyBatisPlusUtils.batchSave(pos, AdminProject.class);
     }
 }

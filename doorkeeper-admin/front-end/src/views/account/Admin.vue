@@ -79,16 +79,7 @@
 
         <el-dialog :title="`${dialogOpenMode}账户`" :visible.sync="accountDialogOpened" width="50%" class="edit-dialog"
                    @close="closeEditDialog(false)">
-            <account-edit :account="account" @cancel="closeEditDialog(false)" ref="accountEdit"></account-edit>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="closeEditDialog">取 消</el-button>
-                <el-button type="primary" @click="dialogConfirm">确 定</el-button>
-            </span>
-        </el-dialog>
-
-        <el-dialog :title="`${dialogOpenMode}账户`" :visible.sync="accountDialogOpened" width="50%" class="edit-dialog"
-                   @close="closeEditDialog(false)">
-            <account-edit :account="account" @cancel="closeEditDialog(false)" ref="accountEdit"></account-edit>
+            <admin-edit :account="account" @cancel="closeEditDialog(false)" ref="accountEdit"></admin-edit>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="closeEditDialog">取 消</el-button>
                 <el-button type="primary" @click="dialogConfirm">确 定</el-button>
@@ -118,12 +109,12 @@
 
 <script>
 
-    import AccountEdit from './AccountEdit';
+    import AdminEdit from './AdminEdit';
     import {mapActions, mapState} from 'vuex';
 
     export default {
         components: {
-            AccountEdit,
+            AdminEdit,
         },
 
         data() {
@@ -139,7 +130,6 @@
                 account: {},
                 dialogOpenMode: '',
                 accountDialogOpened: false,
-                adminDialogOpened: false,
                 roleDialogOpened: false,
                 projectDialogOpened: false,
             };
@@ -147,11 +137,6 @@
 
         computed: {
             ...mapState('session', ['user']),
-
-
-            isAdminProjectSelected() { // 是否选中管理端项目
-                return this.user.account.accountProjectId === this.user.account.currentProjectId;
-            },
         },
 
         created() {
@@ -190,18 +175,6 @@
                 this.account = account;
                 this.dialogOpenMode = '修改';
                 this.accountDialogOpened = true;
-            },
-
-            // ========= 管理员相关 ============
-            addAdmin() {
-                this.account = {};
-                this.dialogOpenMode = '新增';
-                this.adminDialogOpened = true;
-            },
-            editAdmin(account) {
-                this.account = account;
-                this.dialogOpenMode = '修改';
-                this.adminDialogOpened = true;
             },
 
             // ========= 角色相关 ============

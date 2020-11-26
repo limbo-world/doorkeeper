@@ -22,10 +22,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.exception.ParamException;
 import org.limbo.doorkeeper.api.model.Page;
-import org.limbo.doorkeeper.api.model.param.AccountAddParam;
-import org.limbo.doorkeeper.api.model.param.AccountBatchUpdateParam;
-import org.limbo.doorkeeper.api.model.param.AccountQueryParam;
-import org.limbo.doorkeeper.api.model.param.AccountRoleAddParam;
+import org.limbo.doorkeeper.api.model.param.*;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.limbo.doorkeeper.server.dao.AccountMapper;
 import org.limbo.doorkeeper.server.dao.AccountRoleMapper;
@@ -93,11 +90,21 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Integer updateAccount(Long projectId, AccountBatchUpdateParam param) {
+    public Integer batchUpdate(Long projectId, AccountBatchUpdateParam param) {
         return accountMapper.update(null, Wrappers.<Account>lambdaUpdate()
                 .set(param.getIsAdmin() != null, Account::getIsAdmin, param.getIsAdmin())
                 .eq(Account::getProjectId, projectId)
                 .in(Account::getAccountId, param.getAccountIds())
+        );
+    }
+
+    @Override
+    public Integer update(Long projectId, AccountUpdateParam param) {
+        return accountMapper.update(null, Wrappers.<Account>lambdaUpdate()
+                .set(param.getIsAdmin() != null, Account::getIsAdmin, param.getIsAdmin())
+                .set(StringUtils.isNotBlank(param.getAccountDescribe()), Account::getAccountDescribe, param.getAccountDescribe())
+                .eq(Account::getProjectId, projectId)
+                .eq(Account::getAccountId, param.getAccountId())
         );
     }
 
@@ -120,6 +127,15 @@ public class AccountServiceImpl implements AccountService {
                 .eq(Account::getProjectId, projectId)
         );
         return EnhancedBeanUtils.createAndCopyList(accounts, AccountVO.class);
+    }
+
+    @Override
+    public AccountVO get(Long projectId, Long accountId) {
+        Account account = accountMapper.selectOne(Wrappers.<Account>lambdaQuery()
+                .eq(Account::getProjectId, projectId)
+                .eq(Account::getAccountId, accountId)
+        );
+        return EnhancedBeanUtils.createAndCopy(account, AccountVO.class);
     }
 
 }
