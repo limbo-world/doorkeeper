@@ -29,10 +29,10 @@ import java.util.List;
  */
 public interface AdminAccountProjectMapper extends BaseMapper<AdminAccountProject> {
 
-    @Select(" select * from laa_account_project where account_id = #{accountId}")
+    @Select(" select * from laa_admin_project where account_id = #{accountId}")
     List<AdminAccountProject> getByAccount(@Param("accountId") Long accountId);
 
-    @Select(" select * from laa_account_project where account_id = #{accountId} and project_id = #{projectId}")
+    @Select(" select * from laa_admin_project where account_id = #{accountId} and project_id = #{projectId}")
     AdminAccountProject getByAccountProject(@Param("accountId") Long accountId, @Param("projectId") Long projectId);
 
 }

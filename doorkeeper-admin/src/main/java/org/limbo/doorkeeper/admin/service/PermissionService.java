@@ -16,8 +16,8 @@
 
 package org.limbo.doorkeeper.admin.service;
 
-import org.limbo.doorkeeper.admin.model.param.AdminPermissionAddParam;
-import org.limbo.doorkeeper.admin.model.param.AdminPermissionUpdateParam;
+import org.limbo.doorkeeper.admin.model.param.PermissionAddParam;
+import org.limbo.doorkeeper.admin.model.param.PermissionUpdateParam;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 
@@ -27,7 +27,7 @@ import org.limbo.doorkeeper.api.model.vo.PermissionVO;
  */
 public interface PermissionService {
 
-    Response<PermissionVO> add(AdminPermissionAddParam param);
+    Response<PermissionVO> add(PermissionAddParam param);
 
-    Response<Integer> update(Long permissionId, AdminPermissionUpdateParam param);
+    Response<Integer> update(Long permissionId, PermissionUpdateParam param);
 }

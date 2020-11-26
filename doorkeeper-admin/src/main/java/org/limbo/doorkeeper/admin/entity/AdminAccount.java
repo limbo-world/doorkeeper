@@ -28,7 +28,7 @@ import java.util.Date;
  * @date 2020/3/13
  */
 @Data
-@TableName("laa_account")
+@TableName("laa_admin")
 public class AdminAccount {
 
     @TableId(type = IdType.INPUT)

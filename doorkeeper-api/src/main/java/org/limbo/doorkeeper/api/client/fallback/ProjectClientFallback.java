@@ -56,6 +56,11 @@ public class ProjectClientFallback extends Fallback implements FallbackFactory<P
             }
 
             @Override
+            public Response<ProjectVO> getProject(Long projectId) {
+                return serviceUnavailable();
+            }
+
+            @Override
             public Response<Integer> updateProject(Long projectId, ProjectUpdateParam project) {
                 return serviceUnavailable();
             }

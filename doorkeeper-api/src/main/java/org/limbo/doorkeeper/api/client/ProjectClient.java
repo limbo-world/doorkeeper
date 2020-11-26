@@ -48,6 +48,9 @@ public interface ProjectClient {
     @GetMapping("/{projectId}/secret")
     Response<String> getProjectSecret(@PathVariable("projectId") Long projectId);
 
+    @GetMapping("/{projectId}")
+    Response<ProjectVO> getProject(@PathVariable("projectId") Long projectId);
+
     @PutMapping("/{projectId}")
     Response<Integer> updateProject(@PathVariable("projectId") Long projectId,
                                     @RequestBody ProjectUpdateParam project);

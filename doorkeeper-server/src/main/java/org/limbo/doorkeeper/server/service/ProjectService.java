@@ -46,6 +46,8 @@ public interface ProjectService {
      */
     String getSecret(Long projectId);
 
+    ProjectVO getById(Long projectId);
+
     List<ProjectVO> all();
 
     /**

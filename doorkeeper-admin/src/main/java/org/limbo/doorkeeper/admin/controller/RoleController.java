@@ -16,8 +16,8 @@
 
 package org.limbo.doorkeeper.admin.controller;
 
-import org.limbo.doorkeeper.admin.model.param.AdminRoleAddParam;
-import org.limbo.doorkeeper.admin.model.param.AdminRoleUpdateParam;
+import org.limbo.doorkeeper.admin.model.param.AccountRoleAddParam;
+import org.limbo.doorkeeper.admin.model.param.RoleUpdateParam;
 import org.limbo.doorkeeper.admin.service.RoleService;
 import org.limbo.doorkeeper.api.client.RoleClient;
 import org.limbo.doorkeeper.api.model.Page;
@@ -46,13 +46,13 @@ public class RoleController {
     private RoleService roleService;
 
     @PostMapping
-    public Response<RoleVO> add(@RequestBody AdminRoleAddParam param) {
+    public Response<RoleVO> add(@RequestBody AccountRoleAddParam param) {
         return roleService.add(param);
     }
 
     @PutMapping("/{roleId}")
     public Response<Integer> update(@Validated @NotNull(message = "角色不存在") @PathVariable("roleId") Long roleId,
-                                    @RequestBody AdminRoleUpdateParam param) {
+                                    @RequestBody RoleUpdateParam param) {
         return roleService.update(roleId, param);
     }
 

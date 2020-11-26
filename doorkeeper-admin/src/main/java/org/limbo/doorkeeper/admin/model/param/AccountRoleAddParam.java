@@ -28,7 +28,7 @@ import java.util.List;
  * @date 2020/11/26 9:43 AM
  */
 @Data
-public class AdminRoleAddParam {
+public class AccountRoleAddParam {
 
     @NotBlank(message = "角色名称不能为空")
     private String roleName;

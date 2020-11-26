@@ -29,7 +29,7 @@ import lombok.Data;
  * @date 2020/3/13
  */
 @Data
-@TableName("laa_account_project")
+@TableName("laa_admin_project")
 public class AdminAccountProject {
 
     @TableId(type = IdType.AUTO)

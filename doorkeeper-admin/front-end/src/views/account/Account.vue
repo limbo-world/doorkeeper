@@ -77,25 +77,25 @@
             </el-pagination>
         </el-footer>
 
-        <el-dialog title="添加管理员" :visible.sync="dialogOpened" width="50%" class="edit-dialog"
+        <el-dialog :title="`${dialogOpenMode}账户`" :visible.sync="accountDialogOpened" width="50%" class="edit-dialog"
                    @close="closeEditDialog(false)">
-            <account-edit :account="account" @cancel="closeEditDialog(false)" ref="accountEdit"/>
+            <account-edit :account="account" @cancel="closeEditDialog(false)" ref="accountEdit"></account-edit>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="closeEditDialog">取 消</el-button>
                 <el-button type="primary" @click="dialogConfirm">确 定</el-button>
             </span>
         </el-dialog>
 
-        <el-dialog title="项目绑定" :visible.sync="projectDialogOpened" width="60%" class="edit-dialog"
+        <el-dialog :title="`${dialogOpenMode}账户角色`" :visible.sync="projectDialogOpened" width="60%" class="edit-dialog"
                    @close="projectDialogOpened = false">
-            <account-project :account="account" @cancel="projectDialogOpened = false" ref="projectEdit"/>
+            <account-project :account="account" @cancel="projectDialogOpened = false" ref="projectEdit"></account-project>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="projectDialogOpened = false">取 消</el-button>
                 <el-button type="primary" @click="projectDialogConfirm">确 定</el-button>
             </span>
         </el-dialog>
 
-        <el-dialog title="授权" :visible.sync="grantDialogOpened" width="50%" class="edit-dialog"
+        <el-dialog :title="`${dialogOpenMode}账户项目`" :visible.sync="grantDialogOpened" width="50%" class="edit-dialog"
                    @close="closeGrantDialog">
             <span slot="footer" class="dialog-footer">
                 <el-button @click="closeGrantDialog">取 消</el-button>
@@ -128,15 +128,10 @@
                 accounts: [],
 
                 account: {},
+                dialogOpenMode: '',
                 accountDialogOpened: false,
                 roleDialogOpened: false,
                 projectDialogOpened: false,
-
-                projectDialogOpened: false,
-
-                grantAccountId: null,
-                grantDialogOpened: false,
-
             };
         },
 
@@ -180,6 +175,7 @@
                 this.dialogOpened = false;
             },
 
+            // ========= 账户相关 ============
             addAccount() {
                 this.account = {};
                 this.dialogOpenMode = '新增';
@@ -191,6 +187,7 @@
                 this.dialogOpened = true;
             },
 
+            // ========= 角色相关 ============
             viewRole(project) {
                 this.project = project;
                 this.dialogOpenMode = '查看';
@@ -202,6 +199,7 @@
                 this.dialogOpened = true;
             },
 
+            // ========= 项目相关 ============
             viewProject(project) {
                 this.project = project;
                 this.dialogOpenMode = '查看';

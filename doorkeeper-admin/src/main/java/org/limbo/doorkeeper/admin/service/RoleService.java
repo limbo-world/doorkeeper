@@ -16,8 +16,8 @@
 
 package org.limbo.doorkeeper.admin.service;
 
-import org.limbo.doorkeeper.admin.model.param.AdminRoleAddParam;
-import org.limbo.doorkeeper.admin.model.param.AdminRoleUpdateParam;
+import org.limbo.doorkeeper.admin.model.param.AccountRoleAddParam;
+import org.limbo.doorkeeper.admin.model.param.RoleUpdateParam;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 
@@ -27,7 +27,7 @@ import org.limbo.doorkeeper.api.model.vo.RoleVO;
  */
 public interface RoleService {
 
-    Response<RoleVO> add(AdminRoleAddParam param);
+    Response<RoleVO> add(AccountRoleAddParam param);
 
-    Response<Integer> update(Long roleId, AdminRoleUpdateParam param);
+    Response<Integer> update(Long roleId, RoleUpdateParam param);
 }

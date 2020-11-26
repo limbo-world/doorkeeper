@@ -17,7 +17,6 @@
 package org.limbo.doorkeeper.server.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
@@ -67,6 +66,12 @@ public class ProjectController {
     @Operation(summary = "获取项目秘钥")
     public Response<String> getProjectSecret(@Validated @NotNull(message = "项目不存在") @PathVariable("projectId") Long projectId) {
         return Response.ok(projectService.getSecret(projectId));
+    }
+
+    @GetMapping("/{projectId}")
+    @Operation(summary = "获取指定项目")
+    public Response<ProjectVO> getProject(@Validated @NotNull(message = "项目不存在") @PathVariable("projectId") Long projectId) {
+        return Response.ok(projectService.getById(projectId));
     }
 
     @PutMapping("/{projectId}")

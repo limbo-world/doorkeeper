@@ -17,15 +17,22 @@
 package org.limbo.doorkeeper.admin.model.param;
 
 import lombok.Data;
+import org.limbo.doorkeeper.api.model.param.PermissionApiAddParam;
+
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * @author Devil
- * @date 2020/11/26 3:32 PM
+ * @date 2020/11/26 9:43 AM
  */
 @Data
-public class AdminAccountProjectQueryParam {
+public class PermissionAddParam {
 
-    private Long projectId;
+    @NotNull(message = "权限名称不能为空")
+    private String permissionName;
 
-    private Long accountId;
+    private String permissionDescribe;
+
+    private List<PermissionApiAddParam> permissionApis;
 }

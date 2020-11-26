@@ -21,7 +21,9 @@ import org.limbo.doorkeeper.admin.entity.AdminAccountProject;
 import org.limbo.doorkeeper.admin.service.AdminAccountProjectService;
 import org.limbo.doorkeeper.admin.session.AdminSession;
 import org.limbo.doorkeeper.admin.session.support.SessionAccount;
+import org.limbo.doorkeeper.api.client.ProjectClient;
 import org.limbo.doorkeeper.api.model.Response;
+import org.limbo.doorkeeper.api.model.vo.ProjectVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,6 +39,8 @@ import javax.validation.constraints.NotNull;
 @RequestMapping("/session")
 public class SessionController extends BaseController {
 
+    @Autowired
+    private ProjectClient projectClient;
     @Autowired
     private AdminAccountProjectService adminAccountProjectService;
 
@@ -55,14 +59,24 @@ public class SessionController extends BaseController {
         AdminSession session = getSession();
         SessionAccount account = session.getAccount();
 
-        // 检测是否有项目的操作权限
-        AdminAccountProject accountProject = adminAccountProjectService.getByAccountProject(account.getAccountId(), projectId);
-        if (accountProject == null) {
-            return Response.paramError("无权操作此项目！");
+        Response<ProjectVO> projectRes = projectClient.getProject(projectId);
+        if (!projectRes.ok()) {
+            Response<AdminSession> response = new Response<>();
+            response.setCode(projectRes.getCode());
+            response.setMsg(projectRes.getMsg());
+            return response;
         }
 
-        account.setCurrentProjectId(accountProject.getProjectId());
-        account.setCurrentProjectName(accountProject.getProjectName());
+        if (!session.getAccount().getIsAdmin()) {
+            // 检测是否有项目的操作权限
+            AdminAccountProject accountProject = adminAccountProjectService.getByAccountProject(account.getAccountId(), projectId);
+            if (accountProject == null) {
+                return Response.paramError("无权操作此项目！");
+            }
+        }
+        ProjectVO project = projectRes.getData();
+        account.setCurrentProjectId(project.getProjectId());
+        account.setCurrentProjectName(project.getProjectName());
         sessionDAO.save(session);
         return Response.ok(getSession());
     }

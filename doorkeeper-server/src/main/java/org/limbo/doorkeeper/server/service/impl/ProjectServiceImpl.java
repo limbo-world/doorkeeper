@@ -106,6 +106,12 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    public ProjectVO getById(Long projectId) {
+        Project project = projectMapper.selectById(projectId);
+        return EnhancedBeanUtils.createAndCopy(project, ProjectVO.class);
+    }
+
+    @Override
     public List<ProjectVO> all() {
         List<Project> allProjects = projectMapper.selectList(columnNoSecret());
         return EnhancedBeanUtils.createAndCopyList(allProjects, ProjectVO.class);

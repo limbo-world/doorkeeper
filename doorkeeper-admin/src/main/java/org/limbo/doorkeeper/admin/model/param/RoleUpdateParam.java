@@ -17,22 +17,26 @@
 package org.limbo.doorkeeper.admin.model.param;
 
 import lombok.Data;
-import org.limbo.doorkeeper.api.model.param.PermissionApiAddParam;
+import org.limbo.doorkeeper.api.model.param.RolePermissionAddParam;
 
 import java.util.List;
 
 /**
  * @author Devil
- * @date 2020/11/26 10:07 AM
+ * @date 2020/11/26 9:43 AM
  */
 @Data
-public class AdminPermissionUpdateParam {
+public class RoleUpdateParam {
 
-    private String permissionName;
+    private Long roleId;
 
-    private String permissionDescribe;
+    private String roleName;
 
-    private List<PermissionApiAddParam> addPermissionApis;
+    private String roleDescribe;
 
-    private List<Long> deletePermissionApiIds;
+    private Boolean isDefault;
+
+    private List<RolePermissionAddParam> addRolePermissions;
+
+    private List<Long> deleteRolePermissionIds;
 }

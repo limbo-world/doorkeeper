@@ -17,8 +17,8 @@
 package org.limbo.doorkeeper.admin.service.impl;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.limbo.doorkeeper.admin.model.param.AdminRoleAddParam;
-import org.limbo.doorkeeper.admin.model.param.AdminRoleUpdateParam;
+import org.limbo.doorkeeper.admin.model.param.AccountRoleAddParam;
+import org.limbo.doorkeeper.admin.model.param.RoleUpdateParam;
 import org.limbo.doorkeeper.admin.service.RoleService;
 import org.limbo.doorkeeper.admin.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.api.client.RoleClient;
@@ -26,7 +26,6 @@ import org.limbo.doorkeeper.api.client.RolePermissionClient;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.RoleAddParam;
 import org.limbo.doorkeeper.api.model.param.RolePermissionAddParam;
-import org.limbo.doorkeeper.api.model.param.RoleUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,7 +44,7 @@ public class RoleServiceImpl implements RoleService {
     private RolePermissionClient rolePermissionClient;
 
     @Override
-    public Response<RoleVO> add(AdminRoleAddParam param) {
+    public Response<RoleVO> add(AccountRoleAddParam param) {
         RoleAddParam roleAddParam = EnhancedBeanUtils.createAndCopy(param, RoleAddParam.class);
 
         Response<RoleVO> add = roleClient.add(roleAddParam);
@@ -65,8 +64,8 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public Response<Integer> update(Long roleId, AdminRoleUpdateParam param) {
-        RoleUpdateParam updateParam = EnhancedBeanUtils.createAndCopy(param, RoleUpdateParam.class);
+    public Response<Integer> update(Long roleId, RoleUpdateParam param) {
+        org.limbo.doorkeeper.api.model.param.RoleUpdateParam updateParam = EnhancedBeanUtils.createAndCopy(param, org.limbo.doorkeeper.api.model.param.RoleUpdateParam.class);
         Response<Integer> update = roleClient.update(roleId, updateParam);
 
         if (CollectionUtils.isNotEmpty(param.getDeleteRolePermissionIds())) {

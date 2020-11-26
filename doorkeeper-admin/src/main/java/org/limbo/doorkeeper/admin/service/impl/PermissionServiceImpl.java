@@ -17,16 +17,14 @@
 package org.limbo.doorkeeper.admin.service.impl;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.limbo.doorkeeper.admin.model.param.AdminPermissionAddParam;
-import org.limbo.doorkeeper.admin.model.param.AdminPermissionUpdateParam;
+import org.limbo.doorkeeper.admin.model.param.PermissionAddParam;
+import org.limbo.doorkeeper.admin.model.param.PermissionUpdateParam;
 import org.limbo.doorkeeper.admin.service.PermissionService;
 import org.limbo.doorkeeper.admin.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.api.client.PermissionApiClient;
 import org.limbo.doorkeeper.api.client.PermissionClient;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.PermissionAddParam;
 import org.limbo.doorkeeper.api.model.param.PermissionApiAddParam;
-import org.limbo.doorkeeper.api.model.param.PermissionUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,9 +43,9 @@ public class PermissionServiceImpl implements PermissionService {
     private PermissionApiClient permissionApiClient;
 
     @Override
-    public Response<PermissionVO> add(AdminPermissionAddParam param) {
+    public Response<PermissionVO> add(PermissionAddParam param) {
 
-        PermissionAddParam permission = EnhancedBeanUtils.createAndCopy(param, PermissionAddParam.class);
+        org.limbo.doorkeeper.api.model.param.PermissionAddParam permission = EnhancedBeanUtils.createAndCopy(param, org.limbo.doorkeeper.api.model.param.PermissionAddParam.class);
         Response<PermissionVO> permissionVOResponse = permissionClient.add(permission);
         if (!permissionVOResponse.ok()) {
             return permissionVOResponse;
@@ -65,8 +63,8 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public Response<Integer> update(Long permissionId, AdminPermissionUpdateParam param) {
-        PermissionUpdateParam permission = EnhancedBeanUtils.createAndCopy(param, PermissionUpdateParam.class);
+    public Response<Integer> update(Long permissionId, PermissionUpdateParam param) {
+        org.limbo.doorkeeper.api.model.param.PermissionUpdateParam permission = EnhancedBeanUtils.createAndCopy(param, org.limbo.doorkeeper.api.model.param.PermissionUpdateParam.class);
 
         Response<Integer> update = permissionClient.update(permissionId, permission);
 
