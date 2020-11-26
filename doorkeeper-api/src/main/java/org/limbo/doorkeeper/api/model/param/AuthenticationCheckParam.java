@@ -14,34 +14,31 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.vo;
+package org.limbo.doorkeeper.api.model.param;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 /**
- * @author Devil
- * @date 2020/11/23 4:44 PM
+ * @author liuqingtong
+ * @date 2020/11/25 18:04
  */
 @Data
-public class ApiVO {
+public class AuthenticationCheckParam {
 
-    @Schema(title = "api id")
-    private Long apiId;
+    @NotNull(message = "访问账户不存在")
+    @Schema(name = "访问账户ID", required = true)
+    private Long accountId;
 
-    @Schema(title = "项目id")
-    private Long projectId;
+    @NotBlank(message = "请求方法不可为空")
+    @Schema(name = "Http请求方式", required = true)
+    private String method;
 
-    @Schema(title = "名称")
-    private String apiName;
-
-    @Schema(title = "描述")
-    private String apiDescribe;
-
-    @Schema(title = "请求方法 get post put delete")
-    private String apiMethod;
-
-    @Schema(title = "ant风格url")
-    private String apiUrl;
+    @NotBlank(message = "请求路径不可为空")
+    @Schema(name = "Http请求路径", required = true)
+    private String path;
 
 }

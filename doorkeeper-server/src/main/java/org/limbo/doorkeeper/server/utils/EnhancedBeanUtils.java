@@ -18,16 +18,19 @@
 
 package org.limbo.doorkeeper.server.utils;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.ContextClassLoaderLocal;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.converters.DateConverter;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -45,7 +48,7 @@ public class EnhancedBeanUtils {
 
     public static <S, D> D createAndCopy(S source, Class<D> clazz) {
         try {
-            D newOne = clazz.newInstance();
+            D newOne = clazz.getDeclaredConstructor().newInstance();
             // FBI WARNING 不能修改这个BeanUtils的引用！绝对不行！公司内部的BeanUtils拷贝有缺陷！不能拷贝父类数据！反正绝对不能换引用！
             org.apache.commons.beanutils.BeanUtils.copyProperties(newOne, source);
             return newOne;
@@ -55,6 +58,10 @@ public class EnhancedBeanUtils {
     }
 
     public static <S, D> List<D> createAndCopyList(List<S> source, Class<D> clazz) {
+        if (CollectionUtils.isEmpty(source)) {
+            return Lists.newArrayList();
+        }
+
         List<D> dest = new ArrayList<>(source.size());
         for (S s : source) {
             dest.add(createAndCopy(s, clazz));
@@ -79,7 +86,7 @@ public class EnhancedBeanUtils {
     }
 
     private static class IgnoreNullBeanUtilsBean extends BeanUtilsBean {
-        private Log log = LogFactory.getLog(BeanUtils.class);
+        private final Log log = LogFactory.getLog(BeanUtils.class);
 
         private static final ContextClassLoaderLocal BEANS_BY_CLASSLOADER = new ContextClassLoaderLocal() {
             // Creates the default instance used when the context classloader is unavailable
