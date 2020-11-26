@@ -16,7 +16,6 @@
 
 package org.limbo.doorkeeper.api.client;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import org.limbo.doorkeeper.api.client.fallback.RoleClinentFallback;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
@@ -45,7 +44,7 @@ public interface RoleClient {
                              @RequestBody RoleUpdateParam param);
 
     @DeleteMapping
-    Response<Integer> delete(@Schema(title = "角色ID") List<Long> roleIds);
+    Response<Integer> delete(@RequestBody List<Long> roleIds);
 
 
     @GetMapping("/query")

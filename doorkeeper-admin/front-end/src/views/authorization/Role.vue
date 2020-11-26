@@ -15,23 +15,16 @@
         <el-main>
             <el-table :data="roles" ref="roleTable" size="mini">
                 <!--<el-table-column type="selection" width="55"></el-table-column>-->
-                <el-table-column align="left" prop="roleName" label="名称"></el-table-column>
-                <el-table-column align="center" prop="roleDesc" label="描述信息"></el-table-column>
-                <el-table-column align="center" prop="accounts" label="授权用户">
-                    <template slot-scope="scope">
-                        <el-link type="primary" @click="grantRole(scope.row)">点击修改授权</el-link>
-                    </template>
-                </el-table-column>
-                <el-table-column align="center" label="操作" width="120">
+                <el-table-column align="left" prop="roleName" label="名称" width="150"></el-table-column>
+                <el-table-column align="center" prop="roleDescribe" label="描述"></el-table-column>
+                <el-table-column align="center" label="操作" width="150">
                     <template slot-scope="scope">
                         <div class="operations">
-                            <template v-if="!scope.row.isDefault">
-                                <i class="el-icon-edit" @click="editRole(scope.row)"></i>
-                                <i class="el-icon-delete" @click="deleteRole(scope.row)"></i>
-                            </template>
-                            <template>
-                                <i class="el-icon-view" @click="viewRole(scope.row)"></i>
-                            </template>
+                            <i class="el-icon-view" @click="viewRole(scope.row)"></i>
+                            <i class="el-icon-edit" @click="editRole(scope.row)"></i>
+                            <i class="el-icon-delete" @click="() => {
+                                deleteRole([scope.row.roleId])
+                            }"></i>
                         </div>
                     </template>
                 </el-table-column>
@@ -45,8 +38,8 @@
         </el-footer>
 
 
-        <el-dialog :title="`${dialogOpenMode}角色`" :visible.sync="dialogOpened" width="50%" class="edit-dialog"
-                   @close="closeEditDialog(false)">
+        <el-dialog :title="`${dialogOpenMode}角色`" :visible.sync="dialogOpened" width="70%" class="edit-dialog"
+                   @close="closeEditDialog(false)" @opened="beforeDialogOpen">
             <role-edit v-if="dialogOpenMode !== 'grant'" :role="role" @cancel="closeEditDialog(false)"
                        @confirm="closeEditDialog(true)" ref="roleEdit" :open-mode="dialogOpenMode">
             </role-edit>
@@ -135,6 +128,10 @@
                 this.dialogOpened = true;
             },
 
+            beforeDialogOpen() {
+                this.$refs.roleEdit.preOpen();
+            },
+
             closeEditDialog(refresh) {
                 this.role = {};
                 this.dialogOpened = false;
@@ -143,19 +140,20 @@
                 }
             },
 
-            deleteRole(role) {
-                this.$ajax.delete(`/role/${role.roleId}`)
-                    .then(() => {
-                        this.$message.success('删除成功。');
-                        this.loadRoles();
-                    });
-            },
-
-            // 角色授权
-            grantRole(role) {
-                this.role = role;
-                this.dialogOpenMode = 'grant';
-                this.dialogOpened = true;
+            deleteRole(roleIds) {
+                this.$confirm('确认删除?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$ajax.delete(`/role`, {data: roleIds})
+                        .then(() => {
+                            this.$message.success('删除成功。');
+                            this.loadRoles(true);
+                        });
+                }).catch(() => {
+                    this.$message.info("已取消删除");
+                });
             },
 
             dialogCancel(refresh) {
@@ -170,10 +168,12 @@
             },
 
             dialogConfirm() {
-                const prom = this.$refs.roleEdit.saveRole();
-                prom.then(() => {
+                this.$refs.roleEdit.confirmEdit().then(() => {
                     this.role = {};
                     this.dialogOpened = false;
+                    if ('新增' === this.dialogOpenMode) {
+                        this.initPageForm()
+                    }
                     this.loadRoles()
                 }).catch(err => err);
             },

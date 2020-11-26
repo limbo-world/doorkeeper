@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -58,7 +57,7 @@ public class RoleController {
     }
 
     @DeleteMapping
-    public Response<Integer> delete(@NotEmpty(message = "角色不存在") List<Long> roleIds) {
+    public Response<Integer> delete(@RequestBody List<Long> roleIds) {
         return roleClient.delete(roleIds);
     }
 

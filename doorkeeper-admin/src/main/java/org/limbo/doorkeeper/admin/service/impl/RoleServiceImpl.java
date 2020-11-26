@@ -69,15 +69,15 @@ public class RoleServiceImpl implements RoleService {
         RoleUpdateParam updateParam = EnhancedBeanUtils.createAndCopy(param, RoleUpdateParam.class);
         Response<Integer> update = roleClient.update(roleId, updateParam);
 
+        if (CollectionUtils.isNotEmpty(param.getDeleteRolePermissionIds())) {
+            rolePermissionClient.deleteRolePermission(param.getDeleteRolePermissionIds());
+        }
+
         if (CollectionUtils.isNotEmpty(param.getAddRolePermissions())) {
             for (RolePermissionAddParam rolePermissionAddParam : param.getAddRolePermissions()) {
                 rolePermissionAddParam.setRoleId(roleId);
             }
             rolePermissionClient.addRolePermission(param.getAddRolePermissions());
-        }
-
-        if (CollectionUtils.isNotEmpty(param.getDeleteRolePermissionIds())) {
-            rolePermissionClient.deleteRolePermission(param.getDeleteRolePermissionIds());
         }
 
         return update;

@@ -91,13 +91,13 @@ public class RoleServiceImpl implements RoleService {
 
         // 删除账户角色绑定
         accountRoleMapper.delete(Wrappers.<AccountRole>lambdaQuery()
-                .eq(AccountRole::getRoleId, roleIds)
+                .in(AccountRole::getRoleId, roleIds)
                 .eq(AccountRole::getProjectId, projectId)
         );
 
         // 删除角色权限绑定
         rolePermissionMapper.delete(Wrappers.<RolePermission>lambdaQuery()
-                .eq(RolePermission::getRoleId, roleIds)
+                .in(RolePermission::getRoleId, roleIds)
                 .eq(RolePermission::getProjectId, projectId)
         );
 

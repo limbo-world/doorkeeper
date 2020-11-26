@@ -153,6 +153,7 @@
 
             dialogConfirm() {
                 this.$refs.permissionEdit.confirmEdit().then(() => {
+                    this.permission = {}
                     this.dialogOpened = false;
                     if ('新增' === this.dialogOpenMode) {
                         this.initPageForm()
