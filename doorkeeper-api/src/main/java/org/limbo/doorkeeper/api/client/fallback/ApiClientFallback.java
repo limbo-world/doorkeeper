@@ -51,7 +51,7 @@ public class ApiClientFallback extends Fallback implements FallbackFactory<ApiCl
             }
 
             @Override
-            public Response<Boolean> delete(List<Long> apiIds) {
+            public Response<Boolean> batchDelete(List<Long> apiIds) {
                 return serviceUnavailable();
             }
 

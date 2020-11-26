@@ -72,7 +72,7 @@ public class ApiController extends BaseController {
 
     @DeleteMapping
     @Operation(summary = "批量删除api")
-    public Response<Boolean> delete(@RequestBody List<Long> apiIds) {
+    public Response<Boolean> batchDelete(@RequestBody List<Long> apiIds) {
         apiService.deleteApi(getProjectId(), apiIds);
         return Response.ok(true);
     }

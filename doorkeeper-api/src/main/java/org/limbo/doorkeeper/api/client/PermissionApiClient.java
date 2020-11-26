@@ -21,8 +21,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.limbo.doorkeeper.api.client.fallback.PermissionApiClientFallback;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.PermissionApiAddParam;
+import org.limbo.doorkeeper.api.model.param.PermissionApiQueryParam;
+import org.limbo.doorkeeper.api.model.vo.PermissionApiVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -32,17 +35,17 @@ import java.util.List;
  * @author liuqingtong
  * @date 2020/11/20 11:59
  */
-@Tag(name = "权限api")
 @FeignClient(name = "doorkeeper-server", path = "/permission-api", contextId = "permissionApiClient", fallbackFactory = PermissionApiClientFallback.class)
 public interface PermissionApiClient {
 
+    @GetMapping
+    Response<List<PermissionApiVO>> list(PermissionApiQueryParam param);
+
     @PostMapping
-    @Operation(summary = "绑定权限api")
     Response<Boolean> addPermissionApi(@RequestBody List<PermissionApiAddParam> permissionApis);
 
 
     @DeleteMapping
-    @Operation(summary = "删除权限api")
     Response<Integer> deletePermissionApi(@RequestBody List<Long> permissionApiIds);
 
 

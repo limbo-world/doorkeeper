@@ -57,7 +57,7 @@ public class PermissionClientFallback extends Fallback implements FallbackFactor
             }
 
             @Override
-            public Response<Boolean> delete(List<Long> permissionIds) {
+            public Response<Boolean> batchDelete(List<Long> permissionIds) {
                 return serviceUnavailable();
             }
 

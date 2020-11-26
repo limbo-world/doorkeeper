@@ -21,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.client.PermissionApiClient;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.PermissionApiAddParam;
+import org.limbo.doorkeeper.api.model.param.PermissionApiQueryParam;
+import org.limbo.doorkeeper.api.model.vo.PermissionApiVO;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -36,6 +38,11 @@ public class PermissionApiClientFallback extends Fallback implements FallbackFac
     public PermissionApiClient create(Throwable throwable) {
         log.error("服务调用失败", throwable);
         return new PermissionApiClient() {
+            @Override
+            public Response<List<PermissionApiVO>> list(PermissionApiQueryParam param) {
+                return serviceUnavailable();
+            }
+
             @Override
             public Response<Boolean> addPermissionApi(List<PermissionApiAddParam> permissionApis) {
                 return serviceUnavailable();

@@ -17,6 +17,8 @@
 package org.limbo.doorkeeper.server.service;
 
 import org.limbo.doorkeeper.api.model.param.PermissionApiAddParam;
+import org.limbo.doorkeeper.api.model.param.PermissionApiQueryParam;
+import org.limbo.doorkeeper.api.model.vo.PermissionApiVO;
 
 import java.util.List;
 
@@ -25,6 +27,11 @@ import java.util.List;
  * @date 2020/11/19 8:35 PM
  */
 public interface PermissionApiService {
+
+    /**
+     * 查询列表
+     */
+    List<PermissionApiVO> list(Long projectId, PermissionApiQueryParam param);
 
     /**
      * 为权限添加api

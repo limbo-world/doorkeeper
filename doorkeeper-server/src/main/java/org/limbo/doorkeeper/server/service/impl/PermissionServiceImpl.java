@@ -17,16 +17,15 @@
 package org.limbo.doorkeeper.server.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.Page;
-import org.limbo.doorkeeper.api.model.param.PermissionAddParam;
-import org.limbo.doorkeeper.api.model.param.PermissionBatchUpdateParam;
-import org.limbo.doorkeeper.api.model.param.PermissionQueryParam;
-import org.limbo.doorkeeper.api.model.param.PermissionUpdateParam;
+import org.limbo.doorkeeper.api.model.param.*;
 import org.limbo.doorkeeper.api.model.vo.ApiVO;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.limbo.doorkeeper.server.dao.PermissionMapper;
 import org.limbo.doorkeeper.server.entity.Permission;
+import org.limbo.doorkeeper.server.service.PermissionApiService;
 import org.limbo.doorkeeper.server.service.PermissionService;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
@@ -45,6 +44,9 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Autowired
     private PermissionMapper permissionMapper;
+
+    @Autowired
+    private PermissionApiService permissionApiService;
 
     @Override
     @Transactional

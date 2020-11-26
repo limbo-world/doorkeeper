@@ -18,9 +18,12 @@ package org.limbo.doorkeeper.admin.controller;
 
 import org.limbo.doorkeeper.api.client.PermissionApiClient;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.PermissionApiAddParam;
+import org.limbo.doorkeeper.api.model.param.PermissionApiQueryParam;
+import org.limbo.doorkeeper.api.model.vo.PermissionApiVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -35,15 +38,8 @@ public class PermissionApiController {
     @Autowired
     private PermissionApiClient permissionApiClient;
 
-
-    @PostMapping
-    public Response<Boolean> addPermissionApi(@RequestBody List<PermissionApiAddParam> permissionApis) {
-        return permissionApiClient.addPermissionApi(permissionApis);
-    }
-
-
-    @DeleteMapping
-    public Response<Integer> deletePermissionApi(@RequestBody List<Long> permissionApiIds){
-        return permissionApiClient.deletePermissionApi(permissionApiIds);
+    @GetMapping
+    public Response<List<PermissionApiVO>> list(PermissionApiQueryParam param) {
+        return permissionApiClient.list(param);
     }
 }

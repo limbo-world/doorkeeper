@@ -17,6 +17,7 @@
 package org.limbo.doorkeeper.server.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 import org.limbo.doorkeeper.api.model.param.ApiAddParam;
 import org.limbo.doorkeeper.server.entity.Api;
 
@@ -27,5 +28,5 @@ import java.util.List;
  * @date 2020/11/19 7:18 PM
  */
 public interface ApiMapper extends BaseMapper<Api> {
-    void batchInsert(List<ApiAddParam> apis);
+    void batchInsert(@Param("apis") List<ApiAddParam> apis);
 }

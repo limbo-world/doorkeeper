@@ -69,7 +69,7 @@ public class PermissionController extends BaseController {
 
     @DeleteMapping
     @Operation(summary = "批量删除权限")
-    public Response<Boolean> delete(@RequestBody @Schema(title = "权限id列表", required = true) List<Long> permissionIds) {
+    public Response<Boolean> batchDelete(@RequestBody @Schema(title = "权限id列表", required = true) List<Long> permissionIds) {
         permissionService.deletePermission(getProjectId(), permissionIds);
         return Response.ok(true);
     }

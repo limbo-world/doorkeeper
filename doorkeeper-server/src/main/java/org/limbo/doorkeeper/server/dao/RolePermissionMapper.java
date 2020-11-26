@@ -18,6 +18,7 @@ package org.limbo.doorkeeper.server.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.limbo.doorkeeper.api.model.param.RolePermissionAddParam;
 import org.limbo.doorkeeper.server.entity.RolePermission;
@@ -30,6 +31,6 @@ import java.util.List;
  */
 public interface RolePermissionMapper extends BaseMapper<RolePermission> {
 
-    void batchInsertIgnore(List<RolePermission> rolePermissions);
+    void batchInsertIgnore(@Param("rolePermissions") List<RolePermission> rolePermissions);
 
 }

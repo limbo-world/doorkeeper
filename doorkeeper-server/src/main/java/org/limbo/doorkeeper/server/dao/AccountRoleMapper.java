@@ -17,6 +17,7 @@
 package org.limbo.doorkeeper.server.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 import org.limbo.doorkeeper.api.model.param.AccountRoleAddParam;
 import org.limbo.doorkeeper.server.entity.AccountRole;
 
@@ -28,6 +29,6 @@ import java.util.List;
  */
 public interface AccountRoleMapper extends BaseMapper<AccountRole> {
 
-    void batchInsertIgnore(List<AccountRoleAddParam> accountRoles);
+    void batchInsertIgnore(@Param("accountRoles") List<AccountRoleAddParam> accountRoles);
 
 }

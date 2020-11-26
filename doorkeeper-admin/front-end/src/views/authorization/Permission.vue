@@ -14,10 +14,9 @@
 
         <el-main>
             <el-table :data="permissions" size="mini">
-                <el-table-column prop="permCode" label="编码"></el-table-column>
-                <el-table-column prop="permName" label="名称"></el-table-column>
-                <el-table-column prop="permDesc" label="描述信息"></el-table-column>
-                <el-table-column prop="isOnline" label="是否已启用" height="30px">
+                <el-table-column prop="permissionName" label="名称"></el-table-column>
+                <el-table-column prop="permissionDescribe" label="描述"></el-table-column>
+                <el-table-column prop="isOnline" label="是否启用" width="100">
                     <template slot-scope="scope">
                         <div class="el-form--mini">
                             <el-switch :value="scope.row.isOnline" class="block el-switch--mini" size="mini"
@@ -25,23 +24,14 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="API列表" width="300px">
-                    <template slot-scope="scope">
-                        <div v-for="api in scope.row.apiList" :key="api">
-                            {{api}}
-                        </div>
-                    </template>
-                </el-table-column>
-                <el-table-column label="操作" width="120" align="center">
+                <el-table-column label="操作" width="150" align="center">
                     <template slot-scope="scope">
                         <div class="operations">
-                            <template v-if="!scope.row.isDefault">
-                                <i class="el-icon-edit" @click="editPermission(scope.row)"></i>
-                                <i class="el-icon-delete" @click="deletePermission(scope.row)"></i>
-                            </template>
-                            <template v-else>
-                                <i class="el-icon-view" @click="viewPermission(scope.row)"></i>
-                            </template>
+                            <i class="el-icon-view" @click="viewPermission(scope.row)"></i>
+                            <i class="el-icon-edit" @click="editPermission(scope.row)"></i>
+                            <i class="el-icon-delete" @click="() => {
+                                deletePermission([scope.row.permissionId])
+                            }"></i>
                         </div>
                     </template>
                 </el-table-column>
@@ -55,9 +45,9 @@
         </el-footer>
 
 
-        <el-dialog :title="`${dialogOpenMode === 'add' ? '新增' : '修改'}权限`" @close="dialogCancel"
+        <el-dialog :title="`${dialogOpenMode}权限`" @close="dialogCancel"
                    :visible.sync="dialogOpened" width="70%" class="edit-dialog" @opened="beforeDialogOpen">
-            <permission-edit :permission="permission" ref="permissionEdit" :view-mode="dialogOpenMode === 'view'"></permission-edit>
+            <permission-edit :permission="permission" ref="permissionEdit" :open-mode="dialogOpenMode"></permission-edit>
             <el-footer class="text-right">
                 <el-button @click="dialogCancel">取 消</el-button>
                 <el-button type="primary" @click="dialogConfirm">确 定</el-button>
@@ -137,25 +127,20 @@
             },
 
             addPermission() {
-                this.permission = {
-                    permCode: '',
-                    permName: '',
-                    apiList: [],
-                    isAdd: true,
-                };
-                this.dialogOpenMode = 'add';
+                this.permission = {};
+                this.dialogOpenMode = '新增';
                 this.dialogOpened = true;
             },
 
             editPermission(perm) {
                 this.permission = perm;
-                this.dialogOpenMode = 'update';
+                this.dialogOpenMode = '修改';
                 this.dialogOpened = true;
             },
 
             viewPermission(perm) {
                 this.permission = perm;
-                this.dialogOpenMode = 'view';
+                this.dialogOpenMode = '查看';
                 this.dialogOpened = true;
             },
 
@@ -165,18 +150,30 @@
             },
 
             dialogConfirm() {
-                this.$refs.permissionEdit.savePermission().then(() => {
+                this.$refs.permissionEdit.confirmEdit().then(() => {
                     this.dialogOpened = false;
+                    if ('新增' === this.dialogOpenMode) {
+                        this.queryForm.total = -1;
+                    }
                     this.loadPermissions();
                 });
             },
 
-            deletePermission(perm) {
-                this.$ajax.delete(`/permission/${perm.permCode}`)
-                    .then(() => {
-                        this.$message.success('删除成功。');
-                        this.loadPermissions();
-                    })
+            deletePermission(permissionIds) {
+                this.$confirm('确认删除?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$ajax.delete(`/permission`, {data: permissionIds})
+                        .then(() => {
+                            this.$message. success('删除成功。');
+                            this.queryForm.total = -1;
+                            this.loadPermissions();
+                        });
+                }).catch(() => {
+                    this.$message.info("已取消删除");
+                });
             },
 
         }

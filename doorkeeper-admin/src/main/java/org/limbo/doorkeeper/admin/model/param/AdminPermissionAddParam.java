@@ -14,21 +14,25 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.dao;
+package org.limbo.doorkeeper.admin.model.param;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Param;
+import lombok.Data;
 import org.limbo.doorkeeper.api.model.param.PermissionApiAddParam;
-import org.limbo.doorkeeper.server.entity.PermissionApi;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
  * @author Devil
- * @date 2020/11/20 9:49 AM
+ * @date 2020/11/26 9:43 AM
  */
-public interface PermissionApiMapper extends BaseMapper<PermissionApi> {
+@Data
+public class AdminPermissionAddParam {
 
-    void batchInsertOrIgnore(@Param("permissionApis") List<PermissionApi> permissionApis);
+    @NotNull(message = "权限名称不能为空")
+    private String permissionName;
 
+    private String permissionDescribe;
+
+    private List<PermissionApiAddParam> permissionApis;
 }

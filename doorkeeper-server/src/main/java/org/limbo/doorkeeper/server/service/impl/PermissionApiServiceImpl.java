@@ -19,6 +19,8 @@ package org.limbo.doorkeeper.server.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.model.param.PermissionApiAddParam;
+import org.limbo.doorkeeper.api.model.param.PermissionApiQueryParam;
+import org.limbo.doorkeeper.api.model.vo.PermissionApiVO;
 import org.limbo.doorkeeper.server.dao.PermissionApiMapper;
 import org.limbo.doorkeeper.server.entity.PermissionApi;
 import org.limbo.doorkeeper.server.service.PermissionApiService;
@@ -37,6 +39,15 @@ public class PermissionApiServiceImpl implements PermissionApiService {
 
     @Autowired
     private PermissionApiMapper permissionApiMapper;
+
+    @Override
+    public List<PermissionApiVO> list(Long projectId, PermissionApiQueryParam param) {
+        List<PermissionApi> permissionApis = permissionApiMapper.selectList(Wrappers.<PermissionApi>lambdaQuery()
+                .eq(PermissionApi::getProjectId, projectId)
+                .eq(PermissionApi::getPermissionId, param.getPermissionId())
+        );
+        return EnhancedBeanUtils.createAndCopyList(permissionApis, PermissionApiVO.class);
+    }
 
     @Override
     public void addPermissionApi(Long projectId, List<PermissionApiAddParam> param) {

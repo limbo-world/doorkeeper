@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.dao;
+package org.limbo.doorkeeper.admin.service;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Param;
-import org.limbo.doorkeeper.api.model.param.PermissionApiAddParam;
-import org.limbo.doorkeeper.server.entity.PermissionApi;
-
-import java.util.List;
+import org.limbo.doorkeeper.admin.model.param.AdminPermissionAddParam;
+import org.limbo.doorkeeper.admin.model.param.AdminPermissionUpdateParam;
+import org.limbo.doorkeeper.api.model.Response;
+import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 
 /**
  * @author Devil
- * @date 2020/11/20 9:49 AM
+ * @date 2020/11/26 9:45 AM
  */
-public interface PermissionApiMapper extends BaseMapper<PermissionApi> {
+public interface PermissionService {
 
-    void batchInsertOrIgnore(@Param("permissionApis") List<PermissionApi> permissionApis);
+    Response<PermissionVO> add(AdminPermissionAddParam param);
 
+    Response<Integer> update(Long permissionId, AdminPermissionUpdateParam param);
 }

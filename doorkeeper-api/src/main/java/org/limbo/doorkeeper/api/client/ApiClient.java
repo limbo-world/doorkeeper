@@ -49,5 +49,5 @@ public interface ApiClient {
     Response<Integer> update(@PathVariable("apiId") Long apiId, @RequestBody ApiUpdateParam param);
 
     @DeleteMapping
-    Response<Boolean> delete(@RequestBody List<Long> apiIds);
+    Response<Boolean> batchDelete(@RequestBody List<Long> apiIds);
 }

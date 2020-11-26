@@ -16,6 +16,7 @@
 
 package org.limbo.doorkeeper.api.model.vo;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -25,19 +26,18 @@ import lombok.Data;
 @Data
 public class PermissionVO {
 
+    @Schema(title = "项目ID")
     private Long projectId;
-    /**
-     * 权限名称
-     */
+
+    @Schema(title = "权限ID")
+    private Long permissionId;
+
+    @Schema(title = "权限名称")
     private String permissionName;
 
-    /**
-     * 描述
-     */
+    @Schema(title = "权限描述")
     private String permissionDescribe;
 
-    /**
-     * 是否上线
-     */
+    @Schema(title = "是否上线")
     private Boolean isOnline;
 }

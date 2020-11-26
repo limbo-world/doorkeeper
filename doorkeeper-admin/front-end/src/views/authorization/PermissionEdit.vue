@@ -15,12 +15,9 @@
                                  :titles="['未选', '已选']" :render-content="renderFunc"
                                  @left-check-change="leftCheckChange" @right-check-change="rightCheckChange"
                                  v-model="transferValue" :data="apis">
-                        <el-button class="transfer-footer" slot="left-footer" size="small" @click="allowApi">放行
-                        </el-button>
-                        <el-button class="transfer-footer" slot="left-footer" size="small" @click="refuseApi">拦截
-                        </el-button>
-                        <el-button class="transfer-footer" slot="right-footer" size="small" @click="deleteApi">删除
-                        </el-button>
+                        <el-button class="transfer-footer" slot="left-footer" size="small" @click="allowApi">放行</el-button>
+                        <el-button class="transfer-footer" slot="left-footer" size="small" @click="refuseApi">拦截</el-button>
+                        <el-button class="transfer-footer" slot="right-footer" size="small" @click="deleteApi">删除</el-button>
                     </el-transfer>
                 </el-form-item>
             </el-form>
@@ -37,9 +34,9 @@
                 default: {}
             },
 
-            viewMode: {
-                type: Boolean,
-                default: false,
+            openMode: {
+                type: String,
+                default: '',
             }
         },
 
@@ -60,15 +57,30 @@
         methods: {
 
             preOpen() {
-                // 加载所有api
-                this.$ajax.get('/api').then(response => {
-                    response.data.forEach(api => {
+                Promise.all([this.loadAllApi(), this.loadPermissionApi()]).then((result) => {
+                    const allApi = result[0].data;
+                    const hasApi = result[1].data;
+
+                    allApi.forEach(api => {
                         api.label = api.apiName;
                         api.key = api.apiId;
-                        this.apis.push(api)
                     });
-                });
 
+                    this.apis = result[0].data;
+
+                    if (hasApi && hasApi.length > 0) {
+                        hasApi.forEach(k => {
+                            for (let api of this.apis) {
+                                if (k === api.apiId) {
+                                    api.policy = k.policy;
+                                    this.hasApis.push(api);
+                                    this.transferValue.push(api.apiId);
+                                    break
+                                }
+                            }
+                        });
+                    }
+                });
                 // 如果传递了权限ID 查询对应权限的所以已有的api
             },
             renderFunc(h, option) {
@@ -126,6 +138,17 @@
                 });
                 this.$forceUpdate();
             },
+            loadAllApi() {
+                return this.$ajax.get('/api');
+            },
+            loadPermissionApi() {
+                if (!this.permission.permissionId) {
+                    return new Promise((resolve, reject) => {
+                        resolve({data: [], code: 200})
+                    })
+                }
+                return this.$ajax.get('/permission-api');
+            },
 
 
             clearData() {
@@ -138,11 +161,7 @@
                 }
             },
 
-            savePermission() {
-                if (this.viewMode) {
-                    return this.$immediate();
-                }
-
+            confirmEdit() {
                 const loading = this.$loading();
                 return new Promise((resolve, reject) => {
                     this.$refs.editForm.validate(valid => {
@@ -150,21 +169,22 @@
                             reject();
                             return;
                         }
-
-                        const permission = JSON.parse(JSON.stringify(this.permission));
-                        const prom = !permission.isAdd
-                            ? this.doUpdatePermission(permission)
-                            : this.doAddPermission(permission);
-                        prom.then(() => {
-                            this.clearData();
-                            resolve();
-                        }).catch(reject);
+                        if ('新增' === this.openMode) {
+                            this.doAddPermission(this.permission).then(() => {
+                                this.clearData();
+                                resolve();
+                            }).catch(reject);
+                        } else if ('修改' === this.openMode) {
+                            this.doUpdatePermission(this.permission).then(() => {
+                                this.clearData();
+                                resolve();
+                            }).catch(reject);
+                        }
                     });
                 }).finally(() => loading.close())
             },
-
             doAddPermission(permission) {
-                delete permission.isAdd;
+                permission.permissionApis = this.hasApis;
                 return this.$ajax.post('/permission', permission);
             },
 

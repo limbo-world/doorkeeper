@@ -50,8 +50,8 @@ public class ApiController {
     }
 
     @DeleteMapping
-    public Response<Boolean> delete(@RequestBody List<Long> apiIds) {
-        return apiClient.delete(apiIds);
+    public Response<Boolean> batchDelete(@RequestBody List<Long> apiIds) {
+        return apiClient.batchDelete(apiIds);
     }
 
     @GetMapping

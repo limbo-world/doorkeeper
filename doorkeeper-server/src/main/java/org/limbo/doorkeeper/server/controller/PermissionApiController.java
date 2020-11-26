@@ -20,6 +20,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.PermissionApiAddParam;
+import org.limbo.doorkeeper.api.model.param.PermissionApiQueryParam;
+import org.limbo.doorkeeper.api.model.vo.PermissionApiVO;
 import org.limbo.doorkeeper.server.service.PermissionApiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +40,11 @@ public class PermissionApiController extends BaseController {
     @Autowired
     private PermissionApiService permissionApiService;
 
+    @GetMapping
+    @Operation(summary = "获取权限api")
+    public Response<List<PermissionApiVO>> list(PermissionApiQueryParam param) {
+        return Response.ok(permissionApiService.list(getProjectId(), param));
+    }
 
     @PostMapping
     @Operation(summary = "绑定权限api")

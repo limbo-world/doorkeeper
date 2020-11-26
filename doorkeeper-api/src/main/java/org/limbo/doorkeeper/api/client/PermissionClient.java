@@ -47,7 +47,7 @@ public interface PermissionClient {
     Response<Boolean> batchUpdate(@RequestBody PermissionBatchUpdateParam param);
 
     @DeleteMapping
-    Response<Boolean> delete(@RequestBody List<Long> permissionIds);
+    Response<Boolean> batchDelete(@RequestBody List<Long> permissionIds);
 
     @GetMapping
     Response<List<PermissionVO>> list();
