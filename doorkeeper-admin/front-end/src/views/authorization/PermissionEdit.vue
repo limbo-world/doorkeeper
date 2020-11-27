@@ -205,6 +205,8 @@
                                 this.clearData();
                                 resolve();
                             }).catch(reject);
+                        } else {
+                            reject();
                         }
                     });
                 }).finally(() => loading.close())

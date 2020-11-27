@@ -16,7 +16,7 @@
 
 package org.limbo.doorkeeper.admin.controller;
 
-import org.limbo.doorkeeper.admin.model.param.AccountRoleAddParam;
+import org.limbo.doorkeeper.admin.model.param.RoleAddParam;
 import org.limbo.doorkeeper.admin.model.param.RoleUpdateParam;
 import org.limbo.doorkeeper.admin.service.RoleService;
 import org.limbo.doorkeeper.api.client.RoleClient;
@@ -46,7 +46,7 @@ public class RoleController {
     private RoleService roleService;
 
     @PostMapping
-    public Response<RoleVO> add(@RequestBody AccountRoleAddParam param) {
+    public Response<RoleVO> add(@RequestBody RoleAddParam param) {
         return roleService.add(param);
     }
 

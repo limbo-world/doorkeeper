@@ -20,13 +20,15 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.admin.dao.AdminMapper;
 import org.limbo.doorkeeper.admin.dao.AdminProjectMapper;
-import org.limbo.doorkeeper.admin.entity.Admin;
 import org.limbo.doorkeeper.admin.entity.AdminProject;
 import org.limbo.doorkeeper.admin.model.param.AdminProjectQueryParam;
 import org.limbo.doorkeeper.admin.service.AdminProjectService;
 import org.limbo.doorkeeper.admin.utils.MyBatisPlusUtils;
+import org.limbo.doorkeeper.admin.utils.Verifies;
+import org.limbo.doorkeeper.api.client.AccountClient;
 import org.limbo.doorkeeper.api.client.ProjectClient;
 import org.limbo.doorkeeper.api.model.Response;
+import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.limbo.doorkeeper.api.model.vo.ProjectVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,16 +50,22 @@ public class AdminProjectServiceImpl implements AdminProjectService {
     private AdminProjectMapper adminProjectMapper;
     @Autowired
     private ProjectClient projectClient;
+    @Autowired
+    private AccountClient accountClient;
 
     @Override
     public List<AdminProject> getByAccount(Long accountId) {
-        Admin admin = adminMapper.selectById(accountId);
-        if (admin.getIsAdmin()) {
+        Response<AccountVO> accountVOResponse = accountClient.get(accountId);
+        Verifies.verify(accountVOResponse.ok(), String.format("获取远程账户失败 %s", accountVOResponse.getMsg()));
+
+        AccountVO accountVO = accountVOResponse.getData();
+        Verifies.notNull(accountVO, "管理员不存在");
+        if (accountVO.getIsAdmin()) {
             Response<List<ProjectVO>> all = projectClient.getAll();
             List<AdminProject> projects = new ArrayList<>();
             for (ProjectVO projectVO : all.getData()) {
                 AdminProject project = new AdminProject();
-                project.setAccountId(admin.getAccountId());
+                project.setAccountId(accountId);
                 project.setProjectId(projectVO.getProjectId());
                 project.setProjectName(projectVO.getProjectName());
                 projects.add(project);

@@ -15,7 +15,7 @@
   -->
 
 <template>
-    <el-container class="page-role-edit" v-loading="loading">
+    <el-container class="page-role-edit">
         <el-main>
             <el-form :model="role" label-width="80px" size="mini" class="edit-form"
                      :rules="rules" ref="editForm" :disabled="'查看' === openMode">
@@ -46,12 +46,12 @@
         props: {
             role: {
                 type: Object,
-                default() {}
+                default: {}
             },
 
             openMode: {
-                type: Boolean,
-                default: true,
+                type: String,
+                default: '',
             }
         },
 
@@ -91,7 +91,7 @@
                         });
                     }
                     this.$forceUpdate();
-                })
+                });
             },
             loadAllPermission() {
                 return this.$ajax.get('/permission');
@@ -137,6 +137,8 @@
                                 this.clearData();
                                 resolve();
                             }).catch(reject);
+                        } else {
+                            reject();
                         }
                     });
                 }).finally(() => loading.close())

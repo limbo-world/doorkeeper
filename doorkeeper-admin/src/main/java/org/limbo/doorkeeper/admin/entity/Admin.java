@@ -42,13 +42,6 @@ public class Admin {
 
     private Date lastLogin;
 
-    private Boolean isSuperAdmin;
-
-    /**
-     * 是否为管理员
-     */
-    private Boolean isAdmin;
-
     private Date gmtCreated;
 
     private Date gmtModified;

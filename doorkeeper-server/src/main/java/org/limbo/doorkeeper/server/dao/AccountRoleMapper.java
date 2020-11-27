@@ -29,6 +29,6 @@ import java.util.List;
  */
 public interface AccountRoleMapper extends BaseMapper<AccountRole> {
 
-    void batchInsertIgnore(@Param("accountRoles") List<AccountRoleAddParam> accountRoles);
+    void batchInsertIgnore(@Param("accountRoles") List<AccountRole> accountRoles);
 
 }

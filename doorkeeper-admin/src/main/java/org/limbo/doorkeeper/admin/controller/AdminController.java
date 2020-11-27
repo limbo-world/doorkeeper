@@ -17,8 +17,11 @@
 package org.limbo.doorkeeper.admin.controller;
 
 import org.limbo.doorkeeper.admin.model.param.AdminAddParam;
+import org.limbo.doorkeeper.admin.model.param.AdminQueryParam;
 import org.limbo.doorkeeper.admin.model.param.AdminUpdateParam;
+import org.limbo.doorkeeper.admin.model.vo.AdminVO;
 import org.limbo.doorkeeper.admin.service.AdminService;
+import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +51,11 @@ public class AdminController {
                                     @RequestBody AdminUpdateParam param) {
         param.setAccountId(accountId);
         return adminService.update(param);
+    }
+
+    @GetMapping("/query")
+    public Response<Page<AdminVO>> page(AdminQueryParam param) {
+        return Response.ok(adminService.page(param));
     }
 
 }

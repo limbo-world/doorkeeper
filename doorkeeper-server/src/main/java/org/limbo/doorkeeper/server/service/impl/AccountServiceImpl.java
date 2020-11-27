@@ -25,10 +25,10 @@ import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.*;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.limbo.doorkeeper.server.dao.AccountMapper;
-import org.limbo.doorkeeper.server.dao.AccountRoleMapper;
 import org.limbo.doorkeeper.server.dao.RoleMapper;
 import org.limbo.doorkeeper.server.entity.Account;
 import org.limbo.doorkeeper.server.entity.Role;
+import org.limbo.doorkeeper.server.service.AccountRoleService;
 import org.limbo.doorkeeper.server.service.AccountService;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
@@ -55,7 +55,7 @@ public class AccountServiceImpl implements AccountService {
     private RoleMapper roleMapper;
 
     @Autowired
-    private AccountRoleMapper accountRoleMapper;
+    private AccountRoleService accountRoleService;
 
     @Override
     @Transactional
@@ -83,7 +83,7 @@ public class AccountServiceImpl implements AccountService {
                 accountRole.setRoleId(role.getRoleId());
                 accountRoles.add(accountRole);
             }
-            accountRoleMapper.batchInsertIgnore(accountRoles);
+            accountRoleService.batchSave(projectId, accountRoles);
         }
 
         return EnhancedBeanUtils.createAndCopy(po, AccountVO.class);
@@ -113,7 +113,8 @@ public class AccountServiceImpl implements AccountService {
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<Account> mpage = MyBatisPlusUtils.pageOf(param);
         LambdaQueryWrapper<Account> condition = Wrappers.<Account>lambdaQuery()
                 .eq(Account::getProjectId, projectId)
-                .like(StringUtils.isNotBlank(param.getUsername()), Account::getUsername, param.getUsername());
+                .like(StringUtils.isNotBlank(param.getUsername()), Account::getUsername, param.getUsername())
+                .in(CollectionUtils.isNotEmpty(param.getAccountIds()), Account::getAccountId, param.getAccountIds());
         mpage = accountMapper.selectPage(mpage, condition);
 
         param.setTotal(mpage.getTotal());
@@ -130,12 +131,11 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountVO get(Long projectId, Long accountId) {
+    public AccountVO get(Long accountId) {
         Account account = accountMapper.selectOne(Wrappers.<Account>lambdaQuery()
-                .eq(Account::getProjectId, projectId)
                 .eq(Account::getAccountId, accountId)
         );
-        return EnhancedBeanUtils.createAndCopy(account, AccountVO.class);
+        return account == null ? null : EnhancedBeanUtils.createAndCopy(account, AccountVO.class);
     }
 
 }

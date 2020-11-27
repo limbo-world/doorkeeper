@@ -52,6 +52,6 @@ public interface AccountService {
 
     List<AccountVO> list(Long projectId);
 
-    AccountVO get(Long projectId, Long accountId);
+    AccountVO get(Long accountId);
 
 }

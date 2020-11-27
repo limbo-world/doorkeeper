@@ -14,38 +14,16 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.admin.model.vo;
+package org.limbo.doorkeeper.admin.service;
 
-import lombok.Data;
-
-import java.util.Date;
+import org.limbo.doorkeeper.admin.model.param.AccountRoleUpdateParam;
 
 /**
  * @author Devil
- * @date 2020/11/26 3:25 PM
+ * @date 2020/11/27 10:52 AM
  */
-@Data
-public class AdminAccountVO {
+public interface AccountRoleService {
 
-    private Long accountId;
-
-    private String username;
-
-    private String password;
-
-    private String nickname;
-
-    private Date lastLogin;
-
-    private Boolean isSuperAdmin;
-
-    /**
-     * 是否为管理员
-     */
-    private Boolean isAdmin;
-
-    private Date gmtCreated;
-
-    private Date gmtModified;
+    void update(AccountRoleUpdateParam param);
 
 }

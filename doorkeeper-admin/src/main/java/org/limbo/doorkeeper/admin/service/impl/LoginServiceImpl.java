@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.limbo.doorkeeper.admin.config.DoorkeeperProperties;
 import org.limbo.doorkeeper.admin.dao.AdminMapper;
 import org.limbo.doorkeeper.admin.dao.AdminProjectMapper;
 import org.limbo.doorkeeper.admin.entity.Admin;
@@ -83,6 +84,9 @@ public class LoginServiceImpl implements LoginService {
     @Autowired
     private AccountClient accountClient;
 
+    @Autowired
+    private DoorkeeperProperties doorkeeperProperties;
+
     @Override
     public AbstractSession login(LoginParam param) {
         Verifies.verify(verifyCaptcha(param.getCaptchaToken(), param.getCaptcha()), "验证码错误！");
@@ -93,19 +97,25 @@ public class LoginServiceImpl implements LoginService {
         Verifies.notNull(admin, "账户不存在");
         Verifies.verify(MD5Utils.verify(param.getPassword(), admin.getPassword()), "用户名或密码错误！");
 
+        SessionAccount sessionAccount = new SessionAccount();
+        sessionAccount.setAccountId(admin.getAccountId());
+        sessionAccount.setNickname(admin.getNickname());
+        // 选中当前项目
+        sessionAccount.setCurrentProjectId(doorkeeperProperties.getProjectId());
+        // 先创建会话让 feign拦截器可以获取到信息
+        sessionDAO.createSession(sessionAccount);
+
         Response<AccountVO> accountVOResponse = accountClient.get(admin.getAccountId());
         Verifies.verify(accountVOResponse.ok(), "账户不存在");
         Verifies.notNull(accountVOResponse.getData(), "账户不存在");
 
-        SessionAccount sessionAccount = new SessionAccount();
-        sessionAccount.setProjectId(accountVOResponse.getData().getProjectId());
-        sessionAccount.setAccountId(admin.getAccountId());
-        sessionAccount.setNickname(admin.getNickname());
-        sessionAccount.setIsSuperAdmin(admin.getIsSuperAdmin());
-        sessionAccount.setIsAdmin(admin.getIsAdmin());
+        AccountVO accountVO = accountVOResponse.getData();
+        sessionAccount.setProjectId(accountVO.getProjectId());
+        sessionAccount.setIsSuperAdmin(accountVO.getIsSuperAdmin());
+        sessionAccount.setIsAdmin(accountVO.getIsAdmin());
 
         List<AdminProject> projects;
-        if (admin.getIsAdmin()) { // 管理员有所有项目权限
+        if (sessionAccount.getIsAdmin()) { // 管理员有所有项目权限
             Response<List<ProjectVO>> all = projectClient.getAll();
             projects = new ArrayList<>();
             if (CollectionUtils.isNotEmpty(all.getData())) {
@@ -126,9 +136,7 @@ public class LoginServiceImpl implements LoginService {
             sessionAccount.setCurrentProjectName(projects.get(0).getProjectName());
         }
 
-
-        AdminSession session = sessionDAO.createSession(sessionAccount);
-        return session;
+        return sessionDAO.createSession(sessionAccount);
     }
 
     @Override

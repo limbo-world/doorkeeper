@@ -15,23 +15,12 @@
   -->
 
 <template>
-    <el-container>
+    <el-container class="page-account-role-edit">
         <el-main>
-            <el-form :model="account" label-width="120px" size="mini" class="edit-form"
-                     :rules="rules" ref="editForm">
-                <el-form-item label="登录用户名" prop="username">
-                    <el-input v-model="account.username" :maxlength="50"></el-input>
-                </el-form-item>
-                <el-form-item label="登录密码" prop="password">
-                    <el-input v-model="account.password" :maxlength="50" type="password"></el-input>
-                </el-form-item>
-                <el-form-item label="确认登录密码" prop="confirmPassword">
-                    <el-input v-model="account.confirmPassword" :maxlength="50" type="password"></el-input>
-                </el-form-item>
-                <el-form-item label="昵称" prop="nick">
-                    <el-input v-model="account.nick" :maxlength="32"></el-input>
-                </el-form-item>
-            </el-form>
+            <el-transfer filterable filter-placeholder="搜索"
+                         :titles="['未选', '已选']" @change="roleChange"
+                         v-model="transferValue" :data="roles">
+            </el-transfer>
         </el-main>
     </el-container>
 </template>
@@ -39,46 +28,23 @@
 
 <script>
 
-    import Rules from '../../utils/ValidateRules';
-
     export default {
         props: {
             account: {
                 type: Object,
-                default() {
-                    return {
-                        accountId: null,
-                        username: '',
-                        password: '',
-                        confirmPassword: '',
-                    }
-                }
+                default: {}
+            },
+            openMode: {
+                type: String,
+                default: '',
             }
         },
 
         data() {
-            const confirmPassword = (rule, value, cb) => {
-                if (this.account.password !== value) {
-                    cb(new Error('两次输入密码不一致'));
-                } else {
-                    cb();
-                }
-            };
 
             return {
-                rules: {
-                    username: [Rules.required('登录用户名'), Rules.length(3, 32), ],
-                    password: [ Rules.required('登录密码'), Rules.length(6, 32), ],
-                    confirmPassword: [
-                        Rules.required('确认密码'),
-                        Rules.length(6, 32),
-                        {
-                            validator: confirmPassword,
-                            trigger: 'blur'
-                        }
-                    ],
-                    nick: [ Rules.required('昵称'), Rules.length(2, 16) ]
-                }
+                roles: [],
+                transferValue: []
             };
         },
 
@@ -88,33 +54,101 @@
 
         methods: {
 
-            clearData() {
-                if (this.$refs.editForm) {
-                    this.$refs.editForm.clearValidate();
+            preOpen() {
+                Promise.all([this.loadAllRole(), this.loadAccountRole()]).then((result) => {
+                    const all = result[0].data;
+                    const has = result[1].data;
+
+                    all.forEach(a => {
+                        a.label = a.roleName;
+                        a.key = a.roleId;
+                    });
+
+                    this.roles = all;
+
+                    if (has && has.length > 0) {
+                        has.forEach(k => {
+                            for (let role of this.roles) {
+                                if (k.roleId === role.roleId) {
+                                    role.accountRoleId = k.accountRoleId;
+                                    this.transferValue.push(role.roleId);
+                                    break
+                                }
+                            }
+                        });
+                    }
+                    this.$forceUpdate();
+                });
+            },
+            loadAllRole() {
+                return this.$ajax.get('/role');
+            },
+            loadAccountRole() {
+                return this.$ajax.get('/account-role', {params: {accountId: this.account.accountId}});
+            },
+
+            roleChange(value, direction, movedKeys) { // value 右边剩余的key direction 方向 movedKeys 移动的key
+                if ('left' === direction) {
+                    movedKeys.forEach(k => {
+                        for (let role of this.roles) {
+                            if (k === role.accountId) {
+                                role.delAccountRoleId = account.delAccountRoleId;
+                            }
+                        }
+                    });
+                } else {
+
                 }
             },
 
-            saveAccount() {
+            clearData() {
+                this.roles = [];
+                this.transferValue = [];
+            },
+            confirmEdit() {
                 const loading = this.$loading();
                 return new Promise((resolve, reject) => {
-                    this.$refs.editForm.validate(valid => {
-                        if (!valid) {
-                            reject();
-                            return;
-                        }
-                        const account = this.account;
-                        const prom = this.doAddAccount(account);
-                        prom.then(() => {
+                    if ('修改' === this.openMode) {
+                        this.doUpdateRole().then(() => {
                             this.clearData();
                             resolve();
                         }).catch(reject);
-                    });
+                    } else {
+                        reject();
+                    }
                 }).finally(() => loading.close())
             },
-
-            doAddAccount(account) {
-                return this.$ajax.post('/admin', account);
+            doUpdateRole() {
+                // 找出apis 有permissionApiId但是不在已选框内的
+                let delIds = [];
+                let has = [];
+                this.roles.forEach(role => {
+                    if (role.delAccountRoleId) {
+                        delIds.push(role.delAccountRoleId);
+                    }
+                    for (let k of this.transferValue) {
+                        if (role.roleId === k) {
+                            role.accountId = this.account.accountId;
+                            has.push(role);
+                            break
+                        }
+                    }
+                });
+                let param = {
+                    addAccountRoles: has,
+                    deleteRolePermissionIds: delIds
+                };
+                return this.$ajax.put(`/account-role`, param);
             },
         }
     }
 </script>
+
+<style lang="scss">
+    .page-account-role-edit {
+        .el-transfer-panel {
+            width: 300px;
+            margin-right: 10px;
+        }
+    }
+</style>

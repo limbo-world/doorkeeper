@@ -23,6 +23,7 @@ import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * @author Devil
@@ -34,4 +35,7 @@ public class AccountQueryParam extends Page<AccountVO> {
 
     @Schema(title = "账户名称", description = "like匹配")
     private String username;
+
+    @Schema(title = "账户ID列表")
+    private List<Long> accountIds;
 }

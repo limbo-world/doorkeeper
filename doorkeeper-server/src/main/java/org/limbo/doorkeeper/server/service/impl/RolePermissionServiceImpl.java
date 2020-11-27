@@ -44,7 +44,7 @@ public class RolePermissionServiceImpl implements RolePermissionService {
     public List<RolePermissionVO> list(Long projectId, RolePermissionQueryParam param) {
         List<RolePermission> rolePermissions = rolePermissionMapper.selectList(Wrappers.<RolePermission>lambdaQuery()
                 .eq(RolePermission::getProjectId, projectId)
-                .eq(RolePermission::getRoleId, param.getRoleId())
+                .eq(param.getRoleId() != null, RolePermission::getRoleId, param.getRoleId())
         );
         return EnhancedBeanUtils.createAndCopyList(rolePermissions, RolePermissionVO.class);
     }

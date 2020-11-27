@@ -20,10 +20,10 @@
 
     <insert id="batchInsertIgnore" parameterType="org.limbo.doorkeeper.api.model.param.AccountRoleAddParam">
         INSERT ignore INTO l_account_role (
-          account_id, role_id
+          project_id, account_id, role_id
         ) VALUES
         <foreach collection="accountRoles" separator="," item="accountRole">
-            ( #{accountRole.accountId}, #{accountRole.roleId} )
+            ( #{accountRole.projectId}, #{accountRole.accountId}, #{accountRole.roleId} )
         </foreach>
     </insert>
 

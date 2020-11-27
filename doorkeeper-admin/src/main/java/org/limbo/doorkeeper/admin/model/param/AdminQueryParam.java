@@ -14,26 +14,21 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
+package org.limbo.doorkeeper.admin.model.param;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-
-import javax.validation.constraints.NotNull;
+import lombok.EqualsAndHashCode;
+import org.limbo.doorkeeper.admin.model.vo.AdminVO;
+import org.limbo.doorkeeper.api.model.Page;
 
 /**
  * @author Devil
- * @date 2020/11/20 11:33 AM
+ * @date 2020/11/19 3:27 PM
  */
 @Data
-public class AccountRoleAddParam {
+@EqualsAndHashCode(callSuper = true)
+public class AdminQueryParam extends Page<AdminVO> {
 
-    @NotNull(message = "账户ID不能为空")
-    @Schema(title = "账户ID", required = true)
-    private Long accountId;
-
-    @NotNull(message = "角色ID不能为空")
-    @Schema(title = "角色ID", required = true)
-    private Long roleId;
+    private String username;
 
 }

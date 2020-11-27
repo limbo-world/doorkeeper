@@ -17,7 +17,10 @@
 package org.limbo.doorkeeper.admin.service;
 
 import org.limbo.doorkeeper.admin.model.param.AdminAddParam;
+import org.limbo.doorkeeper.admin.model.param.AdminQueryParam;
 import org.limbo.doorkeeper.admin.model.param.AdminUpdateParam;
+import org.limbo.doorkeeper.admin.model.vo.AdminVO;
+import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
 
@@ -30,4 +33,7 @@ public interface AdminService {
     Response<AccountVO> add(AdminAddParam param);
 
     Response<Integer> update(AdminUpdateParam param);
+
+    Page<AdminVO> page(AdminQueryParam param);
+
 }

@@ -19,17 +19,23 @@
         <el-main>
             <el-form :model="account" label-width="120px" size="mini" class="edit-form"
                      :rules="rules" ref="editForm">
-                <el-form-item label="登录用户名" prop="username">
-                    <el-input v-model="account.username" :maxlength="50"></el-input>
+                <el-form-item label="账号" prop="username" v-if="'新增' === openMode">
+                    <el-input v-model="account.username"></el-input>
                 </el-form-item>
-                <el-form-item label="登录密码" prop="password">
-                    <el-input v-model="account.password" :maxlength="50" type="password"></el-input>
+                <el-form-item label="密码" prop="password" v-if="'新增' === openMode">
+                    <el-input v-model="account.password" type="password"></el-input>
                 </el-form-item>
-                <el-form-item label="确认登录密码" prop="confirmPassword">
-                    <el-input v-model="account.confirmPassword" :maxlength="50" type="password"></el-input>
+                <el-form-item label="确认密码" prop="confirmPassword" v-if="'新增' === openMode">
+                    <el-input v-model="account.confirmPassword" type="password"></el-input>
                 </el-form-item>
-                <el-form-item label="昵称" prop="nick">
-                    <el-input v-model="account.nick" :maxlength="32"></el-input>
+                <el-form-item label="昵称" prop="nickname">
+                    <el-input v-model="account.nickname"></el-input>
+                </el-form-item>
+                <el-form-item label="描述">
+                    <el-input type="textarea" v-model="account.accountDescribe"></el-input>
+                </el-form-item>
+                <el-form-item label="管理员">
+                    <el-switch v-model="account.isAdmin" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
                 </el-form-item>
             </el-form>
         </el-main>
@@ -45,14 +51,11 @@
         props: {
             account: {
                 type: Object,
-                default() {
-                    return {
-                        accountId: null,
-                        username: '',
-                        password: '',
-                        confirmPassword: '',
-                    }
-                }
+                default() {}
+            },
+            openMode: {
+                type: Boolean,
+                default: true,
             }
         },
 
@@ -77,7 +80,7 @@
                             trigger: 'blur'
                         }
                     ],
-                    nick: [ Rules.required('昵称'), Rules.length(2, 16) ]
+                    nickname: [ Rules.required('昵称'), Rules.length(2, 32) ]
                 }
             };
         },
@@ -93,8 +96,7 @@
                     this.$refs.editForm.clearValidate();
                 }
             },
-
-            saveAccount() {
+            confirmEdit() {
                 const loading = this.$loading();
                 return new Promise((resolve, reject) => {
                     this.$refs.editForm.validate(valid => {
@@ -102,12 +104,19 @@
                             reject();
                             return;
                         }
-                        const account = this.account;
-                        const prom = this.doAddAccount(account);
-                        prom.then(() => {
-                            this.clearData();
-                            resolve();
-                        }).catch(reject);
+                        if ('新增' === this.openMode) {
+                            this.doAddAccount(this.account).then(() => {
+                                this.clearData();
+                                resolve();
+                            }).catch(reject);
+                        } else if ('修改' === this.openMode) {
+                            this.doUpdateAccount(this.account).then(() => {
+                                this.clearData();
+                                resolve();
+                            }).catch(reject);
+                        } else {
+                            reject();
+                        }
                     });
                 }).finally(() => loading.close())
             },
@@ -115,6 +124,16 @@
             doAddAccount(account) {
                 return this.$ajax.post('/admin', account);
             },
+
+            doUpdateAccount(account) {
+                return this.$ajax.put(`/admin/${account.accountId}`, account);
+            },
+
+            clearData() {
+                if (this.$refs.editForm) {
+                    this.$refs.editForm.clearValidate();
+                }
+            }
         }
     }
 </script>

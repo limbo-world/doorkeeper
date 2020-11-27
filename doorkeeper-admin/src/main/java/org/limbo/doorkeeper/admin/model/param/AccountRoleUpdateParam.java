@@ -14,26 +14,22 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
+package org.limbo.doorkeeper.admin.model.param;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.limbo.doorkeeper.api.model.param.AccountRoleAddParam;
 
-import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * @author Devil
- * @date 2020/11/20 11:33 AM
+ * @date 2020/11/27 10:48 AM
  */
 @Data
-public class AccountRoleAddParam {
+public class AccountRoleUpdateParam {
 
-    @NotNull(message = "账户ID不能为空")
-    @Schema(title = "账户ID", required = true)
-    private Long accountId;
+    private List<AccountRoleAddParam> addAccountRoles;
 
-    @NotNull(message = "角色ID不能为空")
-    @Schema(title = "角色ID", required = true)
-    private Long roleId;
+    private List<Long> deleteAccountRoleIds;
 
 }

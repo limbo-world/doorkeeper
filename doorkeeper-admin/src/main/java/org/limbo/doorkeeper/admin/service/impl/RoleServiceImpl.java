@@ -17,14 +17,13 @@
 package org.limbo.doorkeeper.admin.service.impl;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.limbo.doorkeeper.admin.model.param.AccountRoleAddParam;
+import org.limbo.doorkeeper.admin.model.param.RoleAddParam;
 import org.limbo.doorkeeper.admin.model.param.RoleUpdateParam;
 import org.limbo.doorkeeper.admin.service.RoleService;
 import org.limbo.doorkeeper.admin.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.api.client.RoleClient;
 import org.limbo.doorkeeper.api.client.RolePermissionClient;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.RoleAddParam;
 import org.limbo.doorkeeper.api.model.param.RolePermissionAddParam;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,8 +43,8 @@ public class RoleServiceImpl implements RoleService {
     private RolePermissionClient rolePermissionClient;
 
     @Override
-    public Response<RoleVO> add(AccountRoleAddParam param) {
-        RoleAddParam roleAddParam = EnhancedBeanUtils.createAndCopy(param, RoleAddParam.class);
+    public Response<RoleVO> add(RoleAddParam param) {
+        org.limbo.doorkeeper.api.model.param.RoleAddParam roleAddParam = EnhancedBeanUtils.createAndCopy(param, org.limbo.doorkeeper.api.model.param.RoleAddParam.class);
 
         Response<RoleVO> add = roleClient.add(roleAddParam);
         if (!add.ok()) {

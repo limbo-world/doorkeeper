@@ -39,6 +39,9 @@ public class AccountVO {
     @Schema(title = "账户名称")
     private String username;
 
+    @Schema(title = "账户描述")
+    private String accountDescribe;
+
     @Schema(title = "是否超管")
     private Boolean isSuperAdmin;
 
