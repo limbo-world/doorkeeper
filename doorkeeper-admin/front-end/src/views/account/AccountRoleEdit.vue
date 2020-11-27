@@ -49,7 +49,7 @@
         },
 
         created() {
-            pages.accountEdit = this;
+            pages.accountRoleEdit = this;
         },
 
         methods: {

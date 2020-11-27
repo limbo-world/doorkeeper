@@ -39,30 +39,18 @@
                             {{ scope.row.isAdmin ? (scope.row.isSuperAdmin ? "超级管理员" : "管理员") : "普通用户"}}
                         </template>
                     </el-table-column>
-                    <el-table-column prop="lastLogin" label="最后登录时间" width="120"></el-table-column>
-                    <el-table-column label="绑定角色" align="center" width="80">
+                    <el-table-column label="绑定角色" align="center" width="100">
                         <template slot-scope="scope">
                             <div class="operations">
-                                <i class="el-icon-edit" @click="editRole(scope.row)"></i>
-                            </div>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="绑定项目" align="center" width="80">
-                        <template slot-scope="scope">
-                            <div class="operations">
-                                <!--<i v-if="!scope.row.isSuperAdmin && isAdminProjectSelected" class="el-icon-delete" @click="deleteAccount(scope.row)"></i>-->
-                                <i class="el-icon-edit" @click="editRole(scope.row)"></i>
+                                <i v-if="!scope.row.isAdmin" class="el-icon-view" @click="viewRole(scope.row)"></i>
+                                <i v-if="!scope.row.isAdmin" class="el-icon-edit" @click="editRole(scope.row)"></i>
                             </div>
                         </template>
                     </el-table-column>
                     <el-table-column label="操作" align="center" width="100">
                         <template slot-scope="scope">
                             <div class="operations">
-                                <!--<i v-if="!scope.row.isSuperAdmin && isAdminProjectSelected" class="el-icon-delete" @click="deleteAccount(scope.row)"></i>-->
-                                <i class="el-icon-edit" @click="editRole(scope.row)"></i>
-                                <i class="el-icon-delete" @click="() => {
-                                deleteRole([scope.row.roleId])
-                            }"></i>
+                                <i v-if="!scope.row.isSuperAdmin" class="el-icon-edit" @click="editAccount(scope.row)"></i>
                             </div>
                         </template>
                     </el-table-column>
@@ -78,37 +66,20 @@
         </el-footer>
 
         <el-dialog :title="`${dialogOpenMode}账户`" :visible.sync="accountDialogOpened" width="50%" class="edit-dialog"
-                   @close="closeEditDialog(false)">
-            <account-edit :account="account" @cancel="closeEditDialog(false)" ref="accountEdit"></account-edit>
+                   @close="accountDialogCancel">
+            <account-edit :account="account" :open-mode="dialogOpenMode" ref="accountEdit"></account-edit>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="closeEditDialog">取 消</el-button>
-                <el-button type="primary" @click="dialogConfirm">确 定</el-button>
+                <el-button @click="accountDialogCancel">取 消</el-button>
+                <el-button type="primary" @click="accountDialogConfirm">确 定</el-button>
             </span>
         </el-dialog>
 
-        <el-dialog :title="`${dialogOpenMode}账户`" :visible.sync="accountDialogOpened" width="50%" class="edit-dialog"
-                   @close="closeEditDialog(false)">
-            <account-edit :account="account" @cancel="closeEditDialog(false)" ref="accountEdit"></account-edit>
+        <el-dialog :title="`${dialogOpenMode}账户角色`" :visible.sync="accountRoleDialogOpened" width="70%" class="edit-dialog"
+                   @close="accountRoleDialogCancel" @opened="beforeAccountRoleDialogOpen">
+            <account-role-edit :account="account" :open-mode="dialogOpenMode" ref="accountRoleEdit"></account-role-edit>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="closeEditDialog">取 消</el-button>
-                <el-button type="primary" @click="dialogConfirm">确 定</el-button>
-            </span>
-        </el-dialog>
-
-        <el-dialog :title="`${dialogOpenMode}账户角色`" :visible.sync="projectDialogOpened" width="60%" class="edit-dialog"
-                   @close="projectDialogOpened = false">
-            <account-project :account="account" @cancel="projectDialogOpened = false" ref="projectEdit"></account-project>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="projectDialogOpened = false">取 消</el-button>
-                <el-button type="primary" @click="projectDialogConfirm">确 定</el-button>
-            </span>
-        </el-dialog>
-
-        <el-dialog :title="`${dialogOpenMode}账户项目`" :visible.sync="grantDialogOpened" width="50%" class="edit-dialog"
-                   @close="closeGrantDialog">
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="closeGrantDialog">取 消</el-button>
-                <el-button type="primary" @click="confirmGrantDialog">确 定</el-button>
+                <el-button @click="accountRoleDialogCancel">取 消</el-button>
+                <el-button type="primary" @click="accountRoledialogConfirm">确 定</el-button>
             </span>
         </el-dialog>
 
@@ -119,11 +90,12 @@
 <script>
 
     import AccountEdit from './AccountEdit';
+    import AccountRoleEdit from './AccountRoleEdit';
     import {mapActions, mapState} from 'vuex';
 
     export default {
         components: {
-            AccountEdit,
+            AccountEdit, AccountRoleEdit,
         },
 
         data() {
@@ -139,19 +111,12 @@
                 account: {},
                 dialogOpenMode: '',
                 accountDialogOpened: false,
-                adminDialogOpened: false,
-                roleDialogOpened: false,
-                projectDialogOpened: false,
+                accountRoleDialogOpened: false,
             };
         },
 
         computed: {
             ...mapState('session', ['user']),
-
-
-            isAdminProjectSelected() { // 是否选中管理端项目
-                return this.user.account.accountProjectId === this.user.account.currentProjectId;
-            },
         },
 
         created() {
@@ -188,45 +153,51 @@
             },
             editAccount(account) {
                 this.account = account;
+                console.log(account)
                 this.dialogOpenMode = '修改';
                 this.accountDialogOpened = true;
             },
-
-            // ========= 管理员相关 ============
-            addAdmin() {
-                this.account = {};
-                this.dialogOpenMode = '新增';
-                this.adminDialogOpened = true;
+            accountDialogConfirm() {
+                this.$refs.accountEdit.confirmEdit().then(() => {
+                    this.account = {};
+                    this.accountDialogOpened = false;
+                    if ('新增' === this.dialogOpenMode) {
+                        this.resetPageForm()
+                    }
+                    this.loadAccounts()
+                }).catch(err => err);
             },
-            editAdmin(account) {
-                this.account = account;
-                this.dialogOpenMode = '修改';
-                this.adminDialogOpened = true;
+            accountDialogCancel() {
+                this.$refs.accountEdit.clearData();
+                this.accountDialogOpened = false;
             },
 
             // ========= 角色相关 ============
-            viewRole(project) {
-                this.project = project;
+            viewRole(account) {
+                this.account = account;
                 this.dialogOpenMode = '查看';
-                this.roleDialogOpened = true;
+                this.accountRoleDialogOpened = true;
             },
-            editRole(project) {
-                this.project = project;
+            editRole(account) {
+                this.account = account;
                 this.dialogOpenMode = '修改';
-                this.roleDialogOpened = true;
+                this.accountRoleDialogOpened = true;
+            },
+            beforeAccountRoleDialogOpen() {
+                this.$refs.accountRoleEdit.preOpen();
+            },
+            accountRoledialogConfirm() {
+                this.$refs.accountRoleEdit.confirmEdit().then(() => {
+                    this.account = {};
+                    this.accountRoleDialogOpened = false;
+                    // this.loadAccounts()
+                }).catch(err => err);
+            },
+            accountRoleDialogCancel() {
+                this.$refs.accountRoleEdit.clearData();
+                this.accountRoleDialogOpened = false;
             },
 
-            // ========= 项目相关 ============
-            viewProject(project) {
-                this.project = project;
-                this.dialogOpenMode = '查看';
-                this.projectDialogOpened = true;
-            },
-            editProject(project) {
-                this.project = project;
-                this.dialogOpenMode = '修改';
-                this.projectDialogOpened = true;
-            },
         }
 
     }

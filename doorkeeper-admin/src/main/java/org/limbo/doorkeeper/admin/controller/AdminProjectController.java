@@ -17,6 +17,7 @@
 package org.limbo.doorkeeper.admin.controller;
 
 import org.limbo.doorkeeper.admin.entity.AdminProject;
+import org.limbo.doorkeeper.admin.model.param.AdminProjectQueryParam;
 import org.limbo.doorkeeper.admin.model.param.AdminProjectUpdateParam;
 import org.limbo.doorkeeper.admin.service.AdminProjectService;
 import org.limbo.doorkeeper.api.model.Response;
@@ -41,19 +42,17 @@ public class AdminProjectController extends BaseController {
     /**
      * 获取管理员拥有哪些未删除的项目
      */
-    @GetMapping("/{accountId}")
-    public Response<List<AdminProject>> list(@Validated @PathVariable("accountId") @NotNull(message = "账户") Long accountId) {
-        return Response.ok(adminProjectService.getByAccount(accountId));
+    @GetMapping
+    public Response<List<AdminProject>> list(AdminProjectQueryParam param) {
+        return Response.ok(adminProjectService.list(param));
     }
 
     /**
      * 更新账户的项目
      */
-    @PutMapping("/{accountId}")
-    public Response<Boolean> update(
-            @RequestBody @Validated AdminProjectUpdateParam param,
-            @Validated @PathVariable("accountId") @NotNull(message = "账户不存在") Long accountId) {
-        adminProjectService.updateAccountProjects(accountId, param.getProjectIds());
+    @PutMapping
+    public Response<Boolean> update(@RequestBody AdminProjectUpdateParam param) {
+        adminProjectService.update(param);
         return Response.ok(true);
     }
 

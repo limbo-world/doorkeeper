@@ -22,6 +22,7 @@ import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.AccountAddParam;
 import org.limbo.doorkeeper.api.model.param.AccountBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.AccountQueryParam;
+import org.limbo.doorkeeper.api.model.param.AccountUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -47,6 +48,13 @@ public class AccountController {
     @PutMapping
     public Response<Integer> batchUpdate(@RequestBody AccountBatchUpdateParam param) {
         return accountClient.batchUpdate(param);
+    }
+
+    @PutMapping("/{accountId}")
+    public Response<Integer> update(@PathVariable("accountId") Long accountId,
+                                    @RequestBody AccountUpdateParam param) {
+        param.setAccountId(accountId);
+        return accountClient.update(accountId, param);
     }
 
     @GetMapping("/query")

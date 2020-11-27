@@ -53,7 +53,7 @@
                         <template slot-scope="scope">
                             <div class="operations">
                                 <i v-if="!scope.row.isAdmin" class="el-icon-view" @click="viewProject(scope.row)"></i>
-                                <i v-if="!scope.row.isAdmin" class="el-icon-edit" @click="editRole(scope.row)"></i>
+                                <i v-if="!scope.row.isAdmin" class="el-icon-edit" @click="editProject(scope.row)"></i>
                             </div>
                         </template>
                     </el-table-column>
@@ -89,15 +89,16 @@
             <account-role-edit :account="account" :open-mode="dialogOpenMode" ref="accountRoleEdit"></account-role-edit>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="accountRoleDialogCancel">取 消</el-button>
-                <el-button type="primary" @click="accountRoledialogConfirm">确 定</el-button>
+                <el-button type="primary" @click="accountRoleDialogConfirm">确 定</el-button>
             </span>
         </el-dialog>
 
         <el-dialog :title="`${dialogOpenMode}账户项目`" :visible.sync="adminProjectDialogOpened" width="70%" class="edit-dialog"
-                   @close="adminProjectDialogCancel">
+                   @close="adminProjectDialogCancel" @opened="beforeAdminProjectDialogOpen">
+            <admin-project-edit :account="account" :open-mode="dialogOpenMode" ref="adminProjectEdit"></admin-project-edit>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="adminProjectDialogCancel">取 消</el-button>
-                <el-button type="primary" @click="adminProjectDialogCancel">确 定</el-button>
+                <el-button type="primary" @click="adminProjectDialogConfirm">确 定</el-button>
             </span>
         </el-dialog>
 
@@ -140,7 +141,7 @@
         },
 
         created() {
-            pages.account = this;
+            pages.admin = this;
             this.loadAccounts();
         },
 
@@ -206,7 +207,7 @@
             beforeAccountRoleDialogOpen() {
                 this.$refs.accountRoleEdit.preOpen();
             },
-            accountRoledialogConfirm() {
+            accountRoleDialogConfirm() {
                 this.$refs.accountRoleEdit.confirmEdit().then(() => {
                     this.account = {};
                     this.accountRoleDialogOpened = false;
@@ -229,8 +230,18 @@
                 this.dialogOpenMode = '修改';
                 this.adminProjectDialogOpened = true;
             },
+            beforeAdminProjectDialogOpen() {
+                this.$refs.adminProjectEdit.preOpen();
+            },
+            adminProjectDialogConfirm() {
+                this.$refs.adminProjectEdit.confirmEdit().then(() => {
+                    this.account = {};
+                    this.adminProjectDialogOpened = false;
+                    // this.loadAccounts()
+                }).catch(err => err);
+            },
             adminProjectDialogCancel() {
-                this.$refs.accountRoleEdit.clearData();
+                this.$refs.adminProjectEdit.clearData();
                 this.adminProjectDialogOpened = false;
             },
 

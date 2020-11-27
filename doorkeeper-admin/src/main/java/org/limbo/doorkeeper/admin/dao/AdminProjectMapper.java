@@ -35,4 +35,5 @@ public interface AdminProjectMapper extends BaseMapper<AdminProject> {
     @Select(" select * from laa_admin_project where account_id = #{accountId} and project_id = #{projectId}")
     AdminProject getByAccountProject(@Param("accountId") Long accountId, @Param("projectId") Long projectId);
 
+    void batchInsertIgnore(@Param("adminProjects") List<AdminProject> adminProjects);
 }

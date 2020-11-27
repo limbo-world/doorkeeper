@@ -18,6 +18,8 @@ package org.limbo.doorkeeper.admin.model.param;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * @author Devil
  * @date 2020/11/26 3:32 PM
@@ -27,5 +29,6 @@ public class AdminProjectQueryParam {
 
     private Long projectId;
 
+    @NotNull(message = "账户不能为空")
     private Long accountId;
 }

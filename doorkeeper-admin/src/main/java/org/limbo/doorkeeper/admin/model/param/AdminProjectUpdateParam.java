@@ -17,6 +17,8 @@
 package org.limbo.doorkeeper.admin.model.param;
 
 import lombok.Data;
+import org.limbo.doorkeeper.admin.entity.AdminProject;
+import org.limbo.doorkeeper.api.model.param.AccountRoleAddParam;
 
 import java.util.List;
 
@@ -27,5 +29,7 @@ import java.util.List;
 @Data
 public class AdminProjectUpdateParam {
 
-    List<Long> projectIds;
+    private List<AdminProject> addAdminProjects;
+
+    private List<Long> deleteAdminProjectIds;
 }

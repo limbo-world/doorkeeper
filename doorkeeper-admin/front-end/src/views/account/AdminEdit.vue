@@ -86,7 +86,7 @@
         },
 
         created() {
-            pages.accountEdit = this;
+            pages.adminEdit = this;
         },
 
         methods: {

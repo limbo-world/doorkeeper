@@ -22,8 +22,8 @@ import org.limbo.doorkeeper.admin.dao.AdminMapper;
 import org.limbo.doorkeeper.admin.dao.AdminProjectMapper;
 import org.limbo.doorkeeper.admin.entity.AdminProject;
 import org.limbo.doorkeeper.admin.model.param.AdminProjectQueryParam;
+import org.limbo.doorkeeper.admin.model.param.AdminProjectUpdateParam;
 import org.limbo.doorkeeper.admin.service.AdminProjectService;
-import org.limbo.doorkeeper.admin.utils.MyBatisPlusUtils;
 import org.limbo.doorkeeper.admin.utils.Verifies;
 import org.limbo.doorkeeper.api.client.AccountClient;
 import org.limbo.doorkeeper.api.client.ProjectClient;
@@ -32,7 +32,6 @@ import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.limbo.doorkeeper.api.model.vo.ProjectVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,9 +76,26 @@ public class AdminProjectServiceImpl implements AdminProjectService {
 
     @Override
     public List<AdminProject> list(AdminProjectQueryParam param) {
+        Response<AccountVO> accountVOResponse = accountClient.get(param.getAccountId());
+        Verifies.verify(accountVOResponse.ok(), String.format("获取远程账户失败 %s", accountVOResponse.getMsg()));
+
+        AccountVO accountVO = accountVOResponse.getData();
+        Verifies.notNull(accountVO, "管理员不存在");
+        if (accountVO.getIsAdmin()) {
+            Response<List<ProjectVO>> all = projectClient.getAll();
+            List<AdminProject> projects = new ArrayList<>();
+            for (ProjectVO projectVO : all.getData()) {
+                AdminProject project = new AdminProject();
+                project.setAccountId(param.getAccountId());
+                project.setProjectId(projectVO.getProjectId());
+                project.setProjectName(projectVO.getProjectName());
+                projects.add(project);
+            }
+            return projects;
+        }
         return adminProjectMapper.selectList(Wrappers.<AdminProject>lambdaQuery()
                 .eq(param.getProjectId() != null, AdminProject::getProjectId, param.getProjectId())
-                .eq(param.getAccountId() != null, AdminProject::getAccountId, param.getAccountId())
+                .eq(AdminProject::getAccountId, param.getAccountId())
         );
     }
 
@@ -89,22 +105,12 @@ public class AdminProjectServiceImpl implements AdminProjectService {
     }
 
     @Override
-    @Transactional
-    public void updateAccountProjects(Long accountId, List<Long> projectIds) {
-        // 先删后增
-        adminProjectMapper.delete(Wrappers.<AdminProject>lambdaQuery().eq(AdminProject::getAccountId, accountId));
-
-        if (CollectionUtils.isEmpty(projectIds)) return;
-
-        List<AdminProject> pos = new ArrayList<>();
-        for (Long projectId : projectIds) {
-            AdminProject po = new AdminProject();
-            po.setAccountId(accountId);
-            po.setProjectId(projectId);
-//            po.setProjectName(projectId); // todo
-            pos.add(po);
+    public void update(AdminProjectUpdateParam param) {
+        if (CollectionUtils.isNotEmpty(param.getDeleteAdminProjectIds())) {
+            adminProjectMapper.deleteBatchIds(param.getDeleteAdminProjectIds());
         }
-
-        MyBatisPlusUtils.batchSave(pos, AdminProject.class);
+        if (CollectionUtils.isNotEmpty(param.getAddAdminProjects())) {
+            adminProjectMapper.batchInsertIgnore(param.getAddAdminProjects());
+        }
     }
 }
