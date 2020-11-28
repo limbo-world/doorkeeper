@@ -26,6 +26,8 @@ import org.limbo.doorkeeper.api.model.vo.ProjectVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * @author Devil
  * @date 2020/11/23 3:32 PM
@@ -42,15 +44,22 @@ public class ProjectController {
         return projectClient.addProject(param);
     }
 
-    @GetMapping("query")
-    public Response<Page<ProjectVO>> query(ProjectQueryParam param) {
-        return projectClient.getProjects(param);
-    }
+
 
     @PutMapping("/{projectId}")
     public Response<Integer> updateProject(@PathVariable("projectId") Long projectId,
                                     @RequestBody ProjectUpdateParam project) {
         return projectClient.updateProject(projectId, project);
+    }
+
+    @GetMapping
+    public Response<List<ProjectVO>> getAll() {
+        return projectClient.getAll();
+    }
+
+    @GetMapping("/query")
+    public Response<Page<ProjectVO>> query(ProjectQueryParam param) {
+        return projectClient.getProjects(param);
     }
 
     @GetMapping("/{projectId}/secret")

@@ -17,10 +17,12 @@
 <template>
     <el-container class="page-account-role-edit">
         <el-main>
-            <el-transfer filterable filter-placeholder="搜索"
-                         :titles="['未选', '已选']" @change="projectChange"
-                         v-model="transferValue" :data="projects">
-            </el-transfer>
+            <el-form :disabled="'查看' === openMode">
+                <el-transfer filterable filter-placeholder="搜索"
+                             :titles="['未选', '已选']" @change="projectChange"
+                             v-model="transferValue" :data="projects">
+                </el-transfer>
+            </el-form>
         </el-main>
     </el-container>
 </template>
@@ -84,7 +86,7 @@
                 return this.$ajax.get('/project');
             },
             loadAdminProject() {
-                return this.$ajax.get(`/admin-project`, {param: {accountId: this.account.accountId}});
+                return this.$ajax.get(`/admin-project`, {params: {accountId: this.account.accountId}});
             },
 
             projectChange(value, direction, movedKeys) { // value 右边剩余的key direction 方向 movedKeys 移动的key
@@ -135,8 +137,8 @@
                     }
                 });
                 let param = {
-                    addAccountProjects: has,
-                    deleteAccountProjectIds: delIds
+                    addAdminProjects: has,
+                    deleteAdminProjectIds: delIds
                 };
                 return this.$ajax.put(`/admin-project`, param);
             },

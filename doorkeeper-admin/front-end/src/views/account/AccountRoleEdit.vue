@@ -17,10 +17,12 @@
 <template>
     <el-container class="page-account-role-edit">
         <el-main>
-            <el-transfer filterable filter-placeholder="搜索"
-                         :titles="['未选', '已选']" @change="roleChange"
-                         v-model="transferValue" :data="roles">
-            </el-transfer>
+            <el-form :disabled="'查看' === openMode">
+                <el-transfer filterable filter-placeholder="搜索"
+                             :titles="['未选', '已选']" @change="roleChange"
+                             v-model="transferValue" :data="roles">
+                </el-transfer>
+            </el-form>
         </el-main>
     </el-container>
 </template>
