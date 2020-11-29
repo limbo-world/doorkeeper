@@ -16,7 +16,9 @@
 
 package org.limbo.doorkeeper.server.service;
 
-import org.limbo.doorkeeper.api.model.param.AuthenticationCheckParam;
+import org.limbo.doorkeeper.api.model.param.ApiCheckParam;
+import org.limbo.doorkeeper.api.model.param.PermissionCheckParam;
+import org.limbo.doorkeeper.api.model.param.RoleCheckParam;
 import org.limbo.doorkeeper.api.model.vo.AccountApiGrantVO;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
@@ -30,9 +32,19 @@ import java.util.List;
 public interface AuthenticationService {
 
     /**
-     * 检查是否有权访问资源
+     * 检查是否有权访问api
      */
-    Boolean accessAllowed(Long projectId, AuthenticationCheckParam param);
+    Boolean accessApiAllowed(Long projectId, ApiCheckParam param);
+
+    /**
+     * 检查是否有权访问权限
+     */
+    Boolean accessPermissionAllowed(Long projectId, PermissionCheckParam param);
+
+    /**
+     * 检查是否有权访问角色
+     */
+    Boolean accessRoleAllowed(Long projectId, RoleCheckParam param);
 
     /**
      * 获取用户赋予的角色

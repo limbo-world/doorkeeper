@@ -17,10 +17,11 @@
 package org.limbo.doorkeeper.server.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.AuthenticationCheckParam;
+import org.limbo.doorkeeper.api.model.param.ApiCheckParam;
+import org.limbo.doorkeeper.api.model.param.PermissionCheckParam;
+import org.limbo.doorkeeper.api.model.param.RoleCheckParam;
 import org.limbo.doorkeeper.server.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,10 +40,21 @@ public class AuthenticationController extends BaseController {
     @Autowired
     private AuthenticationService authenticationService;
 
-    @GetMapping("/check")
-    @Operation(summary = "鉴权，检查用户是否有权访问指定url资源")
-    public Response<Boolean> permissionCheck(AuthenticationCheckParam param) {
-        return Response.ok(authenticationService.accessAllowed(getProjectId(), param));
+    @GetMapping("/check-api")
+    @Operation(summary = "检查用户是否可以访问对应api")
+    public Response<Boolean> apiCheck(ApiCheckParam param) {
+        return Response.ok(authenticationService.accessApiAllowed(getProjectId(), param));
     }
 
+    @GetMapping("/check-permission")
+    @Operation(summary = "检查用户是否有对应的权限")
+    public Response<Boolean> permissionCheck(PermissionCheckParam param) {
+        return Response.ok(authenticationService.accessPermissionAllowed(getProjectId(), param));
+    }
+
+    @GetMapping("/check-role")
+    @Operation(summary = "检查用户是否有对应的角色")
+    public Response<Boolean> roleCheck(RoleCheckParam param) {
+        return Response.ok(authenticationService.accessRoleAllowed(getProjectId(), param));
+    }
 }

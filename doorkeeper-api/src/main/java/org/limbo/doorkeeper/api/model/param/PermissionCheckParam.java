@@ -27,18 +27,14 @@ import javax.validation.constraints.NotNull;
  * @date 2020/11/25 18:04
  */
 @Data
-public class AuthenticationCheckParam {
+public class PermissionCheckParam {
 
     @NotNull(message = "访问账户不存在")
     @Schema(name = "访问账户ID", required = true)
     private Long accountId;
 
-    @NotBlank(message = "请求方法不可为空")
-    @Schema(name = "Http请求方式", required = true)
-    private String method;
-
-    @NotBlank(message = "请求路径不可为空")
-    @Schema(name = "Http请求路径", required = true)
-    private String path;
+    @NotBlank(message = "请求权限不能为空")
+    @Schema(name = "权限ID", required = true)
+    private Long permissionId;
 
 }
