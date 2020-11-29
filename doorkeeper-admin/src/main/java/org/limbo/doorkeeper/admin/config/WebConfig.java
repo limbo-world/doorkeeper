@@ -69,13 +69,6 @@ public class WebConfig implements WebMvcConfigurer {
         return springBeanContext;
     }
 
-    @Bean
-    @Lazy(false)
-    @Order(Ordered.HIGHEST_PRECEDENCE)
-    public SpringBeanContext springBeanContext() {
-        return new SpringBeanContext();
-    }
-
     /**
      * json 返回结果处理
      */
@@ -106,11 +99,6 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public PaginationInterceptor paginationInterceptor() {
         return new PaginationInterceptor();
-    }
-
-    @Bean
-    public SessionInterceptor sessionInterceptor() {
-        return new SessionInterceptor(doorkeeperProperties, sessionDAO);
     }
 
     @Bean

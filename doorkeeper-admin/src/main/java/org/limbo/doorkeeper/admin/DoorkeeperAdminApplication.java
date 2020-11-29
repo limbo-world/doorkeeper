@@ -17,7 +17,6 @@
 package org.limbo.doorkeeper.admin;
 
 import org.limbo.doorkeeper.admin.config.RedisConfig;
-import org.limbo.doorkeeper.admin.config.SessionConfig;
 import org.limbo.doorkeeper.admin.config.WebConfig;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.WebApplicationType;

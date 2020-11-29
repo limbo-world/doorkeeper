@@ -17,6 +17,7 @@
 package org.limbo.doorkeeper.admin.config;
 
 import org.limbo.doorkeeper.admin.session.RedisSessionDAO;
+import org.limbo.doorkeeper.admin.session.SessionInterceptor;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -48,6 +49,12 @@ public class SessionConfig {
         } else {
             return new RedisSessionDAO(redissonClient);
         }
+    }
+
+    @Bean
+    public SessionInterceptor sessionInterceptor(RedisSessionDAO sessionDAO) {
+//        return new SessionInterceptor(doorkeeperProperties, sessionDAO(redissonClient));
+        return new SessionInterceptor(doorkeeperProperties, sessionDAO);
     }
 
 }
