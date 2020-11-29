@@ -19,11 +19,10 @@ package org.limbo.doorkeeper.admin.config;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import feign.RequestInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.admin.session.RedisSessionDAO;
 import org.limbo.doorkeeper.admin.session.SessionInterceptor;
-import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.admin.support.authc.AuthenticationInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
@@ -51,13 +50,16 @@ import java.text.SimpleDateFormat;
 public class WebConfig implements WebMvcConfigurer {
 
     @Autowired
-    private RedisSessionDAO redisSessionDAO;
+    private RedisSessionDAO sessionDAO;
 
     @Autowired
     private SessionInterceptor sessionInterceptor;
 
     @Autowired
     private DoorkeeperProperties doorkeeperProperties;
+
+    @Autowired
+    private AuthenticationInterceptor authenticationInterceptor;
 
     @Bean
     public SpringBeanContext SpringBeanContext(ApplicationContext applicationContext, Environment environment) {
@@ -106,8 +108,23 @@ public class WebConfig implements WebMvcConfigurer {
         return new PaginationInterceptor();
     }
 
+    @Bean
+    public SessionInterceptor sessionInterceptor() {
+        return new SessionInterceptor(doorkeeperProperties, sessionDAO);
+    }
+
+    @Bean
+    public AuthenticationInterceptor authenticationInterceptor() {
+        return new AuthenticationInterceptor(doorkeeperProperties, sessionDAO);
+    }
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(sessionInterceptor).excludePathPatterns("/login/**");
+        registry.addInterceptor(sessionInterceptor)
+                .excludePathPatterns("/login/**");
+
+        registry.addInterceptor(authenticationInterceptor)
+                .excludePathPatterns("/login/**")
+                .excludePathPatterns("/session/**");
     }
 }

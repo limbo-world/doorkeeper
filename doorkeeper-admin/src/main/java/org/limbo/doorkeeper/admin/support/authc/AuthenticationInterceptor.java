@@ -16,14 +16,32 @@
 
 package org.limbo.doorkeeper.admin.support.authc;
 
+import lombok.extern.slf4j.Slf4j;
+import org.limbo.doorkeeper.admin.config.DoorkeeperProperties;
+import org.limbo.doorkeeper.admin.session.RedisSessionDAO;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
- * @author liuqingtong
+ * @author Devil
  * @date 2020/11/24 19:29
  */
+@Slf4j
 public class AuthenticationInterceptor implements HandlerInterceptor {
 
+    private final DoorkeeperProperties doorkeeperProperties;
 
+    private final RedisSessionDAO redisSessionDAO;
 
+    public AuthenticationInterceptor(DoorkeeperProperties doorkeeperProperties, RedisSessionDAO redisSessionDAO) {
+        this.doorkeeperProperties = doorkeeperProperties;
+        this.redisSessionDAO = redisSessionDAO;
+    }
+
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        return false;
+    }
 }
