@@ -59,8 +59,6 @@ public class Api {
      */
     private String apiUrl;
 
-    private Boolean isDeleted;
-
     private Date gmtCreated;
 
     private Date gmtModified;

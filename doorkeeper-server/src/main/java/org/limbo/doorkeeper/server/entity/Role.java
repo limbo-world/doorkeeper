@@ -52,11 +52,6 @@ public class Role {
      */
     private Boolean isDefault;
 
-    /**
-     * 是否删除
-     */
-    private Boolean isDeleted;
-
     private Date gmtCreated;
 
     private Date gmtModified;

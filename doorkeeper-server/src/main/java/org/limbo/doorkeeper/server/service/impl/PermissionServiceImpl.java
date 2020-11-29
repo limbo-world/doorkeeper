@@ -90,8 +90,7 @@ public class PermissionServiceImpl implements PermissionService {
                 .in(RolePermission::getPermissionId, permissionIds)
         );
 
-        return permissionMapper.update(null, Wrappers.<Permission>lambdaUpdate()
-                .set(Permission::getIsDeleted, true)
+        return permissionMapper.delete(Wrappers.<Permission>lambdaQuery()
                 .in(Permission::getPermissionId, permissionIds)
                 .eq(Permission::getProjectId, projectId)
         );
@@ -110,7 +109,6 @@ public class PermissionServiceImpl implements PermissionService {
     public List<PermissionVO> all(Long projectId) {
         List<Permission> permissions = permissionMapper.selectList(Wrappers.<Permission>lambdaQuery()
                 .eq(Permission::getProjectId, projectId)
-                .eq(Permission::getIsDeleted, false)
         );
         return EnhancedBeanUtils.createAndCopyList(permissions, PermissionVO.class);
     }
@@ -120,7 +118,6 @@ public class PermissionServiceImpl implements PermissionService {
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<Permission> mpage = MyBatisPlusUtils.pageOf(param);
         mpage = permissionMapper.selectPage(mpage, Wrappers.<Permission>lambdaQuery()
                 .eq(Permission::getProjectId, projectId)
-                .eq(Permission::getIsDeleted, false)
                 .like(StringUtils.isNotBlank(param.getPermissionName()), Permission::getPermissionName, param.getPermissionName())
         );
 

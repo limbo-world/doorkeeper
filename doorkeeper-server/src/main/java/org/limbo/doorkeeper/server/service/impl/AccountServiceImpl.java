@@ -72,7 +72,6 @@ public class AccountServiceImpl implements AccountService {
         List<Role> roles = roleMapper.selectList(Wrappers.<Role>lambdaQuery()
                 .eq(Role::getProjectId, projectId)
                 .eq(Role::getIsDefault, true)
-                .eq(Role::getIsDeleted, false)
         );
 
         if (CollectionUtils.isNotEmpty(roles)) {

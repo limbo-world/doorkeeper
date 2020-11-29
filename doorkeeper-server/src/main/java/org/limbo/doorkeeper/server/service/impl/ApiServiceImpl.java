@@ -73,8 +73,7 @@ public class ApiServiceImpl implements ApiService {
     @Transactional
     public void deleteApi(Long projectId, List<Long> apiIds) {
         // 删除api
-        apiMapper.update(null, Wrappers.<Api>lambdaUpdate()
-                .set(Api::getIsDeleted, true)
+        apiMapper.delete(Wrappers.<Api>lambdaQuery()
                 .in(Api::getApiId, apiIds)
                 .eq(Api::getProjectId, projectId)
         );
@@ -87,7 +86,6 @@ public class ApiServiceImpl implements ApiService {
     public List<ApiVO> all(Long projectId) {
         List<Api> apis = apiMapper.selectList(Wrappers.<Api>lambdaQuery()
                 .eq(Api::getProjectId, projectId)
-                .eq(Api::getIsDeleted, false)
         );
         return EnhancedBeanUtils.createAndCopyList(apis, ApiVO.class);
     }
@@ -97,7 +95,6 @@ public class ApiServiceImpl implements ApiService {
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<Api> mpage = MyBatisPlusUtils.pageOf(param);
         mpage = apiMapper.selectPage(mpage, Wrappers.<Api>lambdaQuery()
                 .eq(Api::getProjectId, projectId)
-                .eq(Api::getIsDeleted, false)
                 .eq(StringUtils.isNotBlank(param.getApiMethod()), Api::getApiMethod, param.getApiMethod())
                 .like(StringUtils.isNotBlank(param.getApiName()), Api::getApiName, param.getApiName())
                 .like(StringUtils.isNotBlank(param.getApiUrl()), Api::getApiUrl, param.getApiUrl())

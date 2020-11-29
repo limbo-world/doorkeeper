@@ -83,8 +83,7 @@ public class RoleServiceImpl implements RoleService {
     @Transactional
     public Integer deleteRole(Long projectId, List<Long> roleIds) {
 
-        Integer result = roleMapper.update(null, Wrappers.<Role>lambdaUpdate()
-                .set(Role::getIsDeleted, true)
+        Integer result = roleMapper.delete(Wrappers.<Role>lambdaQuery()
                 .in(Role::getRoleId, roleIds)
                 .eq(Role::getProjectId, projectId)
         );
@@ -109,8 +108,7 @@ public class RoleServiceImpl implements RoleService {
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<Role> mpage = MyBatisPlusUtils.pageOf(param);
         LambdaQueryWrapper<Role> condition = Wrappers.<Role>lambdaQuery()
                 .like(StringUtils.isNotBlank(param.getRoleName()), Role::getRoleName, param.getRoleName())
-                .eq(Role::getProjectId, projectId)
-                .eq(Role::getIsDeleted, false);
+                .eq(Role::getProjectId, projectId);
         mpage = roleMapper.selectPage(mpage, condition);
 
         param.setTotal(mpage.getTotal());

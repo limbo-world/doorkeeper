@@ -50,8 +50,6 @@ public class Permission {
      */
     private Boolean isOnline;
 
-    private Boolean isDeleted;
-
     private Date gmtCreated;
 
     private Date gmtModified;
