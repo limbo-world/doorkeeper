@@ -18,6 +18,7 @@ package org.limbo.doorkeeper.admin.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.admin.session.support.SessionException;
+import org.limbo.doorkeeper.admin.support.authc.AuthenticationException;
 import org.limbo.doorkeeper.api.exception.ParamException;
 import org.limbo.doorkeeper.api.model.Response;
 import org.springframework.validation.BindException;
@@ -60,10 +61,10 @@ public class BaseExceptionHandler {
         return Response.unauthenticated(e.getMessage());
     }
 
-//    @ExceptionHandler(value = { AuthcException.class })
-//    public Response handAuthc(AuthcException e) {
-//        return Response.unauthorized(e.getMessage());
-//    }
+    @ExceptionHandler(value = { AuthenticationException.class })
+    public Response handAuthentication(AuthenticationException e) {
+        return Response.unauthorized(e.getMessage());
+    }
 
     @ExceptionHandler(value = { Throwable.class })
     public Response unknownException(Throwable e) {

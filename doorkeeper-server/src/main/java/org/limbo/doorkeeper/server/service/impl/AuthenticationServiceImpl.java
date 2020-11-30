@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.AntPathMatcher;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -200,6 +201,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public List<PermissionVO> getGrantedPermissions(Long projectId, Long accountId) {
         // 用户授权的角色
         List<RoleVO> roles = _this.getGrantedRoles(projectId, accountId);
+        if (CollectionUtils.isEmpty(roles)) {
+            return new ArrayList<>();
+        }
+
         Set<Long> roleIds = roles.stream().map(RoleVO::getRoleId).collect(Collectors.toSet());
 
         // 角色对应的权限
@@ -207,6 +212,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .eq(RolePermission::getProjectId, projectId)
                 .in(RolePermission::getRoleId, roleIds)
         );
+        if (CollectionUtils.isEmpty(rolePerms)) {
+            return new ArrayList<>();
+        }
+
         Set<Long> permIds = rolePerms.stream().map(RolePermission::getPermissionId).collect(Collectors.toSet());
 
         List<Permission> perms = permissionMapper.selectBatchIds(permIds);
@@ -223,8 +232,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      */
     @Override
     public AccountApiGrantVO getGrantedApis(Long projectId, Long accountId) {
+        AccountApiGrantVO accountApiGrant = new AccountApiGrantVO();
+        accountApiGrant.setAccountId(accountId);
+        accountApiGrant.setAllowedApis(new ArrayList<>());
+        accountApiGrant.setRefusedApis(new ArrayList<>());
+
         // 查询用户授权的所有权限
         List<PermissionVO> permissions = _this.getGrantedPermissions(projectId, accountId);
+        if (CollectionUtils.isEmpty(permissions)) {
+            return accountApiGrant;
+        }
+
         Set<Long> permIds = permissions.stream().map(PermissionVO::getPermissionId).collect(Collectors.toSet());
 
         // 查询权限管理的API，并根据策略分组
@@ -239,25 +257,25 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         // 查询allowed
         Set<Long> allowedApiIds = groupedApiIds.get(PermissionPolicy.ALLOW);
-        List<Api> allowedApis = apiMapper.selectList(Wrappers.<Api>lambdaQuery()
-                .eq(Api::getProjectId, projectId)
-                .in(Api::getApiId, allowedApiIds)
-        );
-        List<ApiVO> allowedApiVos = EnhancedBeanUtils.createAndCopyList(allowedApis, ApiVO.class);
+        if (CollectionUtils.isNotEmpty(allowedApiIds)) {
+            List<Api> allowedApis = apiMapper.selectList(Wrappers.<Api>lambdaQuery()
+                    .eq(Api::getProjectId, projectId)
+                    .in(Api::getApiId, allowedApiIds)
+            );
+            List<ApiVO> allowedApiVos = EnhancedBeanUtils.createAndCopyList(allowedApis, ApiVO.class);
+            accountApiGrant.setAllowedApis(allowedApiVos);
+        }
 
         // 查询refused
         Set<Long> refusedApiIds = groupedApiIds.get(PermissionPolicy.REFUSE);
-        List<Api> refusedApis = apiMapper.selectList(Wrappers.<Api>lambdaQuery()
-                .eq(Api::getProjectId, projectId)
-                .in(Api::getApiId, refusedApiIds)
-        );
-        List<ApiVO> refusedApiVos = EnhancedBeanUtils.createAndCopyList(refusedApis, ApiVO.class);
-
-        // 组装返回值
-        AccountApiGrantVO accountApiGrant = new AccountApiGrantVO();
-        accountApiGrant.setAccountId(accountId);
-        accountApiGrant.setAllowedApis(allowedApiVos);
-        accountApiGrant.setRefusedApis(refusedApiVos);
+        if (CollectionUtils.isNotEmpty(refusedApiIds)) {
+            List<Api> refusedApis = apiMapper.selectList(Wrappers.<Api>lambdaQuery()
+                    .eq(Api::getProjectId, projectId)
+                    .in(Api::getApiId, refusedApiIds)
+            );
+            List<ApiVO> refusedApiVos = EnhancedBeanUtils.createAndCopyList(refusedApis, ApiVO.class);
+            accountApiGrant.setRefusedApis(refusedApiVos);
+        }
         return accountApiGrant;
     }
 

@@ -17,6 +17,7 @@
 package org.limbo.doorkeeper.server.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.ApiCheckParam;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author liuqingtong
  * @date 2020/11/24 19:34
  */
+@Tag(name = "鉴权")
 @Slf4j
 @RestController
 @RequestMapping("/auth")

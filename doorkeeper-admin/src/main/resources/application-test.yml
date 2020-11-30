@@ -54,8 +54,6 @@ eureka:
       defaultZone: http://10.219.192.172:8001/eureka/
   instance:
     prefer-ip-address: true
-    metadata-map:
-      zone: dev
 
 doorkeeper:
   projectId: 10000000
