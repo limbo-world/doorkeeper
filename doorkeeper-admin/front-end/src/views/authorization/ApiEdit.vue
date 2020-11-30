@@ -28,6 +28,19 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="url" v-if="addMode">
+                    <el-popover
+                        placement="top-start"
+                        title="匹配规则"
+                        width="500"
+                        trigger="hover">
+                        <div>
+                            <p>（1）? 匹配一个字符（除过操作系统默认的文件分隔符）</p>
+                            <p>（2）* 匹配0个或多个字符</p>
+                            <p>（3）**匹配0个或多个目录</p>
+                            <p>（4）{id:\d+} 将正则表达式\d+匹配到的值,赋值给名为id的路径变量</p>
+                        </div>
+                        <i class="el-icon-question" slot="reference"></i>
+                    </el-popover>
                     <el-input v-model="api.apiUrl" placeholder="API路径，支持Ant风格"></el-input>
                 </el-form-item>
                 <el-form-item label="描述">
