@@ -18,6 +18,7 @@ package org.limbo.doorkeeper.admin.session;
 
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.admin.config.DoorkeeperProperties;
+import org.limbo.doorkeeper.admin.config.SpringBeanContext;
 import org.limbo.doorkeeper.admin.session.support.SessionException;
 import org.limbo.doorkeeper.admin.session.validate.SessionValidator;
 import org.limbo.doorkeeper.admin.session.validate.SessionValidatorFactory;
@@ -48,10 +49,7 @@ public class SessionInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         // 验证会话存在
         String sessionId = request.getHeader(doorkeeperProperties.getSession().getHeaderName());
-        log.info(JacksonUtil.toJSONString(doorkeeperProperties));
-        log.info(sessionId);
         AdminSession adminSession = redisSessionDAO.readSessionMayNull(sessionId);
-        log.info(JacksonUtil.toJSONString(adminSession));
         if (adminSession == null) {
             throw new SessionException("无有效会话");
         }

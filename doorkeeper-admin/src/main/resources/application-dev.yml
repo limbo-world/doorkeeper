@@ -59,9 +59,9 @@ doorkeeper:
   projectId: 10000000
   projectSecret: BEC00CF81411430FAC6EBDE343AADA86
   session:
-    header-name: Doorkeeper-Session-Dev
+    header-name: Doorkeeper-Session
     session-duration: 1d
   sign:
-    header-name: Doorkeeper-Sign-Dev
+    header-name: Doorkeeper-Sign
   api:
     certificate: 123567890

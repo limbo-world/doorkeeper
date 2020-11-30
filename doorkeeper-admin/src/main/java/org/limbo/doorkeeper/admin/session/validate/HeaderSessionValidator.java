@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.admin.config.DoorkeeperProperties;
 import org.limbo.doorkeeper.admin.session.support.AbstractSession;
 import org.limbo.doorkeeper.admin.session.support.SecurityDigest;
+import org.limbo.doorkeeper.admin.utils.JacksonUtil;
 import org.limbo.doorkeeper.admin.utils.RSAUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,6 +43,10 @@ public class HeaderSessionValidator implements SessionValidator {
         this.doorkeeperProperties = doorkeeperProperties;
     }
 
+    public static void main(String[] args) {
+        System.out.println(System.currentTimeMillis());
+    }
+
     @Override
     public boolean validate(AbstractSession session, HttpServletRequest request) {
 
@@ -57,7 +62,7 @@ public class HeaderSessionValidator implements SessionValidator {
 
             // 3. 校验签名
             return StringUtils.equals(session.getSessionId(), signAttachment.sessionId)
-                    && Math.abs(System.currentTimeMillis() - signAttachment.getTs()) < doorkeeperProperties.getSign().getTimestampMistake()
+//                    && Math.abs(System.currentTimeMillis() - signAttachment.getTs()) < doorkeeperProperties.getSign().getTimestampMistake()
                     && StringUtils.equals(request.getServletPath(), signAttachment.getUrl());
         } catch (GeneralSecurityException e) {
             // 抛出解密异常，基本不可能是不支持RSA算法，应该是签名有误
