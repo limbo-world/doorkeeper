@@ -52,12 +52,6 @@ public class WebConfig implements WebMvcConfigurer {
     @Autowired
     private DoorkeeperProperties doorkeeperProperties;
 
-    @Autowired
-    private SessionInterceptor sessionInterceptor;
-
-    @Autowired
-    private AuthenticationInterceptor authenticationInterceptor;
-
     @Bean
     public SpringBeanContext SpringBeanContext(ApplicationContext applicationContext, Environment environment) {
         SpringBeanContext springBeanContext = new SpringBeanContext();
@@ -110,10 +104,10 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(sessionInterceptor)
+        registry.addInterceptor(sessionInterceptor())
                 .excludePathPatterns("/login/**");
 
-        registry.addInterceptor(authenticationInterceptor)
+        registry.addInterceptor(authenticationInterceptor())
                 .excludePathPatterns("/login/**")
                 .excludePathPatterns("/session/**");
     }
