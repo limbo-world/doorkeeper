@@ -55,7 +55,7 @@ eureka:
   instance:
     prefer-ip-address: true
     metadata-map:
-      zone: dev
+      zone: test
 
 doorkeeper:
   projectId: 10000000
@@ -65,5 +65,3 @@ doorkeeper:
     session-duration: 1d
   sign:
     header-name: Doorkeeper-Sign
-  api:
-    certificate: 123567890

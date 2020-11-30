@@ -4,6 +4,8 @@ eureka:
     register-with-eureka: false
     serviceUrl:
       defaultZone: http://localhost:8000/eureka/
+      dev: http://localhost:8000/eureka/
+      test: http://localhost:8000/eureka/
   server:
     use-read-only-response-cache: false
     eviction-interval-timer-in-ms: 5000

@@ -28,10 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.DateFormatter;
@@ -53,10 +50,10 @@ public class WebConfig implements WebMvcConfigurer {
     private RedisSessionDAO sessionDAO;
 
     @Autowired
-    private SessionInterceptor sessionInterceptor;
+    private DoorkeeperProperties doorkeeperProperties;
 
     @Autowired
-    private DoorkeeperProperties doorkeeperProperties;
+    private SessionInterceptor sessionInterceptor;
 
     @Autowired
     private AuthenticationInterceptor authenticationInterceptor;
@@ -99,6 +96,11 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public PaginationInterceptor paginationInterceptor() {
         return new PaginationInterceptor();
+    }
+
+    @Bean
+    public SessionInterceptor sessionInterceptor() {
+        return new SessionInterceptor(doorkeeperProperties, sessionDAO);
     }
 
     @Bean

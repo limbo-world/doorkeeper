@@ -34,8 +34,6 @@ public class DoorkeeperProperties {
 
     private Sign sign = new Sign();
 
-    private ApiConfig api = new ApiConfig();
-
     private Long projectId;
 
     private String projectSecret;
@@ -74,11 +72,4 @@ public class DoorkeeperProperties {
         private Long timestampMistake = 1000L;
     }
 
-    @Data
-    public static class ApiConfig {
-        /**
-         * 调用API的认证密码，在调用部分API的时候需要该认证，比如ProjectApi，只有认证通过了才能调用
-         */
-        private String certificate;
-    }
 }
