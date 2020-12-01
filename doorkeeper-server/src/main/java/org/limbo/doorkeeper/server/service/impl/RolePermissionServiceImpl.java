@@ -72,6 +72,7 @@ public class RolePermissionServiceImpl implements RolePermissionService {
     }
 
     @Override
+    @Transactional
     @PLog(operateType = OperateType.DELETE, businessType = BusinessType.ROLE_PERMISSION)
     public int deleteRolePermission(PLogParam pLogParam, @PLogTag(PLogConstants.CONTENT) Long projectId,
                                     @PLogTag(PLogConstants.CONTENT) List<Long> rolePermissionIds) {

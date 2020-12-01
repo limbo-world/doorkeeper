@@ -17,6 +17,7 @@
 package org.limbo.doorkeeper.server.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.*;
@@ -28,6 +29,7 @@ import org.limbo.doorkeeper.server.dao.RolePermissionMapper;
 import org.limbo.doorkeeper.server.entity.Permission;
 import org.limbo.doorkeeper.server.entity.RolePermission;
 import org.limbo.doorkeeper.server.service.PermissionService;
+import org.limbo.doorkeeper.server.service.RolePermissionService;
 import org.limbo.doorkeeper.server.support.plog.PLog;
 import org.limbo.doorkeeper.server.support.plog.PLogConstants;
 import org.limbo.doorkeeper.server.support.plog.PLogParam;
@@ -39,6 +41,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Devil
@@ -52,6 +55,9 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Autowired
     private RolePermissionMapper rolePermissionMapper;
+
+    @Autowired
+    private RolePermissionService rolePermissionService;
 
     @Override
     @Transactional
@@ -84,10 +90,15 @@ public class PermissionServiceImpl implements PermissionService {
     public int deletePermission(PLogParam pLogParam, @PLogTag(PLogConstants.CONTENT) Long projectId,
                                 @PLogTag(PLogConstants.CONTENT) List<Long> permissionIds) {
         // 删除角色权限
-        rolePermissionMapper.delete(Wrappers.<RolePermission>lambdaQuery()
+        List<RolePermission> rolePermissions = rolePermissionMapper.selectList(Wrappers.<RolePermission>lambdaQuery()
+                .select(RolePermission::getRolePermissionId)
                 .eq(RolePermission::getProjectId, projectId)
                 .in(RolePermission::getPermissionId, permissionIds)
         );
+        if (CollectionUtils.isNotEmpty(rolePermissions)) {
+            rolePermissionService.deleteRolePermission(pLogParam, projectId,
+                    rolePermissions.stream().map(RolePermission::getRolePermissionId).collect(Collectors.toList()));
+        }
 
         return permissionMapper.delete(Wrappers.<Permission>lambdaQuery()
                 .in(Permission::getPermissionId, permissionIds)

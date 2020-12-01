@@ -18,6 +18,7 @@ package org.limbo.doorkeeper.server.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.RoleAddParam;
@@ -32,6 +33,8 @@ import org.limbo.doorkeeper.server.dao.RolePermissionMapper;
 import org.limbo.doorkeeper.server.entity.AccountRole;
 import org.limbo.doorkeeper.server.entity.Role;
 import org.limbo.doorkeeper.server.entity.RolePermission;
+import org.limbo.doorkeeper.server.service.AccountRoleService;
+import org.limbo.doorkeeper.server.service.RolePermissionService;
 import org.limbo.doorkeeper.server.service.RoleService;
 import org.limbo.doorkeeper.server.support.plog.PLog;
 import org.limbo.doorkeeper.server.support.plog.PLogConstants;
@@ -45,6 +48,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Devil
@@ -60,7 +64,13 @@ public class RoleServiceImpl implements RoleService {
     private AccountRoleMapper accountRoleMapper;
 
     @Autowired
+    private AccountRoleService accountRoleService;
+
+    @Autowired
     private RolePermissionMapper rolePermissionMapper;
+
+    @Autowired
+    private RolePermissionService rolePermissionService;
 
     @Override
     @Transactional
@@ -101,16 +111,26 @@ public class RoleServiceImpl implements RoleService {
         );
 
         // 删除账户角色绑定
-        accountRoleMapper.delete(Wrappers.<AccountRole>lambdaQuery()
+        List<AccountRole> accountRoles = accountRoleMapper.selectList(Wrappers.<AccountRole>lambdaQuery()
+                .select(AccountRole::getAccountRoleId)
                 .in(AccountRole::getRoleId, roleIds)
                 .eq(AccountRole::getProjectId, projectId)
         );
+        if (CollectionUtils.isNotEmpty(accountRoles)) {
+            accountRoleService.batchDelete(pLogParam, projectId,
+                    accountRoles.stream().map(AccountRole::getAccountRoleId).collect(Collectors.toList()));
+        }
 
         // 删除角色权限绑定
-        rolePermissionMapper.delete(Wrappers.<RolePermission>lambdaQuery()
+        List<RolePermission> rolePermissions = rolePermissionMapper.selectList(Wrappers.<RolePermission>lambdaQuery()
+                .select(RolePermission::getRolePermissionId)
                 .in(RolePermission::getRoleId, roleIds)
                 .eq(RolePermission::getProjectId, projectId)
         );
+        if (CollectionUtils.isNotEmpty(rolePermissions)) {
+            rolePermissionService.deleteRolePermission(pLogParam, projectId,
+                    rolePermissions.stream().map(RolePermission::getRolePermissionId).collect(Collectors.toList()));
+        }
 
         return result;
     }
