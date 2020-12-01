@@ -7,6 +7,9 @@ module.exports = {
         disableHostCheck: true,
     },
     configureWebpack: {
+        resolve: {
+            extensions: [".ts", ".tsx", ".js", ".json"]
+        },
         externals: {
             'vue': 'Vue',
             'vuex': 'Vuex',
@@ -16,10 +19,20 @@ module.exports = {
             'jsencrypt': 'JSEncrypt'
         },
         module: {
-            rules: [{
-                test: /\.vue$/,
-                loader: "vue-loader"
-            }]
+            rules: [
+                {
+                    test: /\.vue$/,
+                    loader: "vue-loader"
+                },
+                {
+                    test: /\.ts?$/,
+                    loader: 'ts-loader',
+                    exclude: /node_modules/,
+                    options: {
+                        appendTsSuffixTo: [/\.js$/],
+                    }
+                }
+            ]
         },
         plugins: [
             new VueLoaderPlugin()

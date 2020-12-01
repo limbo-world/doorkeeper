@@ -6,7 +6,8 @@ export const MenuRoute = [{
         "menuCode": "001001",
         "menuName": "项目列表",
         "icon": "fa fa-project-diagram",
-        "route": "/project/project"
+        "route": "/project/project",
+        "auth": ""
     }]
 }, {
     "menuCode": "002",

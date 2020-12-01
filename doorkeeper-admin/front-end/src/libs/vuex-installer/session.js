@@ -3,6 +3,7 @@ import { http } from '../axios-installer/index';
 import TimeUnit from '../cache-installer/time-unit';
 import { Message, MessageBox, Loading } from 'element-ui';
 import {MenuRoute} from "../router-installer/MenuData";
+import AuthExpressionEvaluator from "@/libs/router-installer/AuthExpressionEvaluator.ts";
 
 const setSessionUserCache = (user) => {
     window.localCache.set('session/user', user, 1, TimeUnit.Days);
@@ -17,6 +18,9 @@ export default {
 
         // 全部菜单
         menus: [],
+
+        // 权限表达式计算器
+        authExpEvaluator: null,
     },
 
     getters: {
@@ -41,6 +45,11 @@ export default {
         setMenu: (state, menus) => {
             state.menus = menus;
         },
+
+        // 设置权限表达式计算器
+        setAuthExpEvaluator: (state, evaluator) => {
+            state.authExpEvaluator = evaluator;
+        }
     },
 
     actions: {
@@ -96,9 +105,14 @@ export default {
                 return Promise.resolve(state.menus);
             }
 
-            // 从后台异步获取菜单
+            // TODO 从后台异步获取权限
             return new Promise((resolve, reject) => {
-                const menus = organizeMenu();
+                // 创建计算器
+                const grantInfo = {roles: [], permissions: []};
+                let evaluator = new AuthExpressionEvaluator(grantInfo.roles, grantInfo.permissions);
+                commit('setAuthExpEvaluator', evaluator);
+
+                const menus = organizeMenu(evaluator);
                 commit('setMenu', menus);
                 resolve(menus);
             });
@@ -118,6 +132,37 @@ export default {
 
 
 
-const organizeMenu = () => {
-    return MenuRoute;
+const organizeMenu = (evaluator) => {
+    const menus = [];
+    // 遍历MenuRoute数组，计算auth表达式的值
+    // 如果子菜单全部不展示，则父菜单也不展示
+    MenuRoute.forEach(menu => {
+        const m = organizeSingleMenu(menu, evaluator);
+        if (m) {
+            menus.push(m);
+        }
+    })
+    return menus;
 };
+
+const organizeSingleMenu = (menu, evaluator) => {
+    if (!evaluator.evaluate(menu.auth)) {
+        return null;
+    }
+
+    const m = {...menu}
+    if (menu.children && menu.children.length > 0) {
+        m.children = [];
+        for (let child of menu.children) {
+            let cm = organizeSingleMenu(child, evaluator);
+            if (cm) {
+                m.children.push(cm);
+            }
+        }
+        return m.children.length <= 0 ? null : m;
+    } else {
+        delete m.children;
+        return m;
+    }
+
+}

@@ -1,4 +1,5 @@
 import AnimateDirective from './animate/index';
+import AuthDirective from './auth/index';
 
 
 export default {
@@ -9,6 +10,9 @@ export default {
         window.AnimateCss.config.scrollContainer = '#app';
         window.AnimateCss.config.scrollBottom = -100;
         Vue.directive('animate', AnimateDirective);
+
+        // 基于权限表达式的权限控制
+        Vue.directive('auth', AuthDirective);
 
     }
 
