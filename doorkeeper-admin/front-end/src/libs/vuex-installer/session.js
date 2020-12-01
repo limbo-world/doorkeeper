@@ -3,7 +3,7 @@ import { http } from '../axios-installer/index';
 import TimeUnit from '../cache-installer/time-unit';
 import { Message, MessageBox, Loading } from 'element-ui';
 import {MenuRoute} from "../router-installer/MenuData";
-import AuthExpressionEvaluator from "@/libs/router-installer/AuthExpressionEvaluator.ts";
+import AuthExpressionEvaluator from "@/libs/directives/auth/AuthExpressionEvaluator.ts";
 
 const setSessionUserCache = (user) => {
     window.localCache.set('session/user', user, 1, TimeUnit.Days);
@@ -100,7 +100,7 @@ export default {
 
         // 从后台或其他地方加载菜单信息
         loadMenus({ state, commit }) {
-            debugger
+            // debugger
             // 已经加载完成时不再加载
             if (state.menus && state.menus.length > 0) {
                 return Promise.resolve(state.menus);

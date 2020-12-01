@@ -32,8 +32,6 @@
             <el-table :data="permissions" size="mini">
                 <el-table-column prop="permissionName" label="名称"></el-table-column>
                 <el-table-column prop="permissionDescribe" label="描述"></el-table-column>
-                <el-table-column prop="httpMethod" label="类型"></el-table-column>
-                <el-table-column prop="url" label="url"></el-table-column>
                 <el-table-column prop="isOnline" label="是否启用" width="100">
                     <template slot-scope="scope">
                         <div class="el-form--mini">
@@ -64,7 +62,7 @@
 
 
         <el-dialog :title="`${dialogOpenMode}权限`" @close="dialogCancel"
-                   :visible.sync="dialogOpened" width="70%" class="edit-dialog">
+                   :visible.sync="dialogOpened" width="70%" class="edit-dialog" @opened="beforeDialogOpen">
             <permission-edit :permission="permission" ref="permissionEdit" :open-mode="dialogOpenMode"></permission-edit>
             <el-footer class="text-right">
                 <el-button @click="dialogCancel">取 消</el-button>
@@ -130,11 +128,15 @@
                 }).finally(() => this.stopProgress());
             },
 
-            permissionOnlineChanged(permission) {
+            beforeDialogOpen() {
+                this.$refs.permissionEdit.preOpen();
+            },
+
+            permissionOnlineChanged(perm) {
                 const loading = this.$loading();
-                permission.isOnline = !permission.isOnline;
-                this.$ajax.put(`/permission/${permission.permissionId}`, permission).then(response => {
-                    this.$message.success(`已修改${permission.isOnline ? '上线' : '下线'}`);
+                perm.isOnline = !perm.isOnline;
+                this.$ajax.put(`/permission/${perm.permCode}`, perm).then(response => {
+                    this.$message.success(`已修改${perm.isOnline ? '上线' : '下线'}`);
                     this.loadPermissions();
                 }).finally(() => loading.close());
             },

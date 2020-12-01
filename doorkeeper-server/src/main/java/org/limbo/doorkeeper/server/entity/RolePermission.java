@@ -47,5 +47,5 @@ public class RolePermission {
     /**
      * @see PermissionPolicy
      */
-    private PermissionPolicy policy;
+    private String policy;
 }

@@ -47,15 +47,6 @@ public class BaseExceptionHandler {
         return new Response(e.getMessage());
     }
 
-    @ExceptionHandler(SQLException.class)
-    public ModelAndView handSql(Exception ex){
-        log.info("SQL Exception {}", ex.getMessage());
-        ModelAndView mv = new ModelAndView();
-        mv.addObject("message", ex.getMessage());
-        mv.setViewName("/sql_error.html");
-        return mv;
-    }
-
     @ExceptionHandler(value = { SessionException.class })
     public Response handSession(SessionException e) {
         return Response.unauthenticated(e.getMessage());

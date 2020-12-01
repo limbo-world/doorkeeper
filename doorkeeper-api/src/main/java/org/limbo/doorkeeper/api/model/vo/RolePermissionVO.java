@@ -38,4 +38,6 @@ public class RolePermissionVO {
     @Schema(title = "权限ID")
     private Long permissionId;
 
+    @Schema(title = "策略")
+    private String policy;
 }

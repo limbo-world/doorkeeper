@@ -20,10 +20,10 @@
 
     <insert id="batchInsertIgnore" parameterType="org.limbo.doorkeeper.server.entity.RolePermission">
         INSERT ignore INTO l_role_permission (
-          project_id, role_id, permission_id
+          project_id, role_id, permission_id, policy
         ) VALUES
         <foreach collection="rolePermissions" separator="," item="rolePermission">
-            ( #{rolePermission.projectId}, #{rolePermission.roleId}, #{rolePermission.permissionId} )
+            ( #{rolePermission.projectId}, #{rolePermission.roleId}, #{rolePermission.permissionId}, #{rolePermission.policy} )
         </foreach>
     </insert>
 

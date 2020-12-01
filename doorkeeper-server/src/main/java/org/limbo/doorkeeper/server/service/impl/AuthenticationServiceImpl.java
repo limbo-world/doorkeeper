@@ -227,13 +227,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (CollectionUtils.isEmpty(permApis)) {
             return accountPermissionGrant;
         }
-        Map<PermissionPolicy, Set<Long>> groupedPermissionIds = permApis.stream().collect(Collectors.groupingBy(
+        Map<String, Set<Long>> groupedPermissionIds = permApis.stream().collect(Collectors.groupingBy(
                 RolePermission::getPolicy,
                 Collectors.mapping(RolePermission::getPermissionId, Collectors.toSet())
         ));
 
         // 查询allowed
-        Set<Long> allowedPermissionIds = groupedPermissionIds.get(PermissionPolicy.ALLOW);
+        Set<Long> allowedPermissionIds = groupedPermissionIds.get(PermissionPolicy.ALLOW.getValue());
         if (CollectionUtils.isNotEmpty(allowedPermissionIds)) {
             List<Permission> allowedPermissions = permissionMapper.selectList(Wrappers.<Permission>lambdaQuery()
                     .eq(Permission::getProjectId, projectId)
@@ -245,7 +245,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         // 查询refused
-        Set<Long> refusedPermissionIds = groupedPermissionIds.get(PermissionPolicy.REFUSE);
+        Set<Long> refusedPermissionIds = groupedPermissionIds.get(PermissionPolicy.REFUSE.getValue());
         if (CollectionUtils.isNotEmpty(refusedPermissionIds)) {
             List<Permission> refusedPermissions = permissionMapper.selectList(Wrappers.<Permission>lambdaQuery()
                     .eq(Permission::getProjectId, projectId)

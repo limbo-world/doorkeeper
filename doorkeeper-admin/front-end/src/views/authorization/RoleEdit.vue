@@ -30,8 +30,12 @@
                 </el-form-item>
                 <el-form-item label="权限">
                     <el-transfer filterable filter-placeholder="搜索"
-                                 :titles="['未选', '已选']" @change="permissionChange"
+                                 :titles="['未选', '已选']" :render-content="renderFunc"
+                                 @left-check-change="leftCheckChange" @right-check-change="rightCheckChange"
                                  v-model="transferValue" :data="permissions">
+                        <el-button class="transfer-footer" slot="left-footer" size="small" @click="allowPermission">放行</el-button>
+                        <el-button class="transfer-footer" slot="left-footer" size="small" @click="refusePermission">拦截</el-button>
+                        <el-button class="transfer-footer" slot="right-footer" size="small" @click="deletePermission">删除</el-button>
                     </el-transfer>
                 </el-form-item>
             </el-form>
@@ -58,7 +62,10 @@
         data() {
             return {
                 permissions: [],
-                transferValue: []
+                transferValue: [],
+                hasPermissions: [],
+                leftSelect: [],
+                rightSelect: [],
             };
         },
 
@@ -83,7 +90,9 @@
                         hasPermission.forEach(k => {
                             for (let permission of this.permissions) {
                                 if (k.permissionId === permission.permissionId) {
-                                    permission.rolePermissionId = k.rolePermissionId
+                                    permission.policy = k.policy;
+                                    permission.rolePermissionId = k.rolePermissionId;
+                                    this.hasPermissions.push(permission);
                                     this.transferValue.push(permission.permissionId);
                                     break
                                 }
@@ -104,19 +113,63 @@
                 }
                 return this.$ajax.get('/role-permission', {params: {roleId: this.role.roleId}});
             },
-
-            permissionChange(value, direction, movedKeys) { // value 右边剩余的key direction 方向 movedKeys 移动的key
-                if ('left' === direction) {
-                    movedKeys.forEach(k => {
-                        for (let permission of this.permissions) {
-                            if (k === permission.permissionId) {
-                                permission.delRolePermissionId = permission.rolePermissionId;
-                            }
-                        }
-                    });
+            renderFunc(h, option) {
+                if ('allow' === option.policy) {
+                    return <span style='color: green;'>{option.label}</span>;
+                } else if ('refuse' === option.policy) {
+                    return <span style='color: red;'>{option.label}</span>;
                 } else {
-
+                    return <span>{option.label}</span>;
                 }
+            },
+            leftCheckChange(keys, key) {
+                this.leftSelect = keys;
+            },
+            rightCheckChange(keys, key) {
+                this.rightSelect = keys;
+            },
+            allowPermission() {
+                this.leftSelect.forEach(k => {
+                    for (let permission of this.permissions) {
+                        if (k === permission.permissionId) {
+                            permission.policy = 'allow';
+                            this.hasPermissions.push(permission);
+                            this.transferValue.push(permission.permissionId);
+                            break
+                        }
+                    }
+                });
+                this.$forceUpdate();
+            },
+            refusePermission() {
+                this.leftSelect.forEach(k => {
+                    for (let permission of this.permissions) {
+                        if (k === permission.permissionId) {
+                            permission.policy = 'refuse';
+                            this.hasPermissions.push(permission);
+                            this.transferValue.push(permission.permissionId);
+                            break
+                        }
+                    }
+                });
+                this.$forceUpdate();
+            },
+            deletePermission() {
+                this.rightSelect.forEach(k => {
+                    for (let idx in this.hasPermissions) {
+                        let permission = this.hasPermissions[idx];
+                        if (k === permission.permissionId) {
+                            // 往左边删除的时候，如果有 permissonApiId 需要清空
+                            permission.delRolePermissionId = permission.rolePermissionId
+                            delete permission.rolePermissionId;
+                            delete permission.policy;
+                            this.hasPermissions.splice(idx, 1);
+                            this.transferValue.splice(idx, 1);
+                            break
+                        }
+                    }
+                });
+                this.$forceUpdate();
             },
 
             confirmEdit() {
@@ -145,35 +198,18 @@
             },
 
             doAddRole(role) {
-                let rolePermissions = [];
-                this.transferValue.forEach(k => {
-                    for (let permission of this.permissions) {
-                        if (k === permission.permissionId) {
-                            rolePermissions.push(permission);
-                            break;
-                        }
-                    }
-                });
-                role.rolePermissions = rolePermissions;
+                role.rolePermissions = this.hasPermissions;
                 return this.$ajax.post('/role', role);
             },
 
             doUpdateRole(role) {
-                // 找出apis 有permissionApiId但是不在已选框内的
                 let delIds = [];
-                let hasPermissions = [];
                 this.permissions.forEach(permission => {
                     if (permission.delRolePermissionId) {
                         delIds.push(permission.delRolePermissionId);
                     }
-                    for (let k of this.transferValue) {
-                        if (permission.permissionId === k) {
-                            hasPermissions.push(permission);
-                            break
-                        }
-                    }
                 });
-                role.addRolePermissions = hasPermissions;
+                role.addRolePermissions = this.hasPermissions;
                 role.deleteRolePermissionIds = delIds;
                 return this.$ajax.put(`/role/${role.roleId}`, role);
             },
@@ -195,6 +231,15 @@
         .el-transfer-panel {
             width: 300px;
             margin-right: 10px;
+            .el-transfer-panel__item.el-checkbox {
+                margin-left:0;
+                display: block;
+            }
+        }
+        .el-transfer {
+            .el-transfer__buttons {
+                display: none;
+            }
         }
     }
 </style>

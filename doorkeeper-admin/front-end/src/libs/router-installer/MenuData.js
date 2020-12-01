@@ -25,16 +25,11 @@ export const MenuRoute = [{
     "icon": "el-icon-key",
     "children": [{
         "menuCode": "003001",
-        "menuName": "Api列表",
-        "icon": "el-icon-connection",
-        "route": "/authorization/api"
-    }, {
-        "menuCode": "003002",
         "menuName": "权限列表",
         "icon": "el-icon-coin",
         "route": "/authorization/permission"
     }, {
-        "menuCode": "003003",
+        "menuCode": "003002",
         "menuName": "角色列表",
         "icon": "el-icon-postcard",
         "route": "/authorization/role"
