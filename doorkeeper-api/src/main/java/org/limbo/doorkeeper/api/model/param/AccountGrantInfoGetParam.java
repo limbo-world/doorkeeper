@@ -14,36 +14,26 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.vo;
+package org.limbo.doorkeeper.api.model.param;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import javax.validation.constraints.NotNull;
 
 /**
- * @author liuqingtong
- * @date 2020/11/25 20:27
+ * @author brozen
+ * @date 2020/12/01 10:10 PM
  */
 @Data
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class AccountGrantVO {
+@AllArgsConstructor
+public class AccountGrantInfoGetParam {
 
-    @Schema(name = "用户ID")
+    @NotNull(message = "账户ID不能为空")
+    @Schema(title = "账户ID", required = true)
     private Long accountId;
-
-    @Schema(name = "用户授予的角色")
-    private List<RoleVO> roles;
-
-    @Schema(name = "用户授予拥有的权限")
-    private List<PermissionVO> permissions;
-
-    @Schema(name = "用户授予权限的API")
-    private AccountPermissionGrantVO apis;
 
 }

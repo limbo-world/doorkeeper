@@ -28,5 +28,5 @@ import org.limbo.doorkeeper.server.entity.Account;
  */
 public interface AccountMapper extends BaseMapper<Account> {
     @Select("select * from l_account where project_id = #{projectId} and account_id = #{accountId}")
-    Account getProjcetAccountById(@Param("projectId") Long projectId, @Param("accountId") Long accountId);
+    Account getProjectAccountById(@Param("projectId") Long projectId, @Param("accountId") Long accountId);
 }

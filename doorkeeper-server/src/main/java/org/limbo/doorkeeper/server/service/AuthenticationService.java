@@ -35,6 +35,11 @@ public interface AuthenticationService {
     Boolean accessAllowed(Long projectId, AuthenticationCheckParam param);
 
     /**
+     * 获取用户的授权信息，包括授予的角色、权限，不包括API
+     */
+    AccountGrantVO getGrantInfo(Long projectId, Long accountId);
+
+    /**
      * 获取用户赋予的角色
      */
     List<RoleVO> getGrantedRoles(Long projectId, Long accountId);
