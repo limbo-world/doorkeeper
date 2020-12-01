@@ -22,6 +22,7 @@ import org.limbo.doorkeeper.api.model.param.PermissionBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.PermissionQueryParam;
 import org.limbo.doorkeeper.api.model.param.PermissionUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
+import org.limbo.doorkeeper.server.support.plog.PLogParam;
 
 import java.util.List;
 
@@ -33,22 +34,22 @@ public interface PermissionService {
     /**
      * 新增权限
      */
-    PermissionVO addPermission(Long projectId, PermissionAddParam param);
+    PermissionVO addPermission(PLogParam pLogParam, Long projectId, PermissionAddParam param);
 
     /**
      * 修改权限
      */
-    int updatePermission(Long projectId, PermissionUpdateParam param);
+    int updatePermission(PLogParam pLogParam, Long projectId, PermissionUpdateParam param);
 
     /**
      * 删除权限
      */
-    int deletePermission(Long projectId, List<Long> permissionIds);
+    int deletePermission(PLogParam pLogParam, Long projectId, List<Long> permissionIds);
 
     /**
      * 批量修改权限
      */
-    int batchUpdate(Long projectId, PermissionBatchUpdateParam param);
+    int batchUpdate(PLogParam pLogParam, Long projectId, PermissionBatchUpdateParam param);
 
     /**
      * 返回所有权限

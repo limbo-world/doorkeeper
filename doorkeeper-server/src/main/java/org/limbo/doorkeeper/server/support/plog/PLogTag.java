@@ -16,9 +16,17 @@
 
 package org.limbo.doorkeeper.server.support.plog;
 
+import java.lang.annotation.*;
+
 /**
  * @Author Devil
- * @Date 2020/12/1 11:50 上午
+ * @Date 2020/12/1 11:13 上午
  */
-public class PLogContants {
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PARAMETER)
+public @interface PLogTag {
+
+    String value();
+
 }

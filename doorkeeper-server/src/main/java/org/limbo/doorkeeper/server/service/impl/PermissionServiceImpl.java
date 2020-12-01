@@ -21,11 +21,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.*;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
+import org.limbo.doorkeeper.server.constants.BusinessType;
+import org.limbo.doorkeeper.server.constants.OperateType;
 import org.limbo.doorkeeper.server.dao.PermissionMapper;
 import org.limbo.doorkeeper.server.dao.RolePermissionMapper;
 import org.limbo.doorkeeper.server.entity.Permission;
 import org.limbo.doorkeeper.server.entity.RolePermission;
 import org.limbo.doorkeeper.server.service.PermissionService;
+import org.limbo.doorkeeper.server.support.plog.PLog;
+import org.limbo.doorkeeper.server.support.plog.PLogConstants;
+import org.limbo.doorkeeper.server.support.plog.PLogParam;
+import org.limbo.doorkeeper.server.support.plog.PLogTag;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +55,9 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     @Transactional
-    public PermissionVO addPermission(Long projectId, PermissionAddParam param) {
+    @PLog(operateType = OperateType.CREATE, businessType = BusinessType.PERMISSION)
+    public PermissionVO addPermission(PLogParam pLogParam, @PLogTag(PLogConstants.CONTENT) Long projectId,
+                                      @PLogTag(PLogConstants.CONTENT) PermissionAddParam param) {
         Permission permission = EnhancedBeanUtils.createAndCopy(param, Permission.class);
         permission.setProjectId(projectId);
         permissionMapper.insert(permission);
@@ -58,7 +66,9 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     @Transactional
-    public int updatePermission(Long projectId, PermissionUpdateParam param) {
+    @PLog(operateType = OperateType.UPDATE, businessType = BusinessType.PERMISSION)
+    public int updatePermission(PLogParam pLogParam, @PLogTag(PLogConstants.CONTENT) Long projectId,
+                                @PLogTag(PLogConstants.CONTENT) PermissionUpdateParam param) {
         return permissionMapper.update(null, Wrappers.<Permission>lambdaUpdate()
                 .set(StringUtils.isNotBlank(param.getPermissionName()), Permission::getPermissionName, param.getPermissionName())
                 .set(StringUtils.isNotBlank(param.getPermissionDescribe()), Permission::getPermissionDescribe, param.getPermissionDescribe())
@@ -70,7 +80,9 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     @Transactional
-    public int deletePermission(Long projectId, List<Long> permissionIds) {
+    @PLog(operateType = OperateType.DELETE, businessType = BusinessType.PERMISSION)
+    public int deletePermission(PLogParam pLogParam, @PLogTag(PLogConstants.CONTENT) Long projectId,
+                                @PLogTag(PLogConstants.CONTENT) List<Long> permissionIds) {
         // 删除角色权限
         rolePermissionMapper.delete(Wrappers.<RolePermission>lambdaQuery()
                 .eq(RolePermission::getProjectId, projectId)
@@ -84,7 +96,10 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public int batchUpdate(Long projectId, PermissionBatchUpdateParam param) {
+    @Transactional
+    @PLog(operateType = OperateType.UPDATE, businessType = BusinessType.PERMISSION)
+    public int batchUpdate(PLogParam pLogParam, @PLogTag(PLogConstants.CONTENT) Long projectId,
+                           @PLogTag(PLogConstants.CONTENT) PermissionBatchUpdateParam param) {
         return permissionMapper.update(null, Wrappers.<Permission>lambdaUpdate()
                 .set(Permission::getIsOnline, param.getIsOnline())
                 .in(Permission::getPermissionId, param.getPermissionIds())

@@ -18,7 +18,9 @@ package org.limbo.doorkeeper.server.support.config;
 
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.server.dao.AccountMapper;
 import org.limbo.doorkeeper.server.dao.ProjectMapper;
+import org.limbo.doorkeeper.server.entity.Account;
 import org.limbo.doorkeeper.server.entity.Project;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,8 @@ public class DoorkeeperInterceptor implements HandlerInterceptor {
 
     @Autowired
     private ProjectMapper projectMapper;
+    @Autowired
+    private AccountMapper accountMapper;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -49,6 +53,11 @@ public class DoorkeeperInterceptor implements HandlerInterceptor {
         Verifies.notNull(project, "项目认证失败");
         Verifies.verify(project.getProjectSecret().equals(secret), "项目认证失败");
 
+        String accountIdStr = request.getHeader(DoorkeeperConstants.ACCOUNT_HEADER);
+        Long accountId = Long.valueOf(accountIdStr);
+        Account account = accountMapper.getProjectAccountById(projectId, accountId);
+        Verifies.notNull(account, "操作用户为空");
+
         String projectParamIdStr = request.getHeader(DoorkeeperConstants.PROJECT_PARAM_HEADER);
         Long projectParamId;
         if (StringUtils.isBlank(projectParamIdStr)) {
@@ -56,7 +65,9 @@ public class DoorkeeperInterceptor implements HandlerInterceptor {
         } else {
             projectParamId = project.getIsAdmin() ? Long.valueOf(projectParamIdStr) : projectId;
         }
+        request.setAttribute(DoorkeeperConstants.PROJECT_HEADER, projectId);
         request.setAttribute(DoorkeeperConstants.PROJECT_PARAM_HEADER, projectParamId);
+        request.setAttribute(DoorkeeperConstants.ACCOUNT_HEADER, accountId);
         return true;
     }
 }

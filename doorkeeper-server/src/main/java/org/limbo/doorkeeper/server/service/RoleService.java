@@ -21,6 +21,7 @@ import org.limbo.doorkeeper.api.model.param.RoleAddParam;
 import org.limbo.doorkeeper.api.model.param.RoleQueryParam;
 import org.limbo.doorkeeper.api.model.param.RoleUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
+import org.limbo.doorkeeper.server.support.plog.PLogParam;
 
 import java.util.List;
 
@@ -30,11 +31,11 @@ import java.util.List;
  */
 public interface RoleService {
 
-    RoleVO addRole(Long projectId, RoleAddParam param);
+    RoleVO addRole(PLogParam pLogParam, Long projectId, RoleAddParam param);
 
-    Integer updateRole(Long projectId, RoleUpdateParam param);
+    Integer updateRole(PLogParam pLogParam, Long projectId, RoleUpdateParam param);
 
-    Integer deleteRole(Long projectId, List<Long> roleIds);
+    Integer deleteRole(PLogParam pLogParam, Long projectId, List<Long> roleIds);
 
     Page<RoleVO> queryRole(Long projectId, RoleQueryParam param);
 

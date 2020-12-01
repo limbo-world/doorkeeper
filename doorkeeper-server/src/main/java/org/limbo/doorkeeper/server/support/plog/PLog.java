@@ -22,15 +22,13 @@ import java.lang.annotation.*;
  * @Author Devil
  * @Date 2020/12/1 11:13 上午
  */
+@Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@Documented
 public @interface PLog {
 
-    /**
-     * 日志表达式
-     */
-    String expression() default "";
+    String operateType();
 
+    String businessType();
 
 }

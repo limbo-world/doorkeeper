@@ -16,37 +16,15 @@
 
 package org.limbo.doorkeeper.server.constants;
 
-import org.limbo.doorkeeper.api.constants.IEnum;
-
 /**
  * @Author Devil
  * @Date 2020/12/1 11:18 上午
  */
-public enum  OperateType implements IEnum<String> {
+public interface   OperateType {
 
-    CREATE("新增"),
-    QUERY("查询"),
-    UPDATE("修改"),
-    DELETE("删除"),
-    ;
+    String CREATE = "新增";
+    String QUERY = "查询";
+    String UPDATE = "修改";
+    String DELETE = "删除";
 
-    private String type;
-
-    OperateType(String type) {
-        this.type = type;
-    }
-
-    @Override
-    public String getValue() {
-        return type;
-    }
-
-    public static OperateType parse(String p) {
-        for (OperateType type : values()) {
-            if (type.is(p)) {
-                return type;
-            }
-        }
-        return null;
-    }
 }

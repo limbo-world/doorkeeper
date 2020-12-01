@@ -18,6 +18,7 @@ package org.limbo.doorkeeper.server.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import org.limbo.doorkeeper.server.constants.BusinessType;
 import org.limbo.doorkeeper.server.constants.OperateType;
@@ -29,6 +30,7 @@ import java.util.Date;
  * @Date 2020/11/30 7:46 下午
  */
 @Data
+@TableName("l_project_log")
 public class ProjectLog {
 
     @TableId(type = IdType.AUTO)
@@ -44,11 +46,11 @@ public class ProjectLog {
     /**
      * 业务类型
      */
-    private BusinessType businessType;
+    private String businessType;
     /**
      * 操作类型
      */
-    private OperateType operateType;
+    private String operateType;
     /**
      * 内容
      */

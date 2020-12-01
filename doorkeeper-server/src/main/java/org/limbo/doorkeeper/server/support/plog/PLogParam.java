@@ -14,19 +14,24 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.constants;
+package org.limbo.doorkeeper.server.support.plog;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 /**
  * @Author Devil
- * @Date 2020/12/1 11:18 上午
+ * @Date 2020/12/1 5:20 下午
  */
-public interface BusinessType {
-
-    String PROJECT = "项目";
-    String ACCOUNT = "账户";
-    String ACCOUNT_ROLE = "账户角色";
-    String ROLE = "角色";
-    String ROLE_PERMISSION = "角色权限";
-    String PERMISSION = "权限";
-
+@Data
+@AllArgsConstructor
+public class PLogParam {
+    /**
+     * 当前项目
+     */
+    private Long projectId;
+    /**
+     * 当前账户
+     */
+    private Long accountId;
 }

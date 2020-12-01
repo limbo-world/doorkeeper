@@ -24,13 +24,20 @@ import org.limbo.doorkeeper.api.model.param.AccountRoleQueryParam;
 import org.limbo.doorkeeper.api.model.param.RolePermissionAddParam;
 import org.limbo.doorkeeper.api.model.vo.AccountRoleVO;
 import org.limbo.doorkeeper.api.model.vo.RolePermissionVO;
+import org.limbo.doorkeeper.server.constants.BusinessType;
+import org.limbo.doorkeeper.server.constants.OperateType;
 import org.limbo.doorkeeper.server.dao.AccountRoleMapper;
 import org.limbo.doorkeeper.server.entity.AccountRole;
 import org.limbo.doorkeeper.server.entity.RolePermission;
 import org.limbo.doorkeeper.server.service.AccountRoleService;
+import org.limbo.doorkeeper.server.support.plog.PLog;
+import org.limbo.doorkeeper.server.support.plog.PLogConstants;
+import org.limbo.doorkeeper.server.support.plog.PLogParam;
+import org.limbo.doorkeeper.server.support.plog.PLogTag;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -55,7 +62,10 @@ public class AccountRoleServiceImpl implements AccountRoleService {
     }
 
     @Override
-    public void batchSave(Long projectId, List<AccountRoleAddParam> params) {
+    @Transactional
+    @PLog(operateType = OperateType.CREATE, businessType = BusinessType.ACCOUNT_ROLE)
+    public void batchSave(PLogParam pLogParam, @PLogTag(PLogConstants.CONTENT) Long projectId,
+                          @PLogTag(PLogConstants.CONTENT) List<AccountRoleAddParam> params) {
         if (CollectionUtils.isEmpty(params)) {
             return;
         }
@@ -67,7 +77,10 @@ public class AccountRoleServiceImpl implements AccountRoleService {
     }
 
     @Override
-    public int batchDelete(Long projectId, List<Long> accountRoleIds) {
+    @Transactional
+    @PLog(operateType = OperateType.DELETE, businessType = BusinessType.ACCOUNT_ROLE)
+    public int batchDelete(PLogParam pLogParam, @PLogTag(PLogConstants.CONTENT) Long projectId,
+                           @PLogTag(PLogConstants.CONTENT) List<Long> accountRoleIds) {
         return accountRoleMapper.delete(Wrappers.<AccountRole>lambdaQuery()
                 .eq(AccountRole::getProjectId, projectId)
                 .in(AccountRole::getAccountRoleId, accountRoleIds)

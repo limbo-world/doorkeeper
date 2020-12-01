@@ -17,6 +17,7 @@
 package org.limbo.doorkeeper.server.controller;
 
 import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.server.support.plog.PLogParam;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,9 +32,25 @@ public class BaseController {
     @Autowired
     protected HttpServletRequest request;
 
+    protected Long getAccountId() {
+        Object id = request.getAttribute(DoorkeeperConstants.ACCOUNT_HEADER);
+        Verifies.notNull(id, "账户ID不能为空");
+        return (Long) id;
+    }
+
     protected Long getProjectId() {
-        Object projectId = request.getAttribute(DoorkeeperConstants.PROJECT_PARAM_HEADER);
-        Verifies.notNull(projectId, "项目ID不能为空");
-        return (Long) projectId;
+        Object id = request.getAttribute(DoorkeeperConstants.PROJECT_HEADER);
+        Verifies.notNull(id, "项目ID不能为空");
+        return (Long) id;
+    }
+
+    protected Long getParamProjectId() {
+        Object id = request.getAttribute(DoorkeeperConstants.PROJECT_PARAM_HEADER);
+        Verifies.notNull(id, "项目参数ID不能为空");
+        return (Long) id;
+    }
+
+    protected PLogParam getPLogParam() {
+        return new PLogParam(getProjectId(), getAccountId());
     }
 }

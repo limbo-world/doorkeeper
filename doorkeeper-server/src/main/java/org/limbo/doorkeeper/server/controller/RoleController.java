@@ -49,7 +49,7 @@ public class RoleController extends BaseController {
     @PostMapping
     @Operation(summary = "新增角色")
     public Response<RoleVO> add(@RequestBody RoleAddParam param) {
-        return Response.ok(roleService.addRole(getProjectId(), param));
+        return Response.ok(roleService.addRole(getPLogParam(), getParamProjectId(), param));
     }
 
     @PutMapping("/{roleId}")
@@ -57,25 +57,25 @@ public class RoleController extends BaseController {
     public Response<Integer> update(@Validated @NotNull(message = "角色不存在") @PathVariable("roleId") Long roleId,
                                    @RequestBody RoleUpdateParam param) {
         param.setRoleId(roleId);
-        return Response.ok(roleService.updateRole(getProjectId(), param));
+        return Response.ok(roleService.updateRole(getPLogParam(), getParamProjectId(), param));
     }
 
     @DeleteMapping
     @Operation(summary = "删除角色")
     public Response<Integer> delete(@Validated @NotEmpty(message = "角色不存在") @Schema(title = "角色ID") @RequestBody List<Long> roleIds) {
-        return Response.ok(roleService.deleteRole(getProjectId(), roleIds));
+        return Response.ok(roleService.deleteRole(getPLogParam(), getParamProjectId(), roleIds));
     }
 
     @GetMapping
     @Operation(summary = "查询所有角色")
     public Response<List<RoleVO>> list() {
-        return Response.ok(roleService.list(getProjectId()));
+        return Response.ok(roleService.list(getParamProjectId()));
     }
 
     @GetMapping("/query")
     @Operation(summary = "分页查询角色")
     public Response<Page<RoleVO>> page(RoleQueryParam param) {
-        return Response.ok(roleService.queryRole(getProjectId(), param));
+        return Response.ok(roleService.queryRole(getParamProjectId(), param));
     }
 
 }

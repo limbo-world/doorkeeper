@@ -21,6 +21,7 @@ import org.limbo.doorkeeper.api.model.param.ProjectAddParam;
 import org.limbo.doorkeeper.api.model.param.ProjectQueryParam;
 import org.limbo.doorkeeper.api.model.param.ProjectUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ProjectVO;
+import org.limbo.doorkeeper.server.support.plog.PLogParam;
 
 import java.util.List;
 
@@ -34,12 +35,12 @@ public interface ProjectService {
     /**
      * 添加项目
      */
-    ProjectVO addProject(ProjectAddParam param);
+    ProjectVO addProject(PLogParam pLogParam, ProjectAddParam param);
 
     /**
      * 更新项目
      */
-    Integer updateProject(ProjectUpdateParam param);
+    Integer updateProject(PLogParam pLogParam, ProjectUpdateParam param);
 
     /**
      * 获取秘钥

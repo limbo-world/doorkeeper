@@ -43,13 +43,13 @@ public class RolePermissionController extends BaseController {
     @GetMapping
     @Operation(summary = "获取角色权限")
     public Response<List<RolePermissionVO>> list(RolePermissionQueryParam param) {
-        return Response.ok(rolePermissionService.list(getProjectId(), param));
+        return Response.ok(rolePermissionService.list(getParamProjectId(), param));
     }
 
     @PostMapping
     @Operation(summary = "绑定角色权限")
     public Response<Boolean> addRolePermission(@RequestBody List<RolePermissionAddParam> params) {
-        rolePermissionService.addRolePermission(getProjectId(), params);
+        rolePermissionService.addRolePermission(getPLogParam(), getParamProjectId(), params);
         return Response.ok(true);
     }
 
@@ -57,7 +57,7 @@ public class RolePermissionController extends BaseController {
     @DeleteMapping
     @Operation(summary = "删除角色权限")
     public Response<Integer> deleteRolePermission(@RequestBody List<Long> rolePermissionIds){
-        return Response.ok(rolePermissionService.deleteRolePermission(getProjectId(), rolePermissionIds));
+        return Response.ok(rolePermissionService.deleteRolePermission(getPLogParam(), getParamProjectId(), rolePermissionIds));
     }
 
 }

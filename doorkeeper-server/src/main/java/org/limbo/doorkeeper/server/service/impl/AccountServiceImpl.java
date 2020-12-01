@@ -24,12 +24,18 @@ import org.limbo.doorkeeper.api.exception.ParamException;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.*;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
+import org.limbo.doorkeeper.server.constants.BusinessType;
+import org.limbo.doorkeeper.server.constants.OperateType;
 import org.limbo.doorkeeper.server.dao.AccountMapper;
 import org.limbo.doorkeeper.server.dao.RoleMapper;
 import org.limbo.doorkeeper.server.entity.Account;
 import org.limbo.doorkeeper.server.entity.Role;
 import org.limbo.doorkeeper.server.service.AccountRoleService;
 import org.limbo.doorkeeper.server.service.AccountService;
+import org.limbo.doorkeeper.server.support.plog.PLog;
+import org.limbo.doorkeeper.server.support.plog.PLogConstants;
+import org.limbo.doorkeeper.server.support.plog.PLogParam;
+import org.limbo.doorkeeper.server.support.plog.PLogTag;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +65,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public AccountVO addAccount(Long projectId, AccountAddParam param) {
+    @PLog(operateType = OperateType.CREATE, businessType = BusinessType.ACCOUNT)
+    public AccountVO addAccount(PLogParam pLogParam, @PLogTag(PLogConstants.CONTENT) Long projectId,
+                                @PLogTag(PLogConstants.CONTENT) AccountAddParam param) {
         Account po = EnhancedBeanUtils.createAndCopy(param, Account.class);
         po.setProjectId(projectId);
         try {
@@ -82,14 +90,17 @@ public class AccountServiceImpl implements AccountService {
                 accountRole.setRoleId(role.getRoleId());
                 accountRoles.add(accountRole);
             }
-            accountRoleService.batchSave(projectId, accountRoles);
+            accountRoleService.batchSave(pLogParam, projectId, accountRoles);
         }
 
         return EnhancedBeanUtils.createAndCopy(po, AccountVO.class);
     }
 
     @Override
-    public Integer batchUpdate(Long projectId, AccountBatchUpdateParam param) {
+    @Transactional
+    @PLog(operateType = OperateType.UPDATE, businessType = BusinessType.ACCOUNT)
+    public Integer batchUpdate(PLogParam pLogParam, @PLogTag(PLogConstants.CONTENT)  Long projectId,
+                               @PLogTag(PLogConstants.CONTENT) AccountBatchUpdateParam param) {
         return accountMapper.update(null, Wrappers.<Account>lambdaUpdate()
                 .set(param.getIsAdmin() != null, Account::getIsAdmin, param.getIsAdmin())
                 .eq(Account::getProjectId, projectId)
@@ -98,7 +109,10 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Integer update(Long projectId, AccountUpdateParam param) {
+    @Transactional
+    @PLog(operateType = OperateType.UPDATE, businessType = BusinessType.ACCOUNT)
+    public Integer update(PLogParam pLogParam, @PLogTag(PLogConstants.CONTENT) Long projectId,
+                          @PLogTag(PLogConstants.CONTENT) AccountUpdateParam param) {
         return accountMapper.update(null, Wrappers.<Account>lambdaUpdate()
                 .set(param.getIsAdmin() != null, Account::getIsAdmin, param.getIsAdmin())
                 .set(StringUtils.isNotBlank(param.getAccountDescribe()), Account::getAccountDescribe, param.getAccountDescribe())
