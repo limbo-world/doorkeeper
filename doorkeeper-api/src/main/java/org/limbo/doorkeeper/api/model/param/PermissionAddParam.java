@@ -36,4 +36,13 @@ public class PermissionAddParam {
     @Schema(title = "权限描述")
     private String permissionDescribe;
 
+    @Schema(title = "http方法")
+    private String httpMethod;
+
+    @Schema(title = "ant风格url")
+    private String url;
+
+    @Schema(title = "是否上线 下线权限不生效")
+    private Boolean isOnline;
+
 }

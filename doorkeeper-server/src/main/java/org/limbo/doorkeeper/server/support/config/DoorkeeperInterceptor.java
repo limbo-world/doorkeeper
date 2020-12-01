@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.config;
+package org.limbo.doorkeeper.server.support.config;
 
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;

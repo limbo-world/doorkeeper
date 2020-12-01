@@ -18,7 +18,9 @@ package org.limbo.doorkeeper.api.model.param;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.limbo.doorkeeper.api.constants.PermissionPolicy;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -36,4 +38,10 @@ public class RolePermissionAddParam {
     @Schema(title = "权限id", required = true)
     private Long permissionId;
 
+    /**
+     * @see PermissionPolicy
+     */
+    @NotBlank(message = "策略不能为空")
+    @Schema(title = "策略", required = true, requiredProperties = {"allow", "refuse"})
+    private String policy;
 }

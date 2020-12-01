@@ -18,11 +18,8 @@ package org.limbo.doorkeeper.api.client;
 
 import org.limbo.doorkeeper.api.client.fallback.AuthenticationClientFallback;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.ApiCheckParam;
-import org.limbo.doorkeeper.api.model.param.PermissionCheckParam;
-import org.limbo.doorkeeper.api.model.param.RoleCheckParam;
+import org.limbo.doorkeeper.api.model.param.AuthenticationCheckParam;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
@@ -32,13 +29,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @FeignClient(name = "doorkeeper-server", path = "/auth", contextId = "authenticationClient", fallbackFactory = AuthenticationClientFallback.class)
 public interface AuthenticationClient {
 
-    @GetMapping("/check-api")
-    Response<Boolean> apiCheck(@SpringQueryMap ApiCheckParam param);
-
-    @GetMapping("/check-permission")
-    Response<Boolean> permissionCheck(@SpringQueryMap PermissionCheckParam param);
-
-    @GetMapping("/check-role")
-    Response<Boolean> roleCheck(@SpringQueryMap RoleCheckParam param);
+    @GetMapping("/check")
+    Response<Boolean> check(AuthenticationCheckParam param);
 
 }

@@ -25,11 +25,9 @@ import org.limbo.doorkeeper.admin.session.SessionInterceptor;
 import org.limbo.doorkeeper.admin.support.authc.AuthenticationInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.core.env.Environment;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.DateFormatter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -51,14 +49,6 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Autowired
     private DoorkeeperProperties doorkeeperProperties;
-
-    @Bean
-    public SpringBeanContext SpringBeanContext(ApplicationContext applicationContext, Environment environment) {
-        SpringBeanContext springBeanContext = new SpringBeanContext();
-        springBeanContext.setApplicationContext(applicationContext);
-        springBeanContext.setEnvironment(environment);
-        return springBeanContext;
-    }
 
     /**
      * json 返回结果处理

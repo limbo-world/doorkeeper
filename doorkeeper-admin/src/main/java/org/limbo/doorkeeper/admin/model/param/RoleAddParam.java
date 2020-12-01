@@ -17,7 +17,6 @@
 package org.limbo.doorkeeper.admin.model.param;
 
 import lombok.Data;
-import org.limbo.doorkeeper.api.model.param.PermissionApiAddParam;
 import org.limbo.doorkeeper.api.model.param.RolePermissionAddParam;
 
 import javax.validation.constraints.NotBlank;

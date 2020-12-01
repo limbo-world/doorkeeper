@@ -24,7 +24,7 @@ import org.limbo.doorkeeper.admin.session.support.SessionException;
 import org.limbo.doorkeeper.admin.utils.JacksonUtil;
 import org.limbo.doorkeeper.api.client.AuthenticationClient;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.ApiCheckParam;
+import org.limbo.doorkeeper.api.model.param.AuthenticationCheckParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -59,11 +59,11 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             throw new SessionException("无有效会话");
         }
 
-        ApiCheckParam param = new ApiCheckParam();
+        AuthenticationCheckParam param = new AuthenticationCheckParam();
         param.setAccountId(adminSession.getAccount().getAccountId());
         param.setMethod(request.getMethod());
         param.setPath(request.getServletPath());
-        Response<Boolean> apiCheck = authenticationClient.apiCheck(param);
+        Response<Boolean> apiCheck = authenticationClient.check(param);
         if (!apiCheck.ok()) {
             log.error("api check 调用失败 ", JacksonUtil.toJSONString(apiCheck));
             return false;

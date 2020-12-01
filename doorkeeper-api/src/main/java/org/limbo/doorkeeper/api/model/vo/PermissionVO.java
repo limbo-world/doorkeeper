@@ -38,6 +38,12 @@ public class PermissionVO {
     @Schema(title = "权限描述")
     private String permissionDescribe;
 
+    @Schema(title = "http方法")
+    private String httpMethod;
+
+    @Schema(title = "url")
+    private String url;
+
     @Schema(title = "是否上线")
     private Boolean isOnline;
 }

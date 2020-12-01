@@ -14,25 +14,31 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.admin.model.param;
+package org.limbo.doorkeeper.api.model.param;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import org.limbo.doorkeeper.api.model.param.PermissionApiAddParam;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 /**
  * @author Devil
- * @date 2020/11/26 9:43 AM
+ * @date 2020/11/19 3:27 PM
  */
 @Data
-public class PermissionAddParam {
+public class AuthenticationCheckParam {
 
-    @NotNull(message = "权限名称不能为空")
-    private String permissionName;
+    @NotNull(message = "访问账户不存在")
+    @Schema(name = "访问账户ID", required = true)
+    private Long accountId;
 
-    private String permissionDescribe;
+    @NotBlank(message = "请求方法不可为空")
+    @Schema(name = "Http请求方式", required = true)
+    private String method;
 
-    private List<PermissionApiAddParam> permissionApis;
+    @NotBlank(message = "请求路径不可为空")
+    @Schema(name = "Http请求路径", required = true)
+    private String path;
+
 }

@@ -20,11 +20,8 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.PermissionPolicy;
-import org.limbo.doorkeeper.api.model.param.ApiCheckParam;
-import org.limbo.doorkeeper.api.model.param.PermissionCheckParam;
-import org.limbo.doorkeeper.api.model.param.RoleCheckParam;
-import org.limbo.doorkeeper.api.model.vo.AccountApiGrantVO;
-import org.limbo.doorkeeper.api.model.vo.ApiVO;
+import org.limbo.doorkeeper.api.model.param.AuthenticationCheckParam;
+import org.limbo.doorkeeper.api.model.vo.AccountPermissionGrantVO;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.server.dao.*;
@@ -68,14 +65,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Autowired
     private PermissionMapper permissionMapper;
 
-    @Autowired
-    private PermissionApiMapper permissionApiMapper;
-
-    @Autowired
-    private ApiMapper apiMapper;
-
     @Override
-    public Boolean accessApiAllowed(Long projectId, ApiCheckParam param) {
+    public Boolean accessAllowed(Long projectId, AuthenticationCheckParam param) {
         Account account = accountMapper.getProjcetAccountById(projectId, param.getAccountId());
         if (account == null) {
             return false;
@@ -86,75 +77,35 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return true;
         }
 
-        // 拿到用户全部API
-        AccountApiGrantVO grantedApis = _this.getGrantedApis(projectId, account.getAccountId());
+        // 拿到用户全部权限
+        AccountPermissionGrantVO grants = _this.getGrantedApis(projectId, account.getAccountId());
         // 如果没有授权信息 或 授权访问的API列表为空，则禁止访问
-        if (grantedApis == null || CollectionUtils.isEmpty(grantedApis.getAllowedApis())) {
+        if (grants == null || CollectionUtils.isEmpty(grants.getAllowedPermissions())) {
             return false;
         }
 
-        // 首先检测refusedApis
-        List<ApiVO> refusedApis = grantedApis.getRefusedApis();
-        if (CollectionUtils.isNotEmpty(refusedApis)) {
+        // 首先检测refused
+        List<PermissionVO> refusedPermissions = grants.getRefusedPermissions();
+        if (CollectionUtils.isNotEmpty(refusedPermissions)) {
             // 如果存在请求方法与请求路径匹配，说明禁止访问
-            if (refusedApis.stream().anyMatch(api -> apiMatch(api, param))) {
+            if (refusedPermissions.stream().anyMatch(permission -> permissionMatch(permission, param))) {
                 return false;
             }
         }
 
-        // 然后检测allowedApis
-        List<ApiVO> allowedApis = grantedApis.getAllowedApis();
+        // 然后检测allowed
+        List<PermissionVO> allowedPermissions = grants.getAllowedPermissions();
         // 如果存在请求方法与请求路径匹配，说明允许访问
-        return allowedApis.stream().anyMatch(api -> apiMatch(api, param));
-    }
-
-    @Override
-    public Boolean accessPermissionAllowed(Long projectId, PermissionCheckParam param) {
-        Account account = accountMapper.getProjcetAccountById(projectId, param.getAccountId());
-        if (account == null) {
-            return false;
-        }
-
-        // 管理员拥有全部权限
-        if (account.getIsAdmin()) {
-            return true;
-        }
-
-        List<PermissionVO> grantedPermissions = _this.getGrantedPermissions(projectId, account.getAccountId());
-        if (CollectionUtils.isEmpty(grantedPermissions)) {
-            return false;
-        }
-
-        return grantedPermissions.stream().anyMatch(permission -> permission.getPermissionId().equals(param.getPermissionId()));
-    }
-
-    @Override
-    public Boolean accessRoleAllowed(Long projectId, RoleCheckParam param) {
-        Account account = accountMapper.getProjcetAccountById(projectId, param.getAccountId());
-        if (account == null) {
-            return false;
-        }
-
-        // 管理员拥有全部权限
-        if (account.getIsAdmin()) {
-            return true;
-        }
-
-        List<RoleVO> grantedRoles = _this.getGrantedRoles(projectId, account.getAccountId());
-        if (CollectionUtils.isEmpty(grantedRoles)) {
-            return false;
-        }
-
-        return grantedRoles.stream().anyMatch(role -> role.getRoleId().equals(param.getRoleId()));
+        return allowedPermissions.stream().anyMatch(permission -> permissionMatch(permission, param));
     }
 
     /**
-     * 检测API配置与请求检查参数的请求url是否匹配，检测method和path两部分
+     * 检测配置与请求检查参数的请求url是否匹配，检测method和path两部分
      */
-    private boolean apiMatch(ApiVO api, ApiCheckParam param) {
+    private boolean permissionMatch(PermissionVO permission, AuthenticationCheckParam param) {
         AntPathMatcher antPathMatcher = PATH_MATCHER.get();
-        return methodMatch(api.getApiMethod(), param.getMethod())
-                && antPathMatcher.match(api.getApiUrl(), param.getPath());
+        return methodMatch(permission.getHttpMethod(), param.getMethod())
+                && antPathMatcher.match(permission.getUrl(), param.getPath());
     }
 
     /**
@@ -231,52 +182,54 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * @return
      */
     @Override
-    public AccountApiGrantVO getGrantedApis(Long projectId, Long accountId) {
-        AccountApiGrantVO accountApiGrant = new AccountApiGrantVO();
-        accountApiGrant.setAccountId(accountId);
-        accountApiGrant.setAllowedApis(new ArrayList<>());
-        accountApiGrant.setRefusedApis(new ArrayList<>());
+    public AccountPermissionGrantVO getGrantedApis(Long projectId, Long accountId) {
+        AccountPermissionGrantVO accountPermissionGrant = new AccountPermissionGrantVO();
+        accountPermissionGrant.setAccountId(accountId);
+        accountPermissionGrant.setAllowedPermissions(new ArrayList<>());
+        accountPermissionGrant.setRefusedPermissions(new ArrayList<>());
 
         // 查询用户授权的所有权限
-        List<PermissionVO> permissions = _this.getGrantedPermissions(projectId, accountId);
-        if (CollectionUtils.isEmpty(permissions)) {
-            return accountApiGrant;
+        List<RoleVO> roles = _this.getGrantedRoles(projectId, accountId);
+        if (CollectionUtils.isEmpty(roles)) {
+            return accountPermissionGrant;
         }
 
-        Set<Long> permIds = permissions.stream().map(PermissionVO::getPermissionId).collect(Collectors.toSet());
+        Set<Long> roleIds = roles.stream().map(RoleVO::getRoleId).collect(Collectors.toSet());
 
         // 查询权限管理的API，并根据策略分组
-        List<PermissionApi> permApis = permissionApiMapper.selectList(Wrappers.<PermissionApi>lambdaQuery()
-                .eq(PermissionApi::getProjectId, projectId)
-                .in(PermissionApi::getPermissionId, permIds)
+        List<RolePermission> permApis = rolePermissionMapper.selectList(Wrappers.<RolePermission>lambdaQuery()
+                .eq(RolePermission::getProjectId, projectId)
+                .in(RolePermission::getRoleId, roleIds)
         );
-        Map<PermissionPolicy, Set<Long>> groupedApiIds = permApis.stream().collect(Collectors.groupingBy(
-                PermissionApi::getPolicy,
-                Collectors.mapping(PermissionApi::getApiId, Collectors.toSet())
+        Map<PermissionPolicy, Set<Long>> groupedPermissionIds = permApis.stream().collect(Collectors.groupingBy(
+                RolePermission::getPolicy,
+                Collectors.mapping(RolePermission::getPermissionId, Collectors.toSet())
         ));
 
         // 查询allowed
-        Set<Long> allowedApiIds = groupedApiIds.get(PermissionPolicy.ALLOW);
-        if (CollectionUtils.isNotEmpty(allowedApiIds)) {
-            List<Api> allowedApis = apiMapper.selectList(Wrappers.<Api>lambdaQuery()
-                    .eq(Api::getProjectId, projectId)
-                    .in(Api::getApiId, allowedApiIds)
+        Set<Long> allowedPermissionIds = groupedPermissionIds.get(PermissionPolicy.ALLOW);
+        if (CollectionUtils.isNotEmpty(allowedPermissionIds)) {
+            List<Permission> allowedPermissions = permissionMapper.selectList(Wrappers.<Permission>lambdaQuery()
+                    .eq(Permission::getProjectId, projectId)
+                    .in(Permission::getPermissionId, allowedPermissionIds)
+                    .eq(Permission::getIsOnline, true)
             );
-            List<ApiVO> allowedApiVos = EnhancedBeanUtils.createAndCopyList(allowedApis, ApiVO.class);
-            accountApiGrant.setAllowedApis(allowedApiVos);
+            List<PermissionVO> allowedApiVos = EnhancedBeanUtils.createAndCopyList(allowedPermissions, PermissionVO.class);
+            accountPermissionGrant.setAllowedPermissions(allowedApiVos);
         }
 
         // 查询refused
-        Set<Long> refusedApiIds = groupedApiIds.get(PermissionPolicy.REFUSE);
-        if (CollectionUtils.isNotEmpty(refusedApiIds)) {
-            List<Api> refusedApis = apiMapper.selectList(Wrappers.<Api>lambdaQuery()
-                    .eq(Api::getProjectId, projectId)
-                    .in(Api::getApiId, refusedApiIds)
+        Set<Long> refusedPermissionIds = groupedPermissionIds.get(PermissionPolicy.REFUSE);
+        if (CollectionUtils.isNotEmpty(refusedPermissionIds)) {
+            List<Permission> refusedPermissions = permissionMapper.selectList(Wrappers.<Permission>lambdaQuery()
+                    .eq(Permission::getProjectId, projectId)
+                    .in(Permission::getPermissionId, refusedPermissionIds)
+                    .eq(Permission::getIsOnline, true)
             );
-            List<ApiVO> refusedApiVos = EnhancedBeanUtils.createAndCopyList(refusedApis, ApiVO.class);
-            accountApiGrant.setRefusedApis(refusedApiVos);
+            List<PermissionVO> refusedApiVos = EnhancedBeanUtils.createAndCopyList(refusedPermissions, PermissionVO.class);
+            accountPermissionGrant.setRefusedPermissions(refusedApiVos);
         }
-        return accountApiGrant;
+        return accountPermissionGrant;
     }
 
 }

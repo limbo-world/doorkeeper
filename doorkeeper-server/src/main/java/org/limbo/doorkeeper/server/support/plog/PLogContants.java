@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.dao;
-
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Param;
-import org.limbo.doorkeeper.api.model.param.ApiAddParam;
-import org.limbo.doorkeeper.server.entity.Api;
-
-import java.util.List;
+package org.limbo.doorkeeper.server.support.plog;
 
 /**
- * @author Devil
- * @date 2020/11/19 7:18 PM
+ * @Author Devil
+ * @Date 2020/12/1 11:50 上午
  */
-public interface ApiMapper extends BaseMapper<Api> {
-    void batchInsert(@Param("apis") List<ApiAddParam> apis);
+public class PLogContants {
 }

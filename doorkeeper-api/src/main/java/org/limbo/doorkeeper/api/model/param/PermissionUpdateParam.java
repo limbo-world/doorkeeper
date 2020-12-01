@@ -37,4 +37,7 @@ public class PermissionUpdateParam {
 
     @Schema(title = "权限描述")
     private String permissionDescribe;
+
+    @Schema(title = "是否上线")
+    private Boolean isOnline;
 }

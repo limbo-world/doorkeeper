@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
+package org.limbo.doorkeeper.server.support.config;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.context.annotation.Configuration;
 
 /**
- * @author Devil
- * @date 2020/11/19 3:27 PM
+ * @author liuqingtong
+ * @date 2020/11/20 18:05
  */
-@Data
-public class PermissionApiQueryParam {
+@Configuration
+@EnableDiscoveryClient
+public class FeignConfig {
 
-    @Schema(title = "权限id")
-    private Long permissionId;
+    // TODO 负载均衡、熔断限流
+
 }

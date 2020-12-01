@@ -16,14 +16,13 @@
 
 package org.limbo.doorkeeper.admin.controller;
 
-import org.limbo.doorkeeper.admin.model.param.PermissionAddParam;
-import org.limbo.doorkeeper.admin.model.param.PermissionUpdateParam;
-import org.limbo.doorkeeper.admin.service.PermissionService;
 import org.limbo.doorkeeper.api.client.PermissionClient;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
+import org.limbo.doorkeeper.api.model.param.PermissionAddParam;
 import org.limbo.doorkeeper.api.model.param.PermissionBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.PermissionQueryParam;
+import org.limbo.doorkeeper.api.model.param.PermissionUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -43,18 +42,15 @@ public class PermissionController {
     @Autowired
     private PermissionClient permissionClient;
 
-    @Autowired
-    private PermissionService permissionService;
-
     @PostMapping
     public Response<PermissionVO> add(@RequestBody PermissionAddParam param) {
-        return permissionService.add(param);
+        return permissionClient.add(param);
     }
 
     @PutMapping("/{permissionId}")
     public Response<Integer> update(@Validated @NotNull(message = "权限不存在") @PathVariable("permissionId") Long permissionId,
                                     @RequestBody PermissionUpdateParam param) {
-        return permissionService.update(permissionId, param);
+        return permissionClient.update(permissionId, param);
     }
 
     @PutMapping

@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.config;
+package org.limbo.doorkeeper.server.support.config;
 
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.limbo.doorkeeper.server.support.format.StringToDateConverter;
+import org.limbo.doorkeeper.server.support.plog.PLogAspect;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,9 +41,6 @@ import java.text.SimpleDateFormat;
 @Slf4j
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-
-    @Autowired
-    private DoorkeeperInterceptor doorkeeperInterceptor;
 
     /**
      * json 返回结果处理
@@ -69,6 +67,14 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     /**
+     * 用于记录业务日志
+     */
+    @Bean
+    public PLogAspect pLogAspect() {
+        return new PLogAspect();
+    }
+
+    /**
      * MyBatisPlus分页插件
      */
     @Bean
@@ -76,9 +82,14 @@ public class WebConfig implements WebMvcConfigurer {
         return new PaginationInterceptor();
     }
 
+    @Bean
+    public DoorkeeperInterceptor doorkeeperInterceptor() {
+        return new DoorkeeperInterceptor();
+    }
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(doorkeeperInterceptor)
+        registry.addInterceptor(doorkeeperInterceptor())
                 .excludePathPatterns("/swagger-ui/**")
                 .excludePathPatterns("/api-docs/**")
                 .excludePathPatterns("/api-docs.html");

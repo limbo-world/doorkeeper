@@ -18,11 +18,9 @@ package org.limbo.doorkeeper.admin.session;
 
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.admin.config.DoorkeeperProperties;
-import org.limbo.doorkeeper.admin.config.SpringBeanContext;
 import org.limbo.doorkeeper.admin.session.support.SessionException;
 import org.limbo.doorkeeper.admin.session.validate.SessionValidator;
 import org.limbo.doorkeeper.admin.session.validate.SessionValidatorFactory;
-import org.limbo.doorkeeper.admin.utils.JacksonUtil;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;

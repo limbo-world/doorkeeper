@@ -26,11 +26,14 @@ import org.limbo.doorkeeper.api.model.param.ProjectAddParam;
 import org.limbo.doorkeeper.api.model.param.ProjectQueryParam;
 import org.limbo.doorkeeper.api.model.param.ProjectUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ProjectVO;
+import org.limbo.doorkeeper.server.constants.BusinessType;
+import org.limbo.doorkeeper.server.constants.OperateType;
 import org.limbo.doorkeeper.server.dao.AccountMapper;
 import org.limbo.doorkeeper.server.dao.ProjectMapper;
 import org.limbo.doorkeeper.server.entity.Account;
 import org.limbo.doorkeeper.server.entity.Project;
 import org.limbo.doorkeeper.server.service.ProjectService;
+import org.limbo.doorkeeper.server.support.plog.PLog;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.limbo.doorkeeper.server.utils.UUIDUtils;
@@ -59,6 +62,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     @Transactional
     public ProjectVO addProject(ProjectAddParam param) {
+
         Project project = EnhancedBeanUtils.createAndCopy(param, Project.class);
         if (StringUtils.isBlank(param.getProjectSecret())) {
             project.setProjectSecret(UUIDUtils.get());

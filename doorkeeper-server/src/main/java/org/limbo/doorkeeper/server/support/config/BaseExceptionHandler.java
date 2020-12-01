@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.config;
+package org.limbo.doorkeeper.server.support.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.exception.ParamException;

@@ -17,19 +17,14 @@
 package org.limbo.doorkeeper.server.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.*;
-import org.limbo.doorkeeper.api.model.vo.ApiVO;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
-import org.limbo.doorkeeper.server.dao.PermissionApiMapper;
 import org.limbo.doorkeeper.server.dao.PermissionMapper;
 import org.limbo.doorkeeper.server.dao.RolePermissionMapper;
 import org.limbo.doorkeeper.server.entity.Permission;
-import org.limbo.doorkeeper.server.entity.PermissionApi;
 import org.limbo.doorkeeper.server.entity.RolePermission;
-import org.limbo.doorkeeper.server.service.PermissionApiService;
 import org.limbo.doorkeeper.server.service.PermissionService;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
@@ -50,9 +45,6 @@ public class PermissionServiceImpl implements PermissionService {
     private PermissionMapper permissionMapper;
 
     @Autowired
-    private PermissionApiMapper permissionApiMapper;
-
-    @Autowired
     private RolePermissionMapper rolePermissionMapper;
 
     @Override
@@ -70,6 +62,7 @@ public class PermissionServiceImpl implements PermissionService {
         return permissionMapper.update(null, Wrappers.<Permission>lambdaUpdate()
                 .set(StringUtils.isNotBlank(param.getPermissionName()), Permission::getPermissionName, param.getPermissionName())
                 .set(StringUtils.isNotBlank(param.getPermissionDescribe()), Permission::getPermissionDescribe, param.getPermissionDescribe())
+                .set(param.getIsOnline() != null, Permission::getIsOnline, param.getIsOnline())
                 .eq(Permission::getPermissionId, param.getPermissionId())
                 .eq(Permission::getProjectId, projectId)
         );
@@ -78,12 +71,6 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     @Transactional
     public int deletePermission(Long projectId, List<Long> permissionIds) {
-        // 删除权限api
-        permissionApiMapper.delete(Wrappers.<PermissionApi>lambdaQuery()
-                .eq(PermissionApi::getProjectId, projectId)
-                .in(PermissionApi::getPermissionId, permissionIds)
-        );
-
         // 删除角色权限
         rolePermissionMapper.delete(Wrappers.<RolePermission>lambdaQuery()
                 .eq(RolePermission::getProjectId, projectId)

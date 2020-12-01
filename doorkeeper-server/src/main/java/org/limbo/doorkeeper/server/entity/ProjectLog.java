@@ -18,46 +18,41 @@ package org.limbo.doorkeeper.server.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import org.limbo.doorkeeper.server.constants.BusinessType;
+import org.limbo.doorkeeper.server.constants.OperateType;
 
 import java.util.Date;
 
 /**
- *
- * 对应一个接口
- *
- * @author Devil
- * @date 2020/11/18 7:15 PM
+ * @Author Devil
+ * @Date 2020/11/30 7:46 下午
  */
 @Data
-@TableName("l_api")
-public class Api {
+public class ProjectLog {
 
     @TableId(type = IdType.AUTO)
-    private Long apiId;
-
+    private Long projectLogId;
+    /**
+     * 项目
+     */
     private Long projectId;
-
     /**
-     * 名称
+     * 操作人
      */
-    private String apiName;
-
+    private Long accountId;
     /**
-     * 描述
+     * 业务类型
      */
-    private String apiDescribe;
-
+    private BusinessType businessType;
     /**
-     * 方法类型 get post
+     * 操作类型
      */
-    private String apiMethod;
-
+    private OperateType operateType;
     /**
-     * ant风格url
+     * 内容
      */
-    private String apiUrl;
+    private String content;
 
     private Date gmtCreated;
 

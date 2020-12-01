@@ -14,24 +14,27 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
+package org.limbo.doorkeeper.api.model.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.util.List;
+
 /**
- * @author Devil
- * @date 2020/11/19 7:29 PM
+ * @author liuqingtong
+ * @date 2020/11/25 19:07
  */
 @Data
-public class ApiUpdateParam {
+public class AccountPermissionGrantVO {
 
-    private Long apiId;
+    @Schema(name = "用户ID")
+    private Long accountId;
 
-    @Schema(title = "api名称")
-    private String apiName;
+    @Schema(name = "用户可以访问的权限")
+    private List<PermissionVO> allowedPermissions;
 
-    @Schema(title = "api描述")
-    private String apiDescribe;
+    @Schema(name = "用户禁止访问的权限")
+    private List<PermissionVO> refusedPermissions;
 
 }

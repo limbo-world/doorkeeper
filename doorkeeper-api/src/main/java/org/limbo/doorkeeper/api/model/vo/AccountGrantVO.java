@@ -38,6 +38,6 @@ public class AccountGrantVO {
     private List<PermissionVO> permissions;
 
     @Schema(name = "用户授予权限的API")
-    private AccountApiGrantVO apis;
+    private AccountPermissionGrantVO apis;
 
 }

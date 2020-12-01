@@ -17,12 +17,12 @@
 
 package org.limbo.doorkeeper.server;
 
-import org.limbo.doorkeeper.server.config.DoorkeeperConfig;
-import org.limbo.doorkeeper.server.config.WebConfig;
+import org.limbo.doorkeeper.server.support.config.WebConfig;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -31,9 +31,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * @date 2020/11/19 19:29
  */
 @SpringBootApplication
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableTransactionManagement
 @MapperScan("org.limbo.doorkeeper.server.dao")
-@Import({WebConfig.class, DoorkeeperConfig.class})
+@Import({WebConfig.class})
 public class DoorkeeperApplication {
 
     public static void main(String[] args) {

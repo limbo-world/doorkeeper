@@ -44,7 +44,15 @@ public class Permission {
      * 描述
      */
     private String permissionDescribe;
+    /**
+     * 方法类型 get post
+     */
+    private String httpMethod;
 
+    /**
+     * ant风格url
+     */
+    private String url;
     /**
      * 是否上线 下线权限不生效
      */

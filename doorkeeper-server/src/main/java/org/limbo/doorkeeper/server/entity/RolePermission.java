@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import org.limbo.doorkeeper.api.constants.PermissionPolicy;
 
 import java.util.Date;
 
@@ -42,4 +43,9 @@ public class RolePermission {
     private Long roleId;
 
     private Long permissionId;
+
+    /**
+     * @see PermissionPolicy
+     */
+    private PermissionPolicy policy;
 }
