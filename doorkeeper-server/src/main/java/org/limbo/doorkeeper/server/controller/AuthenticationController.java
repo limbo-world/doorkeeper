@@ -20,9 +20,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.Response;
+import org.limbo.doorkeeper.api.model.param.AccountGrantInfoGetParam;
 import org.limbo.doorkeeper.api.model.param.ApiCheckParam;
 import org.limbo.doorkeeper.api.model.param.PermissionCheckParam;
 import org.limbo.doorkeeper.api.model.param.RoleCheckParam;
+import org.limbo.doorkeeper.api.model.vo.AccountGrantVO;
 import org.limbo.doorkeeper.server.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,6 +43,12 @@ public class AuthenticationController extends BaseController {
 
     @Autowired
     private AuthenticationService authenticationService;
+
+    @GetMapping("/grant-info")
+    @Operation(summary = "获取用户的授权信息，返回授予的角色、权限")
+    public Response<AccountGrantVO> grantInfo(AccountGrantInfoGetParam param) {
+        return Response.ok(authenticationService.getGrantInfo(getProjectId(), param.getAccountId()));
+    }
 
     @GetMapping("/check-api")
     @Operation(summary = "检查用户是否可以访问对应api")

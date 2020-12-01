@@ -21,8 +21,11 @@ import org.limbo.doorkeeper.admin.entity.AdminProject;
 import org.limbo.doorkeeper.admin.service.AdminProjectService;
 import org.limbo.doorkeeper.admin.session.AdminSession;
 import org.limbo.doorkeeper.admin.session.support.SessionAccount;
+import org.limbo.doorkeeper.api.client.AuthenticationClient;
 import org.limbo.doorkeeper.api.client.ProjectClient;
 import org.limbo.doorkeeper.api.model.Response;
+import org.limbo.doorkeeper.api.model.param.AccountGrantInfoGetParam;
+import org.limbo.doorkeeper.api.model.vo.AccountGrantVO;
 import org.limbo.doorkeeper.api.model.vo.ProjectVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +44,8 @@ public class SessionController extends BaseController {
 
     @Autowired
     private ProjectClient projectClient;
+    @Autowired
+    private AuthenticationClient authenticationClient;
     @Autowired
     private AdminProjectService adminProjectService;
 
@@ -79,6 +84,11 @@ public class SessionController extends BaseController {
         account.setCurrentProjectName(project.getProjectName());
         sessionDAO.save(session);
         return Response.ok(getSession());
+    }
+
+    @GetMapping("/grant-info")
+    public Response<AccountGrantVO> getGrantInfo() {
+        return authenticationClient.grantInfo(new AccountGrantInfoGetParam(getSessionAccount().getAccountId()));
     }
 
     @GetMapping("/logout")

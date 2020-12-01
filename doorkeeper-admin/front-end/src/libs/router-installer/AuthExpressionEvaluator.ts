@@ -45,15 +45,17 @@ export default class AuthExpressionEvaluator {
 
     private readonly roles: Set<string>;
     private readonly permissions: Set<string>;
+    private readonly isAdmin: boolean = false;
 
     /**
      * 表达式关键字
      */
     private static KeyChars = new Set([':', '.', '{', '}']);
 
-    constructor(roles: string[], permissions: string[]) {
+    constructor(roles: string[], permissions: string[], isAdmin: boolean) {
         this.roles = new Set(roles || []);
         this.permissions = new Set(permissions || []);
+        this.isAdmin = isAdmin;
     }
 
     /**
@@ -62,6 +64,10 @@ export default class AuthExpressionEvaluator {
      * @param defaultResult
      */
     evaluate(expression: string, defaultResult: boolean = true): boolean {
+        if (this.isAdmin) {
+            return true;
+        }
+
         return eval(this.parseExpression(expression, defaultResult.toString()));
     }
 

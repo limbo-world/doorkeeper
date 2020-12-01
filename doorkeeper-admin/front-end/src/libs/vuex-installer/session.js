@@ -100,21 +100,29 @@ export default {
 
         // 从后台或其他地方加载菜单信息
         loadMenus({ state, commit }) {
+            debugger
             // 已经加载完成时不再加载
             if (state.menus && state.menus.length > 0) {
                 return Promise.resolve(state.menus);
             }
 
-            // TODO 从后台异步获取权限
-            return new Promise((resolve, reject) => {
-                // 创建计算器
-                const grantInfo = {roles: [], permissions: []};
-                let evaluator = new AuthExpressionEvaluator(grantInfo.roles, grantInfo.permissions);
+            // 从后台异步获取权限
+            return http.get('/session/grant-info').then(response => {
+                // 根据后台返回的授权信息，生成计算器
+                const grantInfo = response.data;
+                const account = state.user.account;
+                let evaluator = new AuthExpressionEvaluator(
+                    grantInfo.roles.map(r => r.roleId),
+                    grantInfo.permissions.map(p => p.permissionId),
+                    account.isAdmin
+                );
                 commit('setAuthExpEvaluator', evaluator);
 
-                const menus = organizeMenu(evaluator);
+                // 组装菜单树
+                const menus = organizeMenu(evaluator, account);
                 commit('setMenu', menus);
-                resolve(menus);
+
+                return Promise.resolve(menus);
             });
         },
 

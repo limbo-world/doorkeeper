@@ -20,6 +20,7 @@ import org.limbo.doorkeeper.api.model.param.ApiCheckParam;
 import org.limbo.doorkeeper.api.model.param.PermissionCheckParam;
 import org.limbo.doorkeeper.api.model.param.RoleCheckParam;
 import org.limbo.doorkeeper.api.model.vo.AccountApiGrantVO;
+import org.limbo.doorkeeper.api.model.vo.AccountGrantVO;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 
@@ -45,6 +46,11 @@ public interface AuthenticationService {
      * 检查是否有权访问角色
      */
     Boolean accessRoleAllowed(Long projectId, RoleCheckParam param);
+
+    /**
+     * 获取用户的授权信息，包括授予的角色、权限，不包括API
+     */
+    AccountGrantVO getGrantInfo(Long projectId, Long accountId);
 
     /**
      * 获取用户赋予的角色

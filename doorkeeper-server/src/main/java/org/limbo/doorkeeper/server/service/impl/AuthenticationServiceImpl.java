@@ -23,22 +23,17 @@ import org.limbo.doorkeeper.api.constants.PermissionPolicy;
 import org.limbo.doorkeeper.api.model.param.ApiCheckParam;
 import org.limbo.doorkeeper.api.model.param.PermissionCheckParam;
 import org.limbo.doorkeeper.api.model.param.RoleCheckParam;
-import org.limbo.doorkeeper.api.model.vo.AccountApiGrantVO;
-import org.limbo.doorkeeper.api.model.vo.ApiVO;
-import org.limbo.doorkeeper.api.model.vo.PermissionVO;
-import org.limbo.doorkeeper.api.model.vo.RoleVO;
+import org.limbo.doorkeeper.api.model.vo.*;
 import org.limbo.doorkeeper.server.dao.*;
 import org.limbo.doorkeeper.server.entity.*;
 import org.limbo.doorkeeper.server.service.AuthenticationService;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.AntPathMatcher;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -76,7 +71,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public Boolean accessApiAllowed(Long projectId, ApiCheckParam param) {
-        Account account = accountMapper.getProjcetAccountById(projectId, param.getAccountId());
+        Account account = accountMapper.getProjectAccountById(projectId, param.getAccountId());
         if (account == null) {
             return false;
         }
@@ -110,7 +105,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public Boolean accessPermissionAllowed(Long projectId, PermissionCheckParam param) {
-        Account account = accountMapper.getProjcetAccountById(projectId, param.getAccountId());
+        Account account = accountMapper.getProjectAccountById(projectId, param.getAccountId());
         if (account == null) {
             return false;
         }
@@ -130,7 +125,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public Boolean accessRoleAllowed(Long projectId, RoleCheckParam param) {
-        Account account = accountMapper.getProjcetAccountById(projectId, param.getAccountId());
+        Account account = accountMapper.getProjectAccountById(projectId, param.getAccountId());
         if (account == null) {
             return false;
         }
@@ -176,11 +171,35 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * @return
      */
     @Override
+    public AccountGrantVO getGrantInfo(Long projectId, Long accountId) {
+        Account account = accountMapper.getProjectAccountById(projectId, accountId);
+        Verifies.notNull(account, "账户不存在");
+
+        return AccountGrantVO.builder()
+                .accountId(accountId)
+                .roles(_this.getGrantedRoles(projectId, accountId))
+                .permissions(_this.getGrantedPermissions(projectId, accountId))
+                .build();
+    }
+
+    /**
+     * {@inheritDoc}
+     * 考虑添加缓存
+     *
+     * @param projectId
+     * @param accountId
+     * @return
+     */
+    @Override
     public List<RoleVO> getGrantedRoles(Long projectId, Long accountId) {
         List<AccountRole> accountRoles = accountRoleMapper.selectList(
                 Wrappers.<AccountRole>lambdaQuery()
                         .eq(AccountRole::getProjectId, projectId)
                         .eq(AccountRole::getAccountId, accountId));
+        if (CollectionUtils.isEmpty(accountRoles)) {
+            return Collections.emptyList();
+        }
+
         Set<Long> roleIds = accountRoles.stream()
                 .map(AccountRole::getRoleId)
                 .collect(Collectors.toSet());
@@ -250,6 +269,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .eq(PermissionApi::getProjectId, projectId)
                 .in(PermissionApi::getPermissionId, permIds)
         );
+        if (CollectionUtils.isEmpty(permApis)) {
+            return accountApiGrant;
+        }
         Map<PermissionPolicy, Set<Long>> groupedApiIds = permApis.stream().collect(Collectors.groupingBy(
                 PermissionApi::getPolicy,
                 Collectors.mapping(PermissionApi::getApiId, Collectors.toSet())
