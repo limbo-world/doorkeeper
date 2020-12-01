@@ -20,11 +20,8 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.PermissionPolicy;
-import org.limbo.doorkeeper.api.model.param.ApiCheckParam;
-import org.limbo.doorkeeper.api.model.param.PermissionCheckParam;
-import org.limbo.doorkeeper.api.model.param.RoleCheckParam;
-import org.limbo.doorkeeper.api.model.vo.*;
 import org.limbo.doorkeeper.api.model.param.AuthenticationCheckParam;
+import org.limbo.doorkeeper.api.model.vo.AccountGrantVO;
 import org.limbo.doorkeeper.api.model.vo.AccountPermissionGrantVO;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
@@ -69,7 +66,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public Boolean accessAllowed(Long projectId, AuthenticationCheckParam param) {
-        Account account = accountMapper.getProjcetAccountById(projectId, param.getAccountId());
+        Account account = accountMapper.getProjectAccountById(projectId, param.getAccountId());
         if (account == null) {
             return false;
         }
@@ -228,7 +225,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .in(RolePermission::getRoleId, roleIds)
         );
         if (CollectionUtils.isEmpty(permApis)) {
-            return accountApiGrant;
+            return accountPermissionGrant;
         }
         Map<PermissionPolicy, Set<Long>> groupedPermissionIds = permApis.stream().collect(Collectors.groupingBy(
                 RolePermission::getPolicy,

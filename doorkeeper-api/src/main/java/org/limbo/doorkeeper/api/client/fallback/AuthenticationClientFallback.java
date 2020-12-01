@@ -20,7 +20,9 @@ import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.client.AuthenticationClient;
 import org.limbo.doorkeeper.api.model.Response;
+import org.limbo.doorkeeper.api.model.param.AccountGrantInfoGetParam;
 import org.limbo.doorkeeper.api.model.param.AuthenticationCheckParam;
+import org.limbo.doorkeeper.api.model.vo.AccountGrantVO;
 import org.springframework.stereotype.Component;
 
 /**
@@ -37,6 +39,11 @@ public class AuthenticationClientFallback extends Fallback implements FallbackFa
 
             @Override
             public Response<Boolean> check(AuthenticationCheckParam param) {
+                return serviceUnavailable();
+            }
+
+            @Override
+            public Response<AccountGrantVO> grantInfo(AccountGrantInfoGetParam param) {
                 return serviceUnavailable();
             }
         };
