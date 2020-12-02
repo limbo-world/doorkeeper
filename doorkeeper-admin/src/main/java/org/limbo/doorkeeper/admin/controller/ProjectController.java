@@ -44,8 +44,6 @@ public class ProjectController {
         return projectClient.addProject(param);
     }
 
-
-
     @PutMapping("/{projectId}")
     public Response<Integer> updateProject(@PathVariable("projectId") Long projectId,
                                     @RequestBody ProjectUpdateParam project) {

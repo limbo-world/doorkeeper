@@ -48,6 +48,7 @@ import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -106,7 +107,7 @@ public class LoginServiceImpl implements LoginService {
         sessionDAO.createSession(sessionAccount);
 
         Response<AccountVO> accountVOResponse = accountClient.get(admin.getAccountId());
-        Verifies.verify(accountVOResponse.ok(), "账户不存在");
+        Verifies.verify(accountVOResponse.ok(), "远程调用失败");
         Verifies.notNull(accountVOResponse.getData(), "账户不存在");
 
         AccountVO accountVO = accountVOResponse.getData();
@@ -141,10 +142,8 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public CaptchaVO generateCaptcha() {
-        Integer width = 200;
-        Integer height = 40;
-        Integer count = 5;  // 验证码字符数量
-        Generator generator = new GifVCGenerator(width, height, count);
+        Generator generator = new GifVCGenerator(200, 40, 5,
+                new Font("Verdana", 3, 28), 4, 1000);
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
              ByteArrayOutputStream os = (ByteArrayOutputStream) generator.write2out(baos);
              ByteArrayInputStream swapStream = new ByteArrayInputStream(os.toByteArray())) {

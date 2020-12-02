@@ -22,7 +22,7 @@
                     <el-input v-model="queryForm.permissionName" placeholder="输入名称"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="loadPermissions(true)" size="mini" icon="el-icon-search">查询</el-button>
+                    <el-button type="primary" @click="loadPermissions(1)" size="mini" icon="el-icon-search">查询</el-button>
                     <el-button type="primary" @click="addPermission" size="mini" icon="el-icon-circle-plus">新增</el-button>
                 </el-form-item>
             </el-form>
@@ -116,8 +116,8 @@
                 this.queryForm.total = -1;
             },
 
-            loadPermissions(resetPage) {
-                if (resetPage) {
+            loadPermissions(current) {
+                if (1 === current) {
                     this.resetPageForm();
                 }
                 this.startProgress({ speed: 'fast' });
@@ -166,9 +166,6 @@
                 this.$refs.permissionEdit.confirmEdit().then(() => {
                     this.permission = {}
                     this.dialogOpened = false;
-                    if ('新增' === this.dialogOpenMode) {
-                        this.resetPageForm()
-                    }
                     this.loadPermissions();
                 });
             },
@@ -182,7 +179,7 @@
                     this.$ajax.delete(`/permission`, {data: permissionIds})
                         .then(() => {
                             this.$message. success('删除成功。');
-                            this.loadPermissions(true);
+                            this.loadPermissions();
                         });
                 }).catch(() => {
                     this.$message.info("已取消删除");

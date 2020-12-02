@@ -41,7 +41,7 @@ public class LoginController extends BaseController {
         return Response.ok(loginService.login(param));
     }
 
-    @GetMapping("captcha")
+    @GetMapping("/captcha")
     public Response<CaptchaVO> captcha() {
         return Response.ok(loginService.generateCaptcha());
     }
