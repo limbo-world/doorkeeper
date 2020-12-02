@@ -19,7 +19,15 @@
         <el-header class="padding-top-xs" height="50px">
             <el-form ref="searchForm" :inline="true" size="mini">
                 <el-form-item label="名称">
-                    <el-input v-model="queryForm.permissionName" placeholder="输入名称"></el-input>
+                    <el-input v-model="queryForm.permissionName" placeholder="输入名称" clearable></el-input>
+                </el-form-item>
+                <el-form-item label="方法">
+                    <el-select v-model="queryForm.httpMethod" placeholder="请求方式" clearable class="max-width-100 margin-right-xs">
+                        <el-option v-for="m in httpMethods" :key="m" :label="m" :value="m"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="url">
+                    <el-input v-model="queryForm.url" placeholder="输入url" clearable></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="loadPermissions(1)" size="mini" icon="el-icon-search">查询</el-button>
@@ -81,6 +89,10 @@
     import { mapActions } from 'vuex';
     import PermissionEdit from './PermissionEdit';
 
+    const HttpMethods = [
+        'GET', 'POST', 'PUT', 'DELETE'
+    ];
+
     export default {
         components: {
             PermissionEdit
@@ -88,6 +100,7 @@
 
         data() {
             return {
+                httpMethods: HttpMethods,
                 queryForm: {
                     current: 1,
                     size: 10,
@@ -206,5 +219,6 @@
                 min-width: 500px;
             }
         }
+
     }
 </style>

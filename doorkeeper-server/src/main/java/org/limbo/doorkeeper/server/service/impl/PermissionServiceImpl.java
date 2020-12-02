@@ -132,6 +132,8 @@ public class PermissionServiceImpl implements PermissionService {
         mpage = permissionMapper.selectPage(mpage, Wrappers.<Permission>lambdaQuery()
                 .eq(Permission::getProjectId, projectId)
                 .like(StringUtils.isNotBlank(param.getPermissionName()), Permission::getPermissionName, param.getPermissionName())
+                .like(StringUtils.isNotBlank(param.getUrl()), Permission::getUrl, param.getUrl())
+                .eq(StringUtils.isNotBlank(param.getHttpMethod()), Permission::getHttpMethod, param.getHttpMethod())
         );
 
         param.setTotal(mpage.getTotal());

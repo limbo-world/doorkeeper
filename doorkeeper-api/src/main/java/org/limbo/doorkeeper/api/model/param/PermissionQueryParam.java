@@ -32,4 +32,10 @@ public class PermissionQueryParam extends Page<PermissionVO> {
 
     @Schema(title = "权限名称", description = "like匹配")
     private String permissionName;
+
+    @Schema(title = "http方法")
+    private String httpMethod;
+
+    @Schema(title = "url", description = "like匹配")
+    private String url;
 }

@@ -228,15 +228,17 @@
 
 <style lang="scss">
     .page-role-edit {
-        .el-transfer-panel {
-            width: 300px;
-            margin-right: 10px;
-            .el-transfer-panel__item.el-checkbox {
-                margin-left:0;
-                display: block;
-            }
-        }
         .el-transfer {
+            .el-transfer-panel {
+                width: 350px;
+                margin-right: 10px;
+                height: 343px;
+                .el-transfer-panel__item.el-checkbox {
+                    margin-left:0;
+                    display: block;
+                }
+            }
+
             .el-transfer__buttons {
                 display: none;
             }

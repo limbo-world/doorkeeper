@@ -17,7 +17,7 @@
 <template>
     <el-container>
         <el-main>
-            <el-form :model="permission" label-position="left" label-width="80px" size="mini" class="edit-form"
+            <el-form :model="permission" label-position="left" label-width="80px" size="mini" class="permission-edit-form"
                      :rules="rules" ref="editForm" :disabled="'查看' === openMode">
                 <el-form-item label="名称" prop="permissionName"
                               :rules="{required: true, message: '请填写名称', trigger: 'blur'}">
@@ -123,19 +123,3 @@
         }
     }
 </script>
-
-<style lang="scss">
-    .edit-form {
-        .el-transfer-panel {
-            width: 350px;
-            margin-right: 10px;
-            .el-transfer-panel__item.el-checkbox{
-                margin-left:0;
-                display: block;
-            }
-        }
-        .el-transfer__buttons {
-            display: none;
-        }
-    }
-</style>
