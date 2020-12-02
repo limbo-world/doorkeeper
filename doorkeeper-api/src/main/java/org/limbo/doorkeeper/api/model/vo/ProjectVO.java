@@ -38,6 +38,9 @@ public class ProjectVO {
     @Schema(title = "描述")
     private String projectDescribe;
 
+    @Schema(title = "是否为管理端")
+    private Boolean isAdmin;
+
     @Schema(title = "创建时间")
     private Date gmtCreated;
 

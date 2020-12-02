@@ -22,7 +22,7 @@
                     <el-input v-model="queryForm.roleName" placeholder="请输入名称"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="loadRoles(true)" size="mini" icon="el-icon-search">查询</el-button>
+                    <el-button type="primary" @click="loadRoles(1)" size="mini" icon="el-icon-search">查询</el-button>
                     <el-button type="primary" @click="addRole" size="mini" icon="el-icon-circle-plus">新增</el-button>
                 </el-form-item>
             </el-form>
@@ -107,8 +107,8 @@
                 this.queryForm.total = -1;
             },
 
-            loadRoles(resetPage) {
-                if (resetPage) {
+            loadRoles(current) {
+                if (1 === current) {
                     this.resetPageForm();
                 }
                 this.startProgress();
@@ -153,7 +153,7 @@
                     this.$ajax.delete(`/role`, {data: roleIds})
                         .then(() => {
                             this.$message.success('删除成功。');
-                            this.loadRoles(true);
+                            this.loadRoles(1);
                         });
                 }).catch(() => {
                     this.$message.info("已取消删除");
@@ -169,9 +169,6 @@
                 this.$refs.roleEdit.confirmEdit().then(() => {
                     this.role = {};
                     this.dialogOpened = false;
-                    if ('新增' === this.dialogOpenMode) {
-                        this.resetPageForm()
-                    }
                     this.loadRoles()
                 }).catch(err => err);
             },

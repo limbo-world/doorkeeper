@@ -144,6 +144,7 @@ public class ProjectServiceImpl implements ProjectService {
                 Project::getProjectId,
                 Project::getProjectName,
                 Project::getProjectDescribe,
+                Project::getIsAdmin,
                 Project::getGmtCreated,
                 Project::getGmtModified
         );

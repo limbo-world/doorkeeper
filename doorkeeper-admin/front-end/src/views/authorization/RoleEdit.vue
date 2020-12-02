@@ -217,6 +217,9 @@
             clearData() {
                 this.permissions = [];
                 this.transferValue = [];
+                this.hasPermissions = [];
+                this.leftSelect = [];
+                this.rightSelect = [];
                 if (this.$refs.editForm) {
                     this.$refs.editForm.clearValidate();
                 }

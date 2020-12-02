@@ -22,7 +22,7 @@
                     <el-input v-model="queryForm.username" placeholder="输入账号"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="loadAccounts(true)" size="mini" icon="el-icon-search">查询</el-button>
+                    <el-button type="primary" @click="loadAccounts(1)" size="mini" icon="el-icon-search">查询</el-button>
                     <el-button type="primary" @click="addAccount" size="mini" icon="el-icon-circle-plus">新增</el-button>
                 </el-form-item>
             </el-form>
@@ -154,8 +154,8 @@
                 this.queryForm.total = -1;
             },
 
-            loadAccounts(resetPage) {
-                if (resetPage) {
+            loadAccounts(current) {
+                if (1 === current) {
                     this.resetPageForm();
                 }
                 this.startProgress();
@@ -211,7 +211,6 @@
                 this.$refs.accountRoleEdit.confirmEdit().then(() => {
                     this.account = {};
                     this.accountRoleDialogOpened = false;
-                    // this.loadAccounts()
                 }).catch(err => err);
             },
             accountRoleDialogCancel() {
@@ -237,7 +236,6 @@
                 this.$refs.adminProjectEdit.confirmEdit().then(() => {
                     this.account = {};
                     this.adminProjectDialogOpened = false;
-                    // this.loadAccounts()
                 }).catch(err => err);
             },
             adminProjectDialogCancel() {

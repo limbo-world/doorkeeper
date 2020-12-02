@@ -6,7 +6,7 @@
                     <el-input v-model="queryForm.projectName" placeholder="输入项目名称"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="loadProjects(true)" size="mini" icon="el-icon-search">查询</el-button>
+                    <el-button type="primary" @click="loadProjects(1)" size="mini" icon="el-icon-search">查询</el-button>
                     <el-button type="primary" @click="() =>{
                             dialogOpened = true;
                         }" size="mini" icon="el-icon-circle-plus">新增</el-button>
@@ -36,7 +36,7 @@
                 <el-table-column label="操作">
                     <template slot-scope="scope">
                         <div class="operations">
-                            <template v-if="!scope.row.isDefault && !isAdminProject(scope.row.projectId)">
+                            <template v-if="!scope.row.isAdmin">
                                 <i class="el-icon-edit" @click="() =>{
                                     project = {...scope.row};
                                     dialogOpened = true;
@@ -125,8 +125,8 @@
                 this.queryForm.total = -1;
             },
 
-            loadProjects(resetPage) {
-                if (resetPage) {
+            loadProjects(current) {
+                if (1 === current) {
                     this.resetPageForm();
                 }
                 this.startProgress();
@@ -151,10 +151,6 @@
                 project.projectSecret = null;
 
                 Vue.set(this.projects, idx, project);
-            },
-
-            isAdminProject(projectId) {
-                return this.user.account.accountProjectId === projectId;
             },
 
             editProject() {
