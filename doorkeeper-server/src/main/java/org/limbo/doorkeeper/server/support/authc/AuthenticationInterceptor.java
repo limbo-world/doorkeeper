@@ -17,14 +17,12 @@
 package org.limbo.doorkeeper.server.support.authc;
 
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.client.AuthenticationClient;
-import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.AuthenticationCheckParam;
+import org.limbo.doorkeeper.server.service.AuthenticationService;
 import org.limbo.doorkeeper.server.support.config.DoorkeeperProperties;
 import org.limbo.doorkeeper.server.support.session.AbstractSession;
 import org.limbo.doorkeeper.server.support.session.RedisSessionDAO;
 import org.limbo.doorkeeper.server.support.session.exception.SessionException;
-import org.limbo.doorkeeper.server.utils.JacksonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -43,7 +41,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     private final RedisSessionDAO redisSessionDAO;
 
     @Autowired
-    private AuthenticationClient authenticationClient;
+    private AuthenticationService authenticationService;
 
     public AuthenticationInterceptor(DoorkeeperProperties doorkeeperProperties, RedisSessionDAO redisSessionDAO) {
         this.doorkeeperProperties = doorkeeperProperties;
@@ -63,14 +61,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         param.setAccountId(adminSession.getAccount().getAccountId());
         param.setMethod(request.getMethod());
         param.setPath(request.getServletPath());
-        Response<Boolean> apiCheck = authenticationClient.check(param);
-        if (!apiCheck.ok()) {
-            log.error("api check 调用失败 ", JacksonUtil.toJSONString(apiCheck));
-            return false;
-        }
-        if (!apiCheck.getData()) {
-            throw new AuthenticationException();
-        }
-        return apiCheck.getData();
+        // todo
+        return authenticationService.accessAllowed(0L, param);
     }
 }

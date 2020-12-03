@@ -14,25 +14,20 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.support.session;
+package org.limbo.doorkeeper.server.dao;
 
-import lombok.Data;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+import org.limbo.doorkeeper.server.entity.AdminRole;
+
+import java.util.List;
 
 /**
  * @author Devil
- * @date 2020/11/23 8:16 PM
+ * @date 2020/11/20 11:34 AM
  */
-@Data
-public class AbstractSession {
+public interface AdminRoleMapper extends BaseMapper<AdminRole> {
 
-    protected String token;
+    void batchInsertIgnore(@Param("adminRoles") List<AdminRole> adminRoles);
 
-    private SessionAccount account;
-
-    public AbstractSession() {} // 用于json
-
-    public AbstractSession(String token, SessionAccount account) {
-        this.token = token;
-        this.account = account;
-    }
 }

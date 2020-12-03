@@ -14,25 +14,26 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.support.session;
+package org.limbo.doorkeeper.api.model.param;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Devil
- * @date 2020/11/23 8:16 PM
+ * @date 2020/11/20 11:33 AM
  */
 @Data
-public class AbstractSession {
+public class AdminRoleAddParam {
 
-    protected String token;
+    @NotNull(message = "账户ID不能为空")
+    @Schema(title = "账户ID", required = true)
+    private Long accountId;
 
-    private SessionAccount account;
+    @NotNull(message = "角色ID不能为空")
+    @Schema(title = "角色ID", required = true)
+    private Long roleId;
 
-    public AbstractSession() {} // 用于json
-
-    public AbstractSession(String token, SessionAccount account) {
-        this.token = token;
-        this.account = account;
-    }
 }

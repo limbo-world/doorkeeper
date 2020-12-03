@@ -93,11 +93,6 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public DoorkeeperInterceptor doorkeeperInterceptor() {
-        return new DoorkeeperInterceptor();
-    }
-
-    @Bean
     public SessionInterceptor sessionInterceptor() {
         return new SessionInterceptor(doorkeeperProperties, sessionDAO);
     }
@@ -121,11 +116,6 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/api-docs.html")
                 .excludePathPatterns("/error");
 
-        registry.addInterceptor(doorkeeperInterceptor())
-                .excludePathPatterns("/swagger-ui/**")
-                .excludePathPatterns("/api-docs/**")
-                .excludePathPatterns("/api-docs.html")
-                .excludePathPatterns("/error");
     }
 
 }

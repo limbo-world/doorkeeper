@@ -31,7 +31,7 @@ public class RedisSessionDAO extends AbstractSessionDAO<AbstractSession> {
 
     private final RedissonClient redissonClient;
 
-    private final String sessionPrefix;
+    private final String prefix;
 
     public RedisSessionDAO(RedissonClient redissonClient) {
         this(redissonClient, 2, TimeUnit.HOURS);
@@ -40,7 +40,7 @@ public class RedisSessionDAO extends AbstractSessionDAO<AbstractSession> {
     public RedisSessionDAO(RedissonClient redissonClient, long expiry, TimeUnit timeUnit) {
         super(expiry, timeUnit);
         this.redissonClient = redissonClient;
-        this.sessionPrefix = "Doorkeeper-Session-";
+        this.prefix = "Doorkeeper-Token-";
     }
 
     @Override
@@ -50,7 +50,7 @@ public class RedisSessionDAO extends AbstractSessionDAO<AbstractSession> {
 
     @Override
     public void save(AbstractSession session) {
-        String sessionId = session.getSessionId();
+        String sessionId = session.getToken();
         redissonClient.getBucket(getSessionPrefix() + sessionId)
                 .set(JacksonUtil.toJSONString(session), sessionExpiry, sessionExpiryUnit);
     }
@@ -87,6 +87,6 @@ public class RedisSessionDAO extends AbstractSessionDAO<AbstractSession> {
 
     @Override
     protected String getSessionPrefix() {
-        return sessionPrefix;
+        return prefix;
     }
 }

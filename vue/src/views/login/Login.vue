@@ -15,10 +15,6 @@
                         <el-form-item label="密码" prop="password">
                             <el-input v-model="loginForm.password" type="password" placeholder="请输入密码"></el-input>
                         </el-form-item>
-                        <el-form-item label="验证码" prop="captcha" required>
-                            <el-input v-model="loginForm.captcha" placeholder="验证码"></el-input>
-                            <img id="captchaImg" :src="captchaData" v-on:click="loadCaptcha">
-                        </el-form-item>
                         <el-form-item>
                             <el-button type="primary" class="login-btn" @click="login"
                                        :loading="loginProcessing" :disabled="loginProcessing">登录</el-button>
@@ -41,13 +37,10 @@
     import '@/libs/colorui/colorui.css';
 
     import { mapActions } from 'vuex';
-    import { MenuRoute } from '../../libs/router-installer/MenuData';
 
     export default {
         data() {
             return {
-                captchaData: null,
-
                 loginForm: {},
                 loginFormRule: {
                     username: [
@@ -55,9 +48,6 @@
                     ],
                     password: [
                         {required: true, message: '请填写密码', trigger: 'blur'},
-                    ],
-                    captcha: [
-                        {required: true, message: '请填写验证码', trigger: 'blur'},
                     ]
                 },
                 loginProcessing: false,
@@ -81,18 +71,10 @@
 
         created() {
             window.vue = this;
-            this.loadCaptcha();
         },
 
         methods: {
             ...mapActions('session', ['loadMenus']),
-
-            loadCaptcha() {
-                this.$ajax.get('/login/captcha').then(res => {
-                    this.captchaData = res.data.imageData;
-                    this.loginForm.captchaToken = res.data.token;
-                });
-            },
 
             login() {
                 this.loginProcessing = true;
@@ -111,8 +93,6 @@
                             this.$message.error('加载菜单失败！' + err.msg);
                             console.error(err);
                         });
-                    }).catch(() => {
-                        this.loadCaptcha();
                     }).finally(() => this.loginProcessing = false);
                 });
             }
