@@ -44,7 +44,7 @@ public class DoorkeeperProperties {
         /**
          * 会话header name
          */
-        private String headerName = "Doorkeeper-Session";
+        private String headerName = "Doorkeeper-Token";
 
         /**
          * 回话有效期

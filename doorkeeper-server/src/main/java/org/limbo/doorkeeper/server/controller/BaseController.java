@@ -16,8 +16,10 @@
 
 package org.limbo.doorkeeper.server.controller;
 
-import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.server.utils.Verifies;
+import org.limbo.doorkeeper.server.support.config.DoorkeeperProperties;
+import org.limbo.doorkeeper.server.support.session.AbstractSession;
+import org.limbo.doorkeeper.server.support.session.AbstractSessionDAO;
+import org.limbo.doorkeeper.server.support.session.SessionAccount;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,22 +33,27 @@ public class BaseController {
     @Autowired
     protected HttpServletRequest request;
 
+    @Autowired
+    protected AbstractSessionDAO sessionDAO;
+
+    @Autowired
+    protected DoorkeeperProperties doorkeeperProperties;
+
     protected Long getAccountId() {
-        Object id = request.getAttribute(DoorkeeperConstants.ACCOUNT_HEADER);
-        Verifies.notNull(id, "账户ID不能为空");
-        return (Long) id;
+        return getSession().getAccount().getAccountId();
     }
 
     protected Long getProjectId() {
-        Object id = request.getAttribute(DoorkeeperConstants.PROJECT_HEADER);
-        Verifies.notNull(id, "项目ID不能为空");
-        return (Long) id;
+        return getSession().getAccount().getCurrentProject().getProjectId();
     }
 
-    protected Long getParamProjectId() {
-        Object id = request.getAttribute(DoorkeeperConstants.PROJECT_PARAM_HEADER);
-        Verifies.notNull(id, "项目参数ID不能为空");
-        return (Long) id;
+    protected AbstractSession getSession() {
+        String sessionId = request.getHeader(doorkeeperProperties.getSession().getHeaderName());
+        return sessionDAO.readSession(sessionId);
+    }
+
+    protected SessionAccount getSessionAccount() {
+        return getSession().getAccount();
     }
 
 }

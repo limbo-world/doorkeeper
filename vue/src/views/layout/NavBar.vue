@@ -72,8 +72,7 @@
 
             // 加载账户拥有的项目
             loadAccountProjects() {
-                console.log(this.user.account.accountId)
-                this.$ajax.get(`/admin-project`, {params: {accountId: this.user.account.accountId}}).then(res => {
+                this.$ajax.get(`/session/project`).then(res => {
                     this.accountProjects = res.data;
                 })
             },

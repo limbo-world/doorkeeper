@@ -17,6 +17,7 @@
 package org.limbo.doorkeeper.server.support.session;
 
 import lombok.Data;
+import org.limbo.doorkeeper.api.model.vo.AccountProjectVO;
 
 /**
  * @author Devil
@@ -37,9 +38,7 @@ public class SessionAccount {
     /**
      * 当前用户所选的项目
      */
-    private Long currentProjectId;
-
-    private String currentProjectName;
+    private AccountProjectVO currentProject;
 
     /**
      * 是否为超级管理员

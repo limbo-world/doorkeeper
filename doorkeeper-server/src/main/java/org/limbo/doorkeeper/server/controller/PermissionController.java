@@ -49,7 +49,7 @@ public class PermissionController extends BaseController {
     @PostMapping
     @Operation(summary = "新增权限")
     public Response<PermissionVO> add(@RequestBody PermissionAddParam param) {
-        return Response.ok(permissionService.addPermission(getParamProjectId(), param));
+        return Response.ok(permissionService.addPermission(getProjectId(), param));
     }
 
     @PutMapping("/{permissionId}")
@@ -57,32 +57,32 @@ public class PermissionController extends BaseController {
     public Response<Integer> update(@Validated @NotNull(message = "权限不存在") @PathVariable("permissionId") Long permissionId,
                                     @RequestBody PermissionUpdateParam param) {
         param.setPermissionId(permissionId);
-        return Response.ok(permissionService.updatePermission(getParamProjectId(), param));
+        return Response.ok(permissionService.updatePermission(getProjectId(), param));
     }
 
     @PutMapping
     @Operation(summary = "批量修改权限")
     public Response<Boolean> batchUpdate(@RequestBody PermissionBatchUpdateParam param) {
-        permissionService.batchUpdate(getParamProjectId(), param);
+        permissionService.batchUpdate(getProjectId(), param);
         return Response.ok(true);
     }
 
     @DeleteMapping
     @Operation(summary = "批量删除权限")
     public Response<Boolean> batchDelete(@RequestBody @Schema(title = "权限id列表", required = true) List<Long> permissionIds) {
-        permissionService.deletePermission(getParamProjectId(), permissionIds);
+        permissionService.deletePermission(getProjectId(), permissionIds);
         return Response.ok(true);
     }
 
     @GetMapping
     @Operation(summary = "所有权限")
     public Response<List<PermissionVO>> list() {
-        return Response.ok(permissionService.all(getParamProjectId()));
+        return Response.ok(permissionService.all(getProjectId()));
     }
 
     @GetMapping("/query")
     @Operation(summary = "分页查询权限列表")
     public Response<Page<PermissionVO>> query(PermissionQueryParam param) {
-        return Response.ok(permissionService.queryPage(getParamProjectId(), param));
+        return Response.ok(permissionService.queryPage(getProjectId(), param));
     }
 }

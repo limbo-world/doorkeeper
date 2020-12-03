@@ -17,8 +17,6 @@
 package org.limbo.doorkeeper.server.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 import org.limbo.doorkeeper.server.entity.Account;
 
 /**
@@ -27,6 +25,4 @@ import org.limbo.doorkeeper.server.entity.Account;
  * @email brozen@qq.com
  */
 public interface AccountMapper extends BaseMapper<Account> {
-    @Select("select * from l_account where project_id = #{projectId} and account_id = #{accountId}")
-    Account getProjectAccountById(@Param("projectId") Long projectId, @Param("accountId") Long accountId);
 }

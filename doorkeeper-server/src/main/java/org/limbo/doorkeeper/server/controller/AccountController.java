@@ -47,7 +47,7 @@ public class AccountController extends BaseController {
     @PostMapping
     @Operation(summary = "新增账户")
     public Response<AccountVO> add(@RequestBody AccountAddParam param) {
-        return Response.ok(accountService.addAccount(getParamProjectId(), param));
+        return Response.ok(accountService.addAccount(getProjectId(), param));
     }
 
     @PutMapping("/{accountId}")
@@ -55,19 +55,19 @@ public class AccountController extends BaseController {
     public Response<Integer> update(@Validated @NotNull(message = "账户不存在") @PathVariable("accountId") Long accountId,
                                     @RequestBody AccountUpdateParam param) {
         param.setAccountId(accountId);
-        return Response.ok(accountService.update(getParamProjectId(), param));
+        return Response.ok(accountService.update(getProjectId(), param));
     }
 
     @GetMapping("/query")
     @Operation(summary = "查询账户列表")
     public Response<Page<AccountVO>> page(AccountQueryParam param) {
-        return Response.ok(accountService.queryPage(getParamProjectId(), param));
+        return Response.ok(accountService.queryPage(getProjectId(), param));
     }
 
     @GetMapping
-    @Operation(summary = "所以账户列表")
+    @Operation(summary = "账户列表")
     public Response<List<AccountVO>> list() {
-        return Response.ok(accountService.list(getParamProjectId()));
+        return Response.ok(accountService.list(getProjectId()));
     }
 
     // todo admin端切换到其他项目，header里面的projectid不是当前的，会导致查询为空

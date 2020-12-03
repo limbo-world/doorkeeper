@@ -45,12 +45,12 @@ public class AuthenticationController extends BaseController {
     @GetMapping("/check")
     @Operation(summary = "检查用户是否可以访问对应api")
     public Response<Boolean> check(AuthenticationCheckParam param) {
-        return Response.ok(authenticationService.accessAllowed(getParamProjectId(), param));
+        return Response.ok(authenticationService.accessAllowed(getProjectId(), param));
     }
 
     @GetMapping("/grant-info")
     @Operation(summary = "获取用户的授权信息，返回授予的角色、权限")
     public Response<AccountGrantVO> grantInfo(AccountGrantInfoGetParam param) {
-        return Response.ok(authenticationService.getGrantInfo(getParamProjectId(), param.getAccountId()));
+        return Response.ok(authenticationService.getGrantInfo(getProjectId(), param.getAccountId()));
     }
 }

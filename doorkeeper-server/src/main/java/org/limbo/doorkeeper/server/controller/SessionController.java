@@ -16,15 +16,28 @@
 
 package org.limbo.doorkeeper.server.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.limbo.doorkeeper.api.model.Response;
+import org.limbo.doorkeeper.api.model.vo.AccountGrantVO;
+import org.limbo.doorkeeper.api.model.vo.AccountProjectVO;
+import org.limbo.doorkeeper.server.service.AccountProjectService;
+import org.limbo.doorkeeper.server.service.AuthenticationService;
+import org.limbo.doorkeeper.server.support.session.AbstractSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * @author devil
  * @date 2020/3/11
  */
 @Slf4j
+@Tag(name = "会话")
 @RestController
 @RequestMapping("/session")
 public class SessionController extends BaseController {
@@ -35,13 +48,19 @@ public class SessionController extends BaseController {
 //    private AuthenticationClient authenticationClient;
 //    @Autowired
 //    private AdminProjectService adminProjectService;
-//
-//    @GetMapping
-//    public Response<AdminSession> session() {
-//        AdminSession session = getSession();
-//        session.getSecurityDigest().setPrivateKey(null);
-//        return Response.ok(session);
-//    }
+
+    @Autowired
+    private AuthenticationService authenticationService;
+
+    @Autowired
+    private AccountProjectService accountProjectService;
+
+    @GetMapping
+    @Operation(summary = "获取会话")
+    public Response<AbstractSession> session() {
+        AbstractSession session = getSession();
+        return Response.ok(session);
+    }
 //
 //    /**
 //     * 切换用户当前选择的项目
@@ -73,16 +92,24 @@ public class SessionController extends BaseController {
 //        return Response.ok(getSession());
 //    }
 //
-//    @GetMapping("/grant-info")
-//    public Response<AccountGrantVO> getGrantInfo() {
-//        return authenticationClient.grantInfo(new AccountGrantInfoGetParam(getSessionAccount().getAccountId()));
-//    }
-//
-//    @GetMapping("/logout")
-//    public Response<Boolean> logout() {
-//        AdminSession session = getSession();
-//        sessionDAO.destroySession(session.getSessionId());
-//        return Response.ok(true);
-//    }
+
+    @Operation(summary = "获取会话权限信息")
+    @GetMapping("/grant-info")
+    public Response<AccountGrantVO> getGrantInfo() {
+        return Response.ok(authenticationService.getGrantInfo(0L, getSessionAccount().getAccountId()));
+    }
+
+    @Operation(summary = "会话项目列表")
+    @GetMapping("/project")
+    public Response<List<AccountProjectVO>> list() {
+        return Response.ok(accountProjectService.sessionProject(getSessionAccount().getAccountId()));
+    }
+
+    @GetMapping("/logout")
+    public Response<Boolean> logout() {
+        AbstractSession session = getSession();
+        sessionDAO.destroySession(session.getToken());
+        return Response.ok(true);
+    }
 
 }

@@ -66,7 +66,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public Boolean accessAllowed(Long projectId, AuthenticationCheckParam param) {
-        Account account = accountMapper.getProjectAccountById(projectId, param.getAccountId());
+        Account account = accountMapper.selectById(param.getAccountId());
         if (account == null) {
             return false;
         }
@@ -117,14 +117,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     /**
      * {@inheritDoc}
      * 考虑添加缓存
-     *
-     * @param projectId
-     * @param accountId
-     * @return
      */
     @Override
     public AccountGrantVO getGrantInfo(Long projectId, Long accountId) {
-        Account account = accountMapper.getProjectAccountById(projectId, accountId);
+        Account account = accountMapper.selectById(accountId);
         Verifies.notNull(account, "账户不存在");
 
         return AccountGrantVO.builder()
@@ -137,10 +133,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     /**
      * {@inheritDoc}
      * 考虑添加缓存
-     *
-     * @param projectId
-     * @param accountId
-     * @return
      */
     @Override
     public List<RoleVO> getGrantedRoles(Long projectId, Long accountId) {
@@ -163,10 +155,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     /**
      * {@inheritDoc}
      * 考虑添加缓存
-     *
-     * @param projectId
-     * @param accountId
-     * @return
      */
     @Override
     public List<PermissionVO> getGrantedPermissions(Long projectId, Long accountId) {
