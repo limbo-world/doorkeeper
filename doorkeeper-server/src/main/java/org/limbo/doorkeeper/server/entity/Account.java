@@ -49,18 +49,6 @@ public class Account {
      * 账户描述
      */
     private String accountDescribe;
-    /**
-     * 最后登录时间
-     */
-    private Date lastLogin;
-    /**
-     * 是否超级管理员 项目唯一 主要用于修改别的账号为管理员
-     */
-    private Boolean isSuperAdmin;
-    /**
-     * 是否管理员
-     */
-    private Boolean isAdmin;
 
     private Date gmtCreated;
 

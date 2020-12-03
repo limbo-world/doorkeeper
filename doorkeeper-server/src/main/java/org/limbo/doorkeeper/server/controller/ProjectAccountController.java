@@ -18,34 +18,32 @@ package org.limbo.doorkeeper.server.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.vo.AccountProjectVO;
-import org.limbo.doorkeeper.server.service.AccountProjectService;
+import org.limbo.doorkeeper.api.model.param.ProjectAccountQueryParam;
+import org.limbo.doorkeeper.api.model.vo.ProjectAccountVO;
+import org.limbo.doorkeeper.server.service.ProjectAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 /**
  * @Author Devil
  * @Date 2020/12/3 3:29 下午
  */
-@Tag(name = "账户项目")
+@Tag(name = "项目账户关系")
 @RestController
-@RequestMapping("/account-project")
-public class AccountProjectController extends BaseController {
+@RequestMapping("/project-account")
+public class ProjectAccountController extends BaseController {
 
     @Autowired
-    private AccountProjectService accountProjectService;
+    private ProjectAccountService projectAccountService;
 
-    @GetMapping
-    @Operation(summary = "账户项目列表")
-    public Response<List<AccountProjectVO>> list() {
-        // todo
-        return null;
-//        return Response.ok(accountProjectService.list(getSessionAccount().getAccountId()));
+    @GetMapping("/query")
+    @Operation(summary = "分页查询项目账户关系")
+    public Response<Page<ProjectAccountVO>> query(ProjectAccountQueryParam param) {
+        return Response.ok(projectAccountService.page(param));
     }
 
 }

@@ -40,7 +40,6 @@
                             {{ scope.row.isAdmin ? (scope.row.isSuperAdmin ? "超级管理员" : "管理员") : "普通用户"}}
                         </template>
                     </el-table-column>
-                    <el-table-column prop="lastLogin" label="最后登录时间" width="150"></el-table-column>
                     <el-table-column label="绑定角色" align="center" width="100">
                         <template slot-scope="scope">
                             <div class="operations">
@@ -159,7 +158,7 @@
                     this.resetPageForm();
                 }
                 this.startProgress();
-                return this.$ajax.get('/admin/query', {params: this.queryForm}).then(response => {
+                return this.$ajax.get('/project-account/query', {params: this.queryForm}).then(response => {
                     const page = response.data;
                     this.queryForm.total = page.total >= 0 ? page.total : this.queryForm.total;
                     this.accounts = page.data;

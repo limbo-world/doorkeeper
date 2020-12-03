@@ -30,6 +30,8 @@ import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.limbo.doorkeeper.server.constants.BusinessType;
 import org.limbo.doorkeeper.server.constants.OperateType;
 import org.limbo.doorkeeper.server.dao.AccountMapper;
+import org.limbo.doorkeeper.server.dao.ProjectAccountMapper;
+import org.limbo.doorkeeper.server.dao.ProjectMapper;
 import org.limbo.doorkeeper.server.dao.RoleMapper;
 import org.limbo.doorkeeper.server.entity.Account;
 import org.limbo.doorkeeper.server.entity.Role;
@@ -57,6 +59,9 @@ import java.util.List;
 public class AccountServiceImpl implements AccountService {
 
     @Autowired
+    private ProjectMapper projectMapper;
+
+    @Autowired
     private AccountMapper accountMapper;
 
     @Autowired
@@ -64,6 +69,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Autowired
     private AccountRoleService accountRoleService;
+
+    @Autowired
+    private ProjectAccountMapper projectAccountMapper;
 
     @Override
     @Transactional

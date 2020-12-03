@@ -138,7 +138,7 @@
                     this.resetPageForm();
                 }
                 this.startProgress();
-                return this.$ajax.get('/account/query', {params: this.queryForm}).then(response => {
+                return this.$ajax.get('/project-account/query', {params: this.queryForm}).then(response => {
                     const page = response.data;
                     this.queryForm.total = page.total >= 0 ? page.total : this.queryForm.total;
                     this.accounts = page.data;

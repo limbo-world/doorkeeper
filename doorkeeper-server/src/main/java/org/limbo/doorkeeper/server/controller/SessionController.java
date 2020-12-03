@@ -20,9 +20,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.Response;
+import org.limbo.doorkeeper.api.model.param.ProjectAccountQueryParam;
 import org.limbo.doorkeeper.api.model.vo.AccountGrantVO;
-import org.limbo.doorkeeper.api.model.vo.AccountProjectVO;
-import org.limbo.doorkeeper.server.service.AccountProjectService;
+import org.limbo.doorkeeper.api.model.vo.ProjectAccountVO;
+import org.limbo.doorkeeper.server.service.ProjectAccountService;
 import org.limbo.doorkeeper.server.service.AuthenticationService;
 import org.limbo.doorkeeper.server.support.session.AbstractSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +54,7 @@ public class SessionController extends BaseController {
     private AuthenticationService authenticationService;
 
     @Autowired
-    private AccountProjectService accountProjectService;
+    private ProjectAccountService projectAccountService;
 
     @GetMapping
     @Operation(summary = "获取会话")
@@ -101,8 +102,10 @@ public class SessionController extends BaseController {
 
     @Operation(summary = "会话项目列表")
     @GetMapping("/project")
-    public Response<List<AccountProjectVO>> list() {
-        return Response.ok(accountProjectService.sessionProject(getSessionAccount().getAccountId()));
+    public Response<List<ProjectAccountVO>> project() {
+        ProjectAccountQueryParam param = new ProjectAccountQueryParam();
+        param.setAccountId(getAccountId());
+        return Response.ok(projectAccountService.list(param));
     }
 
     @GetMapping("/logout")

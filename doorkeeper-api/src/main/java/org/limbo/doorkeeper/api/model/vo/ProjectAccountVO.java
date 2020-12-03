@@ -14,14 +14,10 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
+package org.limbo.doorkeeper.api.model.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-
-import java.util.Date;
 
 /**
  *
@@ -31,26 +27,32 @@ import java.util.Date;
  * @Date 2020/12/3 11:06 上午
  */
 @Data
-@TableName("l_account_project")
-public class AccountProject {
+public class ProjectAccountVO {
 
-    @TableId(type = IdType.AUTO)
-    private Long accountProjectId;
+    @Schema(name = "项目账户ID")
+    private Long projectAccountId;
 
+    @Schema(name = "账户ID")
     private Long accountId;
 
+    @Schema(name = "项目ID")
     private Long projectId;
-    /**
-     * 是否超级管理员 项目唯一 主要用于修改别的账号为管理员
-     */
+
+    @Schema(name = "项目名称")
+    private String projectName;
+
+    @Schema(name = "是否超级管理员")
     private Boolean isSuperAdmin;
-    /**
-     * 是否管理员
-     */
+
+    @Schema(name = "是否管理员")
     private Boolean isAdmin;
 
-    private Date gmtCreated;
+    @Schema(title = "账户名称")
+    private String username;
 
-    private Date gmtModified;
+    @Schema(title = "昵称")
+    private String nickname;
 
+    @Schema(title = "账户描述")
+    private String accountDescribe;
 }

@@ -63,7 +63,7 @@ public class Page<T> {
     /**
      * 当前页数据
      */
-    private List<T> data = new ArrayList<>();
+    private List<T> data;
 
     /**
      * 是否还有下一页
@@ -88,5 +88,9 @@ public class Page<T> {
         next.size = this.size;
         next.total = this.total;
         return next;
+    }
+
+    public List<T> getData() {
+        return data == null ? new ArrayList<>() : data;
     }
 }

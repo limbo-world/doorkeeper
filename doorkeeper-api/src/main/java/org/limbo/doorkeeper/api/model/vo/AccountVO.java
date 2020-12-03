@@ -32,6 +32,9 @@ public class AccountVO {
     @Schema(title = "账户名称")
     private String username;
 
+    @Schema(title = "昵称")
+    private String nickname;
+
     @Schema(title = "账户描述")
     private String accountDescribe;
 }

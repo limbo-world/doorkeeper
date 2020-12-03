@@ -20,7 +20,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.limbo.doorkeeper.api.model.Page;
-import org.limbo.doorkeeper.api.model.vo.AccountVO;
+import org.limbo.doorkeeper.api.model.vo.ProjectAccountVO;
 
 import java.util.List;
 
@@ -30,7 +30,13 @@ import java.util.List;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class AccountQueryParam extends Page<AccountVO> {
+public class ProjectAccountQueryParam extends Page<ProjectAccountVO> {
+
+    @Schema(title = "账户ID")
+    private Long accountId;
+
+    @Schema(hidden = true)
+    private Long projectId;
 
     @Schema(title = "账户名称", description = "like匹配")
     private String username;
@@ -38,5 +44,4 @@ public class AccountQueryParam extends Page<AccountVO> {
     @Schema(title = "账户ID列表")
     private List<Long> accountIds;
 
-    private Long projectId;
 }

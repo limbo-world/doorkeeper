@@ -18,11 +18,12 @@ package org.limbo.doorkeeper.server.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
+import org.limbo.doorkeeper.api.model.param.ProjectAccountQueryParam;
 import org.limbo.doorkeeper.api.model.param.LoginParam;
-import org.limbo.doorkeeper.api.model.vo.AccountProjectVO;
+import org.limbo.doorkeeper.api.model.vo.ProjectAccountVO;
 import org.limbo.doorkeeper.server.dao.AccountMapper;
 import org.limbo.doorkeeper.server.entity.Account;
-import org.limbo.doorkeeper.server.service.AccountProjectService;
+import org.limbo.doorkeeper.server.service.ProjectAccountService;
 import org.limbo.doorkeeper.server.service.LoginService;
 import org.limbo.doorkeeper.server.support.session.AbstractSession;
 import org.limbo.doorkeeper.server.support.session.RedisSessionDAO;
@@ -49,7 +50,7 @@ public class LoginServiceImpl implements LoginService {
     private RedisSessionDAO sessionDAO;
 
     @Autowired
-    private AccountProjectService accountProjectService;
+    private ProjectAccountService projectAccountService;
 
     @Override
     public AbstractSession login(LoginParam param) {
@@ -64,8 +65,10 @@ public class LoginServiceImpl implements LoginService {
         sessionAccount.setAccountId(account.getAccountId());
         sessionAccount.setNickname(account.getNickname());
         // 选中当前项目
-        List<AccountProjectVO> accountProjectVOS = accountProjectService.sessionProject(account.getAccountId());
-        sessionAccount.setCurrentProject(accountProjectVOS.get(0));
+        ProjectAccountQueryParam projectAccountQueryParam = new ProjectAccountQueryParam();
+        projectAccountQueryParam.setAccountId(account.getAccountId());
+        List<ProjectAccountVO> projectAccountVOS = projectAccountService.list(projectAccountQueryParam);
+        sessionAccount.setCurrentProject(projectAccountVOS.get(0));
         return sessionDAO.createSession(sessionAccount);
     }
 
