@@ -2,7 +2,7 @@
     <div class="nav-bar">
         <div class="flex align-center">
             <i :class="toggleMenuClass" @click="toggleMenu"></i>
-            <span class="margin-left text-3xs">当前项目：{{user && user.account.currentProjectName}}</span>
+            <span class="margin-left text-3xs">当前项目：{{user && user.account.currentProject.projectName}}</span>
         </div>
         <el-dropdown>
             <span class="el-dropdown-link" style="cursor: pointer">

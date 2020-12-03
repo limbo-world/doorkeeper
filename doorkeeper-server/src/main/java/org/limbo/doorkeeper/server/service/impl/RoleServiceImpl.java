@@ -22,6 +22,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.RoleAddParam;
+import org.limbo.doorkeeper.api.model.param.RolePermissionAddParam;
 import org.limbo.doorkeeper.api.model.param.RoleQueryParam;
 import org.limbo.doorkeeper.api.model.param.RoleUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
@@ -89,13 +90,26 @@ public class RoleServiceImpl implements RoleService {
                               @PLogTag(PLogConstants.CONTENT) RoleUpdateParam param) {
         Role role = roleMapper.selectById(param.getRoleId());
         Verifies.notNull(role, "角色不存在");
-        return roleMapper.update(null, Wrappers.<Role>lambdaUpdate()
+        int update = roleMapper.update(null, Wrappers.<Role>lambdaUpdate()
                 .set(StringUtils.isNotBlank(param.getRoleName()), Role::getRoleName, param.getRoleName())
                 .set(StringUtils.isNotBlank(param.getRoleDescribe()), Role::getRoleDescribe, param.getRoleDescribe())
                 .set(param.getIsDefault() != null, Role::getIsDefault, param.getIsDefault())
                 .eq(Role::getProjectId, projectId)
                 .eq(Role::getRoleId, param.getRoleId())
         );
+
+        if (CollectionUtils.isNotEmpty(param.getDeleteRolePermissionIds())) {
+            rolePermissionService.deleteRolePermission(projectId, param.getDeleteRolePermissionIds());
+        }
+
+        if (CollectionUtils.isNotEmpty(param.getAddRolePermissions())) {
+            for (RolePermissionAddParam rolePermissionAddParam : param.getAddRolePermissions()) {
+                rolePermissionAddParam.setRoleId(role.getRoleId());
+            }
+            rolePermissionService.addRolePermission(projectId, param.getAddRolePermissions());
+        }
+
+        return update;
     }
 
     @Override

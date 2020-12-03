@@ -19,8 +19,10 @@ package org.limbo.doorkeeper.server.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.param.LoginParam;
+import org.limbo.doorkeeper.api.model.vo.AccountProjectVO;
 import org.limbo.doorkeeper.server.dao.AccountMapper;
 import org.limbo.doorkeeper.server.entity.Account;
+import org.limbo.doorkeeper.server.service.AccountProjectService;
 import org.limbo.doorkeeper.server.service.LoginService;
 import org.limbo.doorkeeper.server.support.session.AbstractSession;
 import org.limbo.doorkeeper.server.support.session.RedisSessionDAO;
@@ -29,6 +31,8 @@ import org.limbo.doorkeeper.server.utils.MD5Utils;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @author Devil
@@ -44,19 +48,24 @@ public class LoginServiceImpl implements LoginService {
     @Autowired
     private RedisSessionDAO sessionDAO;
 
+    @Autowired
+    private AccountProjectService accountProjectService;
+
     @Override
     public AbstractSession login(LoginParam param) {
 
-        Account admin = accountMapper.selectOne(Wrappers.<Account>lambdaQuery()
+        Account account = accountMapper.selectOne(Wrappers.<Account>lambdaQuery()
                 .eq(Account::getUsername, param.getUsername())
         );
-        Verifies.notNull(admin, "账户不存在");
-        Verifies.verify(MD5Utils.verify(param.getPassword(), admin.getPassword()), "用户名或密码错误！");
+        Verifies.notNull(account, "账户不存在");
+        Verifies.verify(MD5Utils.verify(param.getPassword(), account.getPassword()), "用户名或密码错误！");
 
         SessionAccount sessionAccount = new SessionAccount();
-        sessionAccount.setAccountId(admin.getAccountId());
-        sessionAccount.setNickname(admin.getNickname());
-        // todo 选中当前项目
+        sessionAccount.setAccountId(account.getAccountId());
+        sessionAccount.setNickname(account.getNickname());
+        // 选中当前项目
+        List<AccountProjectVO> accountProjectVOS = accountProjectService.sessionProject(account.getAccountId());
+        sessionAccount.setCurrentProject(accountProjectVOS.get(0));
         return sessionDAO.createSession(sessionAccount);
     }
 
