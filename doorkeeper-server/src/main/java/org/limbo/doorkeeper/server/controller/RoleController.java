@@ -49,7 +49,7 @@ public class RoleController extends BaseController {
     @PostMapping
     @Operation(summary = "新增角色")
     public Response<RoleVO> add(@RequestBody RoleAddParam param) {
-        return Response.ok(roleService.addRole(getPLogParam(), getParamProjectId(), param));
+        return Response.ok(roleService.addRole(getParamProjectId(), param));
     }
 
     @PutMapping("/{roleId}")
@@ -57,13 +57,13 @@ public class RoleController extends BaseController {
     public Response<Integer> update(@Validated @NotNull(message = "角色不存在") @PathVariable("roleId") Long roleId,
                                    @RequestBody RoleUpdateParam param) {
         param.setRoleId(roleId);
-        return Response.ok(roleService.updateRole(getPLogParam(), getParamProjectId(), param));
+        return Response.ok(roleService.updateRole(getParamProjectId(), param));
     }
 
     @DeleteMapping
     @Operation(summary = "删除角色")
     public Response<Integer> delete(@Validated @NotEmpty(message = "角色不存在") @Schema(title = "角色ID") @RequestBody List<Long> roleIds) {
-        return Response.ok(roleService.deleteRole(getPLogParam(), getParamProjectId(), roleIds));
+        return Response.ok(roleService.deleteRole(getParamProjectId(), roleIds));
     }
 
     @GetMapping

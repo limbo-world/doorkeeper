@@ -22,7 +22,6 @@ import org.limbo.doorkeeper.api.model.param.AccountBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.AccountQueryParam;
 import org.limbo.doorkeeper.api.model.param.AccountUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
-import org.limbo.doorkeeper.server.support.plog.PLogParam;
 
 import java.util.List;
 
@@ -36,14 +35,14 @@ public interface AccountService {
     /**
      * 注册用户
      */
-    AccountVO addAccount(PLogParam pLogParam, Long projectId, AccountAddParam param);
+    AccountVO addAccount(Long projectId, AccountAddParam param);
 
     /**
      * 批量更新账户
      */
-    Integer batchUpdate(PLogParam pLogParam, Long projectId, AccountBatchUpdateParam param);
+    Integer batchUpdate(Long projectId, AccountBatchUpdateParam param);
 
-    Integer update(PLogParam pLogParam, Long projectId, AccountUpdateParam param);
+    Integer update(Long projectId, AccountUpdateParam param);
 
     /**
      * 分页查询

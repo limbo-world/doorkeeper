@@ -34,7 +34,6 @@ import org.limbo.doorkeeper.server.service.AccountRoleService;
 import org.limbo.doorkeeper.server.service.AccountService;
 import org.limbo.doorkeeper.server.support.plog.PLog;
 import org.limbo.doorkeeper.server.support.plog.PLogConstants;
-import org.limbo.doorkeeper.server.support.plog.PLogParam;
 import org.limbo.doorkeeper.server.support.plog.PLogTag;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
@@ -66,7 +65,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     @PLog(operateType = OperateType.CREATE, businessType = BusinessType.ACCOUNT)
-    public AccountVO addAccount(PLogParam pLogParam, @PLogTag(PLogConstants.CONTENT) Long projectId,
+    public AccountVO addAccount(@PLogTag(PLogConstants.CONTENT) Long projectId,
                                 @PLogTag(PLogConstants.CONTENT) AccountAddParam param) {
         Account po = EnhancedBeanUtils.createAndCopy(param, Account.class);
         po.setProjectId(projectId);
@@ -90,7 +89,7 @@ public class AccountServiceImpl implements AccountService {
                 accountRole.setRoleId(role.getRoleId());
                 accountRoles.add(accountRole);
             }
-            accountRoleService.batchSave(pLogParam, projectId, accountRoles);
+            accountRoleService.batchSave(projectId, accountRoles);
         }
 
         return EnhancedBeanUtils.createAndCopy(po, AccountVO.class);
@@ -99,7 +98,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     @PLog(operateType = OperateType.UPDATE, businessType = BusinessType.ACCOUNT)
-    public Integer batchUpdate(PLogParam pLogParam, @PLogTag(PLogConstants.CONTENT)  Long projectId,
+    public Integer batchUpdate(@PLogTag(PLogConstants.CONTENT)  Long projectId,
                                @PLogTag(PLogConstants.CONTENT) AccountBatchUpdateParam param) {
         return accountMapper.update(null, Wrappers.<Account>lambdaUpdate()
                 .set(param.getIsAdmin() != null, Account::getIsAdmin, param.getIsAdmin())
@@ -111,7 +110,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     @PLog(operateType = OperateType.UPDATE, businessType = BusinessType.ACCOUNT)
-    public Integer update(PLogParam pLogParam, @PLogTag(PLogConstants.CONTENT) Long projectId,
+    public Integer update(@PLogTag(PLogConstants.CONTENT) Long projectId,
                           @PLogTag(PLogConstants.CONTENT) AccountUpdateParam param) {
         return accountMapper.update(null, Wrappers.<Account>lambdaUpdate()
                 .set(param.getIsAdmin() != null, Account::getIsAdmin, param.getIsAdmin())

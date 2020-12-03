@@ -19,7 +19,6 @@ package org.limbo.doorkeeper.server.service;
 import org.limbo.doorkeeper.api.model.param.RolePermissionAddParam;
 import org.limbo.doorkeeper.api.model.param.RolePermissionQueryParam;
 import org.limbo.doorkeeper.api.model.vo.RolePermissionVO;
-import org.limbo.doorkeeper.server.support.plog.PLogParam;
 
 import java.util.List;
 
@@ -35,10 +34,10 @@ public interface RolePermissionService {
     /**
      * 为角色添加权限
      */
-    void addRolePermission(PLogParam pLogParam, Long projectId, List<RolePermissionAddParam> params);
+    void addRolePermission(Long projectId, List<RolePermissionAddParam> params);
 
     /**
      * 删除角色权限
      */
-    int deleteRolePermission(PLogParam pLogParam, Long projectId, List<Long> rolePermissionIds);
+    int deleteRolePermission(Long projectId, List<Long> rolePermissionIds);
 }

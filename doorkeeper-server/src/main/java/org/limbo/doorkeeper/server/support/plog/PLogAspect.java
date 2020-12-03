@@ -22,12 +22,16 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.dao.ProjectLogMapper;
 import org.limbo.doorkeeper.server.entity.ProjectLog;
 import org.limbo.doorkeeper.server.utils.JacksonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
@@ -52,36 +56,32 @@ public class PLogAspect {
 
     @Around("logMethod()")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        Method method = signature.getMethod();
-        PLog pLog = method.getAnnotation(PLog.class);
+        Object proceed = joinPoint.proceed(joinPoint.getArgs());
+        doLog(joinPoint);
+        return proceed;
+    }
 
-        Object[] params = joinPoint.getArgs();
-        Annotation[][] annotations = method.getParameterAnnotations();
-        String[] parameterNames = signature.getParameterNames();
+    private void doLog(ProceedingJoinPoint joinPoint) {
+        try {
+            MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+            Method method = signature.getMethod();
+            PLog pLog = method.getAnnotation(PLog.class);
 
-        Long projectId = null;
-        Long accountId = null;
-        StringBuilder content = new StringBuilder();
+            Object[] params = joinPoint.getArgs();
+            Annotation[][] annotations = method.getParameterAnnotations();
+            String[] parameterNames = signature.getParameterNames();
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+            Long projectId = Long.valueOf(request.getHeader(DoorkeeperConstants.PROJECT_HEADER));
+            Long accountId = Long.valueOf(request.getHeader(DoorkeeperConstants.ACCOUNT_HEADER));
+            StringBuilder content = new StringBuilder();
 
-        for (int i = 0; i < params.length; i++) {
-            Object param = params[i];
-            if (param instanceof PLogParam) {
-                PLogParam PLogParam = (PLogParam) param;
-                projectId = PLogParam.getProjectId();
-                accountId = PLogParam.getAccountId();
-            } else {
+            for (int i = 0; i < params.length; i++) {
+                Object param = params[i];
                 Annotation[] paramAnn = annotations[i];
                 for (Annotation annotation : paramAnn) {
                     if (annotation.annotationType().equals(PLogTag.class)) {
                         PLogTag pLogTag = (PLogTag) annotation;
                         switch (pLogTag.value()) {
-                            case PLogConstants.PROJECT_ID:
-                                projectId = (Long) param;
-                                break;
-                            case PLogConstants.ACCOUNT_ID:
-                                accountId = (Long) param;
-                                break;
                             case PLogConstants.CONTENT:
                                 content.append(parameterNames[i]).append(" : ").append(JacksonUtil.toJSONString(param)).append("\n");
                                 break;
@@ -90,16 +90,16 @@ public class PLogAspect {
                     }
                 }
             }
+
+            ProjectLog projectLog = new ProjectLog();
+            projectLog.setProjectId(projectId);
+            projectLog.setAccountId(accountId);
+            projectLog.setContent(content.toString());
+            projectLog.setOperateType(pLog.operateType());
+            projectLog.setBusinessType(pLog.businessType());
+            projectLogMapper.insert(projectLog);
+        } catch (Exception e) {
+            log.error("操作日志插入失败", e);
         }
-
-        ProjectLog projectLog = new ProjectLog();
-        projectLog.setProjectId(projectId);
-        projectLog.setAccountId(accountId);
-        projectLog.setContent(content.toString());
-        projectLog.setOperateType(pLog.operateType());
-        projectLog.setBusinessType(pLog.businessType());
-        projectLogMapper.insert(projectLog);
-
-        return joinPoint.proceed(params);
     }
 }

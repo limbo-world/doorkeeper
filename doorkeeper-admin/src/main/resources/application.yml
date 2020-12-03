@@ -1,9 +1,0 @@
-spring:
-  profiles:
-    active: @spring.profiles.active@
-  application:
-    name: doorkeeper-admin
-
-# log
-logging:
-  config: classpath:log4j2.xml

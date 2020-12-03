@@ -49,7 +49,7 @@ public class PermissionController extends BaseController {
     @PostMapping
     @Operation(summary = "新增权限")
     public Response<PermissionVO> add(@RequestBody PermissionAddParam param) {
-        return Response.ok(permissionService.addPermission(getPLogParam(), getParamProjectId(), param));
+        return Response.ok(permissionService.addPermission(getParamProjectId(), param));
     }
 
     @PutMapping("/{permissionId}")
@@ -57,20 +57,20 @@ public class PermissionController extends BaseController {
     public Response<Integer> update(@Validated @NotNull(message = "权限不存在") @PathVariable("permissionId") Long permissionId,
                                     @RequestBody PermissionUpdateParam param) {
         param.setPermissionId(permissionId);
-        return Response.ok(permissionService.updatePermission(getPLogParam(), getParamProjectId(), param));
+        return Response.ok(permissionService.updatePermission(getParamProjectId(), param));
     }
 
     @PutMapping
     @Operation(summary = "批量修改权限")
     public Response<Boolean> batchUpdate(@RequestBody PermissionBatchUpdateParam param) {
-        permissionService.batchUpdate(getPLogParam(), getParamProjectId(), param);
+        permissionService.batchUpdate(getParamProjectId(), param);
         return Response.ok(true);
     }
 
     @DeleteMapping
     @Operation(summary = "批量删除权限")
     public Response<Boolean> batchDelete(@RequestBody @Schema(title = "权限id列表", required = true) List<Long> permissionIds) {
-        permissionService.deletePermission(getPLogParam(), getParamProjectId(), permissionIds);
+        permissionService.deletePermission(getParamProjectId(), permissionIds);
         return Response.ok(true);
     }
 

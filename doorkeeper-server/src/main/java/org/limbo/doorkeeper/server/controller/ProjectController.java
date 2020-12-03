@@ -25,7 +25,6 @@ import org.limbo.doorkeeper.api.model.param.ProjectQueryParam;
 import org.limbo.doorkeeper.api.model.param.ProjectUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ProjectVO;
 import org.limbo.doorkeeper.server.service.ProjectService;
-import org.limbo.doorkeeper.server.support.plog.PLogParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -48,7 +47,7 @@ public class ProjectController extends BaseController {
     @PostMapping
     @Operation(summary = "新增项目")
     public Response<ProjectVO> addProject(@RequestBody ProjectAddParam project) {
-        return Response.ok(projectService.addProject(getPLogParam(), project));
+        return Response.ok(projectService.addProject(project));
     }
 
     @GetMapping
@@ -80,7 +79,7 @@ public class ProjectController extends BaseController {
     public Response<Integer> updateProject(@Validated @NotNull(message = "项目不存在") @PathVariable("projectId") Long projectId,
                                            @RequestBody ProjectUpdateParam project) {
         project.setProjectId(projectId);
-        return Response.ok(projectService.updateProject(getPLogParam(), project));
+        return Response.ok(projectService.updateProject(project));
     }
 
 }

@@ -20,7 +20,10 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.Page;
-import org.limbo.doorkeeper.api.model.param.*;
+import org.limbo.doorkeeper.api.model.param.PermissionAddParam;
+import org.limbo.doorkeeper.api.model.param.PermissionBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.PermissionQueryParam;
+import org.limbo.doorkeeper.api.model.param.PermissionUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.limbo.doorkeeper.server.constants.BusinessType;
 import org.limbo.doorkeeper.server.constants.OperateType;
@@ -32,7 +35,6 @@ import org.limbo.doorkeeper.server.service.PermissionService;
 import org.limbo.doorkeeper.server.service.RolePermissionService;
 import org.limbo.doorkeeper.server.support.plog.PLog;
 import org.limbo.doorkeeper.server.support.plog.PLogConstants;
-import org.limbo.doorkeeper.server.support.plog.PLogParam;
 import org.limbo.doorkeeper.server.support.plog.PLogTag;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
@@ -62,7 +64,7 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     @Transactional
     @PLog(operateType = OperateType.CREATE, businessType = BusinessType.PERMISSION)
-    public PermissionVO addPermission(PLogParam pLogParam, @PLogTag(PLogConstants.CONTENT) Long projectId,
+    public PermissionVO addPermission(@PLogTag(PLogConstants.CONTENT) Long projectId,
                                       @PLogTag(PLogConstants.CONTENT) PermissionAddParam param) {
         Permission permission = EnhancedBeanUtils.createAndCopy(param, Permission.class);
         permission.setProjectId(projectId);
@@ -73,7 +75,7 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     @Transactional
     @PLog(operateType = OperateType.UPDATE, businessType = BusinessType.PERMISSION)
-    public int updatePermission(PLogParam pLogParam, @PLogTag(PLogConstants.CONTENT) Long projectId,
+    public int updatePermission(@PLogTag(PLogConstants.CONTENT) Long projectId,
                                 @PLogTag(PLogConstants.CONTENT) PermissionUpdateParam param) {
         return permissionMapper.update(null, Wrappers.<Permission>lambdaUpdate()
                 .set(StringUtils.isNotBlank(param.getPermissionName()), Permission::getPermissionName, param.getPermissionName())
@@ -87,7 +89,7 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     @Transactional
     @PLog(operateType = OperateType.DELETE, businessType = BusinessType.PERMISSION)
-    public int deletePermission(PLogParam pLogParam, @PLogTag(PLogConstants.CONTENT) Long projectId,
+    public int deletePermission(@PLogTag(PLogConstants.CONTENT) Long projectId,
                                 @PLogTag(PLogConstants.CONTENT) List<Long> permissionIds) {
         // 删除角色权限
         List<RolePermission> rolePermissions = rolePermissionMapper.selectList(Wrappers.<RolePermission>lambdaQuery()
@@ -96,7 +98,7 @@ public class PermissionServiceImpl implements PermissionService {
                 .in(RolePermission::getPermissionId, permissionIds)
         );
         if (CollectionUtils.isNotEmpty(rolePermissions)) {
-            rolePermissionService.deleteRolePermission(pLogParam, projectId,
+            rolePermissionService.deleteRolePermission(projectId,
                     rolePermissions.stream().map(RolePermission::getRolePermissionId).collect(Collectors.toList()));
         }
 
@@ -109,7 +111,7 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     @Transactional
     @PLog(operateType = OperateType.UPDATE, businessType = BusinessType.PERMISSION)
-    public int batchUpdate(PLogParam pLogParam, @PLogTag(PLogConstants.CONTENT) Long projectId,
+    public int batchUpdate(@PLogTag(PLogConstants.CONTENT) Long projectId,
                            @PLogTag(PLogConstants.CONTENT) PermissionBatchUpdateParam param) {
         return permissionMapper.update(null, Wrappers.<Permission>lambdaUpdate()
                 .set(Permission::getIsOnline, param.getIsOnline())

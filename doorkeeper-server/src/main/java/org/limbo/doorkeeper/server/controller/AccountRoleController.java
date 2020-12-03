@@ -23,7 +23,6 @@ import org.limbo.doorkeeper.api.model.param.AccountRoleAddParam;
 import org.limbo.doorkeeper.api.model.param.AccountRoleQueryParam;
 import org.limbo.doorkeeper.api.model.vo.AccountRoleVO;
 import org.limbo.doorkeeper.server.service.AccountRoleService;
-import org.limbo.doorkeeper.server.support.plog.PLogParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,7 +49,7 @@ public class AccountRoleController extends BaseController {
     @PostMapping
     @Operation(summary = "批量绑定账户角色")
     public Response<Boolean> batchSave(@RequestBody List<AccountRoleAddParam> params) {
-        accountRoleService.batchSave(getPLogParam(), getParamProjectId(), params);
+        accountRoleService.batchSave(getParamProjectId(), params);
         return Response.ok(true);
     }
 
@@ -58,6 +57,6 @@ public class AccountRoleController extends BaseController {
     @DeleteMapping
     @Operation(summary = "批量删除账户角色")
     public Response<Integer> batchDelete(@RequestBody List<Long> accountRoleIds){
-        return Response.ok(accountRoleService.batchDelete(getPLogParam(), getParamProjectId(), accountRoleIds));
+        return Response.ok(accountRoleService.batchDelete(getParamProjectId(), accountRoleIds));
     }
 }

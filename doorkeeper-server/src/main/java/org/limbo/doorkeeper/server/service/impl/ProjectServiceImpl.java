@@ -33,7 +33,6 @@ import org.limbo.doorkeeper.server.dao.ProjectMapper;
 import org.limbo.doorkeeper.server.entity.Account;
 import org.limbo.doorkeeper.server.entity.Project;
 import org.limbo.doorkeeper.server.service.ProjectService;
-import org.limbo.doorkeeper.server.support.plog.PLogParam;
 import org.limbo.doorkeeper.server.support.plog.PLog;
 import org.limbo.doorkeeper.server.support.plog.PLogConstants;
 import org.limbo.doorkeeper.server.support.plog.PLogTag;
@@ -65,7 +64,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     @Transactional
     @PLog(operateType = OperateType.CREATE, businessType = BusinessType.PROJECT)
-    public ProjectVO addProject(PLogParam pLogParam, @PLogTag(PLogConstants.CONTENT) ProjectAddParam param) {
+    public ProjectVO addProject(@PLogTag(PLogConstants.CONTENT) ProjectAddParam param) {
 
         Project project = EnhancedBeanUtils.createAndCopy(param, Project.class);
         if (StringUtils.isBlank(param.getProjectSecret())) {
@@ -92,7 +91,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     @Transactional
     @PLog(operateType = OperateType.UPDATE, businessType = BusinessType.PROJECT)
-    public Integer updateProject(PLogParam pLogParam, @PLogTag(PLogConstants.CONTENT) ProjectUpdateParam param) {
+    public Integer updateProject(@PLogTag(PLogConstants.CONTENT) ProjectUpdateParam param) {
         Project project = projectMapper.selectById(param.getProjectId());
         Verifies.notNull(project, "项目不存在");
 

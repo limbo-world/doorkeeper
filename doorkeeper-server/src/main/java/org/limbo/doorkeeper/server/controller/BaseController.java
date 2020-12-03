@@ -17,7 +17,6 @@
 package org.limbo.doorkeeper.server.controller;
 
 import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.server.support.plog.PLogParam;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -50,7 +49,4 @@ public class BaseController {
         return (Long) id;
     }
 
-    protected PLogParam getPLogParam() {
-        return new PLogParam(getProjectId(), getAccountId());
-    }
 }

@@ -38,7 +38,6 @@ import org.limbo.doorkeeper.server.service.RolePermissionService;
 import org.limbo.doorkeeper.server.service.RoleService;
 import org.limbo.doorkeeper.server.support.plog.PLog;
 import org.limbo.doorkeeper.server.support.plog.PLogConstants;
-import org.limbo.doorkeeper.server.support.plog.PLogParam;
 import org.limbo.doorkeeper.server.support.plog.PLogTag;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
@@ -75,7 +74,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     @Transactional
     @PLog(operateType = OperateType.CREATE, businessType = BusinessType.ROLE)
-    public RoleVO addRole(PLogParam pLogParam, @PLogTag(PLogConstants.CONTENT) Long projectId,
+    public RoleVO addRole(@PLogTag(PLogConstants.CONTENT) Long projectId,
                           @PLogTag(PLogConstants.CONTENT) RoleAddParam param) {
         Role role = EnhancedBeanUtils.createAndCopy(param, Role.class);
         role.setProjectId(projectId);
@@ -86,7 +85,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     @Transactional
     @PLog(operateType = OperateType.UPDATE, businessType = BusinessType.ROLE)
-    public Integer updateRole(PLogParam pLogParam, @PLogTag(PLogConstants.CONTENT) Long projectId,
+    public Integer updateRole(@PLogTag(PLogConstants.CONTENT) Long projectId,
                               @PLogTag(PLogConstants.CONTENT) RoleUpdateParam param) {
         Role role = roleMapper.selectById(param.getRoleId());
         Verifies.notNull(role, "角色不存在");
@@ -102,7 +101,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     @Transactional
     @PLog(operateType = OperateType.DELETE, businessType = BusinessType.ROLE)
-    public Integer deleteRole(PLogParam pLogParam, @PLogTag(PLogConstants.CONTENT) Long projectId,
+    public Integer deleteRole(@PLogTag(PLogConstants.CONTENT) Long projectId,
                               @PLogTag(PLogConstants.CONTENT) List<Long> roleIds) {
 
         Integer result = roleMapper.delete(Wrappers.<Role>lambdaQuery()
@@ -117,7 +116,7 @@ public class RoleServiceImpl implements RoleService {
                 .eq(AccountRole::getProjectId, projectId)
         );
         if (CollectionUtils.isNotEmpty(accountRoles)) {
-            accountRoleService.batchDelete(pLogParam, projectId,
+            accountRoleService.batchDelete(projectId,
                     accountRoles.stream().map(AccountRole::getAccountRoleId).collect(Collectors.toList()));
         }
 
@@ -128,7 +127,7 @@ public class RoleServiceImpl implements RoleService {
                 .eq(RolePermission::getProjectId, projectId)
         );
         if (CollectionUtils.isNotEmpty(rolePermissions)) {
-            rolePermissionService.deleteRolePermission(pLogParam, projectId,
+            rolePermissionService.deleteRolePermission(projectId,
                     rolePermissions.stream().map(RolePermission::getRolePermissionId).collect(Collectors.toList()));
         }
 

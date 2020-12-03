@@ -28,7 +28,6 @@ import org.limbo.doorkeeper.server.entity.RolePermission;
 import org.limbo.doorkeeper.server.service.RolePermissionService;
 import org.limbo.doorkeeper.server.support.plog.PLog;
 import org.limbo.doorkeeper.server.support.plog.PLogConstants;
-import org.limbo.doorkeeper.server.support.plog.PLogParam;
 import org.limbo.doorkeeper.server.support.plog.PLogTag;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +58,7 @@ public class RolePermissionServiceImpl implements RolePermissionService {
     @Override
     @Transactional
     @PLog(operateType = OperateType.CREATE, businessType = BusinessType.ROLE_PERMISSION)
-    public void addRolePermission(PLogParam pLogParam, @PLogTag(PLogConstants.CONTENT) Long projectId,
+    public void addRolePermission(@PLogTag(PLogConstants.CONTENT) Long projectId,
                                   @PLogTag(PLogConstants.CONTENT) List<RolePermissionAddParam> params) {
         if (CollectionUtils.isEmpty(params)) {
             return;
@@ -74,7 +73,7 @@ public class RolePermissionServiceImpl implements RolePermissionService {
     @Override
     @Transactional
     @PLog(operateType = OperateType.DELETE, businessType = BusinessType.ROLE_PERMISSION)
-    public int deleteRolePermission(PLogParam pLogParam, @PLogTag(PLogConstants.CONTENT) Long projectId,
+    public int deleteRolePermission(@PLogTag(PLogConstants.CONTENT) Long projectId,
                                     @PLogTag(PLogConstants.CONTENT) List<Long> rolePermissionIds) {
         return rolePermissionMapper.delete(Wrappers.<RolePermission>lambdaQuery()
                 .eq(RolePermission::getProjectId, projectId)

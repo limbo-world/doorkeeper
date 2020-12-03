@@ -26,7 +26,6 @@ import org.limbo.doorkeeper.api.model.param.AccountQueryParam;
 import org.limbo.doorkeeper.api.model.param.AccountUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.limbo.doorkeeper.server.service.AccountService;
-import org.limbo.doorkeeper.server.support.plog.PLogParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -49,13 +48,13 @@ public class AccountController extends BaseController {
     @PostMapping
     @Operation(summary = "新增账户")
     public Response<AccountVO> add(@RequestBody AccountAddParam param) {
-        return Response.ok(accountService.addAccount(getPLogParam(), getParamProjectId(), param));
+        return Response.ok(accountService.addAccount(getParamProjectId(), param));
     }
 
     @PutMapping
     @Operation(summary = "批量修改账户")
     public Response<Integer> batchUpdate(@RequestBody AccountBatchUpdateParam param) {
-        return Response.ok(accountService.batchUpdate(getPLogParam(), getParamProjectId(), param));
+        return Response.ok(accountService.batchUpdate(getParamProjectId(), param));
     }
 
     @PutMapping("/{accountId}")
@@ -63,7 +62,7 @@ public class AccountController extends BaseController {
     public Response<Integer> update(@Validated @NotNull(message = "账户不存在") @PathVariable("accountId") Long accountId,
                                     @RequestBody AccountUpdateParam param) {
         param.setAccountId(accountId);
-        return Response.ok(accountService.update(getPLogParam(), getParamProjectId(), param));
+        return Response.ok(accountService.update(getParamProjectId(), param));
     }
 
     @GetMapping("/query")

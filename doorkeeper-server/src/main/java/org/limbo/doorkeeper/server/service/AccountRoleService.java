@@ -18,9 +18,7 @@ package org.limbo.doorkeeper.server.service;
 
 import org.limbo.doorkeeper.api.model.param.AccountRoleAddParam;
 import org.limbo.doorkeeper.api.model.param.AccountRoleQueryParam;
-import org.limbo.doorkeeper.api.model.param.RolePermissionAddParam;
 import org.limbo.doorkeeper.api.model.vo.AccountRoleVO;
-import org.limbo.doorkeeper.server.support.plog.PLogParam;
 
 import java.util.List;
 
@@ -36,10 +34,10 @@ public interface AccountRoleService {
     /**
      * 批量添加
      */
-    void batchSave(PLogParam pLogParam, Long projectId, List<AccountRoleAddParam> params);
+    void batchSave(Long projectId, List<AccountRoleAddParam> params);
 
     /**
      * 批量删除
      */
-    int batchDelete(PLogParam pLogParam, Long projectId, List<Long> accountRoleIds);
+    int batchDelete(Long projectId, List<Long> accountRoleIds);
 }
