@@ -21,7 +21,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.AccountAddParam;
-import org.limbo.doorkeeper.api.model.param.AccountBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.AccountQueryParam;
 import org.limbo.doorkeeper.api.model.param.AccountUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
@@ -51,12 +50,6 @@ public class AccountController extends BaseController {
         return Response.ok(accountService.addAccount(getParamProjectId(), param));
     }
 
-    @PutMapping
-    @Operation(summary = "批量修改账户")
-    public Response<Integer> batchUpdate(@RequestBody AccountBatchUpdateParam param) {
-        return Response.ok(accountService.batchUpdate(getParamProjectId(), param));
-    }
-
     @PutMapping("/{accountId}")
     @Operation(summary = "修改账户")
     public Response<Integer> update(@Validated @NotNull(message = "账户不存在") @PathVariable("accountId") Long accountId,
@@ -81,7 +74,6 @@ public class AccountController extends BaseController {
     @GetMapping("/{accountId}")
     @Operation(summary = "查询指定账户")
     public Response<AccountVO> get(@Validated @NotNull(message = "账户不存在") @PathVariable("accountId") Long accountId) {
-//        return Response.ok(accountService.get(getProjectId(), accountId));
         return Response.ok(accountService.get(accountId));
     }
 

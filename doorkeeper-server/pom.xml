@@ -11,6 +11,11 @@
 
     <artifactId>doorkeeper-server</artifactId>
 
+    <properties>
+        <redisson.version>3.12.3</redisson.version>
+        <xvcode.version>1.0</xvcode.version>
+    </properties>
+
     <dependencies>
         <!-- 内部依赖 -->
         <dependency>
@@ -30,6 +35,8 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
+        <!-- 配置加密 -->
         <dependency>
             <groupId>com.github.ulisesbocchio</groupId>
             <artifactId>jasypt-spring-boot-starter</artifactId>
@@ -82,6 +89,20 @@
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>${hikari.version}</version>
+        </dependency>
+
+        <!-- Redis Redisson -->
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson</artifactId>
+            <version>${redisson.version}</version>
+        </dependency>
+
+        <!-- 验证码生成 -->
+        <dependency>
+            <groupId>com.github.botaruibo</groupId>
+            <artifactId>xvcode</artifactId>
+            <version>${xvcode.version}</version>
         </dependency>
 
         <!-- logger begin -->

@@ -20,8 +20,12 @@ import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.limbo.doorkeeper.server.support.authc.AuthenticationInterceptor;
 import org.limbo.doorkeeper.server.support.format.StringToDateConverter;
 import org.limbo.doorkeeper.server.support.plog.PLogAspect;
+import org.limbo.doorkeeper.server.support.session.RedisSessionDAO;
+import org.limbo.doorkeeper.server.support.session.SessionInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,6 +45,12 @@ import java.text.SimpleDateFormat;
 @Slf4j
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
+    @Autowired
+    private RedisSessionDAO sessionDAO;
+
+    @Autowired
+    private DoorkeeperProperties doorkeeperProperties;
 
     /**
      * json 返回结果处理
@@ -87,12 +97,35 @@ public class WebConfig implements WebMvcConfigurer {
         return new DoorkeeperInterceptor();
     }
 
+    @Bean
+    public SessionInterceptor sessionInterceptor() {
+        return new SessionInterceptor(doorkeeperProperties, sessionDAO);
+    }
+
+    @Bean
+    public AuthenticationInterceptor authenticationInterceptor() {
+        return new AuthenticationInterceptor(doorkeeperProperties, sessionDAO);
+    }
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(sessionInterceptor())
+                .excludePathPatterns("/login/**")
+                .excludePathPatterns("/error");
+
+        registry.addInterceptor(authenticationInterceptor())
+                .excludePathPatterns("/login/**")
+                .excludePathPatterns("/session/**")
+                .excludePathPatterns("/swagger-ui/**")
+                .excludePathPatterns("/api-docs/**")
+                .excludePathPatterns("/api-docs.html")
+                .excludePathPatterns("/error");
+
         registry.addInterceptor(doorkeeperInterceptor())
                 .excludePathPatterns("/swagger-ui/**")
                 .excludePathPatterns("/api-docs/**")
-                .excludePathPatterns("/api-docs.html");
+                .excludePathPatterns("/api-docs.html")
+                .excludePathPatterns("/error");
     }
 
 }

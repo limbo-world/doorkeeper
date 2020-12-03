@@ -22,7 +22,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.exception.ParamException;
 import org.limbo.doorkeeper.api.model.Page;
-import org.limbo.doorkeeper.api.model.param.*;
+import org.limbo.doorkeeper.api.model.param.AccountAddParam;
+import org.limbo.doorkeeper.api.model.param.AccountQueryParam;
+import org.limbo.doorkeeper.api.model.param.AccountRoleAddParam;
+import org.limbo.doorkeeper.api.model.param.AccountUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.limbo.doorkeeper.server.constants.BusinessType;
 import org.limbo.doorkeeper.server.constants.OperateType;
@@ -98,23 +101,10 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     @PLog(operateType = OperateType.UPDATE, businessType = BusinessType.ACCOUNT)
-    public Integer batchUpdate(@PLogTag(PLogConstants.CONTENT)  Long projectId,
-                               @PLogTag(PLogConstants.CONTENT) AccountBatchUpdateParam param) {
-        // todo
-        return accountMapper.update(null, Wrappers.<Account>lambdaUpdate()
-                .set(param.getIsAdmin() != null, Account::getIsAdmin, param.getIsAdmin())
-                .in(Account::getAccountId, param.getAccountIds())
-        );
-    }
-
-    @Override
-    @Transactional
-    @PLog(operateType = OperateType.UPDATE, businessType = BusinessType.ACCOUNT)
     public Integer update(@PLogTag(PLogConstants.CONTENT) Long projectId,
                           @PLogTag(PLogConstants.CONTENT) AccountUpdateParam param) {
         // todo
         return accountMapper.update(null, Wrappers.<Account>lambdaUpdate()
-                .set(param.getIsAdmin() != null, Account::getIsAdmin, param.getIsAdmin())
                 .set(StringUtils.isNotBlank(param.getAccountDescribe()), Account::getAccountDescribe, param.getAccountDescribe())
                 .eq(Account::getAccountId, param.getAccountId())
         );

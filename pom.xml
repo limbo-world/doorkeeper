@@ -10,7 +10,7 @@
     <modules>
         <module>doorkeeper-server</module>
         <module>doorkeeper-api</module>
-        <module>doorkeeper-admin</module>
+        <module>doorkeeper-eureka</module>
     </modules>
 
     <packaging>pom</packaging>

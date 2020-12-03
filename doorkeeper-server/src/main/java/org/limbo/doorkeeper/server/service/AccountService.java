@@ -18,7 +18,6 @@ package org.limbo.doorkeeper.server.service;
 
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.AccountAddParam;
-import org.limbo.doorkeeper.api.model.param.AccountBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.AccountQueryParam;
 import org.limbo.doorkeeper.api.model.param.AccountUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
@@ -38,10 +37,8 @@ public interface AccountService {
     AccountVO addAccount(Long projectId, AccountAddParam param);
 
     /**
-     * 批量更新账户
+     * 更新账户
      */
-    Integer batchUpdate(Long projectId, AccountBatchUpdateParam param);
-
     Integer update(Long projectId, AccountUpdateParam param);
 
     /**

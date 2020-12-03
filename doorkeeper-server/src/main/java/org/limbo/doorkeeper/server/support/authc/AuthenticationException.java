@@ -14,26 +14,29 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
-
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-
-import javax.validation.constraints.NotEmpty;
-import java.util.List;
+package org.limbo.doorkeeper.server.support.authc;
 
 /**
  * @author Devil
- * @date 2020/11/20 3:58 PM
+ * @date 2020/11/30 10:46 AM
  */
-@Data
-public class AccountBatchUpdateParam {
+public class AuthenticationException extends RuntimeException {
 
-    @NotEmpty(message = "请选择账户")
-    @Schema(title = "账户ID")
-    private List<Long> accountIds;
+    private static String msg = "无权访问";
 
-    @Schema(title = "是否管理员")
-    private Boolean isAdmin;
+    public AuthenticationException() {
+        super(msg);
+    }
 
+    public AuthenticationException(String msg) {
+        super(msg);
+    }
+
+    public AuthenticationException(Throwable cause) {
+        super(msg, cause);
+    }
+
+    public AuthenticationException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
 }

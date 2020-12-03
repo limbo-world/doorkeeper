@@ -14,24 +14,17 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.vo;
+package org.limbo.doorkeeper.server.service;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
+import org.limbo.doorkeeper.api.model.param.LoginParam;
+import org.limbo.doorkeeper.server.support.session.AbstractSession;
 
 /**
  * @author Devil
- * @date 2020/11/19 3:11 PM
+ * @date 2020/11/23 8:03 PM
  */
-@Data
-public class AccountVO {
+public interface LoginService {
 
-    @Schema(title = "账户id")
-    private Long accountId;
+    AbstractSession login(LoginParam param);
 
-    @Schema(title = "账户名称")
-    private String username;
-
-    @Schema(title = "账户描述")
-    private String accountDescribe;
 }

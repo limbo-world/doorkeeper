@@ -34,21 +34,25 @@ public class Account {
     @TableId(type = IdType.AUTO)
     private Long accountId;
     /**
-     * 账户名称
+     * 账户名称 唯一
      */
     private String username;
+    /**
+     * 密码
+     */
+    private String password;
+    /**
+     * 昵称
+     */
+    private String nickname;
     /**
      * 账户描述
      */
     private String accountDescribe;
     /**
-     * 是否超级管理员 项目唯一 主要用于修改别的账号为管理员
+     * 最后登录时间
      */
-    private Boolean isSuperAdmin;
-    /**
-     * 是否管理员
-     */
-    private Boolean isAdmin;
+    private Date lastLogin;
 
     private Date gmtCreated;
 

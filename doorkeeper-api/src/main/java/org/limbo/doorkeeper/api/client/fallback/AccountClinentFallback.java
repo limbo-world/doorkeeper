@@ -22,7 +22,6 @@ import org.limbo.doorkeeper.api.client.AccountClient;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.AccountAddParam;
-import org.limbo.doorkeeper.api.model.param.AccountBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.AccountQueryParam;
 import org.limbo.doorkeeper.api.model.param.AccountUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
@@ -43,11 +42,6 @@ public class AccountClinentFallback extends Fallback implements FallbackFactory<
         return new AccountClient() {
             @Override
             public Response<AccountVO> add(AccountAddParam project) {
-                return serviceUnavailable();
-            }
-
-            @Override
-            public Response<Integer> batchUpdate(AccountBatchUpdateParam param) {
                 return serviceUnavailable();
             }
 

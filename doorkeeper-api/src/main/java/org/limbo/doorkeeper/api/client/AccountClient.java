@@ -20,7 +20,6 @@ import org.limbo.doorkeeper.api.client.fallback.AccountClinentFallback;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.AccountAddParam;
-import org.limbo.doorkeeper.api.model.param.AccountBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.AccountQueryParam;
 import org.limbo.doorkeeper.api.model.param.AccountUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
@@ -39,9 +38,6 @@ public interface AccountClient {
 
     @PostMapping
     Response<AccountVO> add(@RequestBody AccountAddParam param);
-
-    @PutMapping
-    Response<Integer> batchUpdate(@RequestBody AccountBatchUpdateParam param);
 
     @PutMapping("/{accountId}")
     Response<Integer> update(@PathVariable("accountId") Long accountId, @RequestBody AccountUpdateParam param);

@@ -14,33 +14,27 @@
  * limitations under the License.
  */
 
+package org.limbo.doorkeeper.eureka;
 
-package org.limbo.doorkeeper.server;
-
-import org.limbo.doorkeeper.server.support.config.RedisConfig;
-import org.limbo.doorkeeper.server.support.config.WebConfig;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.context.annotation.Import;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
 
 /**
  * @author liuqingtong
- * @date 2020/11/19 19:29
+ * @date 2020/11/20 10:53
  */
 @SpringBootApplication
-@EnableAspectJAutoProxy(proxyTargetClass = true)
-@EnableTransactionManagement
-@MapperScan("org.limbo.doorkeeper.server.dao")
-@Import({WebConfig.class, RedisConfig.class})
-public class DoorkeeperApplication {
+@EnableEurekaServer
+public class ServiceRegistryApplication {
 
+    /**
+     * http://localhost:8000
+     */
     public static void main(String[] args) {
         new SpringApplicationBuilder()
-                .sources(DoorkeeperApplication.class)
+                .sources(ServiceRegistryApplication.class)
                 .web(WebApplicationType.SERVLET)
                 .build()
                 .run(args);

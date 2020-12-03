@@ -14,24 +14,20 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.vo;
+package org.limbo.doorkeeper.server.support.session.validate;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
+
+import org.limbo.doorkeeper.server.support.session.AbstractSession;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
- * @author Devil
- * @date 2020/11/19 3:11 PM
+ * @author Brozen
+ * @date 2020/3/11 9:59 AM
+ * @email brozen@qq.com
  */
-@Data
-public class AccountVO {
+public interface SessionValidator {
 
-    @Schema(title = "账户id")
-    private Long accountId;
+    boolean validate(AbstractSession session, HttpServletRequest request);
 
-    @Schema(title = "账户名称")
-    private String username;
-
-    @Schema(title = "账户描述")
-    private String accountDescribe;
 }

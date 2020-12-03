@@ -71,10 +71,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return false;
         }
 
-        // 管理员拥有全部权限
-        if (account.getIsAdmin()) {
-            return true;
-        }
+        // todo 管理员拥有全部权限
 
         // 拿到用户全部权限
         AccountPermissionGrantVO grants = _this.getGrantedApis(projectId, account.getAccountId());

@@ -14,24 +14,40 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.vo;
+package org.limbo.doorkeeper.server.support.session;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
  * @author Devil
- * @date 2020/11/19 3:11 PM
+ * @date 2020/11/23 8:17 PM
  */
 @Data
-public class AccountVO {
-
-    @Schema(title = "账户id")
+public class SessionAccount {
+    /**
+     * 账户唯一ID
+     */
     private Long accountId;
 
-    @Schema(title = "账户名称")
-    private String username;
+    /**
+     * 账户昵称
+     */
+    private String nickname;
 
-    @Schema(title = "账户描述")
-    private String accountDescribe;
+    /**
+     * 当前用户所选的项目
+     */
+    private Long currentProjectId;
+
+    private String currentProjectName;
+
+    /**
+     * 是否为超级管理员
+     */
+    private Boolean isSuperAdmin;
+
+    /**
+     * 是否为管理员
+     */
+    private Boolean isAdmin;
 }
