@@ -1,5 +1,5 @@
 import {Loading, Message, MessageBox} from 'element-ui';
-import store from '../vuex-installer/index';
+import store from '../vuex-installer';
 
 const request = axios.create({
     baseURL: process.env.VUE_APP_baseUrl, // api的base_url 配置后，请求会拼接对应uri

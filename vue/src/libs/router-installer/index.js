@@ -1,6 +1,6 @@
 import Router from 'vue-router'
 import Routes from './RouteData'
-import store from "../vuex-installer/index";
+import store from "../vuex-installer";
 
 // 创建一个全局唯一的Router实例
 // 路由使用history模式后，在切换到子路由后，刷新页面会返回404

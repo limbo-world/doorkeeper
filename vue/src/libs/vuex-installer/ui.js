@@ -1,4 +1,4 @@
-import { http } from '../axios-installer/index';
+import { http } from '../axios-installer';
 import { MenuRoute } from '../router-installer/MenuData';
 
 /**

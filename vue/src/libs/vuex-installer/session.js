@@ -1,5 +1,5 @@
 
-import { http } from '../axios-installer/index';
+import { http } from '../axios-installer';
 import TimeUnit from '../cache-installer/time-unit';
 import { Message, MessageBox, Loading } from 'element-ui';
 import {MenuRoute} from "../router-installer/MenuData";

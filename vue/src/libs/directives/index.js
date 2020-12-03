@@ -1,5 +1,5 @@
-import AnimateDirective from './animate/index';
-import AuthDirective from './auth/index';
+import AnimateDirective from './animate';
+import AuthDirective from './auth';
 
 
 export default {
