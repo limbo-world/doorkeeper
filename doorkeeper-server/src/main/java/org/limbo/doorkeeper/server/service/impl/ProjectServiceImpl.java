@@ -76,15 +76,6 @@ public class ProjectServiceImpl implements ProjectService {
             throw new ParamException("项目已存在");
         }
 
-        // 创建超级管理员
-        Account account = new Account();
-        account.setProjectId(project.getProjectId());
-        account.setUsername("admin");
-        account.setIsSuperAdmin(true);
-        account.setIsAdmin(true);
-
-        accountMapper.insert(account);
-
         return EnhancedBeanUtils.createAndCopy(project, ProjectVO.class);
     }
 

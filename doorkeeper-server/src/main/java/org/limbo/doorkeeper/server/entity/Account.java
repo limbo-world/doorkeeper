@@ -33,8 +33,6 @@ public class Account {
 
     @TableId(type = IdType.AUTO)
     private Long accountId;
-
-    private Long projectId;
     /**
      * 账户名称
      */

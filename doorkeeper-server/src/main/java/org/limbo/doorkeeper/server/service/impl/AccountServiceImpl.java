@@ -67,8 +67,8 @@ public class AccountServiceImpl implements AccountService {
     @PLog(operateType = OperateType.CREATE, businessType = BusinessType.ACCOUNT)
     public AccountVO addAccount(@PLogTag(PLogConstants.CONTENT) Long projectId,
                                 @PLogTag(PLogConstants.CONTENT) AccountAddParam param) {
+        // todo
         Account po = EnhancedBeanUtils.createAndCopy(param, Account.class);
-        po.setProjectId(projectId);
         try {
             accountMapper.insert(po);
         } catch (DuplicateKeyException e) {
@@ -100,9 +100,9 @@ public class AccountServiceImpl implements AccountService {
     @PLog(operateType = OperateType.UPDATE, businessType = BusinessType.ACCOUNT)
     public Integer batchUpdate(@PLogTag(PLogConstants.CONTENT)  Long projectId,
                                @PLogTag(PLogConstants.CONTENT) AccountBatchUpdateParam param) {
+        // todo
         return accountMapper.update(null, Wrappers.<Account>lambdaUpdate()
                 .set(param.getIsAdmin() != null, Account::getIsAdmin, param.getIsAdmin())
-                .eq(Account::getProjectId, projectId)
                 .in(Account::getAccountId, param.getAccountIds())
         );
     }
@@ -112,10 +112,10 @@ public class AccountServiceImpl implements AccountService {
     @PLog(operateType = OperateType.UPDATE, businessType = BusinessType.ACCOUNT)
     public Integer update(@PLogTag(PLogConstants.CONTENT) Long projectId,
                           @PLogTag(PLogConstants.CONTENT) AccountUpdateParam param) {
+        // todo
         return accountMapper.update(null, Wrappers.<Account>lambdaUpdate()
                 .set(param.getIsAdmin() != null, Account::getIsAdmin, param.getIsAdmin())
                 .set(StringUtils.isNotBlank(param.getAccountDescribe()), Account::getAccountDescribe, param.getAccountDescribe())
-                .eq(Account::getProjectId, projectId)
                 .eq(Account::getAccountId, param.getAccountId())
         );
     }
@@ -124,7 +124,6 @@ public class AccountServiceImpl implements AccountService {
     public Page<AccountVO> queryPage(Long projectId, AccountQueryParam param) {
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<Account> mpage = MyBatisPlusUtils.pageOf(param);
         LambdaQueryWrapper<Account> condition = Wrappers.<Account>lambdaQuery()
-                .eq(Account::getProjectId, projectId)
                 .like(StringUtils.isNotBlank(param.getUsername()), Account::getUsername, param.getUsername())
                 .in(CollectionUtils.isNotEmpty(param.getAccountIds()), Account::getAccountId, param.getAccountIds());
         mpage = accountMapper.selectPage(mpage, condition);
@@ -136,9 +135,8 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public List<AccountVO> list(Long projectId) {
-        List<Account> accounts = accountMapper.selectList(Wrappers.<Account>lambdaQuery()
-                .eq(Account::getProjectId, projectId)
-        );
+        // todo
+        List<Account> accounts = accountMapper.selectList(Wrappers.emptyWrapper());
         return EnhancedBeanUtils.createAndCopyList(accounts, AccountVO.class);
     }
 

@@ -26,6 +26,9 @@ import org.limbo.doorkeeper.server.constants.OperateType;
 import java.util.Date;
 
 /**
+ *
+ * 项目操作记录
+ *
  * @Author Devil
  * @Date 2020/11/30 7:46 下午
  */
@@ -36,7 +39,7 @@ public class ProjectLog {
     @TableId(type = IdType.AUTO)
     private Long projectLogId;
     /**
-     * 项目
+     * 操作哪个项目
      */
     private Long projectId;
     /**
