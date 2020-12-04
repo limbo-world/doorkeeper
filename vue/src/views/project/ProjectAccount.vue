@@ -156,26 +156,23 @@
             },
 
             batchBindAccount() {
+                if (this.selectAccounts.length <= 0) {
+                    this.$message.warning('请选择账户!');
+                    return;
+                }
                 this.$confirm('确定添加?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
                     let param = {
-                        projectId: this.project.projectId
+                        projectId: this.project.projectId,
+                        accountIds: this.selectAccounts.map(account => account.accountId)
                     }
                     this.$ajax.put(`/project-account`, param).then(res => {
-                        this.$message({
-                            type: 'success',
-                            message: '删除成功!'
-                        });
                         this.loadAccounts();
                     })
                 }).catch(() => {
-                    // this.$message({
-                    //     type: 'info',
-                    //     message: '已取消删除'
-                    // });
                 });
 
             },

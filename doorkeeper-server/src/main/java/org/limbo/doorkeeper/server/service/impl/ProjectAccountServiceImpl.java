@@ -25,18 +25,20 @@ import org.limbo.doorkeeper.api.model.vo.ProjectAccountVO;
 import org.limbo.doorkeeper.server.dao.AccountMapper;
 import org.limbo.doorkeeper.server.dao.ProjectAccountMapper;
 import org.limbo.doorkeeper.server.dao.ProjectMapper;
-import org.limbo.doorkeeper.server.entity.Project;
+import org.limbo.doorkeeper.server.dao.RoleMapper;
 import org.limbo.doorkeeper.server.entity.ProjectAccount;
+import org.limbo.doorkeeper.server.entity.Role;
+import org.limbo.doorkeeper.server.service.AccountRoleService;
 import org.limbo.doorkeeper.server.service.AccountService;
 import org.limbo.doorkeeper.server.service.ProjectAccountService;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @Author Devil
@@ -53,6 +55,12 @@ public class ProjectAccountServiceImpl implements ProjectAccountService {
     private ProjectAccountMapper projectAccountMapper;
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private RoleMapper roleMapper;
+    @Autowired
+    private AccountRoleService accountRoleService;
+    @Autowired
+    private ProjectAccountService projectAccountService;
 
     @Override
     public List<ProjectAccountVO> list(ProjectAccountQueryParam param) {
@@ -101,35 +109,43 @@ public class ProjectAccountServiceImpl implements ProjectAccountService {
         accountService.update(projectAccount.getProjectId(), currentAccountId, accountUpdateParam, false);
     }
 
-    /**
-     * 是否可以设置admin属性
-     * @param accountId 操作用户
-     * @param projectId 操作项目
-     * @return
-     */
-    private boolean canSetAdminParam(Long accountId, Long projectId) {
-        // 判断操作用户是否为管理端管理员
-        List<Project> projects = projectMapper.selectList(Wrappers.<Project>lambdaQuery()
-                .eq(Project::getIsAdminProject, true)
-        );
-        boolean isAdmin = false;
-        List<Long> adminProjectIds = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(projects)) {
-            adminProjectIds = projects.stream().map(Project::getProjectId).collect(Collectors.toList());
-            List<ProjectAccount> projectAccounts = projectAccountMapper.selectList(Wrappers.<ProjectAccount>lambdaQuery()
-                    .eq(ProjectAccount::getAccountId, accountId)
-                    .in(ProjectAccount::getProjectId, adminProjectIds)
-            );
-            for (ProjectAccount projectAccount : projectAccounts) {
-                if (projectAccount.getIsAdmin()) {
-                    isAdmin = true;
-                    break;
-                }
-            }
+    @Override
+    @Transactional
+    public void batchJoinProject(ProjectAccountBatchUpdateParam param) {
+        for (Long accountId : param.getAccountIds()) {
+            projectAccountService.joinProject(param.getProjectId(), accountId, false);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void joinProject(Long projectId, Long accountId, boolean isAdmin) {
+        ProjectAccount projectAccount = new ProjectAccount();
+        projectAccount.setProjectId(projectId);
+        projectAccount.setAccountId(accountId);
+        projectAccount.setIsAdmin(isAdmin);
+        try {
+            projectAccountMapper.insert(projectAccount);
+        } catch (DuplicateKeyException e) {
+            return;
         }
 
-        // 不是管理端管理员 且当前项目为管理端项目 不能提交管理员属性
-        return isAdmin || !adminProjectIds.contains(projectId);
+        // 找到项目中需要默认添加的角色
+        List<Role> roles = roleMapper.selectList(Wrappers.<Role>lambdaQuery()
+                .eq(Role::getProjectId, projectAccount.getProjectAccountId())
+                .eq(Role::getIsDefault, true)
+        );
+
+        if (CollectionUtils.isNotEmpty(roles)) {
+            List<AccountRoleAddParam> accountRoles = new ArrayList<>();
+            for (Role role : roles) {
+                AccountRoleAddParam accountRole = new AccountRoleAddParam();
+                accountRole.setAccountId(accountId);
+                accountRole.setRoleId(role.getRoleId());
+                accountRoles.add(accountRole);
+            }
+            accountRoleService.batchSave(projectId, accountRoles);
+        }
     }
 
 }

@@ -23,7 +23,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.AccountAddParam;
 import org.limbo.doorkeeper.api.model.param.AccountQueryParam;
-import org.limbo.doorkeeper.api.model.param.AccountRoleAddParam;
 import org.limbo.doorkeeper.api.model.param.AccountUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.limbo.doorkeeper.server.constants.BusinessType;
@@ -35,9 +34,9 @@ import org.limbo.doorkeeper.server.dao.RoleMapper;
 import org.limbo.doorkeeper.server.entity.Account;
 import org.limbo.doorkeeper.server.entity.Project;
 import org.limbo.doorkeeper.server.entity.ProjectAccount;
-import org.limbo.doorkeeper.server.entity.Role;
 import org.limbo.doorkeeper.server.service.AccountRoleService;
 import org.limbo.doorkeeper.server.service.AccountService;
+import org.limbo.doorkeeper.server.service.ProjectAccountService;
 import org.limbo.doorkeeper.server.support.plog.PLog;
 import org.limbo.doorkeeper.server.support.plog.PLogConstants;
 import org.limbo.doorkeeper.server.support.plog.PLogTag;
@@ -76,7 +75,7 @@ public class AccountServiceImpl implements AccountService {
     private ProjectMapper projectMapper;
 
     @Autowired
-    private AccountServiceImpl accountService;
+    private ProjectAccountService projectAccountService;
 
     @Override
     @Transactional
@@ -94,35 +93,10 @@ public class AccountServiceImpl implements AccountService {
         }
 
         // 绑定到对应的项目
-        ProjectAccount projectAccount = new ProjectAccount();
-        projectAccount.setProjectId(currentProjectId);
-        projectAccount.setAccountId(po.getAccountId());
-        projectAccount.setIsAdmin(param.getIsAdmin());
         if (!canSetAdminParam(currentAccountId, currentProjectId, needSuperAdmin)) {
-            projectAccount.setIsAdmin(false);
+            param.setIsAdmin(false);
         }
-        try {
-            projectAccountMapper.insert(projectAccount);
-        } catch (DuplicateKeyException e) {
-            return EnhancedBeanUtils.createAndCopy(po, AccountVO.class);
-        }
-
-        // 找到项目中需要默认添加的角色
-        List<Role> roles = roleMapper.selectList(Wrappers.<Role>lambdaQuery()
-                .eq(Role::getProjectId, currentProjectId)
-                .eq(Role::getIsDefault, true)
-        );
-
-        if (CollectionUtils.isNotEmpty(roles)) {
-            List<AccountRoleAddParam> accountRoles = new ArrayList<>();
-            for (Role role : roles) {
-                AccountRoleAddParam accountRole = new AccountRoleAddParam();
-                accountRole.setAccountId(po.getAccountId());
-                accountRole.setRoleId(role.getRoleId());
-                accountRoles.add(accountRole);
-            }
-            accountRoleService.batchSave(currentProjectId, accountRoles);
-        }
+        projectAccountService.joinProject(currentProjectId, po.getAccountId(), param.getIsAdmin());
 
         return EnhancedBeanUtils.createAndCopy(po, AccountVO.class);
     }

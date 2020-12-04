@@ -22,6 +22,7 @@ import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.server.support.authc.AuthenticationException;
 import org.limbo.doorkeeper.server.support.session.exception.SessionException;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -35,6 +36,11 @@ public class BaseExceptionHandler {
 
     @ExceptionHandler(value = { BindException.class })
     public Response handBind(BindException e) {
+        return Response.paramError(e.getBindingResult().getFieldError().getDefaultMessage());
+    }
+
+    @ExceptionHandler(value = { MethodArgumentNotValidException.class })
+    public Response handBind(MethodArgumentNotValidException e) {
         return Response.paramError(e.getBindingResult().getFieldError().getDefaultMessage());
     }
 

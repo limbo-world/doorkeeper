@@ -74,7 +74,8 @@ public class ProjectAccountController extends BaseController {
 
     @PutMapping
     @Operation(summary = "批量修改项目账户")
-    public Response<Boolean> update(@Validated @RequestBody ProjectAccountBatchUpdateParam param) {
+    public Response<Boolean> batchUpdate(@Validated @RequestBody ProjectAccountBatchUpdateParam param) {
+        projectAccountService.batchJoinProject(param);
         return Response.ok(true);
     }
 

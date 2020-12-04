@@ -18,6 +18,7 @@ package org.limbo.doorkeeper.server.service;
 
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.ProjectAccountAddParam;
+import org.limbo.doorkeeper.api.model.param.ProjectAccountBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.ProjectAccountQueryParam;
 import org.limbo.doorkeeper.api.model.param.ProjectAccountUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
@@ -49,4 +50,8 @@ public interface ProjectAccountService {
     AccountVO save(Long currentAccountId, ProjectAccountAddParam param);
 
     void update(Long currentAccountId, ProjectAccountUpdateParam param);
+
+    void batchJoinProject(ProjectAccountBatchUpdateParam param);
+
+    void joinProject(Long projectId, Long accountId, boolean isAdmin);
 }
