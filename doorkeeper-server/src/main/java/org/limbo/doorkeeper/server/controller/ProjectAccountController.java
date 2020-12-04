@@ -21,6 +21,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.ProjectAccountAddParam;
+import org.limbo.doorkeeper.api.model.param.ProjectAccountBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.ProjectAccountQueryParam;
 import org.limbo.doorkeeper.api.model.param.ProjectAccountUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
@@ -46,28 +47,34 @@ public class ProjectAccountController extends BaseController {
 
     @GetMapping("/query")
     @Operation(summary = "分页查询项目账户关系")
-    public Response<Page<ProjectAccountVO>> query(ProjectAccountQueryParam param) {
+    public Response<Page<ProjectAccountVO>> query(@Validated ProjectAccountQueryParam param) {
         return Response.ok(projectAccountService.page(param));
     }
 
     @GetMapping("/all-account")
     @Operation(summary = "分页查询所有账户与项目关系")
-    public Response<Page<ProjectAccountVO>> allAccount(ProjectAccountQueryParam param) {
+    public Response<Page<ProjectAccountVO>> allAccount(@Validated ProjectAccountQueryParam param) {
         return Response.ok(projectAccountService.pageAllAccount(param));
     }
 
     @PostMapping
     @Operation(summary = "添加项目账户")
-    public Response<AccountVO> add(@RequestBody ProjectAccountAddParam param) {
+    public Response<AccountVO> add(@Validated @RequestBody ProjectAccountAddParam param) {
         return Response.ok(projectAccountService.save(getAccountId(), param));
     }
 
     @PutMapping("/{projectAccountId}")
-    @Operation(summary = "添加项目账户")
+    @Operation(summary = "修改项目账户")
     public Response<Boolean> update(@Validated @NotNull(message = "ID不能为空") @PathVariable("projectAccountId") Long projectAccountId,
-                                    @RequestBody ProjectAccountUpdateParam param) {
+                                    @Validated @RequestBody ProjectAccountUpdateParam param) {
         param.setProjectAccountId(projectAccountId);
         projectAccountService.update(getAccountId(), param);
+        return Response.ok(true);
+    }
+
+    @PutMapping
+    @Operation(summary = "批量修改项目账户")
+    public Response<Boolean> update(@Validated @RequestBody ProjectAccountBatchUpdateParam param) {
         return Response.ok(true);
     }
 

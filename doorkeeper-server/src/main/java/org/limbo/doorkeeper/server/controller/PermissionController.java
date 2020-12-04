@@ -48,7 +48,7 @@ public class PermissionController extends BaseController {
 
     @PostMapping
     @Operation(summary = "新增权限")
-    public Response<PermissionVO> add(@RequestBody PermissionAddParam param) {
+    public Response<PermissionVO> add(@Validated @RequestBody PermissionAddParam param) {
         return Response.ok(permissionService.addPermission(getProjectId(), param));
     }
 
@@ -62,14 +62,14 @@ public class PermissionController extends BaseController {
 
     @PutMapping
     @Operation(summary = "批量修改权限")
-    public Response<Boolean> batchUpdate(@RequestBody PermissionBatchUpdateParam param) {
+    public Response<Boolean> batchUpdate(@Validated @RequestBody PermissionBatchUpdateParam param) {
         permissionService.batchUpdate(getProjectId(), param);
         return Response.ok(true);
     }
 
     @DeleteMapping
     @Operation(summary = "批量删除权限")
-    public Response<Boolean> batchDelete(@RequestBody @Schema(title = "权限id列表", required = true) List<Long> permissionIds) {
+    public Response<Boolean> batchDelete(@Validated @RequestBody @Schema(title = "权限id列表", required = true) List<Long> permissionIds) {
         permissionService.deletePermission(getProjectId(), permissionIds);
         return Response.ok(true);
     }
@@ -82,7 +82,7 @@ public class PermissionController extends BaseController {
 
     @GetMapping("/query")
     @Operation(summary = "分页查询权限列表")
-    public Response<Page<PermissionVO>> query(PermissionQueryParam param) {
+    public Response<Page<PermissionVO>> query(@Validated PermissionQueryParam param) {
         return Response.ok(permissionService.queryPage(getProjectId(), param));
     }
 }

@@ -14,19 +14,28 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.support.config;
+package org.limbo.doorkeeper.api.model.param;
 
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.context.annotation.Configuration;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
- * @author liuqingtong
- * @date 2020/11/20 18:05
+ * @author Devil
+ * @date 2020/11/19 3:27 PM
  */
-@Configuration
-@EnableDiscoveryClient
-public class FeignConfig {
+@Data
+public class ProjectAccountBatchUpdateParam {
 
-    // 负载均衡、熔断限流
+    @NotEmpty(message = "请选择要修改的账户")
+    @Schema(title = "账户id", required = true)
+    private List<Long> accountIds;
+
+    @NotNull(message = "请选择项目")
+    @Schema(title = "项目id", required = true)
+    private Long projectId;
 
 }

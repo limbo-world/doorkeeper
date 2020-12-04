@@ -46,7 +46,7 @@ public class ProjectController extends BaseController {
 
     @PostMapping
     @Operation(summary = "新增项目")
-    public Response<ProjectVO> addProject(@RequestBody ProjectAddParam project) {
+    public Response<ProjectVO> addProject(@Validated @RequestBody ProjectAddParam project) {
         return Response.ok(projectService.addProject(project));
     }
 
@@ -58,7 +58,7 @@ public class ProjectController extends BaseController {
 
     @GetMapping("/query")
     @Operation(summary = "分页获取项目列表")
-    public Response<Page<ProjectVO>> getProjects(ProjectQueryParam param) {
+    public Response<Page<ProjectVO>> getProjects(@Validated ProjectQueryParam param) {
         return Response.ok(projectService.queryProjectPage(param));
     }
 

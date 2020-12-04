@@ -25,6 +25,7 @@ import org.limbo.doorkeeper.api.model.param.AccountRoleUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.AccountRoleVO;
 import org.limbo.doorkeeper.server.service.AccountRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,20 +44,20 @@ public class AccountRoleController extends BaseController {
 
     @GetMapping
     @Operation(summary = "获取账户角色")
-    public Response<List<AccountRoleVO>> list(AccountRoleQueryParam param) {
+    public Response<List<AccountRoleVO>> list(@Validated AccountRoleQueryParam param) {
         return Response.ok(accountRoleService.list(getProjectId(), param));
     }
 
     @PutMapping
     @Operation(summary = "批量绑定账户角色")
-    public Response<Boolean> batchUpdate(@RequestBody AccountRoleUpdateParam param) {
+    public Response<Boolean> batchUpdate(@Validated @RequestBody AccountRoleUpdateParam param) {
         accountRoleService.batchUpdate(getProjectId(), param);
         return Response.ok(true);
     }
 
     @PostMapping
     @Operation(summary = "批量绑定账户角色")
-    public Response<Boolean> batchSave(@RequestBody List<AccountRoleAddParam> params) {
+    public Response<Boolean> batchSave(@Validated @RequestBody List<AccountRoleAddParam> params) {
         accountRoleService.batchSave(getProjectId(), params);
         return Response.ok(true);
     }
@@ -64,7 +65,7 @@ public class AccountRoleController extends BaseController {
 
     @DeleteMapping
     @Operation(summary = "批量删除账户角色")
-    public Response<Integer> batchDelete(@RequestBody List<Long> accountRoleIds){
+    public Response<Integer> batchDelete(@Validated @RequestBody List<Long> accountRoleIds){
         return Response.ok(accountRoleService.batchDelete(getProjectId(), accountRoleIds));
     }
 }

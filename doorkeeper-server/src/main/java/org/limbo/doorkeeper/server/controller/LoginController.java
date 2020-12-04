@@ -23,6 +23,7 @@ import org.limbo.doorkeeper.api.model.param.LoginParam;
 import org.limbo.doorkeeper.server.service.LoginService;
 import org.limbo.doorkeeper.server.support.session.AbstractSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,7 +43,7 @@ public class LoginController extends BaseController {
 
     @PostMapping
     @Operation(summary = "登录")
-    public Response<AbstractSession> login(@RequestBody LoginParam param) {
+    public Response<AbstractSession> login(@Validated @RequestBody LoginParam param) {
         return Response.ok(loginService.login(param));
     }
 }

@@ -45,12 +45,11 @@
                 <el-table-column label="操作">
                     <template slot-scope="scope">
                         <div class="operations">
-                            <template v-if="!scope.row.isAdmin">
+                            <template>
                                 <i class="el-icon-edit" @click="() =>{
                                     project = {...scope.row};
                                     dialogOpened = true;
                                 }"></i>
-                                <i class="el-icon-delete" @click="deleteProject(scope.row)"></i>
                             </template>
                         </div>
                     </template>
@@ -185,19 +184,6 @@
                     }).finally(() => this.dialogProcessing = false);
                 }
 
-            },
-
-            deleteProject(project) {
-                this.$confirm('此操作将永久删除该项目, 是否继续?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    this.$ajax.delete(`/project/${project.projectId}`).then(() => {
-                        this.$message.success('删除成功。');
-                        this.loadProjects();
-                    })
-                }).catch(err => err);
             },
 
             preventCloseWhenProcessing() {

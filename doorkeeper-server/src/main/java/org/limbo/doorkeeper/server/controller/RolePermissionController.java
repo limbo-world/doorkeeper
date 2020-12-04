@@ -24,6 +24,7 @@ import org.limbo.doorkeeper.api.model.param.RolePermissionQueryParam;
 import org.limbo.doorkeeper.api.model.vo.RolePermissionVO;
 import org.limbo.doorkeeper.server.service.RolePermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,13 +43,13 @@ public class RolePermissionController extends BaseController {
 
     @GetMapping
     @Operation(summary = "获取角色权限")
-    public Response<List<RolePermissionVO>> list(RolePermissionQueryParam param) {
+    public Response<List<RolePermissionVO>> list(@Validated RolePermissionQueryParam param) {
         return Response.ok(rolePermissionService.list(getProjectId(), param));
     }
 
     @PostMapping
     @Operation(summary = "绑定角色权限")
-    public Response<Boolean> addRolePermission(@RequestBody List<RolePermissionAddParam> params) {
+    public Response<Boolean> addRolePermission(@Validated @RequestBody List<RolePermissionAddParam> params) {
         rolePermissionService.addRolePermission(getProjectId(), params);
         return Response.ok(true);
     }
@@ -56,7 +57,7 @@ public class RolePermissionController extends BaseController {
 
     @DeleteMapping
     @Operation(summary = "删除角色权限")
-    public Response<Integer> deleteRolePermission(@RequestBody List<Long> rolePermissionIds){
+    public Response<Integer> deleteRolePermission(@Validated @RequestBody List<Long> rolePermissionIds){
         return Response.ok(rolePermissionService.deleteRolePermission(getProjectId(), rolePermissionIds));
     }
 

@@ -35,6 +35,9 @@
 
         <el-main>
             <el-row>
+                <el-row>
+                    <el-button type="primary" @click="batchBindAccount" size="mini">批量加入</el-button>
+                </el-row>
                 <el-table :data="accounts" size="mini" @selection-change="handleSelectionChange">
                     <el-table-column type="selection" width="55"></el-table-column>
                     <el-table-column prop="accountId" label="ID"></el-table-column>
@@ -150,6 +153,31 @@
 
             handleSelectionChange(val) {
                 this.selectAccounts = val;
+            },
+
+            batchBindAccount() {
+                this.$confirm('确定添加?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    let param = {
+                        projectId: this.project.projectId
+                    }
+                    this.$ajax.put(`/project-account`, param).then(res => {
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功!'
+                        });
+                        this.loadAccounts();
+                    })
+                }).catch(() => {
+                    // this.$message({
+                    //     type: 'info',
+                    //     message: '已取消删除'
+                    // });
+                });
+
             },
 
             // ========= 账户相关 ============

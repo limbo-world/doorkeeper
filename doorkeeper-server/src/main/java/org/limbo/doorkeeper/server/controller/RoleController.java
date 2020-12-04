@@ -48,7 +48,7 @@ public class RoleController extends BaseController {
 
     @PostMapping
     @Operation(summary = "新增角色")
-    public Response<RoleVO> add(@RequestBody RoleAddParam param) {
+    public Response<RoleVO> add(@Validated @RequestBody RoleAddParam param) {
         return Response.ok(roleService.addRole(getProjectId(), param));
     }
 
@@ -74,7 +74,7 @@ public class RoleController extends BaseController {
 
     @GetMapping("/query")
     @Operation(summary = "分页查询角色")
-    public Response<Page<RoleVO>> page(RoleQueryParam param) {
+    public Response<Page<RoleVO>> page(@Validated RoleQueryParam param) {
         return Response.ok(roleService.queryRole(getProjectId(), param));
     }
 

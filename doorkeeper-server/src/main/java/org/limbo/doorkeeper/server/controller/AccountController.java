@@ -48,7 +48,7 @@ public class AccountController extends BaseController {
 
     @PostMapping
     @Operation(summary = "新增账户")
-    public Response<AccountVO> add(@RequestBody AccountAddParam param) {
+    public Response<AccountVO> add(@Validated @RequestBody AccountAddParam param) {
         return Response.ok(accountService.addAccount(getProjectId(), getAccountId(), param, true));
     }
 
@@ -62,7 +62,7 @@ public class AccountController extends BaseController {
 
     @GetMapping("/query")
     @Operation(summary = "查询账户列表")
-    public Response<Page<AccountVO>> page(AccountQueryParam param) {
+    public Response<Page<AccountVO>> page(@Validated AccountQueryParam param) {
         return Response.ok(accountService.queryPage(getProjectId(), param));
     }
 
