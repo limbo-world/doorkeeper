@@ -36,7 +36,8 @@
                         <div class="operations">
                             <template>
                                 <i class="el-icon-edit" @click="() => {$router.push({path: '/project/project-account',
-                                query: {projectId: scope.row.projectId, projectName: scope.row.projectName}})}"></i>
+                                query: {projectId: scope.row.projectId, projectName: scope.row.projectName,
+                                isAdminProject: scope.row.isAdminProject}})}"></i>
                             </template>
                         </div>
                     </template>
