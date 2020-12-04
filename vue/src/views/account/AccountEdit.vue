@@ -34,7 +34,7 @@
                 <el-form-item label="描述">
                     <el-input type="textarea" v-model="account.accountDescribe"></el-input>
                 </el-form-item>
-                <el-form-item label="管理员">
+                <el-form-item label="管理员" v-if="!account.isAdmin">
                     <el-switch v-model="account.isAdmin" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
                 </el-form-item>
             </el-form>

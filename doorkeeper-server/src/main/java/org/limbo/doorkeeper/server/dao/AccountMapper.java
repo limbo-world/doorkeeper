@@ -17,7 +17,11 @@
 package org.limbo.doorkeeper.server.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.limbo.doorkeeper.api.model.param.AccountQueryParam;
+import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.limbo.doorkeeper.server.entity.Account;
+
+import java.util.List;
 
 /**
  * @author Brozen
@@ -25,4 +29,9 @@ import org.limbo.doorkeeper.server.entity.Account;
  * @email brozen@qq.com
  */
 public interface AccountMapper extends BaseMapper<Account> {
+
+    long pageVOCount(AccountQueryParam param);
+
+    List<AccountVO> pageVOS(AccountQueryParam param);
+
 }

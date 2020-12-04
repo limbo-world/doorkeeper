@@ -37,4 +37,8 @@ public class AccountVO {
 
     @Schema(title = "账户描述")
     private String accountDescribe;
+
+    @Schema(name = "是否管理员")
+    private Boolean isAdmin;
+
 }

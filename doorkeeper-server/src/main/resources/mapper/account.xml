@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2020-2024 Limbo Team (https://github.com/limbo-world).
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ 	http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.limbo.doorkeeper.server.dao.AccountMapper" >
+
+    <resultMap id="ProjectAccountVO" type="org.limbo.doorkeeper.api.model.vo.AccountVO">
+        <result column="account_id" property="accountId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="is_admin" property="isAdmin" jdbcType="BIT" javaType="java.lang.Boolean"/>
+        <result column="account_describe" property="accountDescribe" jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result column="nickname" property="nickname" jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result column="username" property="username" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </resultMap>
+
+    <sql id="accountVOQueryCondition">
+        and pa.account_id = a.account_id
+        <if test="projectId != null">
+            and pa.project_id = #{projectId}
+        </if>
+        <if test="username != null and username != ''">
+            <bind name="username" value="'%' + username + '%'"/>
+            and a.username like #{username}
+        </if>
+        <if test="accountIds != null and accountIds.size() > 0">
+            and pa.account_id in (<foreach collection="accountIds" item="i" separator=",">#{i}</foreach>)
+        </if>
+    </sql>
+    <select id="pageVOCount" resultType="java.lang.Long">
+        select count(*)
+        from l_account a, l_project_account pa
+        <where>
+            <include refid="accountVOQueryCondition"></include>
+        </where>
+    </select>
+    <select id="pageVOS" resultMap="ProjectAccountVO">
+        select a.*, pa.is_admin
+        from l_account a, l_project_account pa
+        <where>
+            <include refid="accountVOQueryCondition"></include>
+        </where>
+        <if test="offset != null and size != null">
+            LIMIT #{offset}, #{size}
+        </if>
+    </select>
+
+</mapper>

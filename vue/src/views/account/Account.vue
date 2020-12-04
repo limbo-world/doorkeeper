@@ -36,7 +36,8 @@
                     <el-table-column prop="accountDescribe" label="描述"></el-table-column>
                     <el-table-column prop="isAdmin" label="管理员" align="center" width="80">
                         <template slot-scope="scope">
-                            <el-switch v-model="scope.row.isAdmin" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+                            <el-switch v-model="scope.row.isAdmin" active-color="#13ce66" :disabled="scope.row.isAdmin"
+                                       inactive-color="#ff4949"></el-switch>
                         </template>
                     </el-table-column>
                     <el-table-column label="绑定角色" align="center" width="100">
@@ -103,7 +104,6 @@
         data() {
             return {
                 queryForm: {
-                    projectId: 0,
                     current: 1,
                     size: 10,
                     total: -1,
@@ -119,7 +119,6 @@
         },
         created() {
             pages.account = this;
-            this.queryForm.projectId = this.user.account.currentProject.projectId
             this.loadAccounts();
         },
 
@@ -137,7 +136,7 @@
                     this.resetPageForm();
                 }
                 this.startProgress();
-                return this.$ajax.get('/project-account/query', {params: this.queryForm}).then(response => {
+                return this.$ajax.get('/account/query', {params: this.queryForm}).then(response => {
                     const page = response.data;
                     this.queryForm.total = page.total >= 0 ? page.total : this.queryForm.total;
                     this.accounts = page.data;

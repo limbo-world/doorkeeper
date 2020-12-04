@@ -16,7 +16,6 @@
 
 package org.limbo.doorkeeper.server.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -44,7 +43,6 @@ import org.limbo.doorkeeper.server.support.plog.PLog;
 import org.limbo.doorkeeper.server.support.plog.PLogConstants;
 import org.limbo.doorkeeper.server.support.plog.PLogTag;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
-import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -173,14 +171,12 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Page<AccountVO> queryPage(Long projectId, AccountQueryParam param) {
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<Account> mpage = MyBatisPlusUtils.pageOf(param);
-        LambdaQueryWrapper<Account> condition = Wrappers.<Account>lambdaQuery()
-                .like(StringUtils.isNotBlank(param.getUsername()), Account::getUsername, param.getUsername())
-                .in(CollectionUtils.isNotEmpty(param.getAccountIds()), Account::getAccountId, param.getAccountIds());
-        mpage = accountMapper.selectPage(mpage, condition);
-
-        param.setTotal(mpage.getTotal());
-        param.setData(EnhancedBeanUtils.createAndCopyList(mpage.getRecords(), AccountVO.class));
+        param.setProjectId(projectId);
+        long count = accountMapper.pageVOCount(param);
+        param.setTotal(count);
+        if (count > 0) {
+            param.setData(accountMapper.pageVOS(param));
+        }
         return param;
     }
 
