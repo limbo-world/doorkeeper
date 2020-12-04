@@ -33,6 +33,7 @@
                 <el-table :data="accounts" size="mini">
                     <el-table-column prop="accountId" label="ID"></el-table-column>
                     <el-table-column prop="username" label="账号"></el-table-column>
+                    <el-table-column prop="nickname" label="昵称"></el-table-column>
                     <el-table-column prop="accountDescribe" label="描述"></el-table-column>
                     <el-table-column prop="isAdmin" label="管理员" align="center" width="80">
                         <template slot-scope="scope">
@@ -68,7 +69,7 @@
 
         <el-dialog :title="`${dialogOpenMode}账户`" :visible.sync="accountDialogOpened" width="50%" class="edit-dialog"
                    @close="accountDialogCancel">
-            <account-edit :account="account" :open-mode="dialogOpenMode" ref="accountEdit"></account-edit>
+            <account-edit :account="account" :project="user.account.currentProject" :open-mode="dialogOpenMode" ref="accountEdit"></account-edit>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="accountDialogCancel">取 消</el-button>
                 <el-button type="primary" @click="accountDialogConfirm">确 定</el-button>

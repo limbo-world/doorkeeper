@@ -34,7 +34,8 @@
                 <el-form-item label="描述">
                     <el-input type="textarea" v-model="account.accountDescribe"></el-input>
                 </el-form-item>
-                <el-form-item label="管理员" v-if="!account.isAdmin">
+                <!-- todo 管理端下不显示 其他项目下 不是管理端管理员 不显示 -->
+                <el-form-item label="管理员" v-if="!project.isAdminProject">
                     <el-switch v-model="account.isAdmin" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
                 </el-form-item>
             </el-form>
@@ -50,6 +51,10 @@
     export default {
         props: {
             account: {
+                type: Object,
+                default() {}
+            },
+            project: {
                 type: Object,
                 default() {}
             },
@@ -90,12 +95,6 @@
         },
 
         methods: {
-
-            clearData() {
-                if (this.$refs.editForm) {
-                    this.$refs.editForm.clearValidate();
-                }
-            },
             confirmEdit() {
                 const loading = this.$loading();
                 return new Promise((resolve, reject) => {
@@ -122,11 +121,11 @@
             },
 
             doAddAccount(account) {
-                return this.$ajax.post('/admin', account);
+                return this.$ajax.post('/account', account);
             },
 
             doUpdateAccount(account) {
-                return this.$ajax.put(`/admin/${account.accountId}`, account);
+                return this.$ajax.put(`/account/${account.accountId}`, account);
             },
 
             clearData() {

@@ -57,7 +57,7 @@ public class AccountController extends BaseController {
     public Response<Integer> update(@Validated @NotNull(message = "账户不存在") @PathVariable("accountId") Long accountId,
                                     @RequestBody AccountUpdateParam param) {
         param.setAccountId(accountId);
-        return Response.ok(accountService.update(getProjectId(), param));
+        return Response.ok(accountService.update(getProjectId(), getAccountId(), param));
     }
 
     @GetMapping("/query")

@@ -79,7 +79,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     @PLog(operateType = OperateType.CREATE, businessType = BusinessType.ACCOUNT)
-    public AccountVO addAccount(@PLogTag(PLogConstants.CONTENT) Long projectId, Long accountId,
+    public AccountVO addAccount(@PLogTag(PLogConstants.CONTENT) Long currentProjectId, Long currentAccountId,
                                 @PLogTag(PLogConstants.CONTENT) AccountAddParam param) {
 
         // 判断账号是否已经存在
@@ -94,10 +94,10 @@ public class AccountServiceImpl implements AccountService {
 
         // 绑定到对应的项目
         ProjectAccount projectAccount = new ProjectAccount();
-        projectAccount.setProjectId(projectId);
+        projectAccount.setProjectId(currentProjectId);
         projectAccount.setAccountId(po.getAccountId());
         projectAccount.setIsAdmin(param.getIsAdmin());
-        if (!canSetAdminParam(accountId, projectId)) {
+        if (!canSetAdminParam(currentAccountId, currentProjectId)) {
             projectAccount.setIsAdmin(false);
         }
         try {
@@ -108,7 +108,7 @@ public class AccountServiceImpl implements AccountService {
 
         // 找到项目中需要默认添加的角色
         List<Role> roles = roleMapper.selectList(Wrappers.<Role>lambdaQuery()
-                .eq(Role::getProjectId, projectId)
+                .eq(Role::getProjectId, currentProjectId)
                 .eq(Role::getIsDefault, true)
         );
 
@@ -120,7 +120,7 @@ public class AccountServiceImpl implements AccountService {
                 accountRole.setRoleId(role.getRoleId());
                 accountRoles.add(accountRole);
             }
-            accountRoleService.batchSave(projectId, accountRoles);
+            accountRoleService.batchSave(currentProjectId, accountRoles);
         }
 
         return EnhancedBeanUtils.createAndCopy(po, AccountVO.class);
@@ -129,13 +129,24 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     @PLog(operateType = OperateType.UPDATE, businessType = BusinessType.ACCOUNT)
-    public Integer update(@PLogTag(PLogConstants.CONTENT) Long projectId,
+    public Integer update(@PLogTag(PLogConstants.CONTENT) Long currentProjectId, Long currentAccountId,
                           @PLogTag(PLogConstants.CONTENT) AccountUpdateParam param) {
-        // todo
-        return accountMapper.update(null, Wrappers.<Account>lambdaUpdate()
+
+        int update = accountMapper.update(null, Wrappers.<Account>lambdaUpdate()
                 .set(StringUtils.isNotBlank(param.getAccountDescribe()), Account::getAccountDescribe, param.getAccountDescribe())
+                .set(StringUtils.isNotBlank(param.getNickname()), Account::getNickname, param.getNickname())
                 .eq(Account::getAccountId, param.getAccountId())
         );
+
+        if (canSetAdminParam(currentAccountId, currentProjectId)) {
+            projectAccountMapper.update(null, Wrappers.<ProjectAccount>lambdaUpdate()
+                    .eq(ProjectAccount::getProjectId, currentProjectId)
+                    .eq(ProjectAccount::getAccountId, param.getAccountDescribe())
+                    .set(ProjectAccount::getIsAdmin, param.getIsAdmin())
+            );
+        }
+
+        return update;
     }
 
     /**
@@ -165,8 +176,8 @@ public class AccountServiceImpl implements AccountService {
             }
         }
 
-        // 不是管理端管理员 且当前项目为管理端项目 不能提交管理员属性
-        return isAdmin || !adminProjectIds.contains(projectId);
+        // 管理端管理员 并且项目不为管理端
+        return isAdmin && !adminProjectIds.contains(projectId);
     }
 
     @Override

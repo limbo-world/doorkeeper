@@ -19,9 +19,6 @@ package org.limbo.doorkeeper.api.model.param;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import javax.validation.constraints.NotEmpty;
-import java.util.List;
-
 /**
  * @author Devil
  * @date 2020/11/20 3:58 PM
@@ -29,7 +26,11 @@ import java.util.List;
 @Data
 public class AccountUpdateParam {
 
+    @Schema(hidden = true)
     private Long accountId;
+
+    @Schema(title = "昵称")
+    private String nickname;
 
     @Schema(title = "描述")
     private String accountDescribe;
