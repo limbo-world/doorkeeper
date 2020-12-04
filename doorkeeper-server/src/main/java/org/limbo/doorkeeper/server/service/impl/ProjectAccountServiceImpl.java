@@ -16,17 +16,29 @@
 
 package org.limbo.doorkeeper.server.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.model.Page;
+import org.limbo.doorkeeper.api.model.param.AccountAddParam;
+import org.limbo.doorkeeper.api.model.param.ProjectAccountAddParam;
 import org.limbo.doorkeeper.api.model.param.ProjectAccountQueryParam;
+import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.limbo.doorkeeper.api.model.vo.ProjectAccountVO;
 import org.limbo.doorkeeper.server.dao.ProjectAccountMapper;
+import org.limbo.doorkeeper.server.dao.ProjectMapper;
+import org.limbo.doorkeeper.server.entity.Project;
+import org.limbo.doorkeeper.server.entity.ProjectAccount;
+import org.limbo.doorkeeper.server.service.AccountService;
 import org.limbo.doorkeeper.server.service.ProjectAccountService;
+import org.limbo.doorkeeper.server.support.authc.AuthenticationException;
+import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Author Devil
@@ -36,7 +48,11 @@ import java.util.List;
 public class ProjectAccountServiceImpl implements ProjectAccountService {
 
     @Autowired
+    private ProjectMapper projectMapper;
+    @Autowired
     private ProjectAccountMapper projectAccountMapper;
+    @Autowired
+    private AccountService accountService;
 
     @Override
     public List<ProjectAccountVO> list(ProjectAccountQueryParam param) {
@@ -52,6 +68,42 @@ public class ProjectAccountServiceImpl implements ProjectAccountService {
             param.setData(projectAccountMapper.pageVOS(param));
         }
         return param;
+    }
+
+    @Override
+    @Transactional
+    public AccountVO save(Long currentAccountId, ProjectAccountAddParam param) {
+        // 判断操作用户是否为管理端管理员
+        List<Project> projects = projectMapper.selectList(Wrappers.<Project>lambdaQuery()
+                .eq(Project::getIsAdminProject, true)
+        );
+        boolean isAdmin = false;
+        List<Long> adminProjectIds = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(projects)) {
+            adminProjectIds = projects.stream().map(Project::getProjectId).collect(Collectors.toList());
+            List<ProjectAccount> projectAccounts = projectAccountMapper.selectList(Wrappers.<ProjectAccount>lambdaQuery()
+                    .eq(ProjectAccount::getAccountId, currentAccountId)
+                    .in(ProjectAccount::getProjectId, adminProjectIds)
+            );
+            for (ProjectAccount projectAccount : projectAccounts) {
+                if (projectAccount.getIsAdmin()) {
+                    isAdmin = true;
+                    break;
+                }
+            }
+        }
+
+        if (!isAdmin) { // 不是管理端管理员 无权操作
+            throw new AuthenticationException("无权操作");
+        }
+
+        // 是管理端管理员 添加项目为管理端 则不能提交管理员属性
+        // 是管理端管理员 添加项目不为管理端 则可以提交管理员属性
+        if (adminProjectIds.contains(param.getProjectId())) {
+            param.setIsAdmin(false);
+        }
+        return accountService.addAccount(param.getProjectId(),
+                EnhancedBeanUtils.createAndCopy(param, AccountAddParam.class), param.getIsAdmin());
     }
 
 }

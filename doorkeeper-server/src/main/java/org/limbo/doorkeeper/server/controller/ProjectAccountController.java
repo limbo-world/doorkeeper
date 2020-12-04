@@ -20,13 +20,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
+import org.limbo.doorkeeper.api.model.param.ProjectAccountAddParam;
 import org.limbo.doorkeeper.api.model.param.ProjectAccountQueryParam;
+import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.limbo.doorkeeper.api.model.vo.ProjectAccountVO;
 import org.limbo.doorkeeper.server.service.ProjectAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @Author Devil
@@ -40,10 +40,18 @@ public class ProjectAccountController extends BaseController {
     @Autowired
     private ProjectAccountService projectAccountService;
 
+    // todo 判断当前项目超管是否存在
+
     @GetMapping("/query")
     @Operation(summary = "分页查询项目账户关系")
     public Response<Page<ProjectAccountVO>> query(ProjectAccountQueryParam param) {
         return Response.ok(projectAccountService.page(param));
+    }
+
+    @PostMapping
+    @Operation(summary = "分页查询项目账户关系")
+    public Response<AccountVO> add(@RequestBody ProjectAccountAddParam param) {
+        return Response.ok(projectAccountService.save(getAccountId(), param));
     }
 
 }

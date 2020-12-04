@@ -17,7 +17,9 @@
 package org.limbo.doorkeeper.server.service;
 
 import org.limbo.doorkeeper.api.model.Page;
+import org.limbo.doorkeeper.api.model.param.ProjectAccountAddParam;
 import org.limbo.doorkeeper.api.model.param.ProjectAccountQueryParam;
+import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.limbo.doorkeeper.api.model.vo.ProjectAccountVO;
 
 import java.util.List;
@@ -37,4 +39,6 @@ public interface ProjectAccountService {
      * 分页查询项目账户关系
      */
     Page<ProjectAccountVO> page(ProjectAccountQueryParam param);
+
+    AccountVO save(Long currentAccountId, ProjectAccountAddParam param);
 }

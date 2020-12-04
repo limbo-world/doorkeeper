@@ -32,7 +32,6 @@ import org.limbo.doorkeeper.server.constants.BusinessType;
 import org.limbo.doorkeeper.server.constants.OperateType;
 import org.limbo.doorkeeper.server.dao.AccountMapper;
 import org.limbo.doorkeeper.server.dao.ProjectAccountMapper;
-import org.limbo.doorkeeper.server.dao.ProjectMapper;
 import org.limbo.doorkeeper.server.dao.RoleMapper;
 import org.limbo.doorkeeper.server.entity.Account;
 import org.limbo.doorkeeper.server.entity.ProjectAccount;
@@ -62,9 +61,6 @@ import java.util.List;
 public class AccountServiceImpl implements AccountService {
 
     @Autowired
-    private ProjectMapper projectMapper;
-
-    @Autowired
     private AccountMapper accountMapper;
 
     @Autowired
@@ -80,8 +76,9 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     @PLog(operateType = OperateType.CREATE, businessType = BusinessType.ACCOUNT)
     public AccountVO addAccount(@PLogTag(PLogConstants.CONTENT) Long projectId,
-                                @PLogTag(PLogConstants.CONTENT) AccountAddParam param) {
+                                @PLogTag(PLogConstants.CONTENT) AccountAddParam param, Boolean isAdmin) {
 
+        // 判断账号是否已经存在
         Account po = EnhancedBeanUtils.createAndCopy(param, Account.class);
         try {
             accountMapper.insert(po);

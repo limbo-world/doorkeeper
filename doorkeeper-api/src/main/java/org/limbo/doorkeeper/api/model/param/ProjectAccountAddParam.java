@@ -18,30 +18,37 @@ package org.limbo.doorkeeper.api.model.param;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import org.limbo.doorkeeper.api.model.Page;
-import org.limbo.doorkeeper.api.model.vo.ProjectAccountVO;
 
-import java.util.List;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Devil
  * @date 2020/11/19 3:27 PM
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class ProjectAccountQueryParam extends Page<ProjectAccountVO> {
+public class ProjectAccountAddParam {
 
-    @Schema(title = "账户ID")
-    private Long accountId;
-
-    @Schema(title = "项目ID")
+    @NotNull(message = "项目不能为空")
+    @Schema(title = "项目ID", required = true)
     private Long projectId;
 
-    @Schema(title = "账户名称", description = "like匹配")
+    @NotBlank(message = "账号不能为空")
+    @Schema(title = "账号", required = true)
     private String username;
 
-    @Schema(title = "账户ID列表")
-    private List<Long> accountIds;
+    @NotBlank(message = "密码不能为空")
+    @Schema(title = "密码", required = true)
+    private String password;
+
+    @NotBlank(message = "昵称不能为空")
+    @Schema(title = "昵称", required = true)
+    private String nickname;
+
+    @Schema(title = "描述")
+    private String accountDescribe;
+
+    @Schema(title = "是否管理员")
+    private Boolean isAdmin;
 
 }

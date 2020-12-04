@@ -44,6 +44,8 @@ public class AccountController extends BaseController {
     @Autowired
     private AccountService accountService;
 
+    // todo 判断用户名是否已注册的接口
+
     @PostMapping
     @Operation(summary = "新增账户")
     public Response<AccountVO> add(@RequestBody AccountAddParam param) {

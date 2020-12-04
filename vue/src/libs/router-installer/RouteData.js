@@ -35,6 +35,10 @@ export default [
                     {
                         path: '/project/project',
                         component: _import('project/Project'),
+                    },
+                    {
+                        path: '/project/project-account',
+                        component: _import('project/ProjectAccount'),
                     }
                 ]
             },

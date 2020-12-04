@@ -31,8 +31,16 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="gmtCreated" label="创建时间"></el-table-column>
-                <el-table-column prop="gmtModified" label="修改时间"></el-table-column>
+                <el-table-column label="账户管理">
+                    <template slot-scope="scope">
+                        <div class="operations">
+                            <template>
+                                <i class="el-icon-edit" @click="() => {$router.push({path: '/project/project-account',
+                                query: {projectId: scope.row.projectId, projectName: scope.row.projectName}})}"></i>
+                            </template>
+                        </div>
+                    </template>
+                </el-table-column>
                 <el-table-column label="操作">
                     <template slot-scope="scope">
                         <div class="operations">

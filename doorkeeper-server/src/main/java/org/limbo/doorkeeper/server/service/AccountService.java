@@ -32,9 +32,13 @@ import java.util.List;
 public interface AccountService {
 
     /**
-     * 注册用户
+     * 添加用户
+     * @param projectId 当前操作项目
+     * @param param
+     * @param isAdmin 设置是否项目管理员
+     * @return
      */
-    AccountVO addAccount(Long projectId, AccountAddParam param);
+    AccountVO addAccount(Long projectId, AccountAddParam param, Boolean isAdmin);
 
     /**
      * 更新账户

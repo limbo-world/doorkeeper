@@ -41,11 +41,12 @@ public class ProjectAccount {
 
     private Long accountId;
     /**
-     * 是否项目超级管理员 主要用于修改别的账号为管理员
-     */
-    private Boolean isSuperAdmin;
-    /**
-     * 是否项目管理员 可以有doorkeeper上此项目的所有接口权限
+     * 是否项目管理员
+     * 1. 普通项目 拥有当前项目所有 doorkeeper 接口权限
+     * 2. doorkeeper 管理项目
+     *      2.1 包含 1 的内容
+     *      2.2 可以创建项目
+     *      2.3 可以进行项目账户绑定 并且可以指定其他项目的管理员
      */
     private Boolean isAdmin;
 
