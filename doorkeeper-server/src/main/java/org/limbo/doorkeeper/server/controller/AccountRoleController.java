@@ -21,6 +21,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.AccountRoleAddParam;
 import org.limbo.doorkeeper.api.model.param.AccountRoleQueryParam;
+import org.limbo.doorkeeper.api.model.param.AccountRoleUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.AccountRoleVO;
 import org.limbo.doorkeeper.server.service.AccountRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,13 @@ public class AccountRoleController extends BaseController {
     @Operation(summary = "获取账户角色")
     public Response<List<AccountRoleVO>> list(AccountRoleQueryParam param) {
         return Response.ok(accountRoleService.list(getProjectId(), param));
+    }
+
+    @PutMapping
+    @Operation(summary = "批量绑定账户角色")
+    public Response<Boolean> batchUpdate(@RequestBody AccountRoleUpdateParam param) {
+        accountRoleService.batchUpdate(getProjectId(), param);
+        return Response.ok(true);
     }
 
     @PostMapping

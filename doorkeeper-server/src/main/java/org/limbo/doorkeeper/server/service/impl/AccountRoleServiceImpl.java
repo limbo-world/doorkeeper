@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.model.param.AccountRoleAddParam;
 import org.limbo.doorkeeper.api.model.param.AccountRoleQueryParam;
+import org.limbo.doorkeeper.api.model.param.AccountRoleUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.AccountRoleVO;
 import org.limbo.doorkeeper.server.constants.BusinessType;
 import org.limbo.doorkeeper.server.constants.OperateType;
@@ -46,6 +47,8 @@ public class AccountRoleServiceImpl implements AccountRoleService {
     @Autowired
     private AccountRoleMapper accountRoleMapper;
 
+    @Autowired
+    private AccountRoleService accountRoleService;
 
     @Override
     public List<AccountRoleVO> list(Long projectId, AccountRoleQueryParam param) {
@@ -54,6 +57,17 @@ public class AccountRoleServiceImpl implements AccountRoleService {
                 .eq(param.getAccountId() != null, AccountRole::getAccountId, param.getAccountId())
         );
         return EnhancedBeanUtils.createAndCopyList(rolePermissions, AccountRoleVO.class);
+    }
+
+    @Override
+    @Transactional
+    public void batchUpdate(Long projectId, AccountRoleUpdateParam param) {
+        if (CollectionUtils.isNotEmpty(param.getDeleteAccountRoleIds())) {
+            accountRoleService.batchDelete(projectId, param.getDeleteAccountRoleIds());
+        }
+        if (CollectionUtils.isNotEmpty(param.getAddAccountRoles())) {
+            accountRoleService.batchSave(projectId, param.getAddAccountRoles());
+        }
     }
 
     @Override
