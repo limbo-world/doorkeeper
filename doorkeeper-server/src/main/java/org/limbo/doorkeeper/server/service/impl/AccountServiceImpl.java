@@ -176,8 +176,8 @@ public class AccountServiceImpl implements AccountService {
             }
         }
 
-        // 管理端管理员 并且项目不为管理端
-        return isAdmin && !adminProjectIds.contains(projectId);
+        // 管理端管理员 并且项目不为管理端 可以设置
+        return !adminProjectIds.contains(projectId);
     }
 
     @Override

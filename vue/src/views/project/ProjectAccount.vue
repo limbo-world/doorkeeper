@@ -42,7 +42,9 @@
                     <el-table-column prop="accountDescribe" label="描述"></el-table-column>
                     <el-table-column prop="isAdmin" label="管理员" align="center" width="80">
                         <template slot-scope="scope">
-                            {{scope.row.isAdmin ? "是" : "否"}}
+                            <!-- todo 管理端下不显示 其他项目下 不是管理端管理员 不显示 -->
+                            <el-switch v-model="scope.row.isAdmin" active-color="#13ce66" :disabled="project.isAdminProject"
+                                       inactive-color="#ff4949"></el-switch>
                         </template>
                     </el-table-column>
                     <el-table-column label="操作" align="center" width="100">
@@ -65,7 +67,7 @@
 
         <el-dialog :title="`${dialogOpenMode}账户`" :visible.sync="accountDialogOpened" width="50%" class="edit-dialog"
                    @close="accountDialogCancel">
-            <project-account-edit :account="account" :open-mode="dialogOpenMode" ref="accountEdit"></project-account-edit>
+            <project-account-edit :account="account" :project="project" :open-mode="dialogOpenMode" ref="accountEdit"></project-account-edit>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="accountDialogCancel">取 消</el-button>
                 <el-button type="primary" @click="accountDialogConfirm">确 定</el-button>
@@ -111,6 +113,7 @@
             pages.projectAccount = this;
             this.project.projectId = this.$route.query.projectId;
             this.project.projectName = this.$route.query.projectName;
+            this.project.isAdminProject = this.$route.query.isAdminProject;
             this.queryForm.projectId = this.$route.query.projectId;
             this.loadAccounts();
         },

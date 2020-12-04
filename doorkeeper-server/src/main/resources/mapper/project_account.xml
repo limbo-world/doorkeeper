@@ -77,9 +77,8 @@
     <select id="pageAllAccountVOS" resultMap="ProjectAccountVO">
         select a.*, pa.is_admin
         from l_account a
-        left join l_project_account pa on pa.account_id = a.account_id
+        left join l_project_account pa on pa.account_id = a.account_id and pa.project_id = #{projectId}
         <where>
-            and pa.project_id = #{projectId}
             <if test="username != null and username != ''">
                 <bind name="username" value="'%' + username + '%'"/>
                 and a.username like #{username}
