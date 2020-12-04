@@ -19,9 +19,7 @@ package org.limbo.doorkeeper.server.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.model.Page;
-import org.limbo.doorkeeper.api.model.param.AccountAddParam;
-import org.limbo.doorkeeper.api.model.param.ProjectAccountAddParam;
-import org.limbo.doorkeeper.api.model.param.ProjectAccountQueryParam;
+import org.limbo.doorkeeper.api.model.param.*;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.limbo.doorkeeper.api.model.vo.ProjectAccountVO;
 import org.limbo.doorkeeper.server.dao.AccountMapper;
@@ -87,6 +85,25 @@ public class ProjectAccountServiceImpl implements ProjectAccountService {
     @Override
     @Transactional
     public AccountVO save(Long currentAccountId, ProjectAccountAddParam param) {
+        if (!canSetAdminParam(currentAccountId, param.getProjectId())) {
+            param.setIsAdmin(false);
+        }
+        return accountService.addAccount(param.getProjectId(),
+                EnhancedBeanUtils.createAndCopy(param, AccountAddParam.class), param.getIsAdmin());
+    }
+
+    @Override
+    @Transactional
+    public void update(Long currentAccountId, ProjectAccountUpdateParam param) {
+        ProjectAccount projectAccount = projectAccountMapper.selectById(param.getProjectAccountId());
+        if (!canSetAdminParam(currentAccountId, projectAccount.getProjectId())) {
+            param.setIsAdmin(false);
+        }
+        // todo 更新
+    }
+
+    // 是否可以设置admin属性
+    private boolean canSetAdminParam(Long currentAccountId, Long projectId) {
         // 判断操作用户是否为管理端管理员
         List<Project> projects = projectMapper.selectList(Wrappers.<Project>lambdaQuery()
                 .eq(Project::getIsAdminProject, true)
@@ -108,11 +125,7 @@ public class ProjectAccountServiceImpl implements ProjectAccountService {
         }
 
         // 不是管理端管理员 且当前项目为管理端项目 不能提交管理员属性
-        if (!isAdmin && adminProjectIds.contains(param.getProjectId())) {
-            param.setIsAdmin(false);
-        }
-        return accountService.addAccount(param.getProjectId(),
-                EnhancedBeanUtils.createAndCopy(param, AccountAddParam.class), param.getIsAdmin());
+        return isAdmin || !adminProjectIds.contains(projectId);
     }
 
 }

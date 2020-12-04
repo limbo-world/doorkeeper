@@ -19,22 +19,28 @@ package org.limbo.doorkeeper.api.model.param;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 /**
  * @author Devil
- * @date 2020/11/19 3:29 PM
+ * @date 2020/11/19 3:27 PM
  */
 @Data
-public class ProjectUpdateParam {
+public class ProjectAccountUpdateParam {
 
-    @Schema(hidden = true)
-    private Long projectId;
+    @NotNull(message = "项目账户ID不能为空")
+    @Schema(title = "项目账户ID", required = true)
+    private Long projectAccountId;
 
-    @Schema(title = "项目名称")
-    private String projectName;
-
-    @Schema(title = "秘钥")
-    private String projectSecret;
+    @NotBlank(message = "昵称不能为空")
+    @Schema(title = "昵称", required = true)
+    private String nickname;
 
     @Schema(title = "描述")
-    private String projectDescribe;
+    private String accountDescribe;
+
+    @Schema(title = "是否管理员")
+    private Boolean isAdmin;
+
 }

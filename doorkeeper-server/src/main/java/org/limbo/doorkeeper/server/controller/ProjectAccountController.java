@@ -22,6 +22,7 @@ import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.ProjectAccountAddParam;
 import org.limbo.doorkeeper.api.model.param.ProjectAccountQueryParam;
+import org.limbo.doorkeeper.api.model.param.ProjectAccountUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.limbo.doorkeeper.api.model.vo.ProjectAccountVO;
 import org.limbo.doorkeeper.server.service.ProjectAccountService;
@@ -53,9 +54,16 @@ public class ProjectAccountController extends BaseController {
     }
 
     @PostMapping
-    @Operation(summary = "分页查询项目账户关系")
+    @Operation(summary = "添加项目账户")
     public Response<AccountVO> add(@RequestBody ProjectAccountAddParam param) {
         return Response.ok(projectAccountService.save(getAccountId(), param));
+    }
+
+    @PostMapping
+    @Operation(summary = "添加项目账户")
+    public Response<Boolean> update(@RequestBody ProjectAccountUpdateParam param) {
+        projectAccountService.update(getAccountId(), param);
+        return Response.ok(true);
     }
 
 }

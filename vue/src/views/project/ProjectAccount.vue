@@ -42,7 +42,7 @@
                     <el-table-column prop="accountDescribe" label="描述"></el-table-column>
                     <el-table-column prop="isAdmin" label="管理员" align="center" width="80">
                         <template slot-scope="scope">
-                            <el-switch v-model="scope.row.isAdmin" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+                            {{scope.row.isAdmin ? "是" : "否"}}
                         </template>
                     </el-table-column>
                     <el-table-column label="操作" align="center" width="100">
