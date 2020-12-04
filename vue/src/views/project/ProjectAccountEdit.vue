@@ -127,7 +127,7 @@
 
             doUpdateAccount(account) {
                 account.projectId = this.project.projectId;
-                return this.$ajax.put(`/project-account/${account.accountId}`, account);
+                return this.$ajax.put(`/project-account/${account.projectAccountId}`, account);
             },
 
             clearData() {

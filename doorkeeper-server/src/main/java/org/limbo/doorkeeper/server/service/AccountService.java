@@ -34,12 +34,12 @@ public interface AccountService {
     /**
      * 添加用户
      */
-    AccountVO addAccount(Long currentProjectId, Long currentAccountId, AccountAddParam param);
+    AccountVO addAccount(Long currentProjectId, Long currentAccountId, AccountAddParam param, boolean needSuperAdmin);
 
     /**
      * 更新账户
      */
-    Integer update(Long currentProjectId, Long currentAccountId, AccountUpdateParam param);
+    Integer update(Long currentProjectId, Long currentAccountId, AccountUpdateParam param, boolean needSuperAdmin);
 
     /**
      * 分页查询

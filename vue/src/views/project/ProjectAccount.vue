@@ -35,11 +35,17 @@
 
         <el-main>
             <el-row>
-                <el-table :data="accounts" size="mini">
+                <el-table :data="accounts" size="mini" @selection-change="handleSelectionChange">
+                    <el-table-column type="selection" width="55"></el-table-column>
                     <el-table-column prop="accountId" label="ID"></el-table-column>
                     <el-table-column prop="username" label="账号"></el-table-column>
                     <el-table-column prop="nickname" label="昵称"></el-table-column>
                     <el-table-column prop="accountDescribe" label="描述"></el-table-column>
+                    <el-table-column prop="accountDescribe" label="加入项目">
+                        <template slot-scope="scope">
+                            {{scope.row.projectAccountId ? "已加入" : "未加入"}}
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="isAdmin" label="管理员" align="center" width="80">
                         <template slot-scope="scope">
                             <!-- todo 管理端下不显示 其他项目下 不是管理端管理员 不显示 -->
@@ -99,6 +105,9 @@
                 project: {},
                 accounts: [],
                 account: {},
+
+                selectAccounts: [],
+
                 dialogOpenMode: '',
                 accountDialogOpened: false,
                 accountRoleDialogOpened: false,
@@ -137,6 +146,10 @@
                     this.queryForm.total = page.total >= 0 ? page.total : this.queryForm.total;
                     this.accounts = page.data;
                 }).finally(() => this.stopProgress());
+            },
+
+            handleSelectionChange(val) {
+                this.selectAccounts = val;
             },
 
             // ========= 账户相关 ============

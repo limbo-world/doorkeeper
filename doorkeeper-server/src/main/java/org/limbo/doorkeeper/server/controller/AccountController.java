@@ -49,7 +49,7 @@ public class AccountController extends BaseController {
     @PostMapping
     @Operation(summary = "新增账户")
     public Response<AccountVO> add(@RequestBody AccountAddParam param) {
-        return Response.ok(accountService.addAccount(getProjectId(), getAccountId(), param));
+        return Response.ok(accountService.addAccount(getProjectId(), getAccountId(), param, true));
     }
 
     @PutMapping("/{accountId}")
@@ -57,7 +57,7 @@ public class AccountController extends BaseController {
     public Response<Integer> update(@Validated @NotNull(message = "账户不存在") @PathVariable("accountId") Long accountId,
                                     @RequestBody AccountUpdateParam param) {
         param.setAccountId(accountId);
-        return Response.ok(accountService.update(getProjectId(), getAccountId(), param));
+        return Response.ok(accountService.update(getProjectId(), getAccountId(), param, true));
     }
 
     @GetMapping("/query")

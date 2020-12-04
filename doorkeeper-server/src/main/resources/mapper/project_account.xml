@@ -75,7 +75,7 @@
     </select>
 
     <select id="pageAllAccountVOS" resultMap="ProjectAccountVO">
-        select a.*, pa.is_admin
+        select a.*, pa.is_admin, pa.project_account_id
         from l_account a
         left join l_project_account pa on pa.account_id = a.account_id and pa.project_id = #{projectId}
         <where>

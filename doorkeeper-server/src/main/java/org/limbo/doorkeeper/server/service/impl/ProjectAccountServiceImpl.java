@@ -86,17 +86,19 @@ public class ProjectAccountServiceImpl implements ProjectAccountService {
     @Transactional
     public AccountVO save(Long currentAccountId, ProjectAccountAddParam param) {
         return accountService.addAccount(param.getProjectId(), currentAccountId,
-                EnhancedBeanUtils.createAndCopy(param, AccountAddParam.class));
+                EnhancedBeanUtils.createAndCopy(param, AccountAddParam.class), false);
     }
 
     @Override
     @Transactional
     public void update(Long currentAccountId, ProjectAccountUpdateParam param) {
         ProjectAccount projectAccount = projectAccountMapper.selectById(param.getProjectAccountId());
-        if (!canSetAdminParam(currentAccountId, projectAccount.getProjectId())) {
-            param.setIsAdmin(false);
-        }
-        // todo 更新
+        AccountUpdateParam accountUpdateParam = new AccountUpdateParam();
+        accountUpdateParam.setNickname(param.getNickname());
+        accountUpdateParam.setAccountDescribe(param.getAccountDescribe());
+        accountUpdateParam.setAccountId(projectAccount.getAccountId());
+        accountUpdateParam.setIsAdmin(param.getIsAdmin());
+        accountService.update(projectAccount.getProjectId(), currentAccountId, accountUpdateParam, false);
     }
 
     /**

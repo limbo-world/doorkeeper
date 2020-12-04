@@ -27,7 +27,10 @@ import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.limbo.doorkeeper.api.model.vo.ProjectAccountVO;
 import org.limbo.doorkeeper.server.service.ProjectAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * @Author Devil
@@ -59,9 +62,11 @@ public class ProjectAccountController extends BaseController {
         return Response.ok(projectAccountService.save(getAccountId(), param));
     }
 
-    @PutMapping
+    @PutMapping("/{projectAccountId}")
     @Operation(summary = "添加项目账户")
-    public Response<Boolean> update(@RequestBody ProjectAccountUpdateParam param) {
+    public Response<Boolean> update(@Validated @NotNull(message = "ID不能为空") @PathVariable("projectAccountId") Long projectAccountId,
+                                    @RequestBody ProjectAccountUpdateParam param) {
+        param.setProjectAccountId(projectAccountId);
         projectAccountService.update(getAccountId(), param);
         return Response.ok(true);
     }

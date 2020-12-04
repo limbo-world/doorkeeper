@@ -20,7 +20,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.limbo.doorkeeper.api.exception.ParamException;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.AccountAddParam;
 import org.limbo.doorkeeper.api.model.param.AccountQueryParam;
@@ -76,12 +75,14 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     private ProjectMapper projectMapper;
 
+    @Autowired
+    private AccountServiceImpl accountService;
+
     @Override
     @Transactional
     @PLog(operateType = OperateType.CREATE, businessType = BusinessType.ACCOUNT)
-    public AccountVO addAccount(@PLogTag(PLogConstants.CONTENT) Long currentProjectId, Long currentAccountId,
-                                @PLogTag(PLogConstants.CONTENT) AccountAddParam param) {
-
+    public AccountVO addAccount(Long currentProjectId, Long currentAccountId,
+                                        @PLogTag(PLogConstants.CONTENT) AccountAddParam param, boolean needSuperAdmin) {
         // 判断账号是否已经存在
         Account po = EnhancedBeanUtils.createAndCopy(param, Account.class);
         try {
@@ -97,13 +98,13 @@ public class AccountServiceImpl implements AccountService {
         projectAccount.setProjectId(currentProjectId);
         projectAccount.setAccountId(po.getAccountId());
         projectAccount.setIsAdmin(param.getIsAdmin());
-        if (!canSetAdminParam(currentAccountId, currentProjectId)) {
+        if (!canSetAdminParam(currentAccountId, currentProjectId, needSuperAdmin)) {
             projectAccount.setIsAdmin(false);
         }
         try {
             projectAccountMapper.insert(projectAccount);
         } catch (DuplicateKeyException e) {
-            throw new ParamException("项目已绑定对应账户");
+            return EnhancedBeanUtils.createAndCopy(po, AccountVO.class);
         }
 
         // 找到项目中需要默认添加的角色
@@ -129,16 +130,15 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     @PLog(operateType = OperateType.UPDATE, businessType = BusinessType.ACCOUNT)
-    public Integer update(@PLogTag(PLogConstants.CONTENT) Long currentProjectId, Long currentAccountId,
-                          @PLogTag(PLogConstants.CONTENT) AccountUpdateParam param) {
-
+    public Integer update(Long currentProjectId, Long currentAccountId,
+                                  @PLogTag(PLogConstants.CONTENT) AccountUpdateParam param, boolean needSuperAdmin) {
         int update = accountMapper.update(null, Wrappers.<Account>lambdaUpdate()
                 .set(StringUtils.isNotBlank(param.getAccountDescribe()), Account::getAccountDescribe, param.getAccountDescribe())
                 .set(StringUtils.isNotBlank(param.getNickname()), Account::getNickname, param.getNickname())
                 .eq(Account::getAccountId, param.getAccountId())
         );
 
-        if (canSetAdminParam(currentAccountId, currentProjectId)) {
+        if (canSetAdminParam(currentAccountId, currentProjectId, needSuperAdmin)) {
             projectAccountMapper.update(null, Wrappers.<ProjectAccount>lambdaUpdate()
                     .eq(ProjectAccount::getProjectId, currentProjectId)
                     .eq(ProjectAccount::getAccountId, param.getAccountDescribe())
@@ -155,15 +155,22 @@ public class AccountServiceImpl implements AccountService {
      * @param projectId 操作项目
      * @return
      */
-    private boolean canSetAdminParam(Long accountId, Long projectId) {
+    private boolean canSetAdminParam(Long accountId, Long projectId, boolean needSuperAdmin) {
         // 判断操作用户是否为管理端管理员
         List<Project> projects = projectMapper.selectList(Wrappers.<Project>lambdaQuery()
                 .eq(Project::getIsAdminProject, true)
         );
-        boolean isAdmin = false;
         List<Long> adminProjectIds = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(projects)) {
             adminProjectIds = projects.stream().map(Project::getProjectId).collect(Collectors.toList());
+        }
+
+        if (!needSuperAdmin) {
+            return !adminProjectIds.contains(projectId);
+        }
+
+        boolean isAdmin = false;
+        if (CollectionUtils.isNotEmpty(projects)) {
             List<ProjectAccount> projectAccounts = projectAccountMapper.selectList(Wrappers.<ProjectAccount>lambdaQuery()
                     .eq(ProjectAccount::getAccountId, accountId)
                     .in(ProjectAccount::getProjectId, adminProjectIds)
@@ -177,7 +184,7 @@ public class AccountServiceImpl implements AccountService {
         }
 
         // 管理端管理员 并且项目不为管理端 可以设置
-        return !adminProjectIds.contains(projectId);
+        return isAdmin && !adminProjectIds.contains(projectId);
     }
 
     @Override

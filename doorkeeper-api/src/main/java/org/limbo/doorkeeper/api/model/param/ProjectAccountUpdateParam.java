@@ -20,7 +20,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 /**
  * @author Devil
@@ -29,8 +28,7 @@ import javax.validation.constraints.NotNull;
 @Data
 public class ProjectAccountUpdateParam {
 
-    @NotNull(message = "项目账户ID不能为空")
-    @Schema(title = "项目账户ID", required = true)
+    @Schema(hidden = true)
     private Long projectAccountId;
 
     @NotBlank(message = "昵称不能为空")
