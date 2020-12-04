@@ -26,16 +26,16 @@ import lombok.Data;
 @Data
 public class AccountRoleVO {
 
-    @Schema(title = "角色权限id")
-    private Long rolePermissionId;
+    @Schema(title = "账户角色ID")
+    private Long accountRoleId;
 
     @Schema(title = "项目ID")
     private Long projectId;
 
+    @Schema(title = "账户ID")
+    private Long accountId;
+
     @Schema(title = "角色ID")
     private Long roleId;
-
-    @Schema(title = "权限ID")
-    private Long permissionId;
 
 }

@@ -90,11 +90,12 @@
             },
 
             roleChange(value, direction, movedKeys) { // value 右边剩余的key direction 方向 movedKeys 移动的key
+                console.log(movedKeys)
                 if ('left' === direction) {
                     movedKeys.forEach(k => {
                         for (let role of this.roles) {
-                            if (k === role.accountId) {
-                                role.delAccountRoleId = account.delAccountRoleId;
+                            if (k === role.roleId) {
+                                role.delAccountRoleId = role.accountRoleId;
                             }
                         }
                     });
@@ -138,7 +139,7 @@
                 });
                 let param = {
                     addAccountRoles: has,
-                    deleteRolePermissionIds: delIds
+                    deleteAccountRoleIds: delIds
                 };
                 return this.$ajax.put(`/account-role`, param);
             },
