@@ -38,18 +38,11 @@
                 <el-table :data="accounts" size="mini">
                     <el-table-column prop="accountId" label="ID"></el-table-column>
                     <el-table-column prop="username" label="账号"></el-table-column>
+                    <el-table-column prop="nickname" label="昵称"></el-table-column>
                     <el-table-column prop="accountDescribe" label="描述"></el-table-column>
-                    <el-table-column prop="isAdmin" label="等级" align="center" width="80">
+                    <el-table-column prop="isAdmin" label="管理员" align="center" width="80">
                         <template slot-scope="scope">
-                            {{ scope.row.isAdmin ? (scope.row.isSuperAdmin ? "超级管理员" : "管理员") : "普通用户"}}
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="绑定角色" align="center" width="100">
-                        <template slot-scope="scope">
-                            <div class="operations">
-                                <i v-if="!scope.row.isAdmin" class="el-icon-view" @click="viewRole(scope.row)"></i>
-                                <i v-if="!scope.row.isAdmin" class="el-icon-edit" @click="editRole(scope.row)"></i>
-                            </div>
+                            <el-switch v-model="scope.row.isAdmin" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
                         </template>
                     </el-table-column>
                     <el-table-column label="操作" align="center" width="100">
@@ -136,7 +129,7 @@
                     this.resetPageForm();
                 }
                 this.startProgress();
-                return this.$ajax.get('/project-account/query', {params: this.queryForm}).then(response => {
+                return this.$ajax.get('/project-account/all-account', {params: this.queryForm}).then(response => {
                     const page = response.data;
                     this.queryForm.total = page.total >= 0 ? page.total : this.queryForm.total;
                     this.accounts = page.data;

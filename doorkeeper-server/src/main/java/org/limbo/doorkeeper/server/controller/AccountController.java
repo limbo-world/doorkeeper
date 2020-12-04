@@ -49,7 +49,7 @@ public class AccountController extends BaseController {
     @PostMapping
     @Operation(summary = "新增账户")
     public Response<AccountVO> add(@RequestBody AccountAddParam param) {
-        return Response.ok(accountService.addAccount(getProjectId(), param));
+        return Response.ok(accountService.addAccount(getProjectId(), param, false));
     }
 
     @PutMapping("/{accountId}")

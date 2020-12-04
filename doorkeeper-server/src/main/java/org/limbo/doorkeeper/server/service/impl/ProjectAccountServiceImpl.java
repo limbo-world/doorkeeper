@@ -24,13 +24,13 @@ import org.limbo.doorkeeper.api.model.param.ProjectAccountAddParam;
 import org.limbo.doorkeeper.api.model.param.ProjectAccountQueryParam;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.limbo.doorkeeper.api.model.vo.ProjectAccountVO;
+import org.limbo.doorkeeper.server.dao.AccountMapper;
 import org.limbo.doorkeeper.server.dao.ProjectAccountMapper;
 import org.limbo.doorkeeper.server.dao.ProjectMapper;
 import org.limbo.doorkeeper.server.entity.Project;
 import org.limbo.doorkeeper.server.entity.ProjectAccount;
 import org.limbo.doorkeeper.server.service.AccountService;
 import org.limbo.doorkeeper.server.service.ProjectAccountService;
-import org.limbo.doorkeeper.server.support.authc.AuthenticationException;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,6 +47,8 @@ import java.util.stream.Collectors;
 @Service
 public class ProjectAccountServiceImpl implements ProjectAccountService {
 
+    @Autowired
+    private AccountMapper accountMapper;
     @Autowired
     private ProjectMapper projectMapper;
     @Autowired
@@ -67,6 +69,18 @@ public class ProjectAccountServiceImpl implements ProjectAccountService {
         if (count > 0) {
             param.setData(projectAccountMapper.pageVOS(param));
         }
+        return param;
+    }
+
+    @Override
+    public Page<ProjectAccountVO> pageAllAccount(ProjectAccountQueryParam param) {
+        Integer count = accountMapper.selectCount(Wrappers.emptyWrapper());
+        param.setTotal(count);
+        if (count > 0) {
+            List<ProjectAccountVO> projectAccountVOS = projectAccountMapper.pageAllAccountVOS(param);
+            param.setData(projectAccountVOS);
+        }
+
         return param;
     }
 
@@ -93,13 +107,8 @@ public class ProjectAccountServiceImpl implements ProjectAccountService {
             }
         }
 
-        if (!isAdmin) { // 不是管理端管理员 无权操作
-            throw new AuthenticationException("无权操作");
-        }
-
-        // 是管理端管理员 添加项目为管理端 则不能提交管理员属性
-        // 是管理端管理员 添加项目不为管理端 则可以提交管理员属性
-        if (adminProjectIds.contains(param.getProjectId())) {
+        // 不是管理端管理员 且当前项目为管理端项目 不能提交管理员属性
+        if (!isAdmin && adminProjectIds.contains(param.getProjectId())) {
             param.setIsAdmin(false);
         }
         return accountService.addAccount(param.getProjectId(),

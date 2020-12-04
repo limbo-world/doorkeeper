@@ -35,4 +35,6 @@ public interface ProjectAccountMapper extends BaseMapper<ProjectAccount> {
     long pageVOCount(ProjectAccountQueryParam param);
 
     List<ProjectAccountVO> pageVOS(ProjectAccountQueryParam param);
+
+    List<ProjectAccountVO> pageAllAccountVOS(ProjectAccountQueryParam param);
 }

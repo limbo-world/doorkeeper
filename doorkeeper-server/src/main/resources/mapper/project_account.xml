@@ -23,7 +23,6 @@
         <result column="account_id" property="accountId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="project_id" property="projectId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="project_name" property="projectName" jdbcType="VARCHAR" javaType="java.lang.String" />
-        <result column="is_super_admin" property="isSuperAdmin" jdbcType="BIT" javaType="java.lang.Boolean"/>
         <result column="is_admin" property="isAdmin" jdbcType="BIT" javaType="java.lang.Boolean"/>
         <result column="account_describe" property="accountDescribe" jdbcType="VARCHAR" javaType="java.lang.String" />
         <result column="nickname" property="nickname" jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -69,6 +68,22 @@
         from l_project_account pa, l_account a
         <where>
             <include refid="accountVOQueryCondition"></include>
+        </where>
+        <if test="offset != null and size != null">
+            LIMIT #{offset}, #{size}
+        </if>
+    </select>
+
+    <select id="pageAllAccountVOS" resultMap="ProjectAccountVO">
+        select a.*, pa.is_admin
+        from l_account a
+        left join l_project_account pa on pa.account_id = a.account_id
+        <where>
+            and pa.project_id = #{projectId}
+            <if test="username != null and username != ''">
+                <bind name="username" value="'%' + username + '%'"/>
+                and a.username like #{username}
+            </if>
         </where>
         <if test="offset != null and size != null">
             LIMIT #{offset}, #{size}

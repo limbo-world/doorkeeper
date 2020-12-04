@@ -40,5 +40,10 @@ public interface ProjectAccountService {
      */
     Page<ProjectAccountVO> page(ProjectAccountQueryParam param);
 
+    /**
+     * 分页查询账户项目关系
+     */
+    Page<ProjectAccountVO> pageAllAccount(ProjectAccountQueryParam param);
+
     AccountVO save(Long currentAccountId, ProjectAccountAddParam param);
 }

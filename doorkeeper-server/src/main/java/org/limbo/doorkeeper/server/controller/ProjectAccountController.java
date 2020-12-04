@@ -40,12 +40,16 @@ public class ProjectAccountController extends BaseController {
     @Autowired
     private ProjectAccountService projectAccountService;
 
-    // todo 判断当前项目超管是否存在
-
     @GetMapping("/query")
     @Operation(summary = "分页查询项目账户关系")
     public Response<Page<ProjectAccountVO>> query(ProjectAccountQueryParam param) {
         return Response.ok(projectAccountService.page(param));
+    }
+
+    @GetMapping("/all-account")
+    @Operation(summary = "分页查询项目账户关系")
+    public Response<Page<ProjectAccountVO>> allAccount(ProjectAccountQueryParam param) {
+        return Response.ok(projectAccountService.pageAllAccount(param));
     }
 
     @PostMapping
