@@ -30,7 +30,6 @@ import org.limbo.doorkeeper.server.constants.BusinessType;
 import org.limbo.doorkeeper.server.constants.OperateType;
 import org.limbo.doorkeeper.server.dao.AccountMapper;
 import org.limbo.doorkeeper.server.dao.ProjectMapper;
-import org.limbo.doorkeeper.server.entity.Account;
 import org.limbo.doorkeeper.server.entity.Project;
 import org.limbo.doorkeeper.server.service.ProjectService;
 import org.limbo.doorkeeper.server.support.plog.PLog;
@@ -134,7 +133,7 @@ public class ProjectServiceImpl implements ProjectService {
                 Project::getProjectId,
                 Project::getProjectName,
                 Project::getProjectDescribe,
-                Project::getIsAdmin,
+                Project::getIsAdminProject,
                 Project::getGmtCreated,
                 Project::getGmtModified
         );

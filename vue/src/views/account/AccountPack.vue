@@ -15,7 +15,7 @@
   -->
 
 <template>
-    <admin v-if="user.account.projectId === user.account.currentProjectId"></admin>
+    <admin v-if="user.account.currentProject.isAdminProject"></admin>
     <account v-else></account>
 </template>
 

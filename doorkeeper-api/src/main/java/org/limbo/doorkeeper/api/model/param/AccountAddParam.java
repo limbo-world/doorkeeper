@@ -20,8 +20,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
  * @author Devil
@@ -30,11 +28,19 @@ import javax.validation.constraints.Size;
 @Data
 public class AccountAddParam {
 
-    @NotBlank(message = "用户名不可为空")
+    @NotBlank(message = "用户名不能为空")
     @Schema(title = "账户名称", required = true)
     private String username;
 
-    @Schema(title = "是否管理员")
-    private Boolean isAdmin;
+    @NotBlank(message = "密码不能为空")
+    @Schema(title = "密码", required = true)
+    private String password;
+
+    @NotBlank(message = "昵称不能为空")
+    @Schema(title = "昵称", required = true)
+    private String nickname;
+
+    @Schema(title = "描述")
+    private String accountDescribe;
 
 }

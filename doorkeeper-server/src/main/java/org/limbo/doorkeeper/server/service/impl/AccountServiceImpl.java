@@ -18,6 +18,7 @@ package org.limbo.doorkeeper.server.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.exception.ParamException;
@@ -34,6 +35,7 @@ import org.limbo.doorkeeper.server.dao.ProjectAccountMapper;
 import org.limbo.doorkeeper.server.dao.ProjectMapper;
 import org.limbo.doorkeeper.server.dao.RoleMapper;
 import org.limbo.doorkeeper.server.entity.Account;
+import org.limbo.doorkeeper.server.entity.ProjectAccount;
 import org.limbo.doorkeeper.server.entity.Role;
 import org.limbo.doorkeeper.server.service.AccountRoleService;
 import org.limbo.doorkeeper.server.service.AccountService;
@@ -55,6 +57,7 @@ import java.util.List;
  * @date 2020/3/9 10:58 AM
  * @email brozen@qq.com
  */
+@Slf4j
 @Service
 public class AccountServiceImpl implements AccountService {
 
@@ -78,12 +81,24 @@ public class AccountServiceImpl implements AccountService {
     @PLog(operateType = OperateType.CREATE, businessType = BusinessType.ACCOUNT)
     public AccountVO addAccount(@PLogTag(PLogConstants.CONTENT) Long projectId,
                                 @PLogTag(PLogConstants.CONTENT) AccountAddParam param) {
-        // todo
+
         Account po = EnhancedBeanUtils.createAndCopy(param, Account.class);
         try {
             accountMapper.insert(po);
         } catch (DuplicateKeyException e) {
-            throw new ParamException("账户已存在");
+            po = accountMapper.selectOne(Wrappers.<Account>lambdaQuery()
+                    .eq(Account::getUsername, param.getUsername())
+            );
+        }
+
+        // 绑定到对应的项目
+        ProjectAccount projectAccount = new ProjectAccount();
+        projectAccount.setProjectId(projectId);
+        projectAccount.setAccountId(po.getAccountId());
+        try {
+            projectAccountMapper.insert(projectAccount);
+        } catch (DuplicateKeyException e) {
+            throw new ParamException("项目已绑定对应账户");
         }
 
         // 找到项目中需要默认添加的角色

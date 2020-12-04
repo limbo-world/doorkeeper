@@ -28,11 +28,13 @@
         <result column="account_describe" property="accountDescribe" jdbcType="VARCHAR" javaType="java.lang.String" />
         <result column="nickname" property="nickname" jdbcType="VARCHAR" javaType="java.lang.String" />
         <result column="username" property="username" jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result column="is_admin_project" property="isAdminProject" jdbcType="BIT" javaType="java.lang.Boolean"/>
     </resultMap>
 
     <select id="selectVOS" resultMap="ProjectAccountVO">
-        select pa.*, p.project_name from l_project_account pa
+        select pa.*, p.project_name, p.is_admin_project from l_project_account pa
         left join l_project p on p.project_id = pa.project_id
+
         <where>
             <if test="accountId != null">
                 and pa.account_id = #{accountId}

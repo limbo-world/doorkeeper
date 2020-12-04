@@ -52,7 +52,7 @@ public class Project {
     /**
      * 是否为管理端项目
      */
-    private Boolean isAdmin;
+    private Boolean isAdminProject;
 
     private Date gmtCreated;
 

@@ -47,6 +47,9 @@ public class ProjectAccountVO {
     @Schema(name = "是否管理员")
     private Boolean isAdmin;
 
+    @Schema(name = "是否管理端项目")
+    private Boolean isAdminProject;
+
     @Schema(title = "账户名称")
     private String username;
 

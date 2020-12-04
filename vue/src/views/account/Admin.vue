@@ -48,14 +48,6 @@
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="绑定项目" align="center" width="100">
-                        <template slot-scope="scope">
-                            <div class="operations">
-                                <i v-if="!scope.row.isAdmin" class="el-icon-view" @click="viewProject(scope.row)"></i>
-                                <i v-if="!scope.row.isAdmin" class="el-icon-edit" @click="editProject(scope.row)"></i>
-                            </div>
-                        </template>
-                    </el-table-column>
                     <el-table-column label="操作" align="center" width="100">
                         <template slot-scope="scope">
                             <div class="operations">
