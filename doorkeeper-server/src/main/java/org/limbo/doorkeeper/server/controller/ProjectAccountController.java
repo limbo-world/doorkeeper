@@ -48,7 +48,7 @@ public class ProjectAccountController extends BaseController {
     }
 
     @GetMapping("/all-account")
-    @Operation(summary = "分页查询项目账户关系")
+    @Operation(summary = "分页查询所有账户与项目关系")
     public Response<Page<ProjectAccountVO>> allAccount(ProjectAccountQueryParam param) {
         return Response.ok(projectAccountService.pageAllAccount(param));
     }
@@ -59,7 +59,7 @@ public class ProjectAccountController extends BaseController {
         return Response.ok(projectAccountService.save(getAccountId(), param));
     }
 
-    @PostMapping
+    @PutMapping
     @Operation(summary = "添加项目账户")
     public Response<Boolean> update(@RequestBody ProjectAccountUpdateParam param) {
         projectAccountService.update(getAccountId(), param);

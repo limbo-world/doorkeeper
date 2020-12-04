@@ -32,8 +32,10 @@ import org.limbo.doorkeeper.server.constants.BusinessType;
 import org.limbo.doorkeeper.server.constants.OperateType;
 import org.limbo.doorkeeper.server.dao.AccountMapper;
 import org.limbo.doorkeeper.server.dao.ProjectAccountMapper;
+import org.limbo.doorkeeper.server.dao.ProjectMapper;
 import org.limbo.doorkeeper.server.dao.RoleMapper;
 import org.limbo.doorkeeper.server.entity.Account;
+import org.limbo.doorkeeper.server.entity.Project;
 import org.limbo.doorkeeper.server.entity.ProjectAccount;
 import org.limbo.doorkeeper.server.entity.Role;
 import org.limbo.doorkeeper.server.service.AccountRoleService;
@@ -50,6 +52,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Brozen
@@ -72,11 +75,14 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     private ProjectAccountMapper projectAccountMapper;
 
+    @Autowired
+    private ProjectMapper projectMapper;
+
     @Override
     @Transactional
     @PLog(operateType = OperateType.CREATE, businessType = BusinessType.ACCOUNT)
-    public AccountVO addAccount(@PLogTag(PLogConstants.CONTENT) Long projectId,
-                                @PLogTag(PLogConstants.CONTENT) AccountAddParam param, Boolean isAdmin) {
+    public AccountVO addAccount(@PLogTag(PLogConstants.CONTENT) Long projectId, Long accountId,
+                                @PLogTag(PLogConstants.CONTENT) AccountAddParam param) {
 
         // 判断账号是否已经存在
         Account po = EnhancedBeanUtils.createAndCopy(param, Account.class);
@@ -92,6 +98,10 @@ public class AccountServiceImpl implements AccountService {
         ProjectAccount projectAccount = new ProjectAccount();
         projectAccount.setProjectId(projectId);
         projectAccount.setAccountId(po.getAccountId());
+        projectAccount.setIsAdmin(param.getIsAdmin());
+        if (!canSetAdminParam(accountId, projectId)) {
+            projectAccount.setIsAdmin(false);
+        }
         try {
             projectAccountMapper.insert(projectAccount);
         } catch (DuplicateKeyException e) {
@@ -128,6 +138,37 @@ public class AccountServiceImpl implements AccountService {
                 .set(StringUtils.isNotBlank(param.getAccountDescribe()), Account::getAccountDescribe, param.getAccountDescribe())
                 .eq(Account::getAccountId, param.getAccountId())
         );
+    }
+
+    /**
+     * 是否可以设置admin属性
+     * @param accountId 操作用户
+     * @param projectId 操作项目
+     * @return
+     */
+    private boolean canSetAdminParam(Long accountId, Long projectId) {
+        // 判断操作用户是否为管理端管理员
+        List<Project> projects = projectMapper.selectList(Wrappers.<Project>lambdaQuery()
+                .eq(Project::getIsAdminProject, true)
+        );
+        boolean isAdmin = false;
+        List<Long> adminProjectIds = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(projects)) {
+            adminProjectIds = projects.stream().map(Project::getProjectId).collect(Collectors.toList());
+            List<ProjectAccount> projectAccounts = projectAccountMapper.selectList(Wrappers.<ProjectAccount>lambdaQuery()
+                    .eq(ProjectAccount::getAccountId, accountId)
+                    .in(ProjectAccount::getProjectId, adminProjectIds)
+            );
+            for (ProjectAccount projectAccount : projectAccounts) {
+                if (projectAccount.getIsAdmin()) {
+                    isAdmin = true;
+                    break;
+                }
+            }
+        }
+
+        // 不是管理端管理员 且当前项目为管理端项目 不能提交管理员属性
+        return isAdmin || !adminProjectIds.contains(projectId);
     }
 
     @Override

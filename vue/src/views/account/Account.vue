@@ -34,9 +34,9 @@
                     <el-table-column prop="accountId" label="ID"></el-table-column>
                     <el-table-column prop="username" label="账号"></el-table-column>
                     <el-table-column prop="accountDescribe" label="描述"></el-table-column>
-                    <el-table-column prop="isAdmin" label="等级" align="center" width="80">
+                    <el-table-column prop="isAdmin" label="管理员" align="center" width="80">
                         <template slot-scope="scope">
-                            {{ scope.row.isAdmin ? (scope.row.isSuperAdmin ? "超级管理员" : "管理员") : "普通用户"}}
+                            <el-switch v-model="scope.row.isAdmin" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
                         </template>
                     </el-table-column>
                     <el-table-column label="绑定角色" align="center" width="100">
@@ -97,10 +97,13 @@
         components: {
             AccountEdit, AccountRoleEdit,
         },
-
+        computed: {
+            ...mapState('session', ['user']),
+        },
         data() {
             return {
                 queryForm: {
+                    projectId: 0,
                     current: 1,
                     size: 10,
                     total: -1,
@@ -114,13 +117,9 @@
                 accountRoleDialogOpened: false,
             };
         },
-
-        computed: {
-            ...mapState('session', ['user']),
-        },
-
         created() {
             pages.account = this;
+            this.queryForm.projectId = this.user.account.currentProject.projectId
             this.loadAccounts();
         },
 

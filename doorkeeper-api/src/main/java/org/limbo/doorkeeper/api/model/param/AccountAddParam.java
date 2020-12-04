@@ -43,4 +43,7 @@ public class AccountAddParam {
     @Schema(title = "描述")
     private String accountDescribe;
 
+    @Schema(title = "是否管理员")
+    private Boolean isAdmin;
+
 }

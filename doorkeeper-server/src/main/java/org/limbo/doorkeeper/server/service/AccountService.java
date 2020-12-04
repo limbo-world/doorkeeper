@@ -33,12 +33,8 @@ public interface AccountService {
 
     /**
      * 添加用户
-     * @param projectId 当前操作项目
-     * @param param
-     * @param isAdmin 设置是否项目管理员
-     * @return
      */
-    AccountVO addAccount(Long projectId, AccountAddParam param, Boolean isAdmin);
+    AccountVO addAccount(Long projectId, Long accountId, AccountAddParam param);
 
     /**
      * 更新账户

@@ -17,10 +17,19 @@
 <template>
     <el-container>
         <el-main>
-            <el-form :model="account" label-width="120px" size="mini" class="edit-form" ref="editForm">
-                <el-form-item label="账号" prop="username" v-if="'新增' === openMode"
-                              :rules="{required: true, message: '请填写账号', trigger: 'blur'}">
+            <el-form :model="account" label-width="120px" size="mini" class="edit-form"
+                     :rules="rules" ref="editForm">
+                <el-form-item label="账号" prop="username" v-if="'新增' === openMode">
                     <el-input v-model="account.username"></el-input>
+                </el-form-item>
+                <el-form-item label="密码" prop="password" v-if="'新增' === openMode">
+                    <el-input v-model="account.password" type="password"></el-input>
+                </el-form-item>
+                <el-form-item label="确认密码" prop="confirmPassword" v-if="'新增' === openMode">
+                    <el-input v-model="account.confirmPassword" type="password"></el-input>
+                </el-form-item>
+                <el-form-item label="昵称" prop="nickname">
+                    <el-input v-model="account.nickname"></el-input>
                 </el-form-item>
                 <el-form-item label="描述">
                     <el-input type="textarea" v-model="account.accountDescribe"></el-input>
@@ -36,6 +45,7 @@
 
 <script>
 
+    import Rules from '../../utils/ValidateRules';
 
     export default {
         props: {
@@ -50,7 +60,28 @@
         },
 
         data() {
+            const confirmPassword = (rule, value, cb) => {
+                if (this.account.password !== value) {
+                    cb(new Error('两次输入密码不一致'));
+                } else {
+                    cb();
+                }
+            };
+
             return {
+                rules: {
+                    username: [Rules.required('登录用户名'), Rules.length(3, 32), ],
+                    password: [ Rules.required('登录密码'), Rules.length(6, 32), ],
+                    confirmPassword: [
+                        Rules.required('确认密码'),
+                        Rules.length(6, 32),
+                        {
+                            validator: confirmPassword,
+                            trigger: 'blur'
+                        }
+                    ],
+                    nickname: [ Rules.required('昵称'), Rules.length(2, 32) ]
+                }
             };
         },
 
@@ -91,11 +122,11 @@
             },
 
             doAddAccount(account) {
-                return this.$ajax.post('/account', account);
+                return this.$ajax.post('/admin', account);
             },
 
             doUpdateAccount(account) {
-                return this.$ajax.put(`/account/${account.accountId}`, account);
+                return this.$ajax.put(`/admin/${account.accountId}`, account);
             },
 
             clearData() {

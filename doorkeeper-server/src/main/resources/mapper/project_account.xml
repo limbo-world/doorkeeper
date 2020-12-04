@@ -33,7 +33,6 @@
     <select id="selectVOS" resultMap="ProjectAccountVO">
         select pa.*, p.project_name, p.is_admin_project from l_project_account pa
         left join l_project p on p.project_id = pa.project_id
-
         <where>
             <if test="accountId != null">
                 and pa.account_id = #{accountId}
@@ -45,6 +44,7 @@
     </select>
 
     <sql id="accountVOQueryCondition">
+        and pa.account_id = a.account_id
         <if test="projectId != null">
             and pa.project_id = #{projectId}
         </if>
@@ -64,7 +64,7 @@
         </where>
     </select>
     <select id="pageVOS" resultMap="ProjectAccountVO">
-        select a.*
+        select a.*, pa.is_admin
         from l_project_account pa, l_account a
         <where>
             <include refid="accountVOQueryCondition"></include>
