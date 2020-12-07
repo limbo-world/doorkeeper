@@ -30,8 +30,13 @@
 
         <el-main>
             <el-table :data="roles" ref="roleTable" size="mini">
-                <el-table-column align="left" prop="roleName" label="名称" width="150"></el-table-column>
+                <el-table-column align="left" prop="roleName" label="名称"></el-table-column>
                 <el-table-column align="center" prop="roleDescribe" label="描述"></el-table-column>
+                <el-table-column align="center" label="默认添加">
+                    <template slot-scope="scope">
+                        {{scope.row.isDefault ? "是" : "否"}}
+                    </template>
+                </el-table-column>
                 <el-table-column align="center" label="角色权限" width="150">
                     <template slot-scope="scope">
                         <div class="operations">
