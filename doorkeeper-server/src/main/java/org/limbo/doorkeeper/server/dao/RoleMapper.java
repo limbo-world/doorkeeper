@@ -30,5 +30,8 @@ import java.util.List;
  * @email brozen@qq.com
  */
 public interface RoleMapper extends BaseMapper<Role> {
-    List<RoleVO> managerRoles();
+    /**
+     * 返回 项目为 isAdminProject true 的角色
+     */
+    List<RoleVO> adminRoles();
 }

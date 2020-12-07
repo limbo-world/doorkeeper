@@ -40,6 +40,9 @@ public interface RoleService {
 
     List<RoleVO> list(Long projectId);
 
-    List<RoleVO> managerRoles();
+    /**
+     * 返回 项目为 isAdminProject true 的角色
+     */
+    List<RoleVO> adminRoles();
 
 }

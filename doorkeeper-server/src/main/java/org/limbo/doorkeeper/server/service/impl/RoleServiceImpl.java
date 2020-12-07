@@ -174,8 +174,8 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<RoleVO> managerRoles() {
-        return roleMapper.managerRoles();
+    public List<RoleVO> adminRoles() {
+        return roleMapper.adminRoles();
     }
 
 }

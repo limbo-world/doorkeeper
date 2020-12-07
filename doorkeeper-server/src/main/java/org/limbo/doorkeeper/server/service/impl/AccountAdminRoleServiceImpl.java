@@ -65,7 +65,7 @@ public class AccountAdminRoleServiceImpl implements AccountAdminRoleService {
     public int batchDelete(Long projectId, List<Long> accountAdminRoleIds) {
         return accountAdminRoleMapper.delete(Wrappers.<AccountAdminRole>lambdaQuery()
                 .eq(AccountAdminRole::getProjectId, projectId)
-                .in(AccountAdminRole::getAccountManagerRoleId, accountAdminRoleIds)
+                .in(AccountAdminRole::getAccountAdminRoleId, accountAdminRoleIds)
         );
     }
 }

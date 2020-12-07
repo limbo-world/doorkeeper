@@ -33,7 +33,7 @@ import lombok.Data;
 public class AccountAdminRole {
 
     @TableId(type = IdType.AUTO)
-    private Long accountManagerRoleId;
+    private Long accountAdminRoleId;
     /**
      * 对应的项目ID
      */

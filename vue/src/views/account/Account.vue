@@ -44,16 +44,16 @@
                                      v-if="!user.account.currentProject.isAdminProject">
                         <template slot-scope="scope">
                             <div class="operations">
-                                <i v-if="!scope.row.isAdmin" class="el-icon-view" @click="viewRole(scope.row)"></i>
-                                <i v-if="!scope.row.isAdmin" class="el-icon-edit" @click="editRole(scope.row)"></i>
+                                <i v-if="!scope.row.isAdmin" class="el-icon-view" @click="viewAccountRole(scope.row)"></i>
+                                <i v-if="!scope.row.isAdmin" class="el-icon-edit" @click="editAccountRole(scope.row)"></i>
                             </div>
                         </template>
                     </el-table-column>
                     <el-table-column label="页面权限" align="center" width="100">
                         <template slot-scope="scope">
                             <div class="operations">
-                                <i v-if="!scope.row.isAdmin" class="el-icon-view" @click="viewRole(scope.row)"></i>
-                                <i v-if="!scope.row.isAdmin" class="el-icon-edit" @click="editRole(scope.row)"></i>
+                                <i v-if="!scope.row.isAdmin" class="el-icon-view" @click="viewAccountAdminRole(scope.row)"></i>
+                                <i v-if="!scope.row.isAdmin" class="el-icon-edit" @click="editAccountAdminRole(scope.row)"></i>
                             </div>
                         </template>
                     </el-table-column>
@@ -77,7 +77,7 @@
 
         <el-dialog :title="`${dialogOpenMode}账户`" :visible.sync="accountDialogOpened" width="50%" class="edit-dialog"
                    @close="accountDialogCancel">
-            <account-edit :account="account" :project="user.account.currentProject" :open-mode="dialogOpenMode" ref="accountEdit"></account-edit>
+            <account-edit :account="account" :open-mode="dialogOpenMode" ref="accountEdit"></account-edit>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="accountDialogCancel">取 消</el-button>
                 <el-button type="primary" @click="accountDialogConfirm">确 定</el-button>
@@ -93,6 +93,15 @@
             </span>
         </el-dialog>
 
+        <el-dialog :title="`${dialogOpenMode}页面权限`" :visible.sync="accountAdminRoleDialogOpened" width="70%" class="edit-dialog"
+                   @close="accountAdminRoleDialogCancel" @opened="beforeAccountAdminRoleDialogOpen">
+            <account-admin-role-edit :account="account" :open-mode="dialogOpenMode" ref="accountAdminRoleEdit"></account-admin-role-edit>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="accountAdminRoleDialogCancel">取 消</el-button>
+                <el-button type="primary" @click="accountAdminRoleDialogConfirm">确 定</el-button>
+            </span>
+        </el-dialog>
+
     </el-container>
 </template>
 
@@ -101,11 +110,12 @@
 
     import AccountEdit from './AccountEdit';
     import AccountRoleEdit from './AccountRoleEdit';
+    import AccountAdminRoleEdit from './AccountAdminRoleEdit';
     import {mapActions, mapState} from 'vuex';
 
     export default {
         components: {
-            AccountEdit, AccountRoleEdit,
+            AccountEdit, AccountRoleEdit, AccountAdminRoleEdit
         },
         computed: {
             ...mapState('session', ['user']),
@@ -124,6 +134,7 @@
                 dialogOpenMode: '',
                 accountDialogOpened: false,
                 accountRoleDialogOpened: false,
+                accountAdminRoleDialogOpened: false,
             };
         },
         created() {
@@ -180,12 +191,12 @@
             },
 
             // ========= 角色相关 ============
-            viewRole(account) {
+            viewAccountRole(account) {
                 this.account = account;
                 this.dialogOpenMode = '查看';
                 this.accountRoleDialogOpened = true;
             },
-            editRole(account) {
+            editAccountRole(account) {
                 this.account = account;
                 this.dialogOpenMode = '修改';
                 this.accountRoleDialogOpened = true;
@@ -204,6 +215,30 @@
                 this.accountRoleDialogOpened = false;
             },
 
+            // ========= 页面权限相关 ============
+            viewAccountAdminRole(account) {
+                this.account = account;
+                this.dialogOpenMode = '查看';
+                this.accountAdminRoleDialogOpened = true;
+            },
+            editAccountAdminRole(account) {
+                this.account = account;
+                this.dialogOpenMode = '修改';
+                this.accountAdminRoleDialogOpened = true;
+            },
+            beforeAccountAdminRoleDialogOpen() {
+                this.$refs.accountAdminRoleEdit.preOpen();
+            },
+            accountAdminRoleDialogConfirm() {
+                this.$refs.accountAdminRoleEdit.confirmEdit().then(() => {
+                    this.account = {};
+                    this.accountAdminRoleDialogOpened = false;
+                }).catch(err => err);
+            },
+            accountAdminRoleDialogCancel() {
+                this.$refs.accountAdminRoleEdit.clearData();
+                this.accountAdminRoleDialogOpened = false;
+            },
         }
 
     }

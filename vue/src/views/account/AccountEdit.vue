@@ -50,10 +50,6 @@
                 type: Object,
                 default() {}
             },
-            project: {
-                type: Object,
-                default() {}
-            },
             openMode: {
                 type: Boolean,
                 default: true,

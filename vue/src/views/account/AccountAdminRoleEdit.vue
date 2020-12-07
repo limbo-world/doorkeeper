@@ -72,7 +72,7 @@
                         has.forEach(k => {
                             for (let role of this.roles) {
                                 if (k.roleId === role.roleId) {
-                                    role.accountRoleId = k.accountRoleId;
+                                    role.accountAdminRoleId = k.accountAdminRoleId;
                                     this.transferValue.push(role.roleId);
                                     break
                                 }
@@ -83,19 +83,18 @@
                 });
             },
             loadAllRole() {
-                return this.$ajax.get('/role');
+                return this.$ajax.get('/role/admin');
             },
             loadAccountRole() {
-                return this.$ajax.get('/account-role', {params: {accountId: this.account.accountId}});
+                return this.$ajax.get('/account-admin-role', {params: {accountId: this.account.accountId}});
             },
 
             roleChange(value, direction, movedKeys) { // value 右边剩余的key direction 方向 movedKeys 移动的key
-                console.log(movedKeys)
                 if ('left' === direction) {
                     movedKeys.forEach(k => {
                         for (let role of this.roles) {
                             if (k === role.roleId) {
-                                role.delAccountRoleId = role.accountRoleId;
+                                role.delAccountAdminRoleId = role.accountAdminRoleId;
                             }
                         }
                     });
@@ -126,8 +125,8 @@
                 let delIds = [];
                 let has = [];
                 this.roles.forEach(role => {
-                    if (role.delAccountRoleId) {
-                        delIds.push(role.delAccountRoleId);
+                    if (role.delAccountAdminRoleId) {
+                        delIds.push(role.delAccountAdminRoleId);
                     }
                     for (let k of this.transferValue) {
                         if (role.roleId === k) {
@@ -137,11 +136,21 @@
                         }
                     }
                 });
-                let param = {
-                    addAccountRoles: has,
-                    deleteAccountRoleIds: delIds
-                };
-                return this.$ajax.put(`/account-role`, param);
+
+                let deletePromise = new Promise((resolve, reject) => {
+                    resolve({code: 200})
+                })
+                if (delIds.length > 0 ) {
+                    deletePromise = this.$ajax.delete('/account-admin-role', {data: delIds})
+                }
+
+                let updatePromise = new Promise((resolve, reject) => {
+                    resolve({code: 200})
+                })
+                if (has && has.length > 0) {
+                    updatePromise = this.$ajax.post(`/account-admin-role`, has);
+                }
+                return Promise.all([deletePromise, updatePromise])
             },
         }
     }

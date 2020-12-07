@@ -26,7 +26,7 @@
         <result column="is_default" property="isDefault" jdbcType="BIT" javaType="java.lang.Boolean"/>
     </resultMap>
 
-    <select id="managerAccountRoles" resultMap="RoleVO">
+    <select id="adminRoles" resultMap="RoleVO">
         select r.* from l_project p
         left join l_role r on r.project_id = p.project_id
         where p.is_admin_project = true
