@@ -137,11 +137,21 @@
                         }
                     }
                 });
-                let param = {
-                    addAccountRoles: has,
-                    deleteAccountRoleIds: delIds
-                };
-                return this.$ajax.put(`/account-role`, param);
+
+                let deletePromise = new Promise((resolve, reject) => {
+                    resolve({code: 200})
+                })
+                if (delIds.length > 0 ) {
+                    deletePromise = this.$ajax.delete('/account-role', {data: delIds})
+                }
+
+                let updatePromise = new Promise((resolve, reject) => {
+                    resolve({code: 200})
+                })
+                if (has && has.length > 0) {
+                    updatePromise = this.$ajax.post(`/account-role`, has);
+                }
+                return Promise.all([deletePromise, updatePromise])
             },
         }
     }
