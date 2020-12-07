@@ -40,7 +40,8 @@
                             {{scope.row.isAdmin ? "是" : "否"}}
                         </template>
                     </el-table-column>
-                    <el-table-column label="绑定角色" align="center" width="100">
+                    <el-table-column label="绑定角色" align="center" width="100"
+                                     v-if="!user.account.currentProject.isAdminProject">
                         <template slot-scope="scope">
                             <div class="operations">
                                 <i v-if="!scope.row.isAdmin" class="el-icon-view" @click="viewRole(scope.row)"></i>

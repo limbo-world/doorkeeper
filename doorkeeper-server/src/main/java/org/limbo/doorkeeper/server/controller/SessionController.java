@@ -64,7 +64,7 @@ public class SessionController extends BaseController {
     @PutMapping("/project/{projectId}")
     public Response<AbstractSession> switchProject(@PathVariable("projectId") @Valid @NotNull(message = "项目不存在") Long projectId) {
         AbstractSession session = getSession();
-        SessionAccount account = getSessionAccount();
+        SessionAccount account = session.getAccount();
 
         ProjectAccountQueryParam queryParam = new ProjectAccountQueryParam();
         queryParam.setProjectId(projectId);

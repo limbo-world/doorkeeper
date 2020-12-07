@@ -108,21 +108,11 @@ public class AccountServiceImpl implements AccountService {
     @PLog(operateType = OperateType.UPDATE, businessType = BusinessType.ACCOUNT)
     public Integer update(Long currentProjectId, Long currentAccountId,
                                   @PLogTag(PLogConstants.CONTENT) AccountUpdateParam param, boolean needSuperAdmin) {
-        int update = accountMapper.update(null, Wrappers.<Account>lambdaUpdate()
+        return accountMapper.update(null, Wrappers.<Account>lambdaUpdate()
                 .set(StringUtils.isNotBlank(param.getAccountDescribe()), Account::getAccountDescribe, param.getAccountDescribe())
                 .set(StringUtils.isNotBlank(param.getNickname()), Account::getNickname, param.getNickname())
                 .eq(Account::getAccountId, param.getAccountId())
         );
-
-        if (canSetAdminParam(currentAccountId, currentProjectId, needSuperAdmin)) {
-            projectAccountMapper.update(null, Wrappers.<ProjectAccount>lambdaUpdate()
-                    .eq(ProjectAccount::getProjectId, currentProjectId)
-                    .eq(ProjectAccount::getAccountId, param.getAccountDescribe())
-                    .set(ProjectAccount::getIsAdmin, param.getIsAdmin())
-            );
-        }
-
-        return update;
     }
 
     /**
