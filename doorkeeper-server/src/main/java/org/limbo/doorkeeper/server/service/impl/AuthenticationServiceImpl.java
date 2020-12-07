@@ -123,7 +123,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public boolean pathMatch(String pattern, String path) {
         EasyAntPathMatcher antPathMatcher = PATH_MATCHER.get();
-        return antPathMatcher.match(pattern, path);
+        return antPathMatcher.match(StringUtils.trim(pattern), StringUtils.trim(path));
     }
 
     /**

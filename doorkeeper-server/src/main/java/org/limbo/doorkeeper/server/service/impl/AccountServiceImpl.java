@@ -108,12 +108,4 @@ public class AccountServiceImpl implements AccountService {
         return EnhancedBeanUtils.createAndCopyList(accounts, AccountVO.class);
     }
 
-    @Override
-    public AccountVO get(Long accountId) {
-        Account account = accountMapper.selectOne(Wrappers.<Account>lambdaQuery()
-                .eq(Account::getAccountId, accountId)
-        );
-        return account == null ? null : EnhancedBeanUtils.createAndCopy(account, AccountVO.class);
-    }
-
 }
