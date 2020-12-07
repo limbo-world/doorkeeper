@@ -23,14 +23,16 @@ import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.ProjectAccountQueryParam;
 import org.limbo.doorkeeper.api.model.vo.AccountGrantVO;
 import org.limbo.doorkeeper.api.model.vo.ProjectAccountVO;
-import org.limbo.doorkeeper.server.service.ProjectAccountService;
 import org.limbo.doorkeeper.server.service.AuthenticationService;
+import org.limbo.doorkeeper.server.service.ProjectAccountService;
 import org.limbo.doorkeeper.server.support.session.AbstractSession;
+import org.limbo.doorkeeper.server.support.session.SessionAccount;
+import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -42,13 +44,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/session")
 public class SessionController extends BaseController {
-
-//    @Autowired
-//    private ProjectClient projectClient;
-//    @Autowired
-//    private AuthenticationClient authenticationClient;
-//    @Autowired
-//    private AdminProjectService adminProjectService;
 
     @Autowired
     private AuthenticationService authenticationService;
@@ -62,37 +57,26 @@ public class SessionController extends BaseController {
         AbstractSession session = getSession();
         return Response.ok(session);
     }
-//
-//    /**
-//     * 切换用户当前选择的项目
-//     */
-//    @PutMapping("/project/{projectId}")
-//    public Response<AdminSession> switchProject(@PathVariable("projectId") @Valid @NotNull(message = "项目不存在") Long projectId) {
-//        AdminSession session = getSession();
-//        SessionAccount account = session.getAccount();
-//
-//        Response<ProjectVO> projectRes = projectClient.getProject(projectId);
-//        if (!projectRes.ok()) {
-//            Response<AdminSession> response = new Response<>();
-//            response.setCode(projectRes.getCode());
-//            response.setMsg(projectRes.getMsg());
-//            return response;
-//        }
-//
-//        if (!session.getAccount().getIsAdmin()) {
-//            // 检测是否有项目的操作权限
-//            AdminProject accountProject = adminProjectService.getByAccountProject(account.getAccountId(), projectId);
-//            if (accountProject == null) {
-//                return Response.paramError("无权操作此项目！");
-//            }
-//        }
-//        ProjectVO project = projectRes.getData();
-//        account.setCurrentProjectId(project.getProjectId());
-//        account.setCurrentProjectName(project.getProjectName());
-//        sessionDAO.save(session);
-//        return Response.ok(getSession());
-//    }
-//
+
+    /**
+     * 切换用户当前选择的项目
+     */
+    @PutMapping("/project/{projectId}")
+    public Response<AbstractSession> switchProject(@PathVariable("projectId") @Valid @NotNull(message = "项目不存在") Long projectId) {
+        AbstractSession session = getSession();
+        SessionAccount account = getSessionAccount();
+
+        ProjectAccountQueryParam queryParam = new ProjectAccountQueryParam();
+        queryParam.setProjectId(projectId);
+        queryParam.setAccountId(account.getAccountId());
+        List<ProjectAccountVO> list = projectAccountService.list(queryParam);
+        Verifies.notEmpty(list, "无权操作此项目！");
+
+        account.setCurrentProject(list.get(0));
+        sessionDAO.save(session);
+        return Response.ok(getSession());
+    }
+
 
     @Operation(summary = "获取会话权限信息")
     @GetMapping("/grant-info")

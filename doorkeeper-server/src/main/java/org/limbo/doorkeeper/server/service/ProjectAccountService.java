@@ -51,7 +51,13 @@ public interface ProjectAccountService {
 
     void update(Long currentAccountId, ProjectAccountUpdateParam param);
 
+    /**
+     * 账户批量加入项目
+     */
     void batchJoinProject(ProjectAccountBatchUpdateParam param);
 
+    /**
+     * 账户加入项目
+     */
     void joinProject(Long projectId, Long accountId, boolean isAdmin);
 }

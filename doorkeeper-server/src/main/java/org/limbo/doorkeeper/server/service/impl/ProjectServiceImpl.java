@@ -28,7 +28,6 @@ import org.limbo.doorkeeper.api.model.param.ProjectUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ProjectVO;
 import org.limbo.doorkeeper.server.constants.BusinessType;
 import org.limbo.doorkeeper.server.constants.OperateType;
-import org.limbo.doorkeeper.server.dao.AccountMapper;
 import org.limbo.doorkeeper.server.dao.ProjectMapper;
 import org.limbo.doorkeeper.server.entity.Project;
 import org.limbo.doorkeeper.server.service.ProjectService;
@@ -56,9 +55,6 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     private ProjectMapper projectMapper;
-
-    @Autowired
-    private AccountMapper accountMapper;
 
     @Override
     @Transactional
