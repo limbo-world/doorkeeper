@@ -16,14 +16,14 @@
   -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="org.limbo.doorkeeper.server.dao.AdminRoleMapper" >
+<mapper namespace="org.limbo.doorkeeper.server.dao.ManagerRoleMapper" >
 
-    <insert id="batchInsertIgnore" parameterType="org.limbo.doorkeeper.api.model.param.AdminRoleAddParam">
+    <insert id="batchInsertIgnore" parameterType="org.limbo.doorkeeper.api.model.param.ManagerRoleAddParam">
         INSERT ignore INTO l_admin_role (
           project_id, account_id, role_id
         ) VALUES
-        <foreach collection="adminRoles" separator="," item="adminRole">
-            ( #{adminRole.projectId}, #{adminRole.accountId}, #{adminRole.roleId} )
+        <foreach collection="managerRoles" separator="," item="managerRole">
+            ( #{managerRole.projectId}, #{managerRole.accountId}, #{managerRole.roleId} )
         </foreach>
     </insert>
 

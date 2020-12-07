@@ -26,7 +26,7 @@ import javax.validation.constraints.NotNull;
  * @date 2020/11/20 11:33 AM
  */
 @Data
-public class AdminRoleAddParam {
+public class ManagerRoleAddParam {
 
     @NotNull(message = "账户ID不能为空")
     @Schema(title = "账户ID", required = true)

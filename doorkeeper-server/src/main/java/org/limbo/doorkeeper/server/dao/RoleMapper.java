@@ -17,7 +17,10 @@
 package org.limbo.doorkeeper.server.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.server.entity.Role;
+
+import java.util.List;
 
 /**
  * 角色操作
@@ -27,4 +30,5 @@ import org.limbo.doorkeeper.server.entity.Role;
  * @email brozen@qq.com
  */
 public interface RoleMapper extends BaseMapper<Role> {
+    List<RoleVO> managerRoles();
 }

@@ -41,7 +41,4 @@ public class RoleVO {
     @Schema(title = "是否默认添加")
     private Boolean isDefault;
 
-    @Schema(title = "是否需要工单")
-    private Boolean needOrder;
-
 }

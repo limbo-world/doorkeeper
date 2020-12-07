@@ -41,6 +41,7 @@ import org.limbo.doorkeeper.server.support.plog.PLog;
 import org.limbo.doorkeeper.server.support.plog.PLogConstants;
 import org.limbo.doorkeeper.server.support.plog.PLogTag;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.utils.MD5Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -84,6 +85,7 @@ public class AccountServiceImpl implements AccountService {
                                         @PLogTag(PLogConstants.CONTENT) AccountAddParam param, boolean needSuperAdmin) {
         // 判断账号是否已经存在
         Account po = EnhancedBeanUtils.createAndCopy(param, Account.class);
+        po.setPassword(MD5Utils.md5WithSalt(po.getPassword()));
         try {
             accountMapper.insert(po);
         } catch (DuplicateKeyException e) {

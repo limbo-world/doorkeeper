@@ -20,8 +20,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
  * @author Devil
@@ -37,9 +35,6 @@ public class RoleAddParam {
     @Schema(title = "角色描述", maxLength = 150)
     private String roleDescribe;
 
-    @Schema(title = "是否默认角色", description = "默认角色会在用户创建的时候直接绑定\n如果为 true 角色初始化的时候 即使配置 needOrder 也会忽略")
+    @Schema(title = "是否默认角色", description = "默认角色会在用户创建的时候直接绑定")
     private Boolean isDefault;
-
-    @Schema(title = "是否需要工单", description = "授予角色的时候是否需要工单审核")
-    private Boolean needOrder;
 }

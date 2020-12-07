@@ -169,4 +169,9 @@ public class RoleServiceImpl implements RoleService {
         return EnhancedBeanUtils.createAndCopyList(roles, RoleVO.class);
     }
 
+    @Override
+    public List<RoleVO> managerRoles() {
+        return roleMapper.managerRoles();
+    }
+
 }

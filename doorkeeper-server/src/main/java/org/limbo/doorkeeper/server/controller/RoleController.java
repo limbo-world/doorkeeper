@@ -72,6 +72,12 @@ public class RoleController extends BaseController {
         return Response.ok(roleService.list(getProjectId()));
     }
 
+    @GetMapping("/manager")
+    @Operation(summary = "查询所有管理端角色")
+    public Response<List<RoleVO>> managerRoles() {
+        return Response.ok(roleService.managerRoles());
+    }
+
     @GetMapping("/query")
     @Operation(summary = "分页查询角色")
     public Response<Page<RoleVO>> page(@Validated RoleQueryParam param) {

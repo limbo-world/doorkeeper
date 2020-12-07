@@ -14,32 +14,11 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
-
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
+package org.limbo.doorkeeper.server.service;
 
 /**
- *
- * 账户拥有哪些管理端的角色
- *
  * @Author Devil
- * @Date 2020/12/3 11:08 上午
+ * @Date 2020/12/7 10:05 上午
  */
-@Data
-@TableName("l_account_project")
-public class AdminRole {
-
-    @TableId(type = IdType.AUTO)
-    private Long adminRoleId;
-
-    private Long projectId;
-
-    private Long accountId;
-    /**
-     * 管理端项目的roleId
-     */
-    private Long roleId;
+public interface ManagerRoleService {
 }

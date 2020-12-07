@@ -39,4 +39,7 @@ public interface RoleService {
     Page<RoleVO> queryRole(Long projectId, RoleQueryParam param);
 
     List<RoleVO> list(Long projectId);
+
+    List<RoleVO> managerRoles();
+
 }

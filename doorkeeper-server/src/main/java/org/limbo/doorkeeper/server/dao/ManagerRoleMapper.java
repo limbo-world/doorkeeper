@@ -18,7 +18,7 @@ package org.limbo.doorkeeper.server.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
-import org.limbo.doorkeeper.server.entity.AdminRole;
+import org.limbo.doorkeeper.server.entity.ManagerRole;
 
 import java.util.List;
 
@@ -26,8 +26,8 @@ import java.util.List;
  * @author Devil
  * @date 2020/11/20 11:34 AM
  */
-public interface AdminRoleMapper extends BaseMapper<AdminRole> {
+public interface ManagerRoleMapper extends BaseMapper<ManagerRole> {
 
-    void batchInsertIgnore(@Param("adminRoles") List<AdminRole> adminRoles);
+    void batchInsertIgnore(@Param("managerRoles") List<ManagerRole> managerRoles);
 
 }
