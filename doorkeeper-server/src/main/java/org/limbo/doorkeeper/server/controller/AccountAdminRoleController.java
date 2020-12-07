@@ -42,13 +42,13 @@ public class AccountAdminRoleController extends BaseController {
     private AccountAdminRoleService accountAdminRoleService;
 
     @GetMapping
-    @Operation(summary = "获取账户角色")
+    @Operation(summary = "获取管理端角色")
     public Response<List<AccountAdminRoleVO>> list(@Validated AccountAdminRoleQueryParam param) {
         return Response.ok(accountAdminRoleService.list(getProjectId(), param));
     }
 
     @PostMapping
-    @Operation(summary = "批量绑定账户角色")
+    @Operation(summary = "批量绑定管理端角色")
     public Response<Boolean> batchSave(@Validated @RequestBody List<AccountAdminRoleAddParam> params) {
         accountAdminRoleService.batchSave(getProjectId(), params);
         return Response.ok(true);
@@ -56,7 +56,7 @@ public class AccountAdminRoleController extends BaseController {
 
 
     @DeleteMapping
-    @Operation(summary = "批量删除账户角色")
+    @Operation(summary = "批量删除管理端角色")
     public Response<Integer> batchDelete(@Validated @RequestBody List<Long> accountAdminRoleIds){
         return Response.ok(accountAdminRoleService.batchDelete(getProjectId(), accountAdminRoleIds));
     }

@@ -44,7 +44,6 @@
 export default class AuthExpressionEvaluator {
 
     private readonly roles: Set<string>;
-    private readonly permissions: Set<string>;
     private readonly isAdmin: boolean = false;
 
     /**
@@ -52,9 +51,8 @@ export default class AuthExpressionEvaluator {
      */
     private static KeyChars = new Set([':', '.', '{', '}']);
 
-    constructor(roles: string[], permissions: string[], isAdmin: boolean) {
+    constructor(roles: string[], isAdmin: boolean) {
         this.roles = new Set(roles || []);
-        this.permissions = new Set(permissions || []);
         this.isAdmin = isAdmin;
     }
 
@@ -89,7 +87,7 @@ export default class AuthExpressionEvaluator {
         }
 
         // 生成解析上下文
-        const context = new ParseContext(this.roles, this.permissions, expression);
+        const context = new ParseContext(this.roles, expression);
         for (let i = 0; i < expression.length; i++) {
             let c = expression.charAt(i);
             if (!context.parseState[c]) {
@@ -127,11 +125,6 @@ class ParseContext {
     private readonly roles: Set<string>;
 
     /**
-     * 已授权的权限
-     */
-    private readonly permissions: Set<string>;
-
-    /**
      * 当前解析状态
      */
     parseState: any;
@@ -162,10 +155,9 @@ class ParseContext {
     parsedExpression: string;
 
 
-    constructor(roles: Set<string>, permissions: Set<string>, originExpression: string) {
+    constructor(roles: Set<string>, originExpression: string) {
         this.parseState = Idle;
         this.roles = roles;
-        this.permissions = permissions;
         this.originExpression = originExpression;
         this.readCharsCache = [];
         this.parsedExpression = '';
@@ -239,7 +231,11 @@ class ParseContext {
         }
 
         // 检查鉴权结果
-        const authObjectsSet: Set<string> = AuthType.Role.is(at) ? this.roles : this.permissions;
+        if (!AuthType.Role.is(at)) {
+            this.parsedExpression += 'false';
+            return
+        }
+        const authObjectsSet: Set<string> = this.roles;
         if (authObjectsSet.has(authObject)) {
             this.parsedExpression += 'true';
         } else {

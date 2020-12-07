@@ -17,10 +17,7 @@
 package org.limbo.doorkeeper.api.model.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -29,9 +26,6 @@ import java.util.List;
  * @date 2020/11/25 20:27
  */
 @Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class AccountGrantVO {
 
     @Schema(name = "用户ID")
@@ -40,10 +34,10 @@ public class AccountGrantVO {
     @Schema(name = "用户授予的角色")
     private List<RoleVO> roles;
 
-    @Schema(name = "用户授予拥有的权限")
-    private List<PermissionVO> permissions;
+    @Schema(name = "用户可以访问的权限")
+    private List<PermissionVO> allowedPermissions;
 
-    @Schema(name = "用户授予权限的API")
-    private AccountPermissionGrantVO apis;
+    @Schema(name = "用户禁止访问的权限")
+    private List<PermissionVO> refusedPermissions;
 
 }

@@ -18,11 +18,11 @@ package org.limbo.doorkeeper.server.service;
 
 import org.limbo.doorkeeper.api.model.param.AuthenticationCheckParam;
 import org.limbo.doorkeeper.api.model.vo.AccountGrantVO;
-import org.limbo.doorkeeper.api.model.vo.AccountPermissionGrantVO;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author liuqingtong
@@ -46,12 +46,24 @@ public interface AuthenticationService {
     List<RoleVO> getGrantedRoles(Long projectId, Long accountId);
 
     /**
-     * 获取用户授予的权限
+     * 获取用户此项目管理端角色
      */
-    List<PermissionVO> getGrantedPermissions(Long projectId, Long accountId);
+    List<RoleVO> getGrantedAdminRoles(Long projectId, Long accountId);
 
     /**
-     * 获取用户授权访问的API
+     * 获取用户授予的权限
      */
-    AccountPermissionGrantVO getGrantedApis(Long projectId, Long accountId);
+    AccountGrantVO getGrantedPermissions(Long projectId, Long accountId);
+
+    /**
+     * 获取用户授予的权限
+     */
+    AccountGrantVO getGrantedPermissions(Long projectId, Set<Long> roleIds);
+
+    /**
+     * 检测配置与请求检查参数的请求url是否匹配，检测method和path两部分
+     */
+    boolean permissionMatch(PermissionVO permission, AuthenticationCheckParam param);
+
+    boolean pathMatch(String pattern, String path);
 }

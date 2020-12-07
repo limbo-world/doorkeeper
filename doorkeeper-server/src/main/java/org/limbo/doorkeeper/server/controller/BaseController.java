@@ -16,10 +16,12 @@
 
 package org.limbo.doorkeeper.server.controller;
 
+import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.support.config.DoorkeeperProperties;
 import org.limbo.doorkeeper.server.support.session.AbstractSession;
 import org.limbo.doorkeeper.server.support.session.AbstractSessionDAO;
 import org.limbo.doorkeeper.server.support.session.SessionAccount;
+import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,6 +46,12 @@ public class BaseController {
     }
 
     protected Long getProjectId() {
+        String projectIdStr = request.getHeader(DoorkeeperConstants.PROJECT_HEADER);
+        Verifies.notBlank(projectIdStr, "当前操作项目为空");
+        return Long.valueOf(projectIdStr);
+    }
+
+    protected Long getCurrentProjectId() {
         return getSession().getAccount().getCurrentProject().getProjectId();
     }
 

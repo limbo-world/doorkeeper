@@ -37,7 +37,7 @@ import javax.validation.constraints.NotNull;
  * @Author Devil
  * @Date 2020/12/3 3:29 下午
  */
-@Tag(name = "项目账户关系")
+@Tag(name = "项目账户关系", description = "只有管理端可以调用")
 @RestController
 @RequestMapping("/project-account")
 public class ProjectAccountController extends BaseController {

@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.limbo.doorkeeper.server.support.authc.AuthenticationInterceptor;
 import org.limbo.doorkeeper.server.support.format.StringToDateConverter;
 import org.limbo.doorkeeper.server.support.plog.PLogAspect;
 import org.limbo.doorkeeper.server.support.session.RedisSessionDAO;
@@ -36,6 +37,8 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Devil
@@ -96,10 +99,13 @@ public class WebConfig implements WebMvcConfigurer {
         return new SessionInterceptor(doorkeeperProperties, sessionDAO);
     }
 
-//    @Bean
-//    public AuthenticationInterceptor authenticationInterceptor() {
-//        return new AuthenticationInterceptor(doorkeeperProperties, sessionDAO);
-//    }
+    @Bean
+    public AuthenticationInterceptor authenticationInterceptor() {
+        List<String> adminPath = new ArrayList<>();
+        adminPath.add("/project/**");
+        adminPath.add("/project-account/**");
+        return new AuthenticationInterceptor(doorkeeperProperties, sessionDAO, adminPath);
+    }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -107,13 +113,13 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/login/**")
                 .excludePathPatterns("/error");
 
-//        registry.addInterceptor(authenticationInterceptor())
-//                .excludePathPatterns("/login/**")
-//                .excludePathPatterns("/session/**")
-//                .excludePathPatterns("/swagger-ui/**")
-//                .excludePathPatterns("/api-docs/**")
-//                .excludePathPatterns("/api-docs.html")
-//                .excludePathPatterns("/error");
+        registry.addInterceptor(authenticationInterceptor())
+                .excludePathPatterns("/login/**")
+                .excludePathPatterns("/session/**")
+                .excludePathPatterns("/swagger-ui/**")
+                .excludePathPatterns("/api-docs/**")
+                .excludePathPatterns("/api-docs.html")
+                .excludePathPatterns("/error");
 
     }
 

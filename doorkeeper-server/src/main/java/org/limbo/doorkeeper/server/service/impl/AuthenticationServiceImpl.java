@@ -22,17 +22,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.PermissionPolicy;
 import org.limbo.doorkeeper.api.model.param.AuthenticationCheckParam;
 import org.limbo.doorkeeper.api.model.vo.AccountGrantVO;
-import org.limbo.doorkeeper.api.model.vo.AccountPermissionGrantVO;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.server.dao.*;
 import org.limbo.doorkeeper.server.entity.*;
 import org.limbo.doorkeeper.server.service.AuthenticationService;
+import org.limbo.doorkeeper.server.utils.EasyAntPathMatcher;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.AntPathMatcher;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -44,7 +43,7 @@ import java.util.stream.Collectors;
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-    private static final ThreadLocal<AntPathMatcher> PATH_MATCHER = ThreadLocal.withInitial(AntPathMatcher::new);
+    private static final ThreadLocal<EasyAntPathMatcher> PATH_MATCHER = ThreadLocal.withInitial(EasyAntPathMatcher::new);
 
     @Autowired
     private AccountMapper accountMapper;
@@ -64,6 +63,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Autowired
     private PermissionMapper permissionMapper;
 
+    @Autowired
+    private ProjectAccountMapper projectAccountMapper;
+
+    @Autowired
+    private AccountAdminRoleMapper accountAdminRoleMapper;
+
     @Override
     public Boolean accessAllowed(Long projectId, AuthenticationCheckParam param) {
         Account account = accountMapper.selectById(param.getAccountId());
@@ -71,10 +76,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return false;
         }
 
-        // todo 管理员拥有全部权限
+        ProjectAccount projectAccount = projectAccountMapper.selectOne(Wrappers.<ProjectAccount>lambdaQuery()
+                .eq(ProjectAccount::getProjectId, projectId)
+                .eq(ProjectAccount::getAccountId, param.getAccountId())
+        );
+        if (projectAccount == null) {
+            return false;
+        }
+
+        // 管理员拥有全部权限
+        if (projectAccount.getIsAdmin()) {
+            return true;
+        }
 
         // 拿到用户全部权限
-        AccountPermissionGrantVO grants = _this.getGrantedApis(projectId, account.getAccountId());
+        AccountGrantVO grants = _this.getGrantedPermissions(projectId, account.getAccountId());
         // 如果没有授权信息 或 授权访问的API列表为空，则禁止访问
         if (grants == null || CollectionUtils.isEmpty(grants.getAllowedPermissions())) {
             return false;
@@ -98,10 +114,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     /**
      * 检测配置与请求检查参数的请求url是否匹配，检测method和path两部分
      */
-    private boolean permissionMatch(PermissionVO permission, AuthenticationCheckParam param) {
-        AntPathMatcher antPathMatcher = PATH_MATCHER.get();
+    @Override
+    public boolean permissionMatch(PermissionVO permission, AuthenticationCheckParam param) {
         return methodMatch(permission.getHttpMethod(), param.getMethod())
-                && antPathMatcher.match(permission.getUrl(), param.getPath());
+                && pathMatch(permission.getUrl(), param.getPath());
+    }
+
+    @Override
+    public boolean pathMatch(String pattern, String path) {
+        EasyAntPathMatcher antPathMatcher = PATH_MATCHER.get();
+        return antPathMatcher.match(pattern, path);
     }
 
     /**
@@ -123,11 +145,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Account account = accountMapper.selectById(accountId);
         Verifies.notNull(account, "账户不存在");
 
-        return AccountGrantVO.builder()
-                .accountId(accountId)
-                .roles(_this.getGrantedRoles(projectId, accountId))
-                .permissions(_this.getGrantedPermissions(projectId, accountId))
-                .build();
+        AccountGrantVO accountGrant = _this.getGrantedPermissions(projectId, accountId);
+        accountGrant.setAccountId(accountId);
+        accountGrant.setRoles(_this.getGrantedRoles(projectId, accountId));
+        return accountGrant;
     }
 
     /**
@@ -136,10 +157,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      */
     @Override
     public List<RoleVO> getGrantedRoles(Long projectId, Long accountId) {
-        List<AccountRole> accountRoles = accountRoleMapper.selectList(
-                Wrappers.<AccountRole>lambdaQuery()
-                        .eq(AccountRole::getProjectId, projectId)
-                        .eq(AccountRole::getAccountId, accountId));
+        List<AccountRole> accountRoles = accountRoleMapper.selectList(Wrappers.<AccountRole>lambdaQuery()
+                .eq(AccountRole::getProjectId, projectId)
+                .eq(AccountRole::getAccountId, accountId)
+        );
         if (CollectionUtils.isEmpty(accountRoles)) {
             return Collections.emptyList();
         }
@@ -152,19 +173,48 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return EnhancedBeanUtils.createAndCopyList(roles, RoleVO.class);
     }
 
+    @Override
+    public List<RoleVO> getGrantedAdminRoles(Long projectId, Long accountId) {
+        List<AccountAdminRole> accountRoles = accountAdminRoleMapper.selectList(Wrappers.<AccountAdminRole>lambdaQuery()
+                .eq(AccountAdminRole::getProjectId, projectId)
+                .eq(AccountAdminRole::getAccountId, accountId)
+        );
+        if (CollectionUtils.isEmpty(accountRoles)) {
+            return Collections.emptyList();
+        }
+
+        Set<Long> roleIds = accountRoles.stream()
+                .map(AccountAdminRole::getRoleId)
+                .collect(Collectors.toSet());
+
+        List<Role> roles = roleMapper.selectBatchIds(roleIds);
+        return EnhancedBeanUtils.createAndCopyList(roles, RoleVO.class);
+    }
+
     /**
      * {@inheritDoc}
      * 考虑添加缓存
      */
     @Override
-    public List<PermissionVO> getGrantedPermissions(Long projectId, Long accountId) {
+    public AccountGrantVO getGrantedPermissions(Long projectId, Long accountId) {
         // 用户授权的角色
         List<RoleVO> roles = _this.getGrantedRoles(projectId, accountId);
         if (CollectionUtils.isEmpty(roles)) {
-            return new ArrayList<>();
+            return getGrantedPermissions(projectId, new HashSet<>());
         }
-
         Set<Long> roleIds = roles.stream().map(RoleVO::getRoleId).collect(Collectors.toSet());
+        return getGrantedPermissions(projectId, roleIds);
+    }
+
+    @Override
+    public AccountGrantVO getGrantedPermissions(Long projectId, Set<Long> roleIds) {
+        AccountGrantVO accountGrant = new AccountGrantVO();
+        accountGrant.setAllowedPermissions(new ArrayList<>());
+        accountGrant.setRefusedPermissions(new ArrayList<>());
+
+        if (CollectionUtils.isEmpty(roleIds)) {
+            return accountGrant;
+        }
 
         // 角色对应的权限
         List<RolePermission> rolePerms = rolePermissionMapper.selectList(Wrappers.<RolePermission>lambdaQuery()
@@ -172,47 +222,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .in(RolePermission::getRoleId, roleIds)
         );
         if (CollectionUtils.isEmpty(rolePerms)) {
-            return new ArrayList<>();
+            return accountGrant;
         }
 
-        Set<Long> permIds = rolePerms.stream().map(RolePermission::getPermissionId).collect(Collectors.toSet());
-
-        List<Permission> perms = permissionMapper.selectBatchIds(permIds);
-        return EnhancedBeanUtils.createAndCopyList(perms, PermissionVO.class);
-    }
-
-    /**
-     * {@inheritDoc}
-     * 考虑添加缓存 @Cache
-     *
-     * @param projectId
-     * @param accountId
-     * @return
-     */
-    @Override
-    public AccountPermissionGrantVO getGrantedApis(Long projectId, Long accountId) {
-        AccountPermissionGrantVO accountPermissionGrant = new AccountPermissionGrantVO();
-        accountPermissionGrant.setAccountId(accountId);
-        accountPermissionGrant.setAllowedPermissions(new ArrayList<>());
-        accountPermissionGrant.setRefusedPermissions(new ArrayList<>());
-
-        // 查询用户授权的所有权限
-        List<RoleVO> roles = _this.getGrantedRoles(projectId, accountId);
-        if (CollectionUtils.isEmpty(roles)) {
-            return accountPermissionGrant;
-        }
-
-        Set<Long> roleIds = roles.stream().map(RoleVO::getRoleId).collect(Collectors.toSet());
-
-        // 查询权限管理的API，并根据策略分组
-        List<RolePermission> permApis = rolePermissionMapper.selectList(Wrappers.<RolePermission>lambdaQuery()
-                .eq(RolePermission::getProjectId, projectId)
-                .in(RolePermission::getRoleId, roleIds)
-        );
-        if (CollectionUtils.isEmpty(permApis)) {
-            return accountPermissionGrant;
-        }
-        Map<String, Set<Long>> groupedPermissionIds = permApis.stream().collect(Collectors.groupingBy(
+        Map<String, Set<Long>> groupedPermissionIds = rolePerms.stream().collect(Collectors.groupingBy(
                 RolePermission::getPolicy,
                 Collectors.mapping(RolePermission::getPermissionId, Collectors.toSet())
         ));
@@ -226,7 +239,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .eq(Permission::getIsOnline, true)
             );
             List<PermissionVO> allowedApiVos = EnhancedBeanUtils.createAndCopyList(allowedPermissions, PermissionVO.class);
-            accountPermissionGrant.setAllowedPermissions(allowedApiVos);
+            accountGrant.setAllowedPermissions(allowedApiVos);
         }
 
         // 查询refused
@@ -238,9 +251,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .eq(Permission::getIsOnline, true)
             );
             List<PermissionVO> refusedApiVos = EnhancedBeanUtils.createAndCopyList(refusedPermissions, PermissionVO.class);
-            accountPermissionGrant.setRefusedPermissions(refusedApiVos);
+            accountGrant.setRefusedPermissions(refusedApiVos);
         }
-        return accountPermissionGrant;
+
+        return accountGrant;
     }
 
 }

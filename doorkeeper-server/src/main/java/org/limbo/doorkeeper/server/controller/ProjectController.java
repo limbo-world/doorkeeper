@@ -39,7 +39,7 @@ import java.util.List;
 @Tag(name = "项目", description = "只有管理端可以调用")
 @RestController
 @RequestMapping("/project")
-public class ProjectController extends BaseController {
+public class ProjectController {
 
     @Autowired
     private ProjectService projectService;

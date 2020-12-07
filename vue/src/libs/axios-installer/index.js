@@ -7,6 +7,8 @@ const request = axios.create({
 });
 
 request.sessionHeader = process.env.VUE_APP_sessionHeaderName;
+request.projectHeader = process.env.VUE_APP_projectHeaderName;
+request.projectId = process.env.VUE_APP_projectId;
 // request.signHeader = process.env.VUE_APP_signHeaderName;
 request.encrypt = new JSEncrypt();
 
@@ -35,6 +37,7 @@ request.interceptors.request.use(config => {
         // 设置会话header
         config.headers[request.sessionHeader] = user.token;
     }
+    config.headers[request.projectHeader] = user.account.currentProject.projectId;
     return config;
 }, error => {
     Promise.reject(error);

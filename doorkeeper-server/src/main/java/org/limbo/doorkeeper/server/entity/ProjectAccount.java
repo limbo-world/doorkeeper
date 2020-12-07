@@ -42,7 +42,9 @@ public class ProjectAccount {
     private Long accountId;
     /**
      * 是否项目管理员
-     * 1. 普通项目 拥有当前项目所有 doorkeeper 接口权限
+     * 1. 普通项目
+     *      1.1 拥有当前项目 doorkeeper 接口权限 （不包含项目管理的）
+     *      1.2 拥有当前项目的所有接口权限
      * 2. doorkeeper 管理项目
      *      2.1 包含 1 的内容
      *      2.2 可以创建项目
