@@ -123,10 +123,11 @@
 
         created() {
             pages.projectAccount = this;
-            this.project.projectId = this.$route.query.projectId;
-            this.project.projectName = this.$route.query.projectName;
-            this.project.isAdminProject = this.$route.query.isAdminProject;
-            this.queryForm.projectId = this.$route.query.projectId;
+            let queryParams = JSON.parse(this.$route.query.params)
+            this.project.projectId = queryParams.projectId;
+            this.project.projectName = queryParams.projectName;
+            this.project.isAdminProject = queryParams.isAdminProject;
+            this.queryForm.projectId = queryParams.projectId;
             this.loadAccounts();
         },
 

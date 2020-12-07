@@ -35,9 +35,7 @@
                     <template slot-scope="scope">
                         <div class="operations">
                             <template>
-                                <i class="el-icon-edit" @click="() => {$router.push({path: '/project/project-account',
-                                query: {projectId: scope.row.projectId, projectName: scope.row.projectName,
-                                isAdminProject: scope.row.isAdminProject}})}"></i>
+                                <i class="el-icon-edit" @click="toProjectAccount(scope.row)"></i>
                             </template>
                         </div>
                     </template>
@@ -193,6 +191,14 @@
 
                 this.project = {};
                 this.dialogOpened = false;
+            },
+
+            toProjectAccount(project) {
+                const json = JSON.stringify({projectId: project.projectId, projectName: project.projectName,
+                    isAdminProject: project.isAdminProject})
+                this.$router.push({path: '/project/project-account',
+                    query: {params: json}
+                })
             }
         }
 
