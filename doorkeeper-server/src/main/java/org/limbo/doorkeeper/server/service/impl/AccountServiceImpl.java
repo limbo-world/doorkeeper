@@ -18,7 +18,6 @@ package org.limbo.doorkeeper.server.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.AccountAddParam;
@@ -28,13 +27,7 @@ import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.limbo.doorkeeper.server.constants.BusinessType;
 import org.limbo.doorkeeper.server.constants.OperateType;
 import org.limbo.doorkeeper.server.dao.AccountMapper;
-import org.limbo.doorkeeper.server.dao.ProjectAccountMapper;
-import org.limbo.doorkeeper.server.dao.ProjectMapper;
-import org.limbo.doorkeeper.server.dao.RoleMapper;
 import org.limbo.doorkeeper.server.entity.Account;
-import org.limbo.doorkeeper.server.entity.Project;
-import org.limbo.doorkeeper.server.entity.ProjectAccount;
-import org.limbo.doorkeeper.server.service.AccountRoleService;
 import org.limbo.doorkeeper.server.service.AccountService;
 import org.limbo.doorkeeper.server.service.ProjectAccountService;
 import org.limbo.doorkeeper.server.support.plog.PLog;
@@ -47,9 +40,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Brozen
@@ -64,25 +55,13 @@ public class AccountServiceImpl implements AccountService {
     private AccountMapper accountMapper;
 
     @Autowired
-    private RoleMapper roleMapper;
-
-    @Autowired
-    private AccountRoleService accountRoleService;
-
-    @Autowired
-    private ProjectAccountMapper projectAccountMapper;
-
-    @Autowired
-    private ProjectMapper projectMapper;
-
-    @Autowired
     private ProjectAccountService projectAccountService;
 
     @Override
     @Transactional
     @PLog(operateType = OperateType.CREATE, businessType = BusinessType.ACCOUNT)
     public AccountVO addAccount(Long currentProjectId, Long currentAccountId,
-                                        @PLogTag(PLogConstants.CONTENT) AccountAddParam param, boolean needSuperAdmin) {
+                                        @PLogTag(PLogConstants.CONTENT) AccountAddParam param, boolean isAdmin) {
         // 判断账号是否已经存在
         Account po = EnhancedBeanUtils.createAndCopy(param, Account.class);
         po.setPassword(MD5Utils.md5WithSalt(po.getPassword()));
@@ -95,10 +74,7 @@ public class AccountServiceImpl implements AccountService {
         }
 
         // 绑定到对应的项目
-        if (!canSetAdminParam(currentAccountId, currentProjectId, needSuperAdmin)) {
-            param.setIsAdmin(false);
-        }
-        projectAccountService.joinProject(currentProjectId, po.getAccountId(), param.getIsAdmin());
+        projectAccountService.joinProject(currentProjectId, po.getAccountId(), isAdmin);
 
         return EnhancedBeanUtils.createAndCopy(po, AccountVO.class);
     }
@@ -107,50 +83,12 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     @PLog(operateType = OperateType.UPDATE, businessType = BusinessType.ACCOUNT)
     public Integer update(Long currentProjectId, Long currentAccountId,
-                                  @PLogTag(PLogConstants.CONTENT) AccountUpdateParam param, boolean needSuperAdmin) {
+                                  @PLogTag(PLogConstants.CONTENT) AccountUpdateParam param) {
         return accountMapper.update(null, Wrappers.<Account>lambdaUpdate()
                 .set(StringUtils.isNotBlank(param.getAccountDescribe()), Account::getAccountDescribe, param.getAccountDescribe())
                 .set(StringUtils.isNotBlank(param.getNickname()), Account::getNickname, param.getNickname())
                 .eq(Account::getAccountId, param.getAccountId())
         );
-    }
-
-    /**
-     * 是否可以设置admin属性
-     * @param accountId 操作用户
-     * @param projectId 操作项目
-     * @return
-     */
-    private boolean canSetAdminParam(Long accountId, Long projectId, boolean needSuperAdmin) {
-        // 判断操作用户是否为管理端管理员
-        List<Project> projects = projectMapper.selectList(Wrappers.<Project>lambdaQuery()
-                .eq(Project::getIsAdminProject, true)
-        );
-        List<Long> adminProjectIds = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(projects)) {
-            adminProjectIds = projects.stream().map(Project::getProjectId).collect(Collectors.toList());
-        }
-
-        if (!needSuperAdmin) {
-            return !adminProjectIds.contains(projectId);
-        }
-
-        boolean isAdmin = false;
-        if (CollectionUtils.isNotEmpty(projects)) {
-            List<ProjectAccount> projectAccounts = projectAccountMapper.selectList(Wrappers.<ProjectAccount>lambdaQuery()
-                    .eq(ProjectAccount::getAccountId, accountId)
-                    .in(ProjectAccount::getProjectId, adminProjectIds)
-            );
-            for (ProjectAccount projectAccount : projectAccounts) {
-                if (projectAccount.getIsAdmin()) {
-                    isAdmin = true;
-                    break;
-                }
-            }
-        }
-
-        // 管理端管理员 并且项目不为管理端 可以设置
-        return isAdmin && !adminProjectIds.contains(projectId);
     }
 
     @Override
@@ -166,7 +104,6 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public List<AccountVO> list(Long projectId) {
-        // todo
         List<Account> accounts = accountMapper.selectList(Wrappers.emptyWrapper());
         return EnhancedBeanUtils.createAndCopyList(accounts, AccountVO.class);
     }

@@ -26,6 +26,7 @@ import org.limbo.doorkeeper.server.dao.AccountMapper;
 import org.limbo.doorkeeper.server.dao.ProjectAccountMapper;
 import org.limbo.doorkeeper.server.dao.ProjectMapper;
 import org.limbo.doorkeeper.server.dao.RoleMapper;
+import org.limbo.doorkeeper.server.entity.Project;
 import org.limbo.doorkeeper.server.entity.ProjectAccount;
 import org.limbo.doorkeeper.server.entity.Role;
 import org.limbo.doorkeeper.server.service.AccountRoleService;
@@ -39,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Author Devil
@@ -93,8 +95,11 @@ public class ProjectAccountServiceImpl implements ProjectAccountService {
     @Override
     @Transactional
     public AccountVO save(Long currentAccountId, ProjectAccountAddParam param) {
+        if (!canSetAdminParam(currentAccountId, param.getProjectId())) {
+            param.setIsAdmin(false);
+        }
         return accountService.addAccount(param.getProjectId(), currentAccountId,
-                EnhancedBeanUtils.createAndCopy(param, AccountAddParam.class), false);
+                EnhancedBeanUtils.createAndCopy(param, AccountAddParam.class), param.getIsAdmin());
     }
 
     @Override
@@ -143,6 +148,40 @@ public class ProjectAccountServiceImpl implements ProjectAccountService {
             }
             accountRoleService.batchSave(projectId, accountRoles);
         }
+    }
+
+    /**
+     * 是否可以设置admin属性
+     * @param accountId 操作用户
+     * @param projectId 操作项目
+     * @return
+     */
+    private boolean canSetAdminParam(Long accountId, Long projectId) {
+        // 判断操作用户是否为管理端管理员
+        List<Project> projects = projectMapper.selectList(Wrappers.<Project>lambdaQuery()
+                .eq(Project::getIsAdminProject, true)
+        );
+        List<Long> adminProjectIds = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(projects)) {
+            adminProjectIds = projects.stream().map(Project::getProjectId).collect(Collectors.toList());
+        }
+
+        boolean isAdmin = false;
+        if (CollectionUtils.isNotEmpty(projects)) {
+            List<ProjectAccount> projectAccounts = projectAccountMapper.selectList(Wrappers.<ProjectAccount>lambdaQuery()
+                    .eq(ProjectAccount::getAccountId, accountId)
+                    .in(ProjectAccount::getProjectId, adminProjectIds)
+            );
+            for (ProjectAccount projectAccount : projectAccounts) {
+                if (projectAccount.getIsAdmin()) {
+                    isAdmin = true;
+                    break;
+                }
+            }
+        }
+
+        // 管理端管理员 并且项目不为管理端 可以设置
+        return isAdmin && !adminProjectIds.contains(projectId);
     }
 
 }

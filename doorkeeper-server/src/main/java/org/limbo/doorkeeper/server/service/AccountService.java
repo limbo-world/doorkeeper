@@ -33,13 +33,14 @@ public interface AccountService {
 
     /**
      * 添加用户
+     * @param isAdmin 是否此项目管理员
      */
-    AccountVO addAccount(Long currentProjectId, Long currentAccountId, AccountAddParam param, boolean needSuperAdmin);
+    AccountVO addAccount(Long currentProjectId, Long currentAccountId, AccountAddParam param, boolean isAdmin);
 
     /**
      * 更新账户
      */
-    Integer update(Long currentProjectId, Long currentAccountId, AccountUpdateParam param, boolean needSuperAdmin);
+    Integer update(Long currentProjectId, Long currentAccountId, AccountUpdateParam param);
 
     /**
      * 分页查询

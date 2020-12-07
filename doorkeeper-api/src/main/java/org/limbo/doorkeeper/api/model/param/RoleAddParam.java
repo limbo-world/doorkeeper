@@ -29,12 +29,12 @@ import javax.validation.constraints.NotBlank;
 public class RoleAddParam {
 
     @NotBlank(message = "角色名称不能为空")
-    @Schema(title = "角色名称")
+    @Schema(title = "角色名称", required = true)
     private String roleName;
 
-    @Schema(title = "角色描述", maxLength = 150)
+    @Schema(title = "角色描述")
     private String roleDescribe;
 
     @Schema(title = "是否默认角色", description = "默认角色会在用户创建的时候直接绑定")
-    private Boolean isDefault;
+    private Boolean isDefault = false;
 }

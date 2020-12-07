@@ -49,6 +49,6 @@ public class ProjectAccountAddParam {
     private String accountDescribe;
 
     @Schema(title = "是否管理员")
-    private Boolean isAdmin;
+    private Boolean isAdmin = false;
 
 }
