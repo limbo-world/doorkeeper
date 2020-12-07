@@ -20,14 +20,15 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.limbo.doorkeeper.api.exception.ParamException;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.RoleAddParam;
-import org.limbo.doorkeeper.api.model.param.RolePermissionAddParam;
 import org.limbo.doorkeeper.api.model.param.RoleQueryParam;
 import org.limbo.doorkeeper.api.model.param.RoleUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.server.constants.BusinessType;
 import org.limbo.doorkeeper.server.constants.OperateType;
+import org.limbo.doorkeeper.server.dao.AccountAdminRoleMapper;
 import org.limbo.doorkeeper.server.dao.AccountRoleMapper;
 import org.limbo.doorkeeper.server.dao.RoleMapper;
 import org.limbo.doorkeeper.server.dao.RolePermissionMapper;
@@ -44,6 +45,7 @@ import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,6 +74,9 @@ public class RoleServiceImpl implements RoleService {
     @Autowired
     private RolePermissionService rolePermissionService;
 
+    @Autowired
+    private AccountAdminRoleMapper accountAdminRoleMapper;
+
     @Override
     @Transactional
     @PLog(operateType = OperateType.CREATE, businessType = BusinessType.ROLE)
@@ -79,7 +84,11 @@ public class RoleServiceImpl implements RoleService {
                           @PLogTag(PLogConstants.CONTENT) RoleAddParam param) {
         Role role = EnhancedBeanUtils.createAndCopy(param, Role.class);
         role.setProjectId(projectId);
-        roleMapper.insert(role);
+        try {
+            roleMapper.insert(role);
+        } catch (DuplicateKeyException duplicateKeyException) {
+            throw new ParamException("角色已存在");
+        }
         return EnhancedBeanUtils.createAndCopy(role, RoleVO.class);
     }
 
@@ -90,25 +99,18 @@ public class RoleServiceImpl implements RoleService {
                               @PLogTag(PLogConstants.CONTENT) RoleUpdateParam param) {
         Role role = roleMapper.selectById(param.getRoleId());
         Verifies.notNull(role, "角色不存在");
-        int update = roleMapper.update(null, Wrappers.<Role>lambdaUpdate()
-                .set(StringUtils.isNotBlank(param.getRoleName()), Role::getRoleName, param.getRoleName())
-                .set(StringUtils.isNotBlank(param.getRoleDescribe()), Role::getRoleDescribe, param.getRoleDescribe())
-                .set(param.getIsDefault() != null, Role::getIsDefault, param.getIsDefault())
-                .eq(Role::getProjectId, projectId)
-                .eq(Role::getRoleId, param.getRoleId())
-        );
-
-        if (CollectionUtils.isNotEmpty(param.getDeleteRolePermissionIds())) {
-            rolePermissionService.deleteRolePermission(projectId, param.getDeleteRolePermissionIds());
+        int update;
+        try {
+            update = roleMapper.update(null, Wrappers.<Role>lambdaUpdate()
+                    .set(StringUtils.isNotBlank(param.getRoleName()), Role::getRoleName, param.getRoleName())
+                    .set(StringUtils.isNotBlank(param.getRoleDescribe()), Role::getRoleDescribe, param.getRoleDescribe())
+                    .set(param.getIsDefault() != null, Role::getIsDefault, param.getIsDefault())
+                    .eq(Role::getProjectId, projectId)
+                    .eq(Role::getRoleId, param.getRoleId())
+            );
+        } catch (DuplicateKeyException duplicateKeyException) {
+            throw new ParamException("角色已存在");
         }
-
-        if (CollectionUtils.isNotEmpty(param.getAddRolePermissions())) {
-            for (RolePermissionAddParam rolePermissionAddParam : param.getAddRolePermissions()) {
-                rolePermissionAddParam.setRoleId(role.getRoleId());
-            }
-            rolePermissionService.addRolePermission(projectId, param.getAddRolePermissions());
-        }
-
         return update;
     }
 
@@ -144,6 +146,8 @@ public class RoleServiceImpl implements RoleService {
             rolePermissionService.deleteRolePermission(projectId,
                     rolePermissions.stream().map(RolePermission::getRolePermissionId).collect(Collectors.toList()));
         }
+
+        // 删除账户管理端角色绑定 todo
 
         return result;
     }

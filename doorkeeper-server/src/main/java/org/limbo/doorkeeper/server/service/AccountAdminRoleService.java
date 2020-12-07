@@ -16,9 +16,28 @@
 
 package org.limbo.doorkeeper.server.service;
 
+import org.limbo.doorkeeper.api.model.param.AccountAdminRoleAddParam;
+import org.limbo.doorkeeper.api.model.param.AccountAdminRoleQueryParam;
+import org.limbo.doorkeeper.api.model.vo.AccountAdminRoleVO;
+
+import java.util.List;
+
 /**
  * @Author Devil
  * @Date 2020/12/7 10:05 上午
  */
-public interface ManagerRoleService {
+public interface AccountAdminRoleService {
+    /**
+     * 查询列表
+     */
+    List<AccountAdminRoleVO> list(Long projectId, AccountAdminRoleQueryParam param);
+    /**
+     * 批量添加
+     */
+    void batchSave(Long projectId, List<AccountAdminRoleAddParam> params);
+
+    /**
+     * 批量删除
+     */
+    int batchDelete(Long projectId, List<Long> accountAdminRoleIds);
 }

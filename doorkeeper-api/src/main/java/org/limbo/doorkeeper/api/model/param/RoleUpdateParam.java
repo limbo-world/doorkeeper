@@ -20,7 +20,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 /**
  * @author Devil
@@ -42,9 +41,4 @@ public class RoleUpdateParam {
     @Schema(name = "默认角色会在用户创建的时候直接绑定")
     private Boolean isDefault;
 
-    @Schema(name = "绑定的角色权限")
-    private List<RolePermissionAddParam> addRolePermissions;
-
-    @Schema(name = "删除的角色权限")
-    private List<Long> deleteRolePermissionIds;
 }

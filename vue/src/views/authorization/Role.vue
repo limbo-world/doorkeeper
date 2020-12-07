@@ -30,13 +30,19 @@
 
         <el-main>
             <el-table :data="roles" ref="roleTable" size="mini">
-                <!--<el-table-column type="selection" width="55"></el-table-column>-->
                 <el-table-column align="left" prop="roleName" label="名称" width="150"></el-table-column>
                 <el-table-column align="center" prop="roleDescribe" label="描述"></el-table-column>
+                <el-table-column align="center" label="角色权限" width="150">
+                    <template slot-scope="scope">
+                        <div class="operations">
+                            <i class="el-icon-view" @click="viewRolePermission(scope.row)"></i>
+                            <i class="el-icon-edit" @click="editRolePermission(scope.row)"></i>
+                        </div>
+                    </template>
+                </el-table-column>
                 <el-table-column align="center" label="操作" width="150">
                     <template slot-scope="scope">
                         <div class="operations">
-                            <i class="el-icon-view" @click="viewRole(scope.row)"></i>
                             <i class="el-icon-edit" @click="editRole(scope.row)"></i>
                             <i class="el-icon-delete" @click="() => {
                                 deleteRole([scope.row.roleId])
@@ -54,7 +60,7 @@
         </el-footer>
 
 
-        <el-dialog :title="`${dialogOpenMode}角色`" :visible.sync="dialogOpened" width="70%" class="edit-dialog"
+        <el-dialog :title="`${dialogOpenMode}`" :visible.sync="dialogOpened" width="70%" class="edit-dialog"
                    @close="dialogCancel" @opened="beforeDialogOpen">
             <role-edit :role="role" ref="roleEdit" :open-mode="dialogOpenMode"></role-edit>
             <span slot="footer" class="dialog-footer">
@@ -124,19 +130,25 @@
 
             addRole() {
                 this.role = {};
-                this.dialogOpenMode = '新增';
+                this.dialogOpenMode = '新增角色';
                 this.dialogOpened = true;
             },
 
             editRole(role) {
                 this.role = role;
-                this.dialogOpenMode = '修改';
+                this.dialogOpenMode = '修改角色';
                 this.dialogOpened = true;
             },
 
-            viewRole(role) {
+            viewRolePermission(role) {
                 this.role = role;
-                this.dialogOpenMode = '查看';
+                this.dialogOpenMode = '查看角色权限';
+                this.dialogOpened = true;
+            },
+
+            editRolePermission(role) {
+                this.role = role;
+                this.dialogOpenMode = '修改角色权限';
                 this.dialogOpened = true;
             },
 

@@ -18,7 +18,6 @@ package org.limbo.doorkeeper.server.service;
 
 import org.limbo.doorkeeper.api.model.param.AccountRoleAddParam;
 import org.limbo.doorkeeper.api.model.param.AccountRoleQueryParam;
-import org.limbo.doorkeeper.api.model.param.AccountRoleUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.AccountRoleVO;
 
 import java.util.List;
@@ -32,10 +31,6 @@ public interface AccountRoleService {
      * 查询列表
      */
     List<AccountRoleVO> list(Long projectId, AccountRoleQueryParam param);
-    /**
-     * 批量添加
-     */
-    void batchUpdate(Long projectId, AccountRoleUpdateParam param);
     /**
      * 批量添加
      */

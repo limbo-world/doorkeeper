@@ -16,19 +16,16 @@
 
 package org.limbo.doorkeeper.api.model.param;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-
-import java.util.List;
 
 /**
  * @author Devil
- * @date 2020/11/20 11:33 AM
+ * @date 2020/11/19 3:27 PM
  */
 @Data
-public class AccountRoleUpdateParam {
+public class AccountAdminRoleQueryParam {
 
-    private List<AccountRoleAddParam> addAccountRoles;
-
-    private List<Long> deleteAccountRoleIds;
-
+    @Schema(title = "账户id")
+    private Long accountId;
 }

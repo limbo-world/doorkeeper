@@ -14,26 +14,20 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
+package org.limbo.doorkeeper.server.dao;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+import org.limbo.doorkeeper.server.entity.AccountAdminRole;
 
-import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * @author Devil
- * @date 2020/11/20 11:33 AM
+ * @date 2020/11/20 11:34 AM
  */
-@Data
-public class ManagerRoleAddParam {
+public interface AccountAdminRoleMapper extends BaseMapper<AccountAdminRole> {
 
-    @NotNull(message = "账户ID不能为空")
-    @Schema(title = "账户ID", required = true)
-    private Long accountId;
-
-    @NotNull(message = "角色ID不能为空")
-    @Schema(title = "角色ID", required = true)
-    private Long roleId;
+    void batchInsertIgnore(@Param("accountAdminRoles") List<AccountAdminRole> accountAdminRoles);
 
 }

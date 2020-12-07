@@ -18,26 +18,30 @@
     <el-container class="page-role-edit">
         <el-main>
             <el-form :model="role" label-width="80px" size="mini" class="edit-form"
-                     :rules="rules" ref="editForm" :disabled="'查看' === openMode">
-                <el-form-item label="名称" prop="roleName" :rules="{required: true, message: '请填写名称', trigger: 'blur'}">
-                    <el-input v-model="role.roleName"></el-input>
-                </el-form-item>
-                <el-form-item label="描述">
-                    <el-input type="textarea" v-model="role.roleDescribe"></el-input>
-                </el-form-item>
-                <el-form-item label="默认角色">
-                    <el-switch v-model="role.isDefault" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
-                </el-form-item>
-                <el-form-item label="权限">
-                    <el-transfer filterable filter-placeholder="搜索"
-                                 :titles="['未选', '已选']" :render-content="renderFunc"
-                                 @left-check-change="leftCheckChange" @right-check-change="rightCheckChange"
-                                 v-model="transferValue" :data="permissions">
-                        <el-button class="transfer-footer" slot="left-footer" size="small" @click="allowPermission">放行</el-button>
-                        <el-button class="transfer-footer" slot="left-footer" size="small" @click="refusePermission">拦截</el-button>
-                        <el-button class="transfer-footer" slot="right-footer" size="small" @click="deletePermission">删除</el-button>
-                    </el-transfer>
-                </el-form-item>
+                     :rules="rules" ref="editForm" :disabled="'查看角色权限' === openMode">
+                <template v-if="'新增角色' === openMode || '修改角色' === openMode">
+                    <el-form-item label="名称" prop="roleName" :rules="{required: true, message: '请填写名称', trigger: 'blur'}">
+                        <el-input v-model="role.roleName"></el-input>
+                    </el-form-item>
+                    <el-form-item label="描述">
+                        <el-input type="textarea" v-model="role.roleDescribe"></el-input>
+                    </el-form-item>
+                    <el-form-item label="默认角色">
+                        <el-switch v-model="role.isDefault" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+                    </el-form-item>
+                </template>
+                <template v-if="'新增角色' === openMode || '查看角色权限' === openMode || '修改角色权限' === openMode">
+                    <el-form-item label="权限">
+                        <el-transfer filterable filter-placeholder="搜索"
+                                     :titles="['未选', '已选']" :render-content="renderFunc"
+                                     @left-check-change="leftCheckChange" @right-check-change="rightCheckChange"
+                                     v-model="transferValue" :data="permissions">
+                            <el-button class="transfer-footer" slot="left-footer" size="small" @click="allowPermission">放行</el-button>
+                            <el-button class="transfer-footer" slot="left-footer" size="small" @click="refusePermission">拦截</el-button>
+                            <el-button class="transfer-footer" slot="right-footer" size="small" @click="deletePermission">删除</el-button>
+                        </el-transfer>
+                    </el-form-item>
+                </template>
             </el-form>
         </el-main>
     </el-container>
@@ -75,6 +79,9 @@
 
         methods: {
             preOpen() {
+                if (this.openMode.indexOf("权限") <= -1) {
+                    return;
+                }
                 Promise.all([this.loadAllPermission(), this.loadRolePermission()]).then((result) => {
                     const allPermission = result[0].data;
                     const hasPermission = result[1].data;
@@ -180,13 +187,20 @@
                             reject();
                             return;
                         }
-                        if ('新增' === this.openMode) {
-                            this.doAddRole(this.role).then(() => {
+                        if ('新增角色' === this.openMode) {
+                            this.doAddRole().then(() => {
+                                this.clearData();
+                                resolve();
+                            }).catch(reject=> {
+                                console.log(reject)
+                            });
+                        } else if ('修改角色' === this.openMode) {
+                            this.doUpdateRole().then(() => {
                                 this.clearData();
                                 resolve();
                             }).catch(reject);
-                        } else if ('修改' === this.openMode) {
-                            this.doUpdateRole(this.role).then(() => {
+                        } else if ('修改角色权限' === this.openMode) {
+                            this.updateRolePermission().then(() => {
                                 this.clearData();
                                 resolve();
                             }).catch(reject);
@@ -197,21 +211,46 @@
                 }).finally(() => loading.close())
             },
 
-            doAddRole(role) {
-                role.rolePermissions = this.hasPermissions;
-                return this.$ajax.post('/role', role);
+            doAddRole() {
+                return this.$ajax.post('/role', this.role).then(response => {
+                    let role = response.data;
+                    this.hasPermissions.forEach(rolePermission => {
+                        rolePermission.roleId = role.roleId;
+                    })
+                    return this.addRolePermissions(this.hasPermissions)
+                })
             },
 
-            doUpdateRole(role) {
+            doUpdateRole() {
+                return this.$ajax.put(`/role/${this.role.roleId}`, this.role);
+            },
+            updateRolePermission() {
+                let deletePromise = new Promise((resolve, reject) => {
+                    resolve({code: 200})
+                })
                 let delIds = [];
                 this.permissions.forEach(permission => {
                     if (permission.delRolePermissionId) {
                         delIds.push(permission.delRolePermissionId);
                     }
                 });
-                role.addRolePermissions = this.hasPermissions;
-                role.deleteRolePermissionIds = delIds;
-                return this.$ajax.put(`/role/${role.roleId}`, role);
+                if (delIds.length > 0 ) {
+                    deletePromise = this.$ajax.delete('/role-permission', {data: delIds})
+                }
+
+                let updatePromise = new Promise((resolve, reject) => {
+                    resolve({code: 200})
+                })
+                if (this.hasPermissions && this.hasPermissions.length > 0) {
+                    this.hasPermissions.forEach(rolePermission => {
+                        rolePermission.roleId = this.role.roleId;
+                    })
+                    updatePromise = this.addRolePermissions(this.hasPermissions);
+                }
+                return Promise.all([deletePromise, updatePromise])
+            },
+            addRolePermissions(rolePermissions) {
+                return this.$ajax.post('/role-permission', rolePermissions)
             },
 
             clearData() {

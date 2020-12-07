@@ -14,32 +14,27 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
+package org.limbo.doorkeeper.api.model.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
- *
- * 账户拥有哪些管理端的角色
- *
  * @Author Devil
- * @Date 2020/12/3 11:08 上午
+ * @Date 2020/12/7 10:20 上午
  */
 @Data
-@TableName("l_menu_role")
-public class ManagerRole {
+public class AccountAdminRoleVO {
 
-    @TableId(type = IdType.AUTO)
-    private Long adminRoleId;
+    @Schema(title = "账户管理端角色ID")
+    private Long accountAdminRoleId;
 
+    @Schema(title = "项目ID")
     private Long projectId;
 
+    @Schema(title = "账户ID")
     private Long accountId;
-    /**
-     * 管理端项目的roleId
-     */
+
+    @Schema(title = "管理端角色ID")
     private Long roleId;
 }

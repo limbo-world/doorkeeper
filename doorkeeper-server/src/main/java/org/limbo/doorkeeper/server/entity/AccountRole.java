@@ -20,13 +20,11 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import org.limbo.doorkeeper.api.constants.PermissionPolicy;
-
-import java.util.Date;
 
 /**
  *
  * 账户角色绑定关系
+ * 账户在项目A下有哪些项目A的角色
  *
  * @author Devil
  * @date 2020/11/19 4:35 PM
