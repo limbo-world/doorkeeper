@@ -36,7 +36,7 @@
         <el-main>
             <el-row>
                 <el-row>
-                    <el-button type="primary" @click="batchBindAccount" size="mini">批量加入</el-button>
+                    <el-button type="primary" @click="batchBindAccount(selectAccounts)" size="mini">批量加入</el-button>
                 </el-row>
                 <el-table :data="accounts" size="mini" @selection-change="handleSelectionChange">
                     <el-table-column type="selection" width="55"></el-table-column>
@@ -52,7 +52,9 @@
                     <el-table-column prop="isAdmin" label="管理员" align="center" width="80">
                         <template slot-scope="scope">
                             <!-- todo 管理端下不显示 其他项目下 不是管理端管理员 不显示 -->
-                            <el-switch v-model="scope.row.isAdmin" active-color="#13ce66" :disabled="project.isAdminProject"
+                            <el-switch v-model="scope.row.isAdmin" active-color="#13ce66"
+                                       :disabled="project.isAdminProject"
+                                       @change="v => {updateAdmin(scope.row, v)}"
                                        inactive-color="#ff4949"></el-switch>
                         </template>
                     </el-table-column>
@@ -156,8 +158,8 @@
                 this.selectAccounts = val;
             },
 
-            batchBindAccount() {
-                if (this.selectAccounts.length <= 0) {
+            batchBindAccount(accounts) {
+                if (accounts.length <= 0) {
                     this.$message.warning('请选择账户!');
                     return;
                 }
@@ -168,7 +170,7 @@
                 }).then(() => {
                     let param = {
                         projectId: this.project.projectId,
-                        accountIds: this.selectAccounts.map(account => account.accountId)
+                        accountIds: accounts.map(account => account.accountId)
                     }
                     this.$ajax.put(`/project-account`, param).then(res => {
                         this.loadAccounts();
@@ -204,31 +206,12 @@
                 this.$refs.accountEdit.clearData();
                 this.accountDialogOpened = false;
             },
-
-            // ========= 角色相关 ============
-            viewRole(account) {
-                this.account = account;
-                this.dialogOpenMode = '查看';
-                this.accountRoleDialogOpened = true;
-            },
-            editRole(account) {
-                this.account = account;
-                this.dialogOpenMode = '修改';
-                this.accountRoleDialogOpened = true;
-            },
-            beforeAccountRoleDialogOpen() {
-                this.$refs.accountRoleEdit.preOpen();
-            },
-            accountRoleDialogConfirm() {
-                this.$refs.accountRoleEdit.confirmEdit().then(() => {
-                    this.account = {};
-                    this.accountRoleDialogOpened = false;
-                }).catch(err => err);
-            },
-            accountRoleDialogCancel() {
-                this.$refs.accountRoleEdit.clearData();
-                this.accountRoleDialogOpened = false;
-            },
+            updateAdmin(account, v) {
+                let param = {projectAccountId: account.projectAccountId, isAdmin: v}
+                this.$ajax.put(`/project-account/${account.projectAccountId}`, param).then(res => {
+                    this.loadAccounts();
+                });
+            }
 
         }
 

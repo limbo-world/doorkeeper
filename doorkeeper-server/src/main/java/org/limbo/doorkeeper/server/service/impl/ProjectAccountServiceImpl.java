@@ -100,13 +100,10 @@ public class ProjectAccountServiceImpl implements ProjectAccountService {
     @Override
     @Transactional
     public void update(Long currentAccountId, ProjectAccountUpdateParam param) {
-        ProjectAccount projectAccount = projectAccountMapper.selectById(param.getProjectAccountId());
-        AccountUpdateParam accountUpdateParam = new AccountUpdateParam();
-        accountUpdateParam.setNickname(param.getNickname());
-        accountUpdateParam.setAccountDescribe(param.getAccountDescribe());
-        accountUpdateParam.setAccountId(projectAccount.getAccountId());
-        accountUpdateParam.setIsAdmin(param.getIsAdmin());
-        accountService.update(projectAccount.getProjectId(), currentAccountId, accountUpdateParam, false);
+        projectAccountMapper.update(null, Wrappers.<ProjectAccount>lambdaUpdate()
+                .eq(ProjectAccount::getProjectAccountId, param.getProjectAccountId())
+                .set(ProjectAccount::getIsAdmin, param.getIsAdmin())
+        );
     }
 
     @Override
