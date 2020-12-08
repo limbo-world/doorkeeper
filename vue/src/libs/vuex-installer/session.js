@@ -98,12 +98,12 @@ export default {
             });
         },
 
-        // 从后台或其他地方加载菜单信息
-        loadMenus({ state, commit }) {
-            // debugger
-            // 已经加载完成时不再加载
-            if (state.menus && state.menus.length > 0) {
-                return Promise.resolve(state.menus);
+        /**
+         * 初始化权限校验计算器
+         */
+        initEvaluator({ state, commit }) {
+            if (state.authExpEvaluator) {
+                return Promise.resolve(state);
             }
 
             // 从后台异步获取权限
@@ -117,12 +117,25 @@ export default {
                 );
                 commit('setAuthExpEvaluator', evaluator);
 
+                return Promise.resolve(evaluator);
+            });
+        },
+
+        // 从后台或其他地方加载菜单信息
+        loadMenus({ state, commit, actions }) {
+            // debugger
+            // 已经加载完成时不再加载
+            if (state.menus && state.menus.length > 0) {
+                return Promise.resolve(state.menus);
+            }
+
+            return actions.initEvaluator().then(evaluator => {
                 // 组装菜单树
                 const menus = organizeMenu(evaluator, account);
                 commit('setMenu', menus);
 
                 return Promise.resolve(menus);
-            });
+            })
         },
 
         /**
