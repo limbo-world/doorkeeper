@@ -7,7 +7,7 @@
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="loadProjects(1)" size="mini" icon="el-icon-search">查询</el-button>
-                    <el-button type="primary" @click="() =>{
+                    <el-button v-auth="'{role.1000037}'" type="primary" @click="() =>{
                             dialogOpened = true;
                         }" size="mini" icon="el-icon-circle-plus">新增</el-button>
                 </el-form-item>
@@ -35,7 +35,7 @@
                     <template slot-scope="scope">
                         <div class="operations">
                             <template>
-                                <i class="el-icon-edit" @click="toProjectAccount(scope.row)"></i>
+                                <i v-auth="'{role.1000034} || {role.1000035}'" class="el-icon-edit" @click="toProjectAccount(scope.row)"></i>
                             </template>
                         </div>
                     </template>
@@ -44,7 +44,7 @@
                     <template slot-scope="scope">
                         <div class="operations">
                             <template>
-                                <i class="el-icon-edit" @click="() =>{
+                                <i v-auth="'{role.1000037}'" class="el-icon-edit" @click="() =>{
                                     project = {...scope.row};
                                     dialogOpened = true;
                                 }"></i>

@@ -22,9 +22,7 @@ export default {
     bind(el, binding, vn) {
         // 获取计算器
         let $store = vn.context.$store;
-        let initEvaluator = $store._actions['session/initEvaluator'][0]
-        let p = initEvaluator.call(this)
-        p.then(evaluator => {
+        $store.dispatch('session/initEvaluator').then(evaluator => {
             const expression = binding.value;
 
             if (!evaluator.evaluate(expression)) {

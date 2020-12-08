@@ -7,7 +7,7 @@ export const MenuRoute = [{
         "menuName": "项目列表",
         "icon": "fa fa-project-diagram",
         "route": "/project/project",
-        "auth": "{role.1000032} || {role.1000033} || {role.1000034} || {role.1000035} || {role.1000037}"
+        "auth": "adminProject {role.1000032} || {role.1000033} || {role.1000034} || {role.1000035} || {role.1000037}"
     }]
 }, {
     "menuCode": "002",

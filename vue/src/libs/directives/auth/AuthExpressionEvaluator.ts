@@ -18,15 +18,15 @@
  * 权限表达式计算器
  * 权限表达式，在解析后会被翻译为一个bool表达式，由子表达式和操作符组成
  *
- * 子表达式：子表达式用花括号“{}”括起来，格式为“{鉴权类型.鉴权对象名}”，支持的鉴权类型有角色(role)、权限(perm)
+ * 子表达式：子表达式用花括号“{}”括起来，格式为“{鉴权类型.鉴权对象名}”，支持的鉴权类型有角色(role)
  * 例如：
  *      {role.A} 表示角色A
- *      {perm.B} 表示角色B
+ *      {role.B} 表示角色B
  *
  * 操作符：普通bool操作符均可用，支持的操作符有：与(&)、或(|)、非(!)、短路与(&&)、短路或(||)、圆括号(())
  * 例如：
- *      {role.A} || ({perm.AA} && {perm.BB})
- *      表示 有角色A 或 同时有权限AA和权限BB时 才有权读取菜单
+ *      {role.A} || ({role.AA} && {role.BB})
+ *      表示 有角色A 或 同时有roleAA和roleBB时 才有权读取菜单
  *
  * 省略花括号的简写形式：如果权限表达式比较简单，没有操作符的话，可以将子表达式的花括号省略，直接使用“鉴权类型.鉴权对象名”的格式，在判断表达式时会认为其在花括号内
  * 例如：role.A 与 {role.A} 的表现结果一致
@@ -34,7 +34,7 @@
  * 省略鉴权类型的简写形式：如果权限表达式内的只使用了一种鉴权类型，可以省略子表达式内的鉴权类型，在表达式头部添加“鉴权类型:”来简写
  * 例如：role:{A} && {B} 与 {role.A} && {role.B} 的表现结果一致
  * 如果简写鉴权类型的同时又在子表达式中指定了鉴权类型，则以子表达式中的鉴权类型为准
- * 例如：role:{A} || {B} || {C} || {perm.D} 与 {role.A} || {role.B} || {role.C} || {perm:D} 的表现结果一致
+ * 例如：role:{A} || {B} || {C} || {role.D} 与 {role.A} || {role.B} || {role.C} || {role:D} 的表现结果一致
  *
  * 保留值：true、false，与bool值含义相同，在权限表达式中使用true或false与其bool值相同
  * 例如：权限表达式为 “true”，表示永远有权限
@@ -44,16 +44,16 @@
 export default class AuthExpressionEvaluator {
 
     private readonly roles: Set<string>;
-    private readonly isAdmin: boolean = false;
+    private readonly currentProject: Project;
 
     /**
      * 表达式关键字
      */
     private static KeyChars = new Set([':', '.', '{', '}']);
 
-    constructor(roles: string[], isAdmin: boolean) {
+    constructor(roles: string[], currentProject: Project) {
         this.roles = new Set(roles || []);
-        this.isAdmin = isAdmin;
+        this.currentProject = currentProject;
     }
 
     /**
@@ -62,7 +62,15 @@ export default class AuthExpressionEvaluator {
      * @param defaultResult
      */
     evaluate(expression: string, defaultResult: boolean = true): boolean {
-        if (this.isAdmin) {
+        if (expression && expression.indexOf("adminProject") >= 0) {
+            if (!this.currentProject.isAdminProject) {
+                return false;
+            } else {
+                expression = expression.replace("adminProject", "")
+                console.debug(`replace [${expression}]`)
+            }
+        }
+        if (this.currentProject.isAdmin) {
             return true;
         }
         return eval(this.parseExpression(expression, defaultResult.toString()));
@@ -114,6 +122,17 @@ export default class AuthExpressionEvaluator {
         return new Error(`Parse auth expression error, expecting '${expecting}', but got ${got ? got : 'nothing'}`);
     }
 
+}
+
+interface Project {
+    /**
+     * 当前账户是否项目管理员
+     */
+    isAdmin :boolean;
+    /**
+     * 是否管理端项目
+     */
+    isAdminProject :boolean;
 }
 
 class ParseContext {
@@ -249,7 +268,6 @@ class ParseContext {
 class AuthType {
 
     static Role = new AuthType('role');
-    static Permission = new AuthType('perm');
 
     private readonly type: string = "";
 
@@ -268,7 +286,7 @@ class AuthType {
      * 校验鉴权类型是否合法
      */
     public static validate(authType: string) {
-        if (!this.Role.is(authType) && !this.Permission.is(authType)) {
+        if (!this.Role.is(authType)) {
             throw new Error("Illegal auth type '" + authType + "'!")
         }
     }

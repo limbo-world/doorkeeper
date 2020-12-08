@@ -28,7 +28,6 @@ import org.limbo.doorkeeper.api.model.param.RoleUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.server.constants.BusinessType;
 import org.limbo.doorkeeper.server.constants.OperateType;
-import org.limbo.doorkeeper.server.dao.AccountAdminRoleMapper;
 import org.limbo.doorkeeper.server.dao.AccountRoleMapper;
 import org.limbo.doorkeeper.server.dao.RoleMapper;
 import org.limbo.doorkeeper.server.dao.RolePermissionMapper;
@@ -73,9 +72,6 @@ public class RoleServiceImpl implements RoleService {
 
     @Autowired
     private RolePermissionService rolePermissionService;
-
-    @Autowired
-    private AccountAdminRoleMapper accountAdminRoleMapper;
 
     @Override
     @Transactional
@@ -157,7 +153,8 @@ public class RoleServiceImpl implements RoleService {
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<Role> mpage = MyBatisPlusUtils.pageOf(param);
         LambdaQueryWrapper<Role> condition = Wrappers.<Role>lambdaQuery()
                 .like(StringUtils.isNotBlank(param.getRoleName()), Role::getRoleName, param.getRoleName())
-                .eq(Role::getProjectId, projectId);
+                .eq(Role::getProjectId, projectId)
+                .orderByDesc(Role::getRoleId);
         mpage = roleMapper.selectPage(mpage, condition);
 
         param.setTotal(mpage.getTotal());

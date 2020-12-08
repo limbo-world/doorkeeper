@@ -25,7 +25,7 @@
                         </el-form-item>
                         <el-form-item>
                             <el-button type="primary" @click="loadAccounts(1)" size="mini" icon="el-icon-search">查询</el-button>
-                            <el-button type="primary" @click="addAccount" size="mini" icon="el-icon-circle-plus">新增</el-button>
+                            <el-button v-auth="'{role.1000035}'" type="primary" @click="addAccount" size="mini" icon="el-icon-circle-plus">新增</el-button>
                         </el-form-item>
                     </el-form>
                 </el-col>
@@ -35,7 +35,7 @@
 
         <el-main>
             <el-row>
-                <el-button type="primary" @click="batchBindAccount(selectAccounts)" size="mini">批量加入</el-button>
+                <el-button v-auth="'{role.1000035}'" type="primary" @click="batchBindAccount(selectAccounts)" size="mini">批量加入</el-button>
             </el-row>
             <el-row>
                 <el-table :data="accounts" size="mini" @selection-change="handleSelectionChange">
@@ -52,7 +52,8 @@
                     <el-table-column prop="isAdmin" label="管理员" align="center" width="80">
                         <template slot-scope="scope">
                             <el-switch v-model="scope.row.isAdmin" active-color="#13ce66"
-                                       :disabled="project.isAdminProject || !scope.row.projectAccountId"
+                                       :disabled="project.isAdminProject || !scope.row.projectAccountId
+                                       || !authExpEvaluator.roles.has('1000035')"
                                        @change="v => {updateAdmin(scope.row, v)}"
                                        inactive-color="#ff4949"></el-switch>
                         </template>
@@ -60,7 +61,8 @@
                     <el-table-column label="操作" align="center" width="100">
                         <template slot-scope="scope">
                             <div class="operations">
-                                <i v-if="!scope.row.isSuperAdmin" class="el-icon-edit" @click="editAccount(scope.row)"></i>
+                                <i v-auth="'{role.1000035} || {role.1000031}'"
+                                   v-if="!scope.row.isSuperAdmin" class="el-icon-edit" @click="editAccount(scope.row)"></i>
                             </div>
                         </template>
                     </el-table-column>
@@ -119,7 +121,7 @@
         },
 
         computed: {
-            ...mapState('session', ['user']),
+            ...mapState('session', ['user', 'authExpEvaluator']),
         },
 
         created() {

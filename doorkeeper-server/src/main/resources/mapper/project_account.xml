@@ -69,6 +69,7 @@
         <where>
             <include refid="accountVOQueryCondition"></include>
         </where>
+        order by a.account_id desc
         <if test="offset != null and size != null">
             LIMIT #{offset}, #{size}
         </if>
@@ -84,6 +85,7 @@
                 and a.username like #{username}
             </if>
         </where>
+        order by a.account_id desc
         <if test="offset != null and size != null">
             LIMIT #{offset}, #{size}
         </if>

@@ -111,9 +111,12 @@ export default {
                 // 根据后台返回的授权信息，生成计算器
                 const grantInfo = response.data;
                 const account = state.user.account;
+                let roleIds = [];
+                if (grantInfo.roles) {
+                    roleIds = grantInfo.roles.map(r => (r.roleId).toString());
+                }
                 let evaluator = new AuthExpressionEvaluator(
-                    grantInfo.roles.map(r => (r.roleId).toString()),
-                    account.currentProject.isAdmin
+                    roleIds, account.currentProject
                 );
                 commit('setAuthExpEvaluator', evaluator);
 

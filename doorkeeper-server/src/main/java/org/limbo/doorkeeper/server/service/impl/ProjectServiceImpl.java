@@ -115,7 +115,8 @@ public class ProjectServiceImpl implements ProjectService {
     public Page<ProjectVO> queryProjectPage(ProjectQueryParam param) {
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<Project> mpage = MyBatisPlusUtils.pageOf(param);
         LambdaQueryWrapper<Project> condition = columnNoSecret()
-                .like(StringUtils.isNotBlank(param.getProjectName()), Project::getProjectName, param.getProjectName());
+                .like(StringUtils.isNotBlank(param.getProjectName()), Project::getProjectName, param.getProjectName())
+                .orderByDesc(Project::getProjectId);
         mpage = projectMapper.selectPage(mpage, condition);
 
         param.setTotal(mpage.getTotal());

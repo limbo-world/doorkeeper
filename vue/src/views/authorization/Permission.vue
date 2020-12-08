@@ -116,7 +116,6 @@
 
         created() {
             pages.permission = this;
-
             this.loadPermissions();
         },
 
