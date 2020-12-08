@@ -218,7 +218,7 @@ public class WebConfig implements WebMvcConfigurer {
   
 2. 初始化数据库  
    数据库有两个，假定名称为authc_admin_db和authc_db，分表用于Authc Admin服务和Authc Service；如果您只使用一个数据库，可以不做区分；
-   1. 在authc_admin_db中依次执行`init/0_初始化DB表.sql`、`init/1_初始化DB数据.sql`；
+   1. 在authc_admin_db中依次执行`init/doorkeeper.sql`、`init/1_初始化DB数据.sql`；
    2. 在authc_db中依次执行`init/2_初始化Admin项目DB表.sql`、`init/3_初始化Admin项目DB数据.sql`；
 
 mvn clean package -Dmaven.test.skip=true
