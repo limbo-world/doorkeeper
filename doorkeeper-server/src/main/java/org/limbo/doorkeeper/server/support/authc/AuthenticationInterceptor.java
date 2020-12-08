@@ -23,7 +23,6 @@ import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.model.param.AuthenticationCheckParam;
 import org.limbo.doorkeeper.api.model.vo.AccountGrantVO;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
-import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.server.dao.AccountMapper;
 import org.limbo.doorkeeper.server.dao.ProjectAccountMapper;
 import org.limbo.doorkeeper.server.dao.ProjectMapper;
@@ -165,12 +164,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         }
 
         // 拿到用户管理端权限
-        List<RoleVO> grantedAdminRoles = authenticationService.getGrantedAdminRoles(projectId, account.getAccountId());
-        if (CollectionUtils.isEmpty(grantedAdminRoles)) {
-            return false;
-        }
-        AccountGrantVO grants = authenticationService.getGrantedPermissions(projectId,
-                grantedAdminRoles.stream().map(RoleVO::getRoleId).collect(Collectors.toSet()));
+        AccountGrantVO grants = authenticationService.getGrantedAdminPermissions(projectId, account.getAccountId());
         // 如果没有授权信息 或 授权访问的API列表为空，则禁止访问
         if (grants == null || CollectionUtils.isEmpty(grants.getAllowedPermissions())) {
             return false;
