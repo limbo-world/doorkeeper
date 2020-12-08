@@ -23,6 +23,7 @@ import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.AccountAddParam;
 import org.limbo.doorkeeper.api.model.param.AccountQueryParam;
 import org.limbo.doorkeeper.api.model.param.AccountUpdateParam;
+import org.limbo.doorkeeper.api.model.param.RepasswordParam;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.limbo.doorkeeper.server.constants.BusinessType;
 import org.limbo.doorkeeper.server.constants.OperateType;
@@ -35,6 +36,7 @@ import org.limbo.doorkeeper.server.support.plog.PLogConstants;
 import org.limbo.doorkeeper.server.support.plog.PLogTag;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MD5Utils;
+import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -106,6 +108,17 @@ public class AccountServiceImpl implements AccountService {
     public List<AccountVO> list(Long projectId) {
         List<Account> accounts = accountMapper.selectList(Wrappers.emptyWrapper());
         return EnhancedBeanUtils.createAndCopyList(accounts, AccountVO.class);
+    }
+
+    @Override
+    public void repassword(Long accountId, RepasswordParam param) {
+        Account account = accountMapper.selectById(accountId);
+        Verifies.verify(MD5Utils.verify(param.getOriginalPassword(), account.getPassword()), "旧密码不正确！");
+
+        accountMapper.update(null, Wrappers.<Account>lambdaUpdate()
+                .set(Account::getPassword, MD5Utils.md5WithSalt(param.getNewPassword()))
+                .eq(Account::getAccountId, accountId)
+        );
     }
 
 }

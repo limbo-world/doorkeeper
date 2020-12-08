@@ -20,6 +20,7 @@ import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.AccountAddParam;
 import org.limbo.doorkeeper.api.model.param.AccountQueryParam;
 import org.limbo.doorkeeper.api.model.param.AccountUpdateParam;
+import org.limbo.doorkeeper.api.model.param.RepasswordParam;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
 
 import java.util.List;
@@ -49,5 +50,7 @@ public interface AccountService {
 
 
     List<AccountVO> list(Long projectId);
+
+    void repassword(Long accountId, RepasswordParam param);
 
 }

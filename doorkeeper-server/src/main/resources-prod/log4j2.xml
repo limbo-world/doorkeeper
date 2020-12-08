@@ -11,11 +11,7 @@
         </Console>
     </Appenders>
     <Loggers>
-        <logger name="org.springframework" level="INFO" />
-        <logger name="org.springframework.web" level="INFO" />
-        <logger name="com.netflix.discovery" level="INFO" />
-        <logger name="org.apache.http.impl.conn.PoolingHttpClientConnectionManager" level="INFO" />
-        <Root level="DEBUG">
+        <Root level="INFO">
             <AppenderRef ref="Console" />
         </Root>
     </Loggers>

@@ -21,14 +21,17 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.ProjectAccountQueryParam;
+import org.limbo.doorkeeper.api.model.param.RepasswordParam;
 import org.limbo.doorkeeper.api.model.vo.AccountGrantVO;
 import org.limbo.doorkeeper.api.model.vo.ProjectAccountVO;
+import org.limbo.doorkeeper.server.service.AccountService;
 import org.limbo.doorkeeper.server.service.AuthenticationService;
 import org.limbo.doorkeeper.server.service.ProjectAccountService;
 import org.limbo.doorkeeper.server.support.session.AbstractSession;
 import org.limbo.doorkeeper.server.support.session.SessionAccount;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -50,6 +53,9 @@ public class SessionController extends BaseController {
 
     @Autowired
     private ProjectAccountService projectAccountService;
+
+    @Autowired
+    private AccountService accountService;
 
     @GetMapping
     @Operation(summary = "获取会话")
@@ -90,6 +96,13 @@ public class SessionController extends BaseController {
         ProjectAccountQueryParam param = new ProjectAccountQueryParam();
         param.setAccountId(getAccountId());
         return Response.ok(projectAccountService.list(param));
+    }
+
+    @Operation(summary = "修改密码")
+    @PutMapping("/repassword")
+    public Response<Boolean> repassword(@Validated @RequestBody RepasswordParam param) {
+        accountService.repassword(getAccountId(), param);
+        return Response.ok(true);
     }
 
     @GetMapping("/logout")

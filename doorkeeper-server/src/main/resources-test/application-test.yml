@@ -6,18 +6,6 @@ jasypt:
   encryptor:
     password: 7777777
 
-# 配置 https://springdoc.org/#springdoc-openapi-core-properties
-# 注解 https://springdoc.org/#migrating-from-springfox
-# 访问 http://localhost:8088/api-docs.html
-springdoc:
-  swagger-ui:
-    path: /api-docs.html
-  api-docs:
-    path: /api-docs
-  group-configs:
-    - group: doorkeeper-server
-      pathsToMatch: /**
-
 spring:
   # DB
   datasource:
@@ -26,10 +14,6 @@ spring:
       url: jdbc:mysql://10.219.192.172:3306/doorkeeper?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
       username: ENC(KNg4F1am9e6SudjCk4gsLg==)
       password: ENC(KNg4F1am9e6SudjCk4gsLg==)
-
-# DAO层基于MyBatisPlus
-mybatis-plus:
-  mapper-locations: classpath*:mapper/*.xml
 
 eureka:
   client:
