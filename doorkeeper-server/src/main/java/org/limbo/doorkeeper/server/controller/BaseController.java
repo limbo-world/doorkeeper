@@ -17,7 +17,6 @@
 package org.limbo.doorkeeper.server.controller;
 
 import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.server.support.config.DoorkeeperProperties;
 import org.limbo.doorkeeper.server.support.session.AbstractSession;
 import org.limbo.doorkeeper.server.support.session.AbstractSessionDAO;
 import org.limbo.doorkeeper.server.support.session.SessionAccount;
@@ -38,9 +37,6 @@ public class BaseController {
     @Autowired
     protected AbstractSessionDAO sessionDAO;
 
-    @Autowired
-    protected DoorkeeperProperties doorkeeperProperties;
-
     protected Long getAccountId() {
         return getSession().getAccount().getAccountId();
     }
@@ -56,7 +52,7 @@ public class BaseController {
     }
 
     protected AbstractSession getSession() {
-        String sessionId = request.getHeader(doorkeeperProperties.getSession().getHeaderName());
+        String sessionId = request.getHeader(DoorkeeperConstants.TOKEN_HEADER);
         return sessionDAO.readSession(sessionId);
     }
 

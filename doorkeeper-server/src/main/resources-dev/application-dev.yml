@@ -45,8 +45,3 @@ eureka:
     prefer-ip-address: true
     metadata-map:
       zone: dev
-
-doorkeeper:
-  session:
-    header-name: Doorkeeper-Token
-    session-duration: 1d

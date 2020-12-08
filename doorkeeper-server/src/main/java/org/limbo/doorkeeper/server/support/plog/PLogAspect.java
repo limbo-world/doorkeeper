@@ -22,9 +22,9 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.dao.ProjectLogMapper;
 import org.limbo.doorkeeper.server.entity.ProjectLog;
-import org.limbo.doorkeeper.server.support.config.DoorkeeperProperties;
 import org.limbo.doorkeeper.server.support.session.AbstractSessionDAO;
 import org.limbo.doorkeeper.server.support.session.SessionAccount;
 import org.limbo.doorkeeper.server.utils.JacksonUtil;
@@ -52,9 +52,6 @@ public class PLogAspect {
     @Autowired
     protected AbstractSessionDAO sessionDAO;
 
-    @Autowired
-    protected DoorkeeperProperties doorkeeperProperties;
-
     /**
      * 声明切点 带有 @PLog 注解的方法
      */
@@ -80,9 +77,9 @@ public class PLogAspect {
             String[] parameterNames = signature.getParameterNames();
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 
-            String token = request.getHeader(doorkeeperProperties.getSession().getHeaderName());
+            String token = request.getHeader(DoorkeeperConstants.TOKEN_HEADER);
             SessionAccount account = sessionDAO.readSession(token).getAccount();
-
+            // todo
             Long projectId = account.getCurrentProject().getProjectId();
             Long accountId = account.getAccountId();
             StringBuilder content = new StringBuilder();

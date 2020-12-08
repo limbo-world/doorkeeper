@@ -18,12 +18,9 @@ package org.limbo.doorkeeper.server.support.config;
 
 import org.limbo.doorkeeper.server.support.session.RedisSessionDAO;
 import org.redisson.api.RedissonClient;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -31,23 +28,12 @@ import java.util.concurrent.TimeUnit;
  * @date 2020/11/24 16:14
  */
 @Configuration
-@EnableConfigurationProperties(DoorkeeperProperties.class)
 //@AutoConfigureAfter(RedisConfig.class)
 public class SessionConfig {
 
-    @Autowired
-    private DoorkeeperProperties doorkeeperProperties;
-
     @Bean
     public RedisSessionDAO sessionDAO(RedissonClient redissonClient) {
-        DoorkeeperProperties.Session sessionProp = doorkeeperProperties.getSession();
-        if (sessionProp != null && sessionProp.getSessionDuration() != null) {
-            // 如果指定了会话过期时间
-            Duration duration = sessionProp.getSessionDuration();
-            return new RedisSessionDAO(redissonClient, duration.getSeconds(), TimeUnit.SECONDS);
-        } else {
-            return new RedisSessionDAO(redissonClient);
-        }
+        return new RedisSessionDAO(redissonClient, 7, TimeUnit.DAYS);
     }
 
 }

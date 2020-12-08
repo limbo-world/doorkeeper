@@ -16,8 +16,6 @@
 
 package org.limbo.doorkeeper.server.support.session.validate;
 
-import org.limbo.doorkeeper.server.support.config.DoorkeeperProperties;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,9 +31,9 @@ public class SessionValidatorFactory {
      */
     private static Map<String, SessionValidator> validators = new ConcurrentHashMap<>(16);
 
-    public static SessionValidator create(DoorkeeperProperties doorkeeperProperties, HttpServletRequest request) {
+    public static SessionValidator create(HttpServletRequest request) {
         String headerVName = HeaderSessionValidator.class.getName();
-        validators.computeIfAbsent(headerVName, k -> new HeaderSessionValidator(doorkeeperProperties));
+        validators.computeIfAbsent(headerVName, k -> new HeaderSessionValidator());
         return validators.get(headerVName);
     }
 }

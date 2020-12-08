@@ -17,14 +17,11 @@
 package org.limbo.doorkeeper.server.support.session.validate;
 
 import lombok.Data;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.limbo.doorkeeper.server.support.config.DoorkeeperProperties;
 import org.limbo.doorkeeper.server.support.session.AbstractSession;
 
 import javax.servlet.http.HttpServletRequest;
-import java.security.GeneralSecurityException;
 
 /**
  * @author devil
@@ -33,16 +30,6 @@ import java.security.GeneralSecurityException;
  */
 @Slf4j
 public class HeaderSessionValidator implements SessionValidator {
-    @Setter
-    protected DoorkeeperProperties doorkeeperProperties;
-
-    public HeaderSessionValidator(DoorkeeperProperties doorkeeperProperties) {
-        this.doorkeeperProperties = doorkeeperProperties;
-    }
-
-    public static void main(String[] args) {
-        System.out.println(System.currentTimeMillis());
-    }
 
     @Override
     public boolean validate(AbstractSession session, HttpServletRequest request) {

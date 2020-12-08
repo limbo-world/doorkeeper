@@ -51,9 +51,6 @@ public class WebConfig implements WebMvcConfigurer {
     @Autowired
     private RedisSessionDAO sessionDAO;
 
-    @Autowired
-    private DoorkeeperProperties doorkeeperProperties;
-
     /**
      * json 返回结果处理
      */
@@ -96,7 +93,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Bean
     public SessionInterceptor sessionInterceptor() {
-        return new SessionInterceptor(doorkeeperProperties, sessionDAO);
+        return new SessionInterceptor(sessionDAO);
     }
 
     @Bean
@@ -104,7 +101,7 @@ public class WebConfig implements WebMvcConfigurer {
         List<String> adminPath = new ArrayList<>();
         adminPath.add("/project/**");
         adminPath.add("/project-account/**");
-        return new AuthenticationInterceptor(doorkeeperProperties, sessionDAO, adminPath);
+        return new AuthenticationInterceptor(sessionDAO, adminPath);
     }
 
     @Override

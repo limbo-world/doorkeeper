@@ -17,7 +17,6 @@
 package org.limbo.doorkeeper.server.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.PermissionAddParam;
@@ -43,7 +42,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Devil
@@ -91,21 +89,19 @@ public class PermissionServiceImpl implements PermissionService {
     @PLog(operateType = OperateType.DELETE, businessType = BusinessType.PERMISSION)
     public int deletePermission(@PLogTag(PLogConstants.CONTENT) Long projectId,
                                 @PLogTag(PLogConstants.CONTENT) List<Long> permissionIds) {
-        // 删除角色权限
-        List<RolePermission> rolePermissions = rolePermissionMapper.selectList(Wrappers.<RolePermission>lambdaQuery()
-                .select(RolePermission::getRolePermissionId)
-                .eq(RolePermission::getProjectId, projectId)
-                .in(RolePermission::getPermissionId, permissionIds)
-        );
-        if (CollectionUtils.isNotEmpty(rolePermissions)) {
-            rolePermissionService.deleteRolePermission(projectId,
-                    rolePermissions.stream().map(RolePermission::getRolePermissionId).collect(Collectors.toList()));
-        }
-
-        return permissionMapper.delete(Wrappers.<Permission>lambdaQuery()
+        int result =permissionMapper.delete(Wrappers.<Permission>lambdaQuery()
                 .in(Permission::getPermissionId, permissionIds)
                 .eq(Permission::getProjectId, projectId)
         );
+        if (result <= 0) {
+            return result;
+        }
+
+        // 删除角色权限
+        rolePermissionMapper.delete(Wrappers.<RolePermission>lambdaQuery()
+                .in(RolePermission::getPermissionId, permissionIds)
+        );
+        return result;
     }
 
     @Override

@@ -30,7 +30,6 @@ import org.limbo.doorkeeper.server.entity.Account;
 import org.limbo.doorkeeper.server.entity.Project;
 import org.limbo.doorkeeper.server.entity.ProjectAccount;
 import org.limbo.doorkeeper.server.service.AuthenticationService;
-import org.limbo.doorkeeper.server.support.config.DoorkeeperProperties;
 import org.limbo.doorkeeper.server.support.session.AbstractSession;
 import org.limbo.doorkeeper.server.support.session.RedisSessionDAO;
 import org.limbo.doorkeeper.server.support.session.exception.SessionException;
@@ -50,8 +49,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AuthenticationInterceptor implements HandlerInterceptor {
 
-    private final DoorkeeperProperties doorkeeperProperties;
-
     private final RedisSessionDAO redisSessionDAO;
 
     @Autowired
@@ -68,8 +65,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
     private List<String> adminPatterns;
 
-    public AuthenticationInterceptor(DoorkeeperProperties doorkeeperProperties, RedisSessionDAO redisSessionDAO, List<String> adminPatterns) {
-        this.doorkeeperProperties = doorkeeperProperties;
+    public AuthenticationInterceptor(RedisSessionDAO redisSessionDAO, List<String> adminPatterns) {
         this.redisSessionDAO = redisSessionDAO;
         this.adminPatterns = adminPatterns;
     }
@@ -77,7 +73,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         // 判断 url 是否有对应权限
-        String sessionId = request.getHeader(doorkeeperProperties.getSession().getHeaderName());
+        String sessionId = request.getHeader(DoorkeeperConstants.TOKEN_HEADER);
         AbstractSession adminSession = redisSessionDAO.readSessionMayNull(sessionId);
         if (adminSession == null) {
             throw new SessionException("无有效会话");

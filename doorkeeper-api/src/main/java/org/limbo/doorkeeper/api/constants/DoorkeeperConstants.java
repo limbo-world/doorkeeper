@@ -27,17 +27,7 @@ public interface DoorkeeperConstants {
     String PROJECT_HEADER = "Doorkeeper-Project";
 
     /**
-     * 请求header 获取 当前项目secret
+     * 会话token
      */
-    String PROJECT_SECRET_HEADER = "Doorkeeper-Project-Secret";
-
-    /**
-     * 请求header 获取 当前操作的项目
-     */
-    String PROJECT_PARAM_HEADER = "Doorkeeper-Project-Param";
-
-    /**
-     * 请求header 获取 当前账户id
-     */
-    String ACCOUNT_HEADER = "Doorkeeper-Account";
+    String TOKEN_HEADER = "Doorkeeper-Token";
 }
