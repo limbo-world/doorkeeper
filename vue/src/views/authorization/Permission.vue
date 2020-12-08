@@ -31,7 +31,7 @@
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="loadPermissions(1)" size="mini" icon="el-icon-search">查询</el-button>
-                    <el-button type="primary" @click="addPermission" size="mini" icon="el-icon-circle-plus">新增</el-button>
+                    <el-button v-auth="'{role.1000027}'" type="primary" @click="addPermission" size="mini" icon="el-icon-circle-plus">新增</el-button>
                 </el-form-item>
             </el-form>
         </el-header>
@@ -44,7 +44,7 @@
                 <el-table-column prop="url" label="url"></el-table-column>
                 <el-table-column prop="isOnline" label="是否启用" width="100">
                     <template slot-scope="scope">
-                        <div class="el-form--mini">
+                        <div class="el-form--mini" v-auth="'{role.1000027}'">
                             <el-switch :value="scope.row.isOnline" class="block el-switch--mini" size="mini"
                                        @change="permissionOnlineChanged(scope.row)"></el-switch>
                         </div>
@@ -52,8 +52,7 @@
                 </el-table-column>
                 <el-table-column label="操作" width="150" align="center">
                     <template slot-scope="scope">
-                        <div class="operations">
-                            <i class="el-icon-view" @click="viewPermission(scope.row)"></i>
+                        <div class="operations" v-auth="'{role.1000027}'">
                             <i class="el-icon-edit" @click="editPermission(scope.row)"></i>
                             <i class="el-icon-delete" @click="() => {
                                 deletePermission([scope.row.permissionId])

@@ -65,7 +65,6 @@ export default class AuthExpressionEvaluator {
         if (this.isAdmin) {
             return true;
         }
-
         return eval(this.parseExpression(expression, defaultResult.toString()));
     }
 

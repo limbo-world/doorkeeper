@@ -21,12 +21,11 @@ export default {
 
     bind(el, binding, vn) {
         // 获取计算器
-        debugger
         let $store = vn.context.$store;
         const evaluator = $store.state.session.authExpEvaluator;
         const expression = binding.value;
 
-        if (!evaluator.evaluate(expression)) {
+        if (!evaluator || !evaluator.evaluate(expression)) {
             el.style.display = 'none';
         }
     },
