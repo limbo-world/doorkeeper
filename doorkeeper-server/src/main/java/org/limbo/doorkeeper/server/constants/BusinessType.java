@@ -23,6 +23,8 @@ package org.limbo.doorkeeper.server.constants;
 public interface BusinessType {
 
     String PROJECT = "项目";
+    String ADMIN_ROLE = "管理端权限";
+    String PROJECT_ACCOUNT = "项目账户";
     String ACCOUNT = "账户";
     String ACCOUNT_ROLE = "账户角色";
     String ROLE = "角色";

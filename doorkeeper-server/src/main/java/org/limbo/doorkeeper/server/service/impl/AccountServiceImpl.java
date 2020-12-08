@@ -60,7 +60,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     @PLog(operateType = OperateType.CREATE, businessType = BusinessType.ACCOUNT)
-    public AccountVO addAccount(Long currentProjectId, Long currentAccountId,
+    public AccountVO addAccount(@PLogTag(PLogConstants.CONTENT) Long currentProjectId, @PLogTag(PLogConstants.CONTENT) Long currentAccountId,
                                         @PLogTag(PLogConstants.CONTENT) AccountAddParam param, boolean isAdmin) {
         // 判断账号是否已经存在
         Account po = EnhancedBeanUtils.createAndCopy(param, Account.class);
@@ -82,7 +82,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     @PLog(operateType = OperateType.UPDATE, businessType = BusinessType.ACCOUNT)
-    public Integer update(Long currentProjectId, Long currentAccountId,
+    public Integer update(@PLogTag(PLogConstants.CONTENT) Long currentProjectId, @PLogTag(PLogConstants.CONTENT) Long currentAccountId,
                                   @PLogTag(PLogConstants.CONTENT) AccountUpdateParam param) {
         return accountMapper.update(null, Wrappers.<Account>lambdaUpdate()
                 .set(StringUtils.isNotBlank(param.getAccountDescribe()), Account::getAccountDescribe, param.getAccountDescribe())

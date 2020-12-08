@@ -79,8 +79,8 @@ public class PLogAspect {
 
             String token = request.getHeader(DoorkeeperConstants.TOKEN_HEADER);
             SessionAccount account = sessionDAO.readSession(token).getAccount();
-            // todo
-            Long projectId = account.getCurrentProject().getProjectId();
+            String projectIdStr = request.getHeader(DoorkeeperConstants.PROJECT_HEADER);
+            Long projectId = Long.valueOf(projectIdStr);
             Long accountId = account.getAccountId();
             StringBuilder content = new StringBuilder();
 

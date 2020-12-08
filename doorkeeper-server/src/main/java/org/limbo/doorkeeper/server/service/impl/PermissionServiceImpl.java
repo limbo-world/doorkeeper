@@ -31,7 +31,6 @@ import org.limbo.doorkeeper.server.dao.RolePermissionMapper;
 import org.limbo.doorkeeper.server.entity.Permission;
 import org.limbo.doorkeeper.server.entity.RolePermission;
 import org.limbo.doorkeeper.server.service.PermissionService;
-import org.limbo.doorkeeper.server.service.RolePermissionService;
 import org.limbo.doorkeeper.server.support.plog.PLog;
 import org.limbo.doorkeeper.server.support.plog.PLogConstants;
 import org.limbo.doorkeeper.server.support.plog.PLogTag;
@@ -55,9 +54,6 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Autowired
     private RolePermissionMapper rolePermissionMapper;
-
-    @Autowired
-    private RolePermissionService rolePermissionService;
 
     @Override
     @Transactional

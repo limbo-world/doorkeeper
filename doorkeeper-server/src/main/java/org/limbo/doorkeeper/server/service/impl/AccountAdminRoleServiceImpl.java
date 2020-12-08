@@ -21,12 +21,18 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.model.param.AccountAdminRoleAddParam;
 import org.limbo.doorkeeper.api.model.param.AccountAdminRoleQueryParam;
 import org.limbo.doorkeeper.api.model.vo.AccountAdminRoleVO;
+import org.limbo.doorkeeper.server.constants.BusinessType;
+import org.limbo.doorkeeper.server.constants.OperateType;
 import org.limbo.doorkeeper.server.dao.AccountAdminRoleMapper;
 import org.limbo.doorkeeper.server.entity.AccountAdminRole;
 import org.limbo.doorkeeper.server.service.AccountAdminRoleService;
+import org.limbo.doorkeeper.server.support.plog.PLog;
+import org.limbo.doorkeeper.server.support.plog.PLogConstants;
+import org.limbo.doorkeeper.server.support.plog.PLogTag;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -50,7 +56,9 @@ public class AccountAdminRoleServiceImpl implements AccountAdminRoleService {
     }
 
     @Override
-    public void batchSave(Long projectId, List<AccountAdminRoleAddParam> params) {
+    @Transactional
+    @PLog(operateType = OperateType.CREATE, businessType = BusinessType.ADMIN_ROLE)
+    public void batchSave(@PLogTag(PLogConstants.CONTENT) Long projectId, @PLogTag(PLogConstants.CONTENT) List<AccountAdminRoleAddParam> params) {
         if (CollectionUtils.isEmpty(params)) {
             return;
         }
@@ -62,7 +70,9 @@ public class AccountAdminRoleServiceImpl implements AccountAdminRoleService {
     }
 
     @Override
-    public int batchDelete(Long projectId, List<Long> accountAdminRoleIds) {
+    @Transactional
+    @PLog(operateType = OperateType.DELETE, businessType = BusinessType.ADMIN_ROLE)
+    public int batchDelete(@PLogTag(PLogConstants.CONTENT) Long projectId, @PLogTag(PLogConstants.CONTENT) List<Long> accountAdminRoleIds) {
         return accountAdminRoleMapper.delete(Wrappers.<AccountAdminRole>lambdaQuery()
                 .eq(AccountAdminRole::getProjectId, projectId)
                 .in(AccountAdminRole::getAccountAdminRoleId, accountAdminRoleIds)

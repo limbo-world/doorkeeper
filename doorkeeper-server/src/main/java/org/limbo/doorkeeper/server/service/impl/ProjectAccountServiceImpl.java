@@ -22,6 +22,8 @@ import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.*;
 import org.limbo.doorkeeper.api.model.vo.AccountVO;
 import org.limbo.doorkeeper.api.model.vo.ProjectAccountVO;
+import org.limbo.doorkeeper.server.constants.BusinessType;
+import org.limbo.doorkeeper.server.constants.OperateType;
 import org.limbo.doorkeeper.server.dao.AccountMapper;
 import org.limbo.doorkeeper.server.dao.ProjectAccountMapper;
 import org.limbo.doorkeeper.server.dao.ProjectMapper;
@@ -32,6 +34,9 @@ import org.limbo.doorkeeper.server.entity.Role;
 import org.limbo.doorkeeper.server.service.AccountRoleService;
 import org.limbo.doorkeeper.server.service.AccountService;
 import org.limbo.doorkeeper.server.service.ProjectAccountService;
+import org.limbo.doorkeeper.server.support.plog.PLog;
+import org.limbo.doorkeeper.server.support.plog.PLogConstants;
+import org.limbo.doorkeeper.server.support.plog.PLogTag;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -94,7 +99,9 @@ public class ProjectAccountServiceImpl implements ProjectAccountService {
 
     @Override
     @Transactional
-    public AccountVO save(Long currentAccountId, ProjectAccountAddParam param) {
+    @PLog(operateType = OperateType.CREATE, businessType = BusinessType.PROJECT_ACCOUNT)
+    public AccountVO save(@PLogTag(PLogConstants.CONTENT) Long currentAccountId,
+                          @PLogTag(PLogConstants.CONTENT) ProjectAccountAddParam param) {
         if (!canSetAdminParam(currentAccountId, param.getProjectId())) {
             param.setIsAdmin(false);
         }
@@ -104,7 +111,9 @@ public class ProjectAccountServiceImpl implements ProjectAccountService {
 
     @Override
     @Transactional
-    public void update(Long currentAccountId, ProjectAccountUpdateParam param) {
+    @PLog(operateType = OperateType.UPDATE, businessType = BusinessType.PROJECT_ACCOUNT)
+    public void update(@PLogTag(PLogConstants.CONTENT) Long currentAccountId,
+                       @PLogTag(PLogConstants.CONTENT) ProjectAccountUpdateParam param) {
         projectAccountMapper.update(null, Wrappers.<ProjectAccount>lambdaUpdate()
                 .eq(ProjectAccount::getProjectAccountId, param.getProjectAccountId())
                 .set(ProjectAccount::getIsAdmin, param.getIsAdmin())
@@ -113,7 +122,8 @@ public class ProjectAccountServiceImpl implements ProjectAccountService {
 
     @Override
     @Transactional
-    public void batchJoinProject(ProjectAccountBatchUpdateParam param) {
+    @PLog(operateType = OperateType.UPDATE, businessType = BusinessType.PROJECT_ACCOUNT)
+    public void batchJoinProject(@PLogTag(PLogConstants.CONTENT) ProjectAccountBatchUpdateParam param) {
         for (Long accountId : param.getAccountIds()) {
             projectAccountService.joinProject(param.getProjectId(), accountId, false);
         }
@@ -121,7 +131,9 @@ public class ProjectAccountServiceImpl implements ProjectAccountService {
 
     @Override
     @Transactional
-    public void joinProject(Long projectId, Long accountId, boolean isAdmin) {
+    @PLog(operateType = OperateType.UPDATE, businessType = BusinessType.PROJECT_ACCOUNT)
+    public void joinProject(@PLogTag(PLogConstants.CONTENT) Long projectId,
+                            @PLogTag(PLogConstants.CONTENT) Long accountId, boolean isAdmin) {
         ProjectAccount projectAccount = new ProjectAccount();
         projectAccount.setProjectId(projectId);
         projectAccount.setAccountId(accountId);

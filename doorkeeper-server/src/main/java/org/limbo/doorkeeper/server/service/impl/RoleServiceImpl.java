@@ -35,9 +35,6 @@ import org.limbo.doorkeeper.server.entity.AccountAdminRole;
 import org.limbo.doorkeeper.server.entity.AccountRole;
 import org.limbo.doorkeeper.server.entity.Role;
 import org.limbo.doorkeeper.server.entity.RolePermission;
-import org.limbo.doorkeeper.server.service.AccountAdminRoleService;
-import org.limbo.doorkeeper.server.service.AccountRoleService;
-import org.limbo.doorkeeper.server.service.RolePermissionService;
 import org.limbo.doorkeeper.server.service.RoleService;
 import org.limbo.doorkeeper.server.support.plog.PLog;
 import org.limbo.doorkeeper.server.support.plog.PLogConstants;
@@ -66,19 +63,10 @@ public class RoleServiceImpl implements RoleService {
     private AccountRoleMapper accountRoleMapper;
 
     @Autowired
-    private AccountRoleService accountRoleService;
-
-    @Autowired
     private RolePermissionMapper rolePermissionMapper;
 
     @Autowired
-    private RolePermissionService rolePermissionService;
-
-    @Autowired
     private AccountAdminRoleMapper accountAdminRoleMapper;
-
-    @Autowired
-    private AccountAdminRoleService accountAdminRoleService;
 
     @Override
     @Transactional
