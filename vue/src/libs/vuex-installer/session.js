@@ -103,7 +103,7 @@ export default {
          */
         initEvaluator({ state, commit }) {
             if (state.authExpEvaluator) {
-                return Promise.resolve(state);
+                return Promise.resolve(state.authExpEvaluator);
             }
 
             // 从后台异步获取权限
@@ -122,16 +122,14 @@ export default {
         },
 
         // 从后台或其他地方加载菜单信息
-        loadMenus({ state, commit, actions }) {
-            // debugger
+        loadMenus({ state, commit, dispatch }) {
             // 已经加载完成时不再加载
             if (state.menus && state.menus.length > 0) {
                 return Promise.resolve(state.menus);
             }
-
-            return actions.initEvaluator().then(evaluator => {
+            return dispatch('initEvaluator').then(evaluator => {
                 // 组装菜单树
-                const menus = organizeMenu(evaluator, account);
+                const menus = organizeMenu(evaluator, state.user.account);
                 commit('setMenu', menus);
 
                 return Promise.resolve(menus);
