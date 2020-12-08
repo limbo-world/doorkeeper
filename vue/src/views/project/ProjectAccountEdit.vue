@@ -34,10 +34,6 @@
                 <el-form-item label="描述">
                     <el-input type="textarea" v-model="account.accountDescribe"></el-input>
                 </el-form-item>
-                <!-- todo 管理端下不显示 其他项目下 不是管理端管理员 不显示 -->
-                <el-form-item label="管理员" v-if="'新增' === openMode && !project.isAdminProject">
-                    <el-switch v-model="account.isAdmin" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
-                </el-form-item>
             </el-form>
         </el-main>
     </el-container>

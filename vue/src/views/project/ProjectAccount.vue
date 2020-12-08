@@ -51,9 +51,8 @@
                     </el-table-column>
                     <el-table-column prop="isAdmin" label="管理员" align="center" width="80">
                         <template slot-scope="scope">
-                            <!-- todo 管理端下不显示 其他项目下 不是管理端管理员 不显示 -->
                             <el-switch v-model="scope.row.isAdmin" active-color="#13ce66"
-                                       :disabled="project.isAdminProject"
+                                       :disabled="project.isAdminProject || !scope.row.projectAccountId"
                                        @change="v => {updateAdmin(scope.row, v)}"
                                        inactive-color="#ff4949"></el-switch>
                         </template>
