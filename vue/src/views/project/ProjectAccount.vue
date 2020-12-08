@@ -35,9 +35,9 @@
 
         <el-main>
             <el-row>
-                <el-row>
-                    <el-button type="primary" @click="batchBindAccount(selectAccounts)" size="mini">批量加入</el-button>
-                </el-row>
+                <el-button type="primary" @click="batchBindAccount(selectAccounts)" size="mini">批量加入</el-button>
+            </el-row>
+            <el-row>
                 <el-table :data="accounts" size="mini" @selection-change="handleSelectionChange">
                     <el-table-column type="selection" width="55"></el-table-column>
                     <el-table-column prop="accountId" label="ID"></el-table-column>

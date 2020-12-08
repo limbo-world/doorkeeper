@@ -32,9 +32,9 @@
 
     export default {
         props: {
-            account: {
-                type: Object,
-                default: {}
+            accountIds: {
+                type: Array,
+                default: []
             },
             openMode: {
                 type: String,
@@ -86,7 +86,12 @@
                 return this.$ajax.get('/role');
             },
             loadAccountRole() {
-                return this.$ajax.get('/account-role', {params: {accountId: this.account.accountId}});
+                if (this.accountIds.length > 1) {
+                    return new Promise((resolve, reject) => {
+                        resolve({data: [], code: 200})
+                    })
+                }
+                return this.$ajax.get('/account-role', {params: {accountId: this.accountIds[0]}});
             },
 
             roleChange(value, direction, movedKeys) { // value 右边剩余的key direction 方向 movedKeys 移动的key
@@ -122,22 +127,12 @@
                 }).finally(() => loading.close())
             },
             doUpdateRole() {
-                // 找出apis 有permissionApiId但是不在已选框内的
                 let delIds = [];
-                let has = [];
                 this.roles.forEach(role => {
                     if (role.delAccountRoleId) {
                         delIds.push(role.delAccountRoleId);
                     }
-                    for (let k of this.transferValue) {
-                        if (role.roleId === k) {
-                            role.accountId = this.account.accountId;
-                            has.push(role);
-                            break
-                        }
-                    }
                 });
-
                 let deletePromise = new Promise((resolve, reject) => {
                     resolve({code: 200})
                 })
@@ -145,6 +140,17 @@
                     deletePromise = this.$ajax.delete('/account-role', {data: delIds})
                 }
 
+                let has = [];
+                this.roles.forEach(role => {
+                    for (let k of this.transferValue) {
+                        if (role.roleId === k) {
+                            this.accountIds.forEach(accountId => {
+                                has.push({accountId: accountId, roleId: role.roleId});
+                            })
+                            break
+                        }
+                    }
+                })
                 let updatePromise = new Promise((resolve, reject) => {
                     resolve({code: 200})
                 })
