@@ -61,7 +61,7 @@ public class RoleController extends BaseController {
     }
 
     @DeleteMapping
-    @Operation(summary = "删除角色")
+    @Operation(summary = "批量删除角色")
     public Response<Integer> delete(@Validated @NotEmpty(message = "角色不存在") @Schema(title = "角色ID") @RequestBody List<Long> roleIds) {
         return Response.ok(roleService.deleteRole(getProjectId(), roleIds));
     }

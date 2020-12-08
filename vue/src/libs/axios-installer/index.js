@@ -36,8 +36,8 @@ request.interceptors.request.use(config => {
     if (user && user.token) {
         // 设置会话header
         config.headers[request.sessionHeader] = user.token;
+        config.headers[request.projectHeader] = user.account.currentProject.projectId;
     }
-    config.headers[request.projectHeader] = user.account.currentProject.projectId;
     return config;
 }, error => {
     Promise.reject(error);

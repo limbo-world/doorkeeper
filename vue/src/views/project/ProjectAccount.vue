@@ -35,9 +35,9 @@
 
         <el-main>
             <el-row>
-                <el-row>
-                    <el-button type="primary" @click="batchBindAccount(selectAccounts)" size="mini">批量加入</el-button>
-                </el-row>
+                <el-button type="primary" @click="batchBindAccount(selectAccounts)" size="mini">批量加入</el-button>
+            </el-row>
+            <el-row>
                 <el-table :data="accounts" size="mini" @selection-change="handleSelectionChange">
                     <el-table-column type="selection" width="55"></el-table-column>
                     <el-table-column prop="accountId" label="ID"></el-table-column>
@@ -51,9 +51,8 @@
                     </el-table-column>
                     <el-table-column prop="isAdmin" label="管理员" align="center" width="80">
                         <template slot-scope="scope">
-                            <!-- todo 管理端下不显示 其他项目下 不是管理端管理员 不显示 -->
                             <el-switch v-model="scope.row.isAdmin" active-color="#13ce66"
-                                       :disabled="project.isAdminProject"
+                                       :disabled="project.isAdminProject || !scope.row.projectAccountId"
                                        @change="v => {updateAdmin(scope.row, v)}"
                                        inactive-color="#ff4949"></el-switch>
                         </template>

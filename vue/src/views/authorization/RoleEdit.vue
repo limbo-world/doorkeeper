@@ -79,7 +79,7 @@
 
         methods: {
             preOpen() {
-                if (this.openMode.indexOf("权限") <= -1) {
+                if (this.openMode.indexOf("权限") <= -1 && "新增角色" !== this.openMode)  {
                     return;
                 }
                 Promise.all([this.loadAllPermission(), this.loadRolePermission()]).then((result) => {

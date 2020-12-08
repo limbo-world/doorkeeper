@@ -113,7 +113,7 @@ export default {
                 const account = state.user.account;
                 let evaluator = new AuthExpressionEvaluator(
                     grantInfo.roles.map(r => (r.roleId).toString()),
-                    account.isAdmin
+                    account.currentProject.isAdmin
                 );
                 commit('setAuthExpEvaluator', evaluator);
 

@@ -7,6 +7,7 @@ export const MenuRoute = [{
         "menuName": "项目列表",
         "icon": "fa fa-project-diagram",
         "route": "/project/project",
+        "auth": "{role.1000032} || {role.1000033} || {role.1000034} || {role.1000035} || {role.1000037}"
     }]
 }, {
     "menuCode": "002",
@@ -17,7 +18,7 @@ export const MenuRoute = [{
         "menuName": "账户列表",
         "icon": "el-icon-user",
         "route": "/account/account",
-        // "auth": "{role.1000002}"
+        "auth": "{role.1000030} || {role.1000031}"
     }]
 }, {
     "menuCode": "003",
@@ -28,12 +29,12 @@ export const MenuRoute = [{
         "menuName": "权限列表",
         "icon": "el-icon-coin",
         "route": "/authorization/permission",
-        // "auth": "{role.1000004}"
+        "auth": "{role.1000026} || {role.1000027}"
     }, {
         "menuCode": "003002",
         "menuName": "角色列表",
         "icon": "el-icon-postcard",
         "route": "/authorization/role",
-        // "auth": "{role.1000003}"
+        "auth": "{role.1000028} || {role.1000029}"
     }]
 }];

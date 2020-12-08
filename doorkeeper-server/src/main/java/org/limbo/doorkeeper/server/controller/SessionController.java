@@ -77,10 +77,11 @@ public class SessionController extends BaseController {
         return Response.ok(getSession());
     }
 
-    @Operation(summary = "获取页面权限信息")
+    @Operation(summary = "获取当前项目页面权限信息")
     @GetMapping("/grant-info")
     public Response<AccountGrantVO> getGrantInfo() {
-        return Response.ok(authenticationService.getGrantInfo(getCurrentProjectId(), getSessionAccount().getAccountId()));
+        // 拿到用户管理端权限
+        return Response.ok(authenticationService.getGrantedAdminPermissions(getCurrentProjectId(), getAccountId()));
     }
 
     @Operation(summary = "会话项目列表")

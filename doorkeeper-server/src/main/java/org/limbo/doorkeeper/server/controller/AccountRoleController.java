@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
 /**
  * @author Devil
  * @date 2020/11/27 10:21 AM
@@ -48,7 +49,7 @@ public class AccountRoleController extends BaseController {
     }
 
     @PostMapping
-    @Operation(summary = "批量绑定账户角色")
+    @Operation(summary = "批量新增账户角色")
     public Response<Boolean> batchSave(@Validated @RequestBody List<AccountRoleAddParam> params) {
         accountRoleService.batchSave(getProjectId(), params);
         return Response.ok(true);

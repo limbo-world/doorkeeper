@@ -30,7 +30,12 @@
 
         <el-main>
             <el-row>
-                <el-table :data="accounts" size="mini">
+                <el-button type="primary" @click="editAccountRole(accountIds)" size="mini">绑定角色</el-button>
+                <el-button type="primary" @click="editAccountAdminRole(accountIds)" size="mini">页面权限</el-button>
+            </el-row>
+            <el-row>
+                <el-table :data="accounts" ref="accountTable" size="mini" @selection-change="handleSelectionChange">
+                    <el-table-column type="selection" width="55"></el-table-column>
                     <el-table-column prop="accountId" label="ID"></el-table-column>
                     <el-table-column prop="username" label="账号"></el-table-column>
                     <el-table-column prop="nickname" label="昵称"></el-table-column>
@@ -44,16 +49,16 @@
                                      v-if="!user.account.currentProject.isAdminProject">
                         <template slot-scope="scope">
                             <div class="operations">
-                                <i v-if="!scope.row.isAdmin" class="el-icon-view" @click="viewAccountRole(scope.row)"></i>
-                                <i v-if="!scope.row.isAdmin" class="el-icon-edit" @click="editAccountRole(scope.row)"></i>
+                                <i v-if="!scope.row.isAdmin" class="el-icon-view" @click="viewAccountRole([scope.row.accountId])"></i>
+                                <i v-if="!scope.row.isAdmin" class="el-icon-edit" @click="editAccountRole([scope.row.accountId])"></i>
                             </div>
                         </template>
                     </el-table-column>
                     <el-table-column label="页面权限" align="center" width="100">
                         <template slot-scope="scope">
                             <div class="operations">
-                                <i v-if="!scope.row.isAdmin" class="el-icon-view" @click="viewAccountAdminRole(scope.row)"></i>
-                                <i v-if="!scope.row.isAdmin" class="el-icon-edit" @click="editAccountAdminRole(scope.row)"></i>
+                                <i v-if="!scope.row.isAdmin" class="el-icon-view" @click="viewAccountAdminRole([scope.row.accountId])"></i>
+                                <i v-if="!scope.row.isAdmin" class="el-icon-edit" @click="editAccountAdminRole([scope.row.accountId])"></i>
                             </div>
                         </template>
                     </el-table-column>
@@ -86,7 +91,7 @@
 
         <el-dialog :title="`${dialogOpenMode}账户角色`" :visible.sync="accountRoleDialogOpened" width="70%" class="edit-dialog"
                    @close="accountRoleDialogCancel" @opened="beforeAccountRoleDialogOpen">
-            <account-role-edit :account="account" :open-mode="dialogOpenMode" ref="accountRoleEdit"></account-role-edit>
+            <account-role-edit :account-ids="accountIds" :open-mode="dialogOpenMode" ref="accountRoleEdit"></account-role-edit>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="accountRoleDialogCancel">取 消</el-button>
                 <el-button type="primary" @click="accountRoleDialogConfirm">确 定</el-button>
@@ -131,6 +136,8 @@
                 accounts: [],
 
                 account: {},
+
+                accountIds: [],
                 dialogOpenMode: '',
                 accountDialogOpened: false,
                 accountRoleDialogOpened: false,
@@ -163,6 +170,13 @@
                 }).finally(() => this.stopProgress());
             },
 
+            handleSelectionChange(accounts) {
+                this.accountIds = []
+                accounts.forEach(account => {
+                    this.accountIds.push(account.accountId)
+                })
+            },
+
             // ========= 账户相关 ============
             addAccount() {
                 this.account = {};
@@ -191,13 +205,19 @@
             },
 
             // ========= 角色相关 ============
-            viewAccountRole(account) {
-                this.account = account;
+            viewAccountRole(accountIds) {
+                this.$refs.accountTable.clearSelection();
+                this.accountIds = accountIds;
                 this.dialogOpenMode = '查看';
                 this.accountRoleDialogOpened = true;
             },
-            editAccountRole(account) {
-                this.account = account;
+            editAccountRole(accountIds) {
+                if (accountIds.length <= 0) {
+                    this.$message.info("请选择账户")
+                    return
+                }
+                this.$refs.accountTable.clearSelection();
+                this.accountIds = accountIds;
                 this.dialogOpenMode = '修改';
                 this.accountRoleDialogOpened = true;
             },
@@ -206,7 +226,7 @@
             },
             accountRoleDialogConfirm() {
                 this.$refs.accountRoleEdit.confirmEdit().then(() => {
-                    this.account = {};
+                    this.accountIds = [];
                     this.accountRoleDialogOpened = false;
                 }).catch(err => err);
             },
@@ -216,13 +236,19 @@
             },
 
             // ========= 页面权限相关 ============
-            viewAccountAdminRole(account) {
-                this.account = account;
+            viewAccountAdminRole(accountIds) {
+                this.$refs.accountTable.clearSelection();
+                this.accountIds = accountIds;
                 this.dialogOpenMode = '查看';
                 this.accountAdminRoleDialogOpened = true;
             },
-            editAccountAdminRole(account) {
-                this.account = account;
+            editAccountAdminRole(accountIds) {
+                if (accountIds.length <= 0) {
+                    this.$message.info("请选择账户")
+                    return
+                }
+                this.$refs.accountTable.clearSelection();
+                this.accountIds = accountIds;
                 this.dialogOpenMode = '修改';
                 this.accountAdminRoleDialogOpened = true;
             },
@@ -231,7 +257,7 @@
             },
             accountAdminRoleDialogConfirm() {
                 this.$refs.accountAdminRoleEdit.confirmEdit().then(() => {
-                    this.account = {};
+                    this.accountIds = [];
                     this.accountAdminRoleDialogOpened = false;
                 }).catch(err => err);
             },

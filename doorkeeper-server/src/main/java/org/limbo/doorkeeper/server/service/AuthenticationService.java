@@ -56,9 +56,14 @@ public interface AuthenticationService {
     AccountGrantVO getGrantedPermissions(Long projectId, Long accountId);
 
     /**
+     * 获取用户授予的管理端权限
+     */
+    AccountGrantVO getGrantedAdminPermissions(Long projectId, Long accountId);
+
+    /**
      * 获取用户授予的权限
      */
-    AccountGrantVO getGrantedPermissions(Long projectId, Set<Long> roleIds);
+    AccountGrantVO getGrantedPermissionsByRoles(Set<Long> roleIds);
 
     /**
      * 检测配置与请求检查参数的请求url是否匹配，检测method和path两部分

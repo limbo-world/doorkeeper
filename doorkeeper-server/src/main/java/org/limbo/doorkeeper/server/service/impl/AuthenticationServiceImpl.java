@@ -123,7 +123,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public boolean pathMatch(String pattern, String path) {
         EasyAntPathMatcher antPathMatcher = PATH_MATCHER.get();
-        return antPathMatcher.match(pattern, path);
+        return antPathMatcher.match(StringUtils.trim(pattern), StringUtils.trim(path));
     }
 
     /**
@@ -200,14 +200,29 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         // 用户授权的角色
         List<RoleVO> roles = _this.getGrantedRoles(projectId, accountId);
         if (CollectionUtils.isEmpty(roles)) {
-            return getGrantedPermissions(projectId, new HashSet<>());
+            return _this.getGrantedPermissionsByRoles(new HashSet<>());
         }
         Set<Long> roleIds = roles.stream().map(RoleVO::getRoleId).collect(Collectors.toSet());
-        return getGrantedPermissions(projectId, roleIds);
+        AccountGrantVO grantedPermissionsByRoles = _this.getGrantedPermissionsByRoles(roleIds);
+        grantedPermissionsByRoles.setRoles(roles);
+        return grantedPermissionsByRoles;
     }
 
     @Override
-    public AccountGrantVO getGrantedPermissions(Long projectId, Set<Long> roleIds) {
+    public AccountGrantVO getGrantedAdminPermissions(Long projectId, Long accountId) {
+        // 用户授权的角色
+        List<RoleVO> roles = _this.getGrantedAdminRoles(projectId, accountId);
+        if (CollectionUtils.isEmpty(roles)) {
+            return _this.getGrantedPermissionsByRoles(new HashSet<>());
+        }
+        Set<Long> roleIds = roles.stream().map(RoleVO::getRoleId).collect(Collectors.toSet());
+        AccountGrantVO grantedPermissionsByRoles = _this.getGrantedPermissionsByRoles(roleIds);
+        grantedPermissionsByRoles.setRoles(roles);
+        return grantedPermissionsByRoles;
+    }
+
+    @Override
+    public AccountGrantVO getGrantedPermissionsByRoles(Set<Long> roleIds) {
         AccountGrantVO accountGrant = new AccountGrantVO();
         accountGrant.setAllowedPermissions(new ArrayList<>());
         accountGrant.setRefusedPermissions(new ArrayList<>());
@@ -218,7 +233,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         // 角色对应的权限
         List<RolePermission> rolePerms = rolePermissionMapper.selectList(Wrappers.<RolePermission>lambdaQuery()
-                .eq(RolePermission::getProjectId, projectId)
                 .in(RolePermission::getRoleId, roleIds)
         );
         if (CollectionUtils.isEmpty(rolePerms)) {
@@ -234,7 +248,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Set<Long> allowedPermissionIds = groupedPermissionIds.get(PermissionPolicy.ALLOW.getValue());
         if (CollectionUtils.isNotEmpty(allowedPermissionIds)) {
             List<Permission> allowedPermissions = permissionMapper.selectList(Wrappers.<Permission>lambdaQuery()
-                    .eq(Permission::getProjectId, projectId)
                     .in(Permission::getPermissionId, allowedPermissionIds)
                     .eq(Permission::getIsOnline, true)
             );
@@ -246,7 +259,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Set<Long> refusedPermissionIds = groupedPermissionIds.get(PermissionPolicy.REFUSE.getValue());
         if (CollectionUtils.isNotEmpty(refusedPermissionIds)) {
             List<Permission> refusedPermissions = permissionMapper.selectList(Wrappers.<Permission>lambdaQuery()
-                    .eq(Permission::getProjectId, projectId)
                     .in(Permission::getPermissionId, refusedPermissionIds)
                     .eq(Permission::getIsOnline, true)
             );

@@ -21,7 +21,6 @@ export default {
 
     bind(el, binding, vn) {
         // 获取计算器
-        debugger
         let $store = vn.context.$store;
         $store.actions.initEvaluator().then(evaluator => {
             const expression = binding.value;
