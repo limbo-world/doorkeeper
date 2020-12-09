@@ -90,6 +90,11 @@ Doorkeeper-Project: projectId
 Doorkeeper-Token:   登录后获取到的token
 ```
 
+ 7. 接口文档
+```
+http://ip:host/api-docs.html
+```
+
 # 安装教程
   
 1. 将 `init/doorkeeper.sql` 导入对应数据库

@@ -68,6 +68,7 @@ public class SessionController extends BaseController {
      * 切换用户当前选择的项目
      */
     @PutMapping("/project/{projectId}")
+    @Operation(summary = "切换用户当前选择的项目")
     public Response<SessionVO> switchProject(@PathVariable("projectId") @Valid @NotNull(message = "项目不存在") Long projectId) {
         SessionVO session = getSession();
         SessionAccount account = session.getAccount();
@@ -105,6 +106,7 @@ public class SessionController extends BaseController {
         return Response.ok(true);
     }
 
+    @Operation(summary = "注销账户")
     @GetMapping("/logout")
     public Response<Boolean> logout() {
         SessionVO session = getSession();
