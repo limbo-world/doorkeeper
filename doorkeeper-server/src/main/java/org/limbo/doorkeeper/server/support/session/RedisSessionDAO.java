@@ -17,6 +17,8 @@
 package org.limbo.doorkeeper.server.support.session;
 
 import org.apache.commons.lang3.StringUtils;
+import org.limbo.doorkeeper.api.model.vo.SessionAccount;
+import org.limbo.doorkeeper.api.model.vo.SessionVO;
 import org.limbo.doorkeeper.server.utils.JacksonUtil;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
@@ -27,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  * @author Devil
  * @date 2020/11/24 10:04 AM
  */
-public class RedisSessionDAO extends AbstractSessionDAO<AbstractSession> {
+public class RedisSessionDAO extends AbstractSessionDAO<SessionVO> {
 
     private final RedissonClient redissonClient;
 
@@ -49,19 +51,22 @@ public class RedisSessionDAO extends AbstractSessionDAO<AbstractSession> {
     }
 
     @Override
-    public void save(AbstractSession session) {
+    public void save(SessionVO session) {
         String sessionId = session.getToken();
         redissonClient.getBucket(getSessionPrefix() + sessionId)
                 .set(JacksonUtil.toJSONString(session), sessionExpiry, sessionExpiryUnit);
     }
 
     @Override
-    protected AbstractSession create(String sessionId, SessionAccount sessionAccount) {
-        return new AbstractSession(sessionId, sessionAccount);
+    protected SessionVO create(String sessionId, SessionAccount sessionAccount) {
+        SessionVO session = new SessionVO();
+        session.setToken(sessionId);
+        session.setAccount(sessionAccount);
+        return session;
     }
 
     @Override
-    protected AbstractSession read(String sessionId) {
+    protected SessionVO read(String sessionId) {
         if (StringUtils.isBlank(sessionId)) {
             return null;
         }
@@ -71,18 +76,18 @@ public class RedisSessionDAO extends AbstractSessionDAO<AbstractSession> {
             return null;
         }
 
-        return JacksonUtil.parseObject(sessionJson, AbstractSession.class);
+        return JacksonUtil.parseObject(sessionJson, SessionVO.class);
     }
 
     @Override
-    protected AbstractSession destroy(String sessionId) {
+    protected SessionVO destroy(String sessionId) {
         RBucket<String> bucket = redissonClient.getBucket(getSessionPrefix() + sessionId);
         String sessionJson = bucket.get();
         if (StringUtils.isBlank(sessionJson)) {
             return null;
         }
         bucket.delete();
-        return JacksonUtil.parseObject(sessionJson, AbstractSession.class);
+        return JacksonUtil.parseObject(sessionJson, SessionVO.class);
     }
 
     @Override

@@ -35,7 +35,7 @@ import java.util.List;
  */
 @Slf4j
 @Component
-public class AccountClinentFallback extends Fallback implements FallbackFactory<AccountClient> {
+public class AccountClientFallback extends Fallback implements FallbackFactory<AccountClient> {
     @Override
     public AccountClient create(Throwable throwable) {
         log.error("服务调用失败", throwable);
@@ -60,10 +60,6 @@ public class AccountClinentFallback extends Fallback implements FallbackFactory<
                 return serviceUnavailable();
             }
 
-            @Override
-            public Response<AccountVO> get(Long accountId) {
-                return serviceUnavailable();
-            }
         };
     }
 }

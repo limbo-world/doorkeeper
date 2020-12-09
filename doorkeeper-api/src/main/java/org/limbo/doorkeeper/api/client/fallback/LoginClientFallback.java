@@ -14,17 +14,31 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.service;
+package org.limbo.doorkeeper.api.client.fallback;
 
+import feign.hystrix.FallbackFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.limbo.doorkeeper.api.client.LoginClient;
+import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.LoginParam;
 import org.limbo.doorkeeper.api.model.vo.SessionVO;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Devil
- * @date 2020/11/23 8:03 PM
+ * @date 2020/11/23 4:55 PM
  */
-public interface LoginService {
-
-    SessionVO login(LoginParam param);
-
+@Slf4j
+@Component
+public class LoginClientFallback extends Fallback implements FallbackFactory<LoginClient> {
+    @Override
+    public LoginClient create(Throwable throwable) {
+        log.error("服务调用失败", throwable);
+        return new LoginClient() {
+            @Override
+            public Response<SessionVO> login(LoginParam param) {
+                return serviceUnavailable();
+            }
+        };
+    }
 }

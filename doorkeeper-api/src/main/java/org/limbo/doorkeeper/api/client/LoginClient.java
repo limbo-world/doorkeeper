@@ -14,36 +14,24 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.controller;
+package org.limbo.doorkeeper.api.client;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import org.limbo.doorkeeper.api.client.fallback.LoginClientFallback;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.LoginParam;
 import org.limbo.doorkeeper.api.model.vo.SessionVO;
-import org.limbo.doorkeeper.server.service.LoginService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author devil
  * @date 2020/3/11
  */
-@Tag(name = "登录注册")
-@RestController
-@RequestMapping("/login")
-public class LoginController extends BaseController {
-
-    @Autowired
-    private LoginService loginService;
+@FeignClient(name = "doorkeeper-server", path = "/login", contextId = "loginClient",
+        fallbackFactory = LoginClientFallback.class)
+public interface LoginClient {
 
     @PostMapping
-    @Operation(summary = "登录")
-    public Response<SessionVO> login(@Validated @RequestBody LoginParam param) {
-        return Response.ok(loginService.login(param));
-    }
+    Response<SessionVO> login(@RequestBody LoginParam param);
 }

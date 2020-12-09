@@ -18,55 +18,54 @@ package org.limbo.doorkeeper.api.client.fallback;
 
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.client.ProjectClient;
-import org.limbo.doorkeeper.api.model.Page;
+import org.limbo.doorkeeper.api.client.SessionClient;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.ProjectAddParam;
-import org.limbo.doorkeeper.api.model.param.ProjectQueryParam;
-import org.limbo.doorkeeper.api.model.param.ProjectUpdateParam;
-import org.limbo.doorkeeper.api.model.vo.ProjectVO;
+import org.limbo.doorkeeper.api.model.param.RepasswordParam;
+import org.limbo.doorkeeper.api.model.vo.AccountGrantVO;
+import org.limbo.doorkeeper.api.model.vo.ProjectAccountVO;
+import org.limbo.doorkeeper.api.model.vo.SessionVO;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 /**
  * @author Devil
- * @date 2020/11/23 3:34 PM
+ * @date 2020/11/23 4:55 PM
  */
 @Slf4j
 @Component
-public class ProjectClientFallback extends Fallback implements FallbackFactory<ProjectClient> {
+public class SessionClientFallback extends Fallback implements FallbackFactory<SessionClient> {
     @Override
-    public ProjectClient create(Throwable throwable) {
+    public SessionClient create(Throwable throwable) {
         log.error("服务调用失败", throwable);
-        return new ProjectClient() {
+        return new SessionClient() {
             @Override
-            public Response<ProjectVO> addProject(ProjectAddParam project) {
+            public Response<SessionVO> session() {
                 return serviceUnavailable();
             }
 
             @Override
-            public Response<List<ProjectVO>> getAll() {
+            public Response<SessionVO> switchProject(Long projectId) {
                 return serviceUnavailable();
             }
 
             @Override
-            public Response<String> getProjectSecret(Long projectId) {
+            public Response<AccountGrantVO> getGrantInfo() {
                 return serviceUnavailable();
             }
 
             @Override
-            public Response<ProjectVO> getProject(Long projectId) {
+            public Response<List<ProjectAccountVO>> project() {
                 return serviceUnavailable();
             }
 
             @Override
-            public Response<Integer> updateProject(Long projectId, ProjectUpdateParam project) {
+            public Response<Boolean> repassword(RepasswordParam param) {
                 return serviceUnavailable();
             }
 
             @Override
-            public Response<Page<ProjectVO>> getProjects(ProjectQueryParam param) {
+            public Response<Boolean> logout() {
                 return serviceUnavailable();
             }
         };

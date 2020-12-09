@@ -19,14 +19,10 @@ package org.limbo.doorkeeper.api.client.fallback;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.client.AccountRoleClient;
-import org.limbo.doorkeeper.api.client.RolePermissionClient;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.AccountRoleAddParam;
 import org.limbo.doorkeeper.api.model.param.AccountRoleQueryParam;
-import org.limbo.doorkeeper.api.model.param.RolePermissionAddParam;
-import org.limbo.doorkeeper.api.model.param.RolePermissionQueryParam;
 import org.limbo.doorkeeper.api.model.vo.AccountRoleVO;
-import org.limbo.doorkeeper.api.model.vo.RolePermissionVO;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

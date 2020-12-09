@@ -26,7 +26,7 @@ import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.dao.ProjectLogMapper;
 import org.limbo.doorkeeper.server.entity.ProjectLog;
 import org.limbo.doorkeeper.server.support.session.AbstractSessionDAO;
-import org.limbo.doorkeeper.server.support.session.SessionAccount;
+import org.limbo.doorkeeper.api.model.vo.SessionAccount;
 import org.limbo.doorkeeper.server.utils.JacksonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;

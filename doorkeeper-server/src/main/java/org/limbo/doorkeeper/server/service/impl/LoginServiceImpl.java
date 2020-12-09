@@ -21,13 +21,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.param.ProjectAccountQueryParam;
 import org.limbo.doorkeeper.api.model.param.LoginParam;
 import org.limbo.doorkeeper.api.model.vo.ProjectAccountVO;
+import org.limbo.doorkeeper.api.model.vo.SessionVO;
 import org.limbo.doorkeeper.server.dao.AccountMapper;
 import org.limbo.doorkeeper.server.entity.Account;
 import org.limbo.doorkeeper.server.service.ProjectAccountService;
 import org.limbo.doorkeeper.server.service.LoginService;
-import org.limbo.doorkeeper.server.support.session.AbstractSession;
 import org.limbo.doorkeeper.server.support.session.RedisSessionDAO;
-import org.limbo.doorkeeper.server.support.session.SessionAccount;
+import org.limbo.doorkeeper.api.model.vo.SessionAccount;
 import org.limbo.doorkeeper.server.utils.MD5Utils;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +53,7 @@ public class LoginServiceImpl implements LoginService {
     private ProjectAccountService projectAccountService;
 
     @Override
-    public AbstractSession login(LoginParam param) {
+    public SessionVO login(LoginParam param) {
 
         Account account = accountMapper.selectOne(Wrappers.<Account>lambdaQuery()
                 .eq(Account::getUsername, param.getUsername())

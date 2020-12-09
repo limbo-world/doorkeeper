@@ -17,9 +17,9 @@
 package org.limbo.doorkeeper.server.controller;
 
 import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.server.support.session.AbstractSession;
+import org.limbo.doorkeeper.api.model.vo.SessionAccount;
+import org.limbo.doorkeeper.api.model.vo.SessionVO;
 import org.limbo.doorkeeper.server.support.session.AbstractSessionDAO;
-import org.limbo.doorkeeper.server.support.session.SessionAccount;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -51,7 +51,7 @@ public class BaseController {
         return getSession().getAccount().getCurrentProject().getProjectId();
     }
 
-    protected AbstractSession getSession() {
+    protected SessionVO getSession() {
         String sessionId = request.getHeader(DoorkeeperConstants.TOKEN_HEADER);
         return sessionDAO.readSession(sessionId);
     }

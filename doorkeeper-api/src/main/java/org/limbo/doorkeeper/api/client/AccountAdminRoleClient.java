@@ -16,10 +16,11 @@
 
 package org.limbo.doorkeeper.api.client;
 
+import org.limbo.doorkeeper.api.client.fallback.AccountAdminRoleClientFallback;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.RolePermissionAddParam;
-import org.limbo.doorkeeper.api.model.param.RolePermissionQueryParam;
-import org.limbo.doorkeeper.api.model.vo.RolePermissionVO;
+import org.limbo.doorkeeper.api.model.param.AccountAdminRoleAddParam;
+import org.limbo.doorkeeper.api.model.param.AccountAdminRoleQueryParam;
+import org.limbo.doorkeeper.api.model.vo.AccountAdminRoleVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,21 +31,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 
 /**
- * @author Devil
- * @date 2020/11/23 10:31 AM
+ * @Author Devil
+ * @Date 2020/12/7 10:00 上午
  */
-@FeignClient(name = "doorkeeper-server", path = "/role-permission", contextId = "rolePermissionClient",
-        fallbackFactory = RolePermissionClient.class)
-public interface RolePermissionClient {
+@FeignClient(name = "doorkeeper-server", path = "/account-admin-role", contextId = "accountAdminRoleClient",
+        fallbackFactory = AccountAdminRoleClientFallback.class)
+public interface AccountAdminRoleClient {
 
     @GetMapping
-    Response<List<RolePermissionVO>> list(@SpringQueryMap RolePermissionQueryParam param);
+    Response<List<AccountAdminRoleVO>> list(@SpringQueryMap AccountAdminRoleQueryParam param);
 
     @PostMapping
-    Response<Boolean> addRolePermission(@RequestBody List<RolePermissionAddParam> params);
+    Response<Boolean> batchSave(@RequestBody List<AccountAdminRoleAddParam> params);
 
 
     @DeleteMapping
-    Response<Integer> deleteRolePermission(@RequestBody List<Long> rolePermissionIds);
+    Response<Integer> batchDelete(@RequestBody List<Long> accountAdminRoleIds);
 
 }

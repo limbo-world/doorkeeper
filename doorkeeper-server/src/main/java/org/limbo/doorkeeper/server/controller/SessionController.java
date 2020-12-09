@@ -24,11 +24,11 @@ import org.limbo.doorkeeper.api.model.param.ProjectAccountQueryParam;
 import org.limbo.doorkeeper.api.model.param.RepasswordParam;
 import org.limbo.doorkeeper.api.model.vo.AccountGrantVO;
 import org.limbo.doorkeeper.api.model.vo.ProjectAccountVO;
+import org.limbo.doorkeeper.api.model.vo.SessionAccount;
+import org.limbo.doorkeeper.api.model.vo.SessionVO;
 import org.limbo.doorkeeper.server.service.AccountService;
 import org.limbo.doorkeeper.server.service.AuthenticationService;
 import org.limbo.doorkeeper.server.service.ProjectAccountService;
-import org.limbo.doorkeeper.server.support.session.AbstractSession;
-import org.limbo.doorkeeper.server.support.session.SessionAccount;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -59,8 +59,8 @@ public class SessionController extends BaseController {
 
     @GetMapping
     @Operation(summary = "获取会话")
-    public Response<AbstractSession> session() {
-        AbstractSession session = getSession();
+    public Response<SessionVO> session() {
+        SessionVO session = getSession();
         return Response.ok(session);
     }
 
@@ -68,8 +68,8 @@ public class SessionController extends BaseController {
      * 切换用户当前选择的项目
      */
     @PutMapping("/project/{projectId}")
-    public Response<AbstractSession> switchProject(@PathVariable("projectId") @Valid @NotNull(message = "项目不存在") Long projectId) {
-        AbstractSession session = getSession();
+    public Response<SessionVO> switchProject(@PathVariable("projectId") @Valid @NotNull(message = "项目不存在") Long projectId) {
+        SessionVO session = getSession();
         SessionAccount account = session.getAccount();
 
         ProjectAccountQueryParam queryParam = new ProjectAccountQueryParam();
@@ -107,7 +107,7 @@ public class SessionController extends BaseController {
 
     @GetMapping("/logout")
     public Response<Boolean> logout() {
-        AbstractSession session = getSession();
+        SessionVO session = getSession();
         sessionDAO.destroySession(session.getToken());
         return Response.ok(true);
     }

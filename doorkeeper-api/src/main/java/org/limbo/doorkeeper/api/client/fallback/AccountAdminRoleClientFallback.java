@@ -18,55 +18,38 @@ package org.limbo.doorkeeper.api.client.fallback;
 
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.client.RoleClient;
-import org.limbo.doorkeeper.api.model.Page;
+import org.limbo.doorkeeper.api.client.AccountAdminRoleClient;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.RoleAddParam;
-import org.limbo.doorkeeper.api.model.param.RoleQueryParam;
-import org.limbo.doorkeeper.api.model.param.RoleUpdateParam;
-import org.limbo.doorkeeper.api.model.vo.RoleVO;
+import org.limbo.doorkeeper.api.model.param.AccountAdminRoleAddParam;
+import org.limbo.doorkeeper.api.model.param.AccountAdminRoleQueryParam;
+import org.limbo.doorkeeper.api.model.vo.AccountAdminRoleVO;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 /**
  * @author Devil
- * @date 2020/11/23 4:26 PM
+ * @date 2020/11/23 4:23 PM
  */
 @Slf4j
 @Component
-public class RoleClinentFallback extends Fallback implements FallbackFactory<RoleClient> {
+public class AccountAdminRoleClientFallback extends Fallback implements FallbackFactory<AccountAdminRoleClient> {
     @Override
-    public RoleClient create(Throwable throwable) {
+    public AccountAdminRoleClient create(Throwable throwable) {
         log.error("服务调用失败", throwable);
-        return new RoleClient() {
+        return new AccountAdminRoleClient() {
             @Override
-            public Response<RoleVO> add(RoleAddParam param) {
+            public Response<List<AccountAdminRoleVO>> list(AccountAdminRoleQueryParam param) {
                 return serviceUnavailable();
             }
 
             @Override
-            public Response<Integer> update(Long roleId, RoleUpdateParam param) {
+            public Response<Boolean> batchSave(List<AccountAdminRoleAddParam> params) {
                 return serviceUnavailable();
             }
 
             @Override
-            public Response<Integer> delete(List<Long> roleIds) {
-                return serviceUnavailable();
-            }
-
-            @Override
-            public Response<Page<RoleVO>> page(RoleQueryParam param) {
-                return serviceUnavailable();
-            }
-
-            @Override
-            public Response<List<RoleVO>> list() {
-                return serviceUnavailable();
-            }
-
-            @Override
-            public Response<List<RoleVO>> adminRoles() {
+            public Response<Integer> batchDelete(List<Long> accountAdminRoleIds) {
                 return serviceUnavailable();
             }
         };
