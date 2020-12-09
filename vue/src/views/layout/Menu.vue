@@ -149,9 +149,6 @@
                 .logo-title {
                     display: none;
                 }
-                .logo-img {
-                    width: 50%;
-                }
             }
         }
     }
