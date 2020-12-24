@@ -20,7 +20,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.LoginParam;
-import org.limbo.doorkeeper.api.model.vo.SessionVO;
+import org.limbo.doorkeeper.api.model.vo.SessionAccount;
 import org.limbo.doorkeeper.server.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -43,7 +43,7 @@ public class LoginController extends BaseController {
 
     @PostMapping
     @Operation(summary = "登录")
-    public Response<SessionVO> login(@Validated @RequestBody LoginParam param) {
+    public Response<SessionAccount> login(@Validated @RequestBody LoginParam param) {
         return Response.ok(loginService.login(param));
     }
 }

@@ -16,7 +16,10 @@
 
 package org.limbo.doorkeeper.api.model.vo;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * @author Devil
@@ -24,18 +27,16 @@ import lombok.Data;
  */
 @Data
 public class SessionAccount {
-    /**
-     * 账户唯一ID
-     */
+
+    @Schema(title = "会话id")
+    private String sessionId;
+
+    @Schema(title = "账户唯一ID")
     private Long accountId;
 
-    /**
-     * 账户昵称
-     */
+    @Schema(title = "账户昵称")
     private String nickname;
 
-    /**
-     * 当前用户所选的项目
-     */
-    private ProjectAccountVO currentProject;
+    @Schema(title = "当前用户所选的项目")
+    private List<ProjectAccountVO> projects;
 }

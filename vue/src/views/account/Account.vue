@@ -46,7 +46,7 @@
                         </template>
                     </el-table-column>
                     <el-table-column label="绑定角色" align="center" width="100"
-                                     v-if="!user.account.currentProject.isAdminProject">
+                                     v-if="!user.currentProject.isAdminProject">
                         <template slot-scope="scope">
                             <div class="operations">
                                 <i v-if="!scope.row.isAdmin" class="el-icon-view" @click="viewAccountRole([scope.row.accountId])"></i>

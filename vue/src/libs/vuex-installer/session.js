@@ -9,6 +9,10 @@ const setSessionUserCache = (user) => {
     window.localCache.set('session/user', user, 1, TimeUnit.Days);
 };
 
+const getSessionUserCache = () => {
+    return window.localCache.getSync('session/user');
+};
+
 export default {
     namespaced: true,
 
@@ -29,7 +33,7 @@ export default {
          */
         user(state) {
             if (!state.user) {
-                return window.localCache.getSync('session/user');
+                return getSessionUserCache();
             }
             return state.user;
         }
@@ -66,8 +70,12 @@ export default {
                     });
                     return Promise.reject();
                 }
-                commit('setUser', response.data);
-                setSessionUserCache(response.data);
+                const user = response.data;
+                if (!user.currentProject) {
+                    user.currentProject = user.projects[0]
+                }
+                commit('setUser', user);
+                setSessionUserCache(user);
                 return Promise.resolve();
             });
         },
@@ -92,8 +100,14 @@ export default {
                 ignoreException: { 401: true }
             }).then(response => {
                 // 有会话 设置到state中，并更新sessionCache
-                commit('setUser', response.data);
-                setSessionUserCache(response.data);
+                const user = response.data;
+                const account = getSessionUserCache();
+                user.currentProject = account.currentProject
+                if (!user.currentProject) {
+                    user.currentProject = user.projects[0]
+                }
+                commit('setUser', user);
+                setSessionUserCache(user);
                 return Promise.resolve();
             });
         },
@@ -110,7 +124,7 @@ export default {
             return http.get('/session/grant-info').then(response => {
                 // 根据后台返回的授权信息，生成计算器
                 const grantInfo = response.data;
-                const account = state.user.account;
+                const account = state.user;
                 let roleIds = [];
                 if (grantInfo.roles) {
                     roleIds = grantInfo.roles.map(r => (r.roleId).toString());
@@ -132,7 +146,7 @@ export default {
             }
             return dispatch('initEvaluator').then(evaluator => {
                 // 组装菜单树
-                const menus = organizeMenu(evaluator, state.user.account);
+                const menus = organizeMenu(evaluator, state.user);
                 commit('setMenu', menus);
 
                 return Promise.resolve(menus);
@@ -142,10 +156,21 @@ export default {
         /**
          * 切换当前选中的店铺
          */
-        changeProject({ commit }, projectId) {
-            return http.put(`/session/project/${projectId}`).then(response => {
+        changeProject({ state, commit }, projectId) {
+            return new Promise((resolve, reject) => {
+                const account = state.user;
+                for (const project of account.projects) {
+                    if (projectId === project.projectId) {
+                        account.currentProject = project;
+                        break;
+                    }
+                }
+                commit('setUser', account);
+                setSessionUserCache(account);
+                resolve();
+            }).then(() => {
                 window.location.reload();
-            });
+            })
         },
 
     }

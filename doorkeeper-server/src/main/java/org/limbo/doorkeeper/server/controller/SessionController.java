@@ -25,17 +25,13 @@ import org.limbo.doorkeeper.api.model.param.RepasswordParam;
 import org.limbo.doorkeeper.api.model.vo.AccountGrantVO;
 import org.limbo.doorkeeper.api.model.vo.ProjectAccountVO;
 import org.limbo.doorkeeper.api.model.vo.SessionAccount;
-import org.limbo.doorkeeper.api.model.vo.SessionVO;
 import org.limbo.doorkeeper.server.service.AccountService;
 import org.limbo.doorkeeper.server.service.AuthenticationService;
 import org.limbo.doorkeeper.server.service.ProjectAccountService;
-import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -59,36 +55,23 @@ public class SessionController extends BaseController {
 
     @GetMapping
     @Operation(summary = "获取会话")
-    public Response<SessionVO> session() {
-        SessionVO session = getSession();
-        return Response.ok(session);
-    }
+    public Response<SessionAccount> session() {
+        SessionAccount session = getSession();
 
-    /**
-     * 切换用户当前选择的项目
-     */
-    @PutMapping("/project/{projectId}")
-    @Operation(summary = "切换用户当前选择的项目")
-    public Response<SessionVO> switchProject(@PathVariable("projectId") @Valid @NotNull(message = "项目不存在") Long projectId) {
-        SessionVO session = getSession();
-        SessionAccount account = session.getAccount();
-
-        ProjectAccountQueryParam queryParam = new ProjectAccountQueryParam();
-        queryParam.setProjectId(projectId);
-        queryParam.setAccountId(account.getAccountId());
-        List<ProjectAccountVO> list = projectAccountService.list(queryParam);
-        Verifies.notEmpty(list, "无权操作此项目！");
-
-        account.setCurrentProject(list.get(0));
+        // 刷新数据
+        ProjectAccountQueryParam param = new ProjectAccountQueryParam();
+        param.setAccountId(getAccountId());
+        session.setProjects(projectAccountService.list(param));
         sessionDAO.save(session);
-        return Response.ok(getSession());
+
+        return Response.ok(session);
     }
 
     @Operation(summary = "获取当前项目页面权限信息")
     @GetMapping("/grant-info")
     public Response<AccountGrantVO> getGrantInfo() {
         // 拿到用户管理端权限
-        return Response.ok(authenticationService.getGrantedAdminPermissions(getCurrentProjectId(), getAccountId()));
+        return Response.ok(authenticationService.getGrantedAdminPermissions(getProjectId(), getAccountId()));
     }
 
     @Operation(summary = "会话项目列表")
@@ -109,8 +92,8 @@ public class SessionController extends BaseController {
     @Operation(summary = "注销账户")
     @GetMapping("/logout")
     public Response<Boolean> logout() {
-        SessionVO session = getSession();
-        sessionDAO.destroySession(session.getToken());
+        SessionAccount session = getSession();
+        sessionDAO.destroySession(session.getSessionId());
         return Response.ok(true);
     }
 

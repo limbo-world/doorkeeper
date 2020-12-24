@@ -19,7 +19,7 @@ package org.limbo.doorkeeper.api.client;
 import org.limbo.doorkeeper.api.client.fallback.LoginClientFallback;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.LoginParam;
-import org.limbo.doorkeeper.api.model.vo.SessionVO;
+import org.limbo.doorkeeper.api.model.vo.SessionAccount;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,5 +33,5 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface LoginClient {
 
     @PostMapping
-    Response<SessionVO> login(@RequestBody LoginParam param);
+    Response<SessionAccount> login(@RequestBody LoginParam param);
 }

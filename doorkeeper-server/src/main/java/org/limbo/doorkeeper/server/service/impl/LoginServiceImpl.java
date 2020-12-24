@@ -18,16 +18,15 @@ package org.limbo.doorkeeper.server.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.param.ProjectAccountQueryParam;
 import org.limbo.doorkeeper.api.model.param.LoginParam;
+import org.limbo.doorkeeper.api.model.param.ProjectAccountQueryParam;
 import org.limbo.doorkeeper.api.model.vo.ProjectAccountVO;
-import org.limbo.doorkeeper.api.model.vo.SessionVO;
+import org.limbo.doorkeeper.api.model.vo.SessionAccount;
 import org.limbo.doorkeeper.server.dao.AccountMapper;
 import org.limbo.doorkeeper.server.entity.Account;
-import org.limbo.doorkeeper.server.service.ProjectAccountService;
 import org.limbo.doorkeeper.server.service.LoginService;
+import org.limbo.doorkeeper.server.service.ProjectAccountService;
 import org.limbo.doorkeeper.server.support.session.RedisSessionDAO;
-import org.limbo.doorkeeper.api.model.vo.SessionAccount;
 import org.limbo.doorkeeper.server.utils.MD5Utils;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +52,7 @@ public class LoginServiceImpl implements LoginService {
     private ProjectAccountService projectAccountService;
 
     @Override
-    public SessionVO login(LoginParam param) {
+    public SessionAccount login(LoginParam param) {
 
         Account account = accountMapper.selectOne(Wrappers.<Account>lambdaQuery()
                 .eq(Account::getUsername, param.getUsername())
@@ -64,11 +63,12 @@ public class LoginServiceImpl implements LoginService {
         SessionAccount sessionAccount = new SessionAccount();
         sessionAccount.setAccountId(account.getAccountId());
         sessionAccount.setNickname(account.getNickname());
+
         // 选中当前项目
         ProjectAccountQueryParam projectAccountQueryParam = new ProjectAccountQueryParam();
         projectAccountQueryParam.setAccountId(account.getAccountId());
         List<ProjectAccountVO> projectAccountVOS = projectAccountService.list(projectAccountQueryParam);
-        sessionAccount.setCurrentProject(projectAccountVOS.get(0));
+        sessionAccount.setProjects(projectAccountVOS);
         return sessionDAO.createSession(sessionAccount);
     }
 

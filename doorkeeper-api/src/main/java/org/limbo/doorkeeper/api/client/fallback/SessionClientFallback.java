@@ -23,7 +23,7 @@ import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.RepasswordParam;
 import org.limbo.doorkeeper.api.model.vo.AccountGrantVO;
 import org.limbo.doorkeeper.api.model.vo.ProjectAccountVO;
-import org.limbo.doorkeeper.api.model.vo.SessionVO;
+import org.limbo.doorkeeper.api.model.vo.SessionAccount;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -40,12 +40,7 @@ public class SessionClientFallback extends Fallback implements FallbackFactory<S
         log.error("服务调用失败", throwable);
         return new SessionClient() {
             @Override
-            public Response<SessionVO> session() {
-                return serviceUnavailable();
-            }
-
-            @Override
-            public Response<SessionVO> switchProject(Long projectId) {
+            public Response<SessionAccount> session() {
                 return serviceUnavailable();
             }
 

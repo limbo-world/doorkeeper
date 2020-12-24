@@ -27,7 +27,7 @@ public interface DoorkeeperConstants {
     String PROJECT_HEADER = "Doorkeeper-Project";
 
     /**
-     * 会话token
+     * 会话
      */
-    String TOKEN_HEADER = "Doorkeeper-Token";
+    String SESSION_HEADER = "Doorkeeper-Session";
 }

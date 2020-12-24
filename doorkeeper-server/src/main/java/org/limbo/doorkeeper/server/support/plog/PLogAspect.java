@@ -23,10 +23,10 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.api.model.vo.SessionAccount;
 import org.limbo.doorkeeper.server.dao.ProjectLogMapper;
 import org.limbo.doorkeeper.server.entity.ProjectLog;
 import org.limbo.doorkeeper.server.support.session.AbstractSessionDAO;
-import org.limbo.doorkeeper.api.model.vo.SessionAccount;
 import org.limbo.doorkeeper.server.utils.JacksonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
@@ -77,8 +77,8 @@ public class PLogAspect {
             String[] parameterNames = signature.getParameterNames();
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 
-            String token = request.getHeader(DoorkeeperConstants.TOKEN_HEADER);
-            SessionAccount account = sessionDAO.readSession(token).getAccount();
+            String sessionId = request.getHeader(DoorkeeperConstants.SESSION_HEADER);
+            SessionAccount account = sessionDAO.readSession(sessionId);
             String projectIdStr = request.getHeader(DoorkeeperConstants.PROJECT_HEADER);
             Long projectId = Long.valueOf(projectIdStr);
             Long accountId = account.getAccountId();

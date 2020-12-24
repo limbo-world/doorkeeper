@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.client.LoginClient;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.LoginParam;
-import org.limbo.doorkeeper.api.model.vo.SessionVO;
+import org.limbo.doorkeeper.api.model.vo.SessionAccount;
 import org.springframework.stereotype.Component;
 
 /**
@@ -36,7 +36,7 @@ public class LoginClientFallback extends Fallback implements FallbackFactory<Log
         log.error("服务调用失败", throwable);
         return new LoginClient() {
             @Override
-            public Response<SessionVO> login(LoginParam param) {
+            public Response<SessionAccount> login(LoginParam param) {
                 return serviceUnavailable();
             }
         };

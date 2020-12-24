@@ -23,7 +23,7 @@ import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.model.param.AuthenticationCheckParam;
 import org.limbo.doorkeeper.api.model.vo.AccountGrantVO;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
-import org.limbo.doorkeeper.api.model.vo.SessionVO;
+import org.limbo.doorkeeper.api.model.vo.SessionAccount;
 import org.limbo.doorkeeper.server.dao.AccountMapper;
 import org.limbo.doorkeeper.server.dao.ProjectAccountMapper;
 import org.limbo.doorkeeper.server.dao.ProjectMapper;
@@ -73,14 +73,14 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         // 判断 url 是否有对应权限
-        String sessionId = request.getHeader(DoorkeeperConstants.TOKEN_HEADER);
-        SessionVO adminSession = redisSessionDAO.readSessionMayNull(sessionId);
+        String sessionId = request.getHeader(DoorkeeperConstants.SESSION_HEADER);
+        SessionAccount adminSession = redisSessionDAO.readSessionMayNull(sessionId);
         if (adminSession == null) {
             throw new SessionException("无有效会话");
         }
 
         AuthenticationCheckParam param = new AuthenticationCheckParam();
-        param.setAccountId(adminSession.getAccount().getAccountId());
+        param.setAccountId(adminSession.getAccountId());
         param.setMethod(request.getMethod());
         param.setPath(request.getServletPath());
 

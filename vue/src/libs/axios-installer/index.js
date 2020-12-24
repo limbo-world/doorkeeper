@@ -8,9 +8,8 @@ const request = axios.create({
 
 request.sessionHeader = process.env.VUE_APP_sessionHeaderName;
 request.projectHeader = process.env.VUE_APP_projectHeaderName;
-request.projectId = process.env.VUE_APP_projectId;
 // request.signHeader = process.env.VUE_APP_signHeaderName;
-request.encrypt = new JSEncrypt();
+// request.encrypt = new JSEncrypt();
 
 // 请求拦截器，设置登录认证header
 request.interceptors.request.use(config => {
@@ -33,10 +32,10 @@ request.interceptors.request.use(config => {
 
     // 设置认证header
     const user = store.getters['session/user'];
-    if (user && user.token) {
+    if (user && user.sessionId) {
         // 设置会话header
-        config.headers[request.sessionHeader] = user.token;
-        config.headers[request.projectHeader] = user.account.currentProject.projectId;
+        config.headers[request.sessionHeader] = user.sessionId;
+        config.headers[request.projectHeader] = user.currentProject.projectId;
     }
     return config;
 }, error => {

@@ -65,7 +65,7 @@
         <el-dialog title="编辑" :visible.sync="dialogOpened" width="50%" class="edit-dialog" :before-close="preventCloseWhenProcessing">
             <el-form :model="project" label-width="80px" size="mini" class="edit-form"
                      :rules="rules" ref="editForm">
-                <el-form-item label="项目名称">
+                <el-form-item label="项目名称" >
                     <el-input v-model="project.projectName" placeholder="项目名称"></el-input>
                 </el-form-item>
                 <el-form-item label="项目秘钥">

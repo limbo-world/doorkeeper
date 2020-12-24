@@ -17,7 +17,7 @@
 package org.limbo.doorkeeper.server.service;
 
 import org.limbo.doorkeeper.api.model.param.LoginParam;
-import org.limbo.doorkeeper.api.model.vo.SessionVO;
+import org.limbo.doorkeeper.api.model.vo.SessionAccount;
 
 /**
  * @author Devil
@@ -25,6 +25,6 @@ import org.limbo.doorkeeper.api.model.vo.SessionVO;
  */
 public interface LoginService {
 
-    SessionVO login(LoginParam param);
+    SessionAccount login(LoginParam param);
 
 }

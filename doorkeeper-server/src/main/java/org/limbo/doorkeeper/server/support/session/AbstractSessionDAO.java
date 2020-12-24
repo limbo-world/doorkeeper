@@ -18,7 +18,6 @@ package org.limbo.doorkeeper.server.support.session;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.limbo.doorkeeper.api.model.vo.SessionAccount;
-import org.limbo.doorkeeper.api.model.vo.SessionVO;
 import org.limbo.doorkeeper.server.support.session.exception.SessionException;
 import org.limbo.doorkeeper.server.utils.UUIDUtils;
 
@@ -30,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  * @author Devil
  * @date 2020/11/23 8:17 PM
  */
-public abstract class AbstractSessionDAO<T extends SessionVO> {
+public abstract class AbstractSessionDAO<T extends SessionAccount> {
 
     protected long sessionExpiry = 5;
 

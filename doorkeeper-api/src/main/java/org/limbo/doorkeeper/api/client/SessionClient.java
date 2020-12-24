@@ -16,15 +16,14 @@
 
 package org.limbo.doorkeeper.api.client;
 
-import org.limbo.doorkeeper.api.client.fallback.AccountClientFallback;
+import org.limbo.doorkeeper.api.client.fallback.SessionClientFallback;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.RepasswordParam;
 import org.limbo.doorkeeper.api.model.vo.AccountGrantVO;
 import org.limbo.doorkeeper.api.model.vo.ProjectAccountVO;
-import org.limbo.doorkeeper.api.model.vo.SessionVO;
+import org.limbo.doorkeeper.api.model.vo.SessionAccount;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -34,14 +33,11 @@ import java.util.List;
  * @author devil
  * @date 2020/3/11
  */
-@FeignClient(name = "doorkeeper-server", path = "/session", contextId = "sessionClient", fallbackFactory = AccountClientFallback.class)
+@FeignClient(name = "doorkeeper-server", path = "/session", contextId = "sessionClient", fallbackFactory = SessionClientFallback.class)
 public interface SessionClient {
 
     @GetMapping
-    Response<SessionVO> session();
-
-    @PutMapping("/project/{projectId}")
-    Response<SessionVO> switchProject(@PathVariable("projectId") Long projectId);
+    Response<SessionAccount> session();
 
     @GetMapping("/grant-info")
     Response<AccountGrantVO> getGrantInfo();

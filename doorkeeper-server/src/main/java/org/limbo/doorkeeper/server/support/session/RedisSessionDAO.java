@@ -18,7 +18,6 @@ package org.limbo.doorkeeper.server.support.session;
 
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.vo.SessionAccount;
-import org.limbo.doorkeeper.api.model.vo.SessionVO;
 import org.limbo.doorkeeper.server.utils.JacksonUtil;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
@@ -29,7 +28,7 @@ import java.util.concurrent.TimeUnit;
  * @author Devil
  * @date 2020/11/24 10:04 AM
  */
-public class RedisSessionDAO extends AbstractSessionDAO<SessionVO> {
+public class RedisSessionDAO extends AbstractSessionDAO<SessionAccount> {
 
     private final RedissonClient redissonClient;
 
@@ -42,7 +41,7 @@ public class RedisSessionDAO extends AbstractSessionDAO<SessionVO> {
     public RedisSessionDAO(RedissonClient redissonClient, long expiry, TimeUnit timeUnit) {
         super(expiry, timeUnit);
         this.redissonClient = redissonClient;
-        this.prefix = "Doorkeeper-Token-";
+        this.prefix = "Doorkeeper-Session-";
     }
 
     @Override
@@ -51,22 +50,20 @@ public class RedisSessionDAO extends AbstractSessionDAO<SessionVO> {
     }
 
     @Override
-    public void save(SessionVO session) {
-        String sessionId = session.getToken();
+    public void save(SessionAccount session) {
+        String sessionId = session.getSessionId();
         redissonClient.getBucket(getSessionPrefix() + sessionId)
                 .set(JacksonUtil.toJSONString(session), sessionExpiry, sessionExpiryUnit);
     }
 
     @Override
-    protected SessionVO create(String sessionId, SessionAccount sessionAccount) {
-        SessionVO session = new SessionVO();
-        session.setToken(sessionId);
-        session.setAccount(sessionAccount);
-        return session;
+    protected SessionAccount create(String sessionId, SessionAccount sessionAccount) {
+        sessionAccount.setSessionId(sessionId);
+        return sessionAccount;
     }
 
     @Override
-    protected SessionVO read(String sessionId) {
+    protected SessionAccount read(String sessionId) {
         if (StringUtils.isBlank(sessionId)) {
             return null;
         }
@@ -76,18 +73,18 @@ public class RedisSessionDAO extends AbstractSessionDAO<SessionVO> {
             return null;
         }
 
-        return JacksonUtil.parseObject(sessionJson, SessionVO.class);
+        return JacksonUtil.parseObject(sessionJson, SessionAccount.class);
     }
 
     @Override
-    protected SessionVO destroy(String sessionId) {
+    protected SessionAccount destroy(String sessionId) {
         RBucket<String> bucket = redissonClient.getBucket(getSessionPrefix() + sessionId);
         String sessionJson = bucket.get();
         if (StringUtils.isBlank(sessionJson)) {
             return null;
         }
         bucket.delete();
-        return JacksonUtil.parseObject(sessionJson, SessionVO.class);
+        return JacksonUtil.parseObject(sessionJson, SessionAccount.class);
     }
 
     @Override
