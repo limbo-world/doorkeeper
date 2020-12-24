@@ -53,7 +53,7 @@
                         <template slot-scope="scope">
                             <el-switch v-model="scope.row.isAdmin" active-color="#13ce66"
                                        :disabled="project.isAdminProject || !scope.row.projectAccountId
-                                       || !authExpEvaluator.roles.has('1000035')"
+                                       || (!authExpEvaluator.roles.has('1000035') && !user.currentProject.isAdmin)"
                                        @change="v => {updateAdmin(scope.row, v)}"
                                        inactive-color="#ff4949"></el-switch>
                         </template>
