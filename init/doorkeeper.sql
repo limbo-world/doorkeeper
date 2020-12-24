@@ -17,7 +17,7 @@ CREATE TABLE `l_account` (
   `username` varchar(32) NOT NULL COMMENT '账户名称',
   `password` varchar(128) NOT NULL DEFAULT '' COMMENT '密码',
   `nickname` varchar(32) NOT NULL DEFAULT '' COMMENT '昵称',
-  `account_describe` varchar(32) NOT NULL COMMENT '账户描述',
+  `account_describe` varchar(128) NOT NULL DEFAULT '' COMMENT '账户描述',
   `gmt_created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`account_id`),
