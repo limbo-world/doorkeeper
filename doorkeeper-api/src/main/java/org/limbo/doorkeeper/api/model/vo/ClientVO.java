@@ -14,14 +14,34 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.dao;
+package org.limbo.doorkeeper.api.model.vo;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.limbo.doorkeeper.server.entity.ResourceApi;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+
+import java.util.Date;
 
 /**
  * @author Devil
- * @date 2021/1/3 6:08 下午
+ * @date 2021/1/4 3:00 下午
  */
-public interface ApiMapper extends BaseMapper<ResourceApi> {
+@Data
+public class ClientVO {
+
+    private Long clientId;
+
+    private Long realmId;
+
+    @Schema(title = "名称")
+    private String name;
+
+    @Schema(title = "描述")
+    private String description;
+
+    @Schema(title = "是否启用")
+    private Boolean isEnabled;
+
+    private Date createTime;
+
+    private Date updateTime;
 }

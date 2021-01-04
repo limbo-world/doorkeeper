@@ -16,6 +16,8 @@
 
 package org.limbo.doorkeeper.server.controller;
 
+import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.api.model.vo.SessionUser;
 import org.limbo.doorkeeper.server.support.session.AbstractSessionDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -33,4 +35,9 @@ public class BaseController {
     @Autowired
     protected AbstractSessionDAO sessionDAO;
 
+
+    protected SessionUser getSession() {
+        String sessionId = request.getHeader(DoorkeeperConstants.SESSION_HEADER);
+        return sessionDAO.readSession(sessionId);
+    }
 }

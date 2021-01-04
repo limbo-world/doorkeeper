@@ -14,30 +14,33 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.vo;
+package org.limbo.doorkeeper.api.model.param;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 /**
  * @author Devil
- * @date 2021/1/4 10:56 上午
+ * @date 2021/1/4 2:57 下午
  */
 @Data
-public class AdminRealmVO {
+public class ClientAddParam {
 
-    @Schema(title = "用户域id")
-    private Long adminRealmId;
-
-    @Schema(title = "用户id")
-    private Long userId;
-
-    @Schema(title = "域id")
+    @NotNull(message = "域不能为空")
+    @Schema(title = "域id", required = true)
     private Long realmId;
 
-    @Schema(title = "域名称")
+    @NotBlank(message = "名称不能为空")
+    @Schema(title = "名称", required = true)
     private String name;
 
-    @Schema(title = "此用户在此域下是否管理员")
-    private Boolean isAdmin;
+    @Schema(title = "描述")
+    private String description;
+
+    @NotNull(message = "请设置是否启用不能为空")
+    @Schema(title = "是否启用", required = true)
+    private Boolean isEnabled;
 }

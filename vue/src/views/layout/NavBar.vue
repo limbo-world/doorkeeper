@@ -2,15 +2,15 @@
     <div class="nav-bar">
         <div class="flex align-center">
             <i :class="toggleMenuClass" @click="toggleMenu"></i>
-            <span class="margin-left text-3xs">当前项目：{{user && user.currentProject.projectName}}</span>
+            <span class="margin-left text-3xs">当前域：{{ user && user.realm && user.realm.name }}</span>
         </div>
         <el-dropdown>
             <span class="el-dropdown-link" style="cursor: pointer">
-                你好，{{user && user.nickname}} <i class="el-icon-arrow-down el-icon--right"></i>
+                你好，{{ user && user.nickname }} <i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item v-for="project in accountProjects" :key="project.projectId">
-                    <span @click="changeProject(project.projectId)" style="display:block;">{{project.projectName}}</span>
+                <el-dropdown-item v-for="realm in realms" :key="realm.realmId">
+                    <span @click="changeRealm(realm.realmId)" style="display:block;">{{ realm.name }}</span>
                 </el-dropdown-item>
                 <el-dropdown-item divided>
                     <span @click="passwordDialogOpened = true" style="display:block;">修改密码</span>
@@ -36,100 +36,108 @@
 
 <script>
 
-    import { mapState, mapMutations, mapActions } from 'vuex';
-    import PasswordEdit from './PasswordEdit';
+import {mapState, mapMutations, mapActions} from 'vuex';
+import PasswordEdit from './PasswordEdit';
+import {http} from "@/libs/axios-installer";
 
-    export default {
-        components: {
-            PasswordEdit
-        },
+export default {
+    components: {
+        PasswordEdit
+    },
 
-        data() {
-            return {
-                passwordDialogOpened: false,
+    data() {
+        return {
+            passwordDialogOpened: false,
 
-                accountProjects: []
-            }
-        },
-
-        computed: {
-            ...mapState('session', ['user']),
-            ...mapState('ui', ['breadcrumbs']),
-
-            toggleMenuClass() {
-                const menuHidden = this.$store.state.ui.isMenuHidden;
-                return `toggle-menu fa fa-bars ${menuHidden ? 'menu-hidden' : ''}`;
-            }
-        },
-
-        created() {
-            this.loadAccountProjects();
-        },
-
-        methods: {
-            ...mapMutations('ui', ['toggleMenu']),
-            ...mapActions('session', ['logout']),
-
-            // 加载账户拥有的项目
-            loadAccountProjects() {
-                this.$ajax.get(`/session/project`).then(res => {
-                    this.accountProjects = res.data;
-                })
-            },
-
-            // 切换项目
-            changeProject(projectId) {
-                this.$store.dispatch('session/changeProject', projectId);
-            },
-
-            // 重置密码
-            passwordDialogConfirm() {
-                this.$refs.passwordEdit.updatePassword().then(() => {
-                    this.$message.success('修改密码成功，您需要重新登录！');
-                    this.passwordDialogOpened = false;
-                    this.logout();
-                });
-            },
+            realms: []
         }
+    },
+
+    computed: {
+        ...mapState('session', ['user']),
+        ...mapState('ui', ['breadcrumbs']),
+
+        toggleMenuClass() {
+            const menuHidden = this.$store.state.ui.isMenuHidden;
+            return `toggle-menu fa fa-bars ${menuHidden ? 'menu-hidden' : ''}`;
+        }
+    },
+
+    created() {
+        pages.navBar = this;
+        this.loadAdminRealms();
+    },
+
+    methods: {
+        ...mapMutations('ui', ['toggleMenu']),
+        ...mapActions('session', ['logout']),
+
+        // 加载账户拥有的项目
+        loadAdminRealms() {
+            this.$ajax.get('/admin/admin-realm', {params: {userId: this.user.userId, size: 100}}).then(response => {
+                let realms = response.data.data;
+                if (!realms) {
+                    realms = []
+                }
+                this.realms = realms;
+                this.$store.dispatch('session/changeRealm', realms[0], false)
+            })
+        },
+
+        // 切换
+        changeRealm(realm) {
+            this.$store.dispatch('session/changeRealm', realm, true);
+        },
+
+        // 重置密码
+        passwordDialogConfirm() {
+            this.$refs.passwordEdit.updatePassword().then(() => {
+                this.$message.success('修改密码成功，您需要重新登录！');
+                this.passwordDialogOpened = false;
+                this.logout();
+            });
+        },
     }
+}
 </script>
 
 
 <style lang="scss">
-    .nav-bar {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+.nav-bar {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
-        .toggle-menu {
-            font-size: 20px;
-            transition: transform .3s;
-            &.menu-hidden {
-                transform: rotateZ(90deg);
-            }
-        }
+    .toggle-menu {
+        font-size: 20px;
+        transition: transform .3s;
 
-        .breadcrumb-enter-active,
-        .breadcrumb-leave-active {
-            transition: all .5s;
-        }
-
-        .breadcrumb-enter,
-        .breadcrumb-leave-active {
-            opacity: 0;
-            transform: translateX(20px);
-        }
-
-        .breadcrumb-move {
-            transition: all .5s;
-        }
-
-        .breadcrumb-leave-active {
-            position: absolute;
+        &.menu-hidden {
+            transform: rotateZ(90deg);
         }
     }
+
+    .breadcrumb-enter-active,
+    .breadcrumb-leave-active {
+        transition: all .5s;
+    }
+
+    .breadcrumb-enter,
+    .breadcrumb-leave-active {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+
+    .breadcrumb-move {
+        transition: all .5s;
+    }
+
+    .breadcrumb-leave-active {
+        position: absolute;
+    }
+}
 
 </style>
 

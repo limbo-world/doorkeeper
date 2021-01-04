@@ -25,25 +25,17 @@ export default [
                 path: '/home',
                 component: _import('home/Home')
             },
-
-            // 项目管理
             {
-                path: '/project',
+                path: '/client',
                 component: RouterView,
-                redirect: '/project/project',
+                redirect: '/client/client',
                 children: [
                     {
-                        path: '/project/project',
-                        component: _import('project/Project'),
-                    },
-                    {
-                        path: '/project/project-account',
-                        component: _import('project/ProjectAccount'),
+                        path: '/client/client',
+                        component: _import('client/Client'),
                     }
                 ]
             },
-
-            // 认证管理
             {
                 path: '/account',
                 component: RouterView,
@@ -55,25 +47,6 @@ export default [
                     },
                 ]
             },
-
-            // 授权管理
-            {
-                path: '/authorization',
-                component: RouterView,
-                redirect: '/authorization/permission',
-                children: [
-                    {
-                        path: '/authorization/permission',
-                        component: _import('authorization/Permission')
-                    },
-                    {
-                        path: '/authorization/role',
-                        component: _import('authorization/Role')
-                    }
-                ]
-            },
-
-            // 操作日志
             {
                 path: '/log',
                 component: RouterView,

@@ -43,24 +43,12 @@ public class Response<T> implements Serializable {
         this(ResponseCode.OK, null, data);
     }
 
-    public Response(String msg) {
-        this(ResponseCode.PARAM_ERROR, msg, null);
-    }
-
     public Response(ResponseCode code, T data) {
         this(code.code(), null, data);
     }
 
-    public Response(int code, T data) {
-        this(code, null, data);
-    }
-
     public Response(ResponseCode code, String msg) {
         this(code.code(), msg, null);
-    }
-
-    public Response(int code, String msg) {
-        this(code, msg, null);
     }
 
     public Response(ResponseCode code, String msg, T data) {

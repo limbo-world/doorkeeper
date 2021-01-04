@@ -44,16 +44,14 @@
 export default class AuthExpressionEvaluator {
 
     private readonly roles: Set<string>;
-    private readonly currentProject: Project;
 
     /**
      * 表达式关键字
      */
     private static KeyChars = new Set([':', '.', '{', '}']);
 
-    constructor(roles: string[], currentProject: Project) {
+    constructor(roles: string[]) {
         this.roles = new Set(roles || []);
-        this.currentProject = currentProject;
     }
 
     /**
@@ -62,17 +60,6 @@ export default class AuthExpressionEvaluator {
      * @param defaultResult
      */
     evaluate(expression: string, defaultResult: boolean = true): boolean {
-        if (expression && expression.indexOf("adminProject") >= 0) {
-            if (!this.currentProject.isAdminProject) {
-                return false;
-            } else {
-                expression = expression.replace("adminProject", "")
-                console.debug(`replace [${expression}]`)
-            }
-        }
-        if (this.currentProject.isAdmin) {
-            return true;
-        }
         return eval(this.parseExpression(expression, defaultResult.toString()));
     }
 
@@ -115,6 +102,7 @@ export default class AuthExpressionEvaluator {
         }
 
         console.debug(`origin expression: ${expression} \nparsed expression: ${context.parsedExpression}`)
+        console.log(context.parsedExpression)
         return context.parsedExpression;
     }
 
@@ -122,17 +110,6 @@ export default class AuthExpressionEvaluator {
         return new Error(`Parse auth expression error, expecting '${expecting}', but got ${got ? got : 'nothing'}`);
     }
 
-}
-
-interface Project {
-    /**
-     * 当前账户是否项目管理员
-     */
-    isAdmin :boolean;
-    /**
-     * 是否管理端项目
-     */
-    isAdminProject :boolean;
 }
 
 class ParseContext {

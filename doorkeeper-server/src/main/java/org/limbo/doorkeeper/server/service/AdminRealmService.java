@@ -16,9 +16,16 @@
 
 package org.limbo.doorkeeper.server.service;
 
+import org.limbo.doorkeeper.api.model.Page;
+import org.limbo.doorkeeper.api.model.param.AdminRealmQueryParam;
+import org.limbo.doorkeeper.api.model.vo.AdminRealmVO;
+
 /**
  * @author Devil
  * @date 2021/1/4 10:59 上午
  */
 public interface AdminRealmService {
+
+    Page<AdminRealmVO> page(AdminRealmQueryParam param);
+
 }

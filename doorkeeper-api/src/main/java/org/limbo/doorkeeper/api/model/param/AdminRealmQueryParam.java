@@ -14,14 +14,22 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.dao;
+package org.limbo.doorkeeper.api.model.param;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.limbo.doorkeeper.server.entity.ResourceApi;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.limbo.doorkeeper.api.model.Page;
+import org.limbo.doorkeeper.api.model.vo.AdminRealmVO;
 
 /**
  * @author Devil
- * @date 2021/1/3 6:08 下午
+ * @date 2021/1/4 11:01 上午
  */
-public interface ApiMapper extends BaseMapper<ResourceApi> {
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class AdminRealmQueryParam extends Page<AdminRealmVO> {
+
+    @Schema(title = "用户id")
+    private Long userId;
 }

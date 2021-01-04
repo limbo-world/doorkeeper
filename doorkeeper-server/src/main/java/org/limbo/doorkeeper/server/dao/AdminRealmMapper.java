@@ -14,33 +14,23 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.service.impl;
+package org.limbo.doorkeeper.server.dao;
 
-import org.limbo.doorkeeper.api.model.Page;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.limbo.doorkeeper.api.model.param.AdminRealmQueryParam;
 import org.limbo.doorkeeper.api.model.vo.AdminRealmVO;
-import org.limbo.doorkeeper.server.dao.AdminRealmMapper;
-import org.limbo.doorkeeper.server.service.AdminRealmService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.limbo.doorkeeper.server.entity.AdminRealm;
+
+import java.util.List;
 
 /**
  * @author Devil
- * @date 2021/1/4 10:59 上午
+ * @date 2021/1/3 6:08 下午
  */
-@Service
-public class AdminRealmServiceImpl implements AdminRealmService {
+public interface AdminRealmMapper extends BaseMapper<AdminRealm> {
 
-    @Autowired
-    private AdminRealmMapper adminRealmMapper;
+    long pageVOCount(AdminRealmQueryParam param);
 
-    @Override
-    public Page<AdminRealmVO> page(AdminRealmQueryParam param) {
-        long count = adminRealmMapper.pageVOCount(param);
-        param.setTotal(count);
-        if (count > 0) {
-            param.setData(adminRealmMapper.pageVOS(param));
-        }
-        return param;
-    }
+    List<AdminRealmVO> pageVOS(AdminRealmQueryParam param);
+
 }

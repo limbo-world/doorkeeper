@@ -14,14 +14,27 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.dao;
+package org.limbo.doorkeeper.server.entity;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.limbo.doorkeeper.server.entity.ResourceApi;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 
 /**
  * @author Devil
- * @date 2021/1/3 6:08 下午
+ * @date 2021/1/4 3:40 下午
  */
-public interface ApiMapper extends BaseMapper<ResourceApi> {
+@Data
+@TableName("resource_tag")
+public class ResourceTag {
+
+    @TableId(type = IdType.AUTO)
+    private Long resourceTagId;
+
+    private Long resourceId;
+
+    private String key;
+
+    private String value;
 }

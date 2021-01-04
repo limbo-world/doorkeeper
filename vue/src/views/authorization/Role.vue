@@ -23,7 +23,7 @@
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="loadRoles(1)" size="mini" icon="el-icon-search">查询</el-button>
-                    <el-button v-auth="'{role.1000029}'" type="primary" @click="addRole" size="mini" icon="el-icon-circle-plus">新增</el-button>
+                    <el-button type="primary" @click="addRole" size="mini" icon="el-icon-circle-plus">新增</el-button>
                 </el-form-item>
             </el-form>
         </el-header>
@@ -41,13 +41,13 @@
                     <template slot-scope="scope">
                         <div class="operations">
                             <i class="el-icon-view" @click="viewRolePermission(scope.row)"></i>
-                            <i v-auth="'{role.1000029}'" class="el-icon-edit" @click="editRolePermission(scope.row)"></i>
+                            <i class="el-icon-edit" @click="editRolePermission(scope.row)"></i>
                         </div>
                     </template>
                 </el-table-column>
                 <el-table-column align="center" label="操作" width="150">
                     <template slot-scope="scope">
-                        <div class="operations" v-auth="'{role.1000029}'">
+                        <div class="operations">
                             <i class="el-icon-edit" @click="editRole(scope.row)"></i>
                             <i class="el-icon-delete" @click="() => {
                                 deleteRole([scope.row.roleId])

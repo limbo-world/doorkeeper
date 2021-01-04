@@ -23,15 +23,15 @@
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="loadAccounts(1)" size="mini" icon="el-icon-search">查询</el-button>
-                    <el-button v-auth="'{role.1000031}'" type="primary" @click="addAccount" size="mini" icon="el-icon-circle-plus">新增</el-button>
+                    <el-button type="primary" @click="addAccount" size="mini" icon="el-icon-circle-plus">新增</el-button>
                 </el-form-item>
             </el-form>
         </el-header>
 
         <el-main>
             <el-row>
-                <el-button v-auth="'{role.1000031}'" type="primary" @click="editAccountRole(accountIds)" size="mini">绑定角色</el-button>
-                <el-button v-auth="'{role.1000031}'" type="primary" @click="editAccountAdminRole(accountIds)" size="mini">页面权限</el-button>
+                <el-button type="primary" @click="editAccountRole(accountIds)" size="mini">绑定角色</el-button>
+                <el-button type="primary" @click="editAccountAdminRole(accountIds)" size="mini">页面权限</el-button>
             </el-row>
             <el-row>
                 <el-table :data="accounts" ref="accountTable" size="mini" @selection-change="handleSelectionChange">
@@ -50,7 +50,7 @@
                         <template slot-scope="scope">
                             <div class="operations">
                                 <i v-if="!scope.row.isAdmin" class="el-icon-view" @click="viewAccountRole([scope.row.accountId])"></i>
-                                <i v-auth="'{role.1000031}'" v-if="!scope.row.isAdmin" class="el-icon-edit" @click="editAccountRole([scope.row.accountId])"></i>
+                                <i v-if="!scope.row.isAdmin" class="el-icon-edit" @click="editAccountRole([scope.row.accountId])"></i>
                             </div>
                         </template>
                     </el-table-column>
@@ -58,14 +58,14 @@
                         <template slot-scope="scope">
                             <div class="operations">
                                 <i v-if="!scope.row.isAdmin" class="el-icon-view" @click="viewAccountAdminRole([scope.row.accountId])"></i>
-                                <i v-auth="'{role.1000031}'" v-if="!scope.row.isAdmin" class="el-icon-edit" @click="editAccountAdminRole([scope.row.accountId])"></i>
+                                <i v-if="!scope.row.isAdmin" class="el-icon-edit" @click="editAccountAdminRole([scope.row.accountId])"></i>
                             </div>
                         </template>
                     </el-table-column>
                     <el-table-column label="操作" align="center" width="100">
                         <template slot-scope="scope">
                             <div class="operations">
-                                <i v-auth="'{role.1000031}'" v-if="!scope.row.isSuperAdmin" class="el-icon-edit" @click="editAccount(scope.row)"></i>
+                                <i v-if="!scope.row.isSuperAdmin" class="el-icon-edit" @click="editAccount(scope.row)"></i>
                             </div>
                         </template>
                     </el-table-column>

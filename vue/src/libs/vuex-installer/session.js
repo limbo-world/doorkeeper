@@ -6,7 +6,7 @@ import {MenuRoute} from "../router-installer/MenuData";
 import AuthExpressionEvaluator from "@/libs/directives/auth/AuthExpressionEvaluator.ts";
 
 const setSessionUserCache = (user) => {
-    window.localCache.set('session/user', user, 1, TimeUnit.Days);
+    window.localCache.set('session/user', user, 15, TimeUnit.Days);
 };
 
 const getSessionUserCache = () => {
@@ -72,9 +72,6 @@ export default {
                     return Promise.reject();
                 }
                 const user = response.data;
-                if (!user.currentProject) {
-                    user.currentProject = user.projects[0]
-                }
                 commit('setUser', user);
                 setSessionUserCache(user);
                 return Promise.resolve();
@@ -102,11 +99,6 @@ export default {
             }).then(response => {
                 // 有会话 设置到state中，并更新sessionCache
                 const user = response.data;
-                const account = getSessionUserCache();
-                user.currentProject = account.currentProject
-                if (!user.currentProject) {
-                    user.currentProject = user.projects[0]
-                }
                 commit('setUser', user);
                 setSessionUserCache(user);
                 return Promise.resolve();
@@ -125,14 +117,11 @@ export default {
             return http.get('/session/grant-info').then(response => {
                 // 根据后台返回的授权信息，生成计算器
                 const grantInfo = response.data;
-                const account = state.user;
                 let roleIds = [];
-                if (grantInfo.roles) {
+                if (grantInfo && grantInfo.roles) {
                     roleIds = grantInfo.roles.map(r => (r.roleId).toString());
                 }
-                let evaluator = new AuthExpressionEvaluator(
-                    roleIds, account.currentProject
-                );
+                let evaluator = new AuthExpressionEvaluator(roleIds);
                 commit('setAuthExpEvaluator', evaluator);
 
                 return Promise.resolve(evaluator);
@@ -155,22 +144,19 @@ export default {
         },
 
         /**
-         * 切换当前选中的店铺
+         * 切换当前选中的域
          */
-        changeProject({ state, commit }, projectId) {
+        changeRealm({ state, commit }, realm, reload) {
             return new Promise((resolve, reject) => {
-                const account = state.user;
-                for (const project of account.projects) {
-                    if (projectId === project.projectId) {
-                        account.currentProject = project;
-                        break;
-                    }
-                }
-                commit('setUser', account);
-                setSessionUserCache(account);
+                const user = state.user;
+                user.realm = realm;
+                commit('setUser', user);
+                setSessionUserCache(user);
                 resolve();
             }).then(() => {
-                window.location.reload();
+                if (reload) {
+                    window.location.reload();
+                }
             })
         },
 
@@ -193,7 +179,7 @@ const organizeMenu = (evaluator) => {
 };
 
 const organizeSingleMenu = (menu, evaluator) => {
-    if (!evaluator.evaluate(menu.auth)) {
+    if (menu.auth && !evaluator.evaluate(menu.auth)) {
         return null;
     }
 

@@ -16,32 +16,42 @@
 
 package org.limbo.doorkeeper.server.controller.admin;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.AdminRealmQueryParam;
-import org.limbo.doorkeeper.api.model.vo.AdminRealmVO;
-import org.limbo.doorkeeper.server.service.AdminRealmService;
+import org.limbo.doorkeeper.api.model.param.ClientAddParam;
+import org.limbo.doorkeeper.api.model.param.ClientQueryParam;
+import org.limbo.doorkeeper.api.model.vo.ClientVO;
+import org.limbo.doorkeeper.server.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author Devil
- * @date 2021/1/4 10:55 上午
+ * @date 2021/1/4 2:55 下午
  */
+@Tag(name = "委托方")
 @Slf4j
 @RestController
-@RequestMapping("/admin/admin-realm")
-public class AdminRealmController {
+@RequestMapping("/admin/client")
+public class ClientController {
 
     @Autowired
-    private AdminRealmService adminRealmService;
+    private ClientService clientService;
 
+    @Operation(summary = "新建委托方")
+    @PostMapping
+    public Response<ClientVO> add(@RequestBody @Validated ClientAddParam param) {
+        return Response.success(clientService.add(param));
+    }
+
+    @Operation(summary = "分页查询委托方")
     @GetMapping
-    public Response<Page<AdminRealmVO>> page(AdminRealmQueryParam param) {
-        return Response.success(adminRealmService.page(param));
+    public Response<Page<ClientVO>> page(ClientQueryParam param) {
+        return Response.success(clientService.page(param));
     }
 
 }

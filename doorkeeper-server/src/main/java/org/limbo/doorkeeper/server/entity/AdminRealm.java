@@ -38,4 +38,6 @@ public class AdminRealm {
 
     private Long realmId;
 
+    private Boolean isAdmin;
+
 }
