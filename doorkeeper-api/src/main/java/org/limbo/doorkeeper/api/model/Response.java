@@ -83,7 +83,14 @@ public class Response<T> implements Serializable {
     /**
      * 调用正常
      */
-    public static <T> Response<T> ok(T data) {
+    public static <T> Response<T> success() {
+        return new Response<>(null);
+    }
+
+    /**
+     * 调用正常
+     */
+    public static <T> Response<T> success(T data) {
         return new Response<>(data);
     }
 

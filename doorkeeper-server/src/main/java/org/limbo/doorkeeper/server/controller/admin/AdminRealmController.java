@@ -14,39 +14,29 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.controller;
+package org.limbo.doorkeeper.server.controller.admin;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.LoginParam;
-import org.limbo.doorkeeper.api.model.vo.SessionUser;
-import org.limbo.doorkeeper.server.service.LoginService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
+import org.limbo.doorkeeper.api.model.vo.AdminRealmVO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * @author Devil
- * @date 2020/12/31 5:26 下午
+ * @date 2021/1/4 10:55 上午
  */
-@Tag(name = "登录")
 @Slf4j
 @RestController
-@RequestMapping("/login")
-public class LoginController {
-
-    @Autowired
-    private LoginService loginService;
+@RequestMapping("/admin/admin-realm")
+public class AdminRealmController {
 
     @GetMapping
-    @Operation(summary = "登录")
-    public Response<SessionUser> login(@Validated LoginParam param) {
-        SessionUser sessionUser = loginService.login(param);
-        return Response.success(sessionUser);
+    public Response<List<AdminRealmVO>> list() {
+        return Response.success();
     }
 
 }

@@ -17,7 +17,7 @@
 package org.limbo.doorkeeper.server.support.session;
 
 import org.apache.commons.lang3.StringUtils;
-import org.limbo.doorkeeper.api.model.vo.SessionAccount;
+import org.limbo.doorkeeper.api.model.vo.SessionUser;
 import org.limbo.doorkeeper.server.utils.JacksonUtil;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
  * @author Devil
  * @date 2020/11/24 10:04 AM
  */
-public class RedisSessionDAO extends AbstractSessionDAO<SessionAccount> {
+public class RedisSessionDAO extends AbstractSessionDAO<SessionUser> {
 
     private final RedissonClient redissonClient;
 
@@ -50,20 +50,20 @@ public class RedisSessionDAO extends AbstractSessionDAO<SessionAccount> {
     }
 
     @Override
-    public void save(SessionAccount session) {
+    public void save(SessionUser session) {
         String sessionId = session.getSessionId();
         redissonClient.getBucket(getSessionPrefix() + sessionId)
                 .set(JacksonUtil.toJSONString(session), sessionExpiry, sessionExpiryUnit);
     }
 
     @Override
-    protected SessionAccount create(String sessionId, SessionAccount sessionAccount) {
+    protected SessionUser create(String sessionId, SessionUser sessionAccount) {
         sessionAccount.setSessionId(sessionId);
         return sessionAccount;
     }
 
     @Override
-    protected SessionAccount read(String sessionId) {
+    protected SessionUser read(String sessionId) {
         if (StringUtils.isBlank(sessionId)) {
             return null;
         }
@@ -73,18 +73,18 @@ public class RedisSessionDAO extends AbstractSessionDAO<SessionAccount> {
             return null;
         }
 
-        return JacksonUtil.parseObject(sessionJson, SessionAccount.class);
+        return JacksonUtil.parseObject(sessionJson, SessionUser.class);
     }
 
     @Override
-    protected SessionAccount destroy(String sessionId) {
+    protected SessionUser destroy(String sessionId) {
         RBucket<String> bucket = redissonClient.getBucket(getSessionPrefix() + sessionId);
         String sessionJson = bucket.get();
         if (StringUtils.isBlank(sessionJson)) {
             return null;
         }
         bucket.delete();
-        return JacksonUtil.parseObject(sessionJson, SessionAccount.class);
+        return JacksonUtil.parseObject(sessionJson, SessionUser.class);
     }
 
     @Override

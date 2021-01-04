@@ -17,7 +17,7 @@
 package org.limbo.doorkeeper.server.support.session;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.limbo.doorkeeper.api.model.vo.SessionAccount;
+import org.limbo.doorkeeper.api.model.vo.SessionUser;
 import org.limbo.doorkeeper.server.support.session.exception.SessionException;
 import org.limbo.doorkeeper.server.utils.UUIDUtils;
 
@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  * @author Devil
  * @date 2020/11/23 8:17 PM
  */
-public abstract class AbstractSessionDAO<T extends SessionAccount> {
+public abstract class AbstractSessionDAO<T extends SessionUser> {
 
     protected long sessionExpiry = 5;
 
@@ -47,10 +47,10 @@ public abstract class AbstractSessionDAO<T extends SessionAccount> {
     /**
      * 创建会话，
      */
-    public T createSession(SessionAccount sessionAccount) {
+    public T createSession(SessionUser sessionUser) {
         try {
             // 会话用户
-            T session = create(UUIDUtils.get(), sessionAccount);
+            T session = create(UUIDUtils.get(), sessionUser);
 
             // 保存会话
             save(session);
@@ -121,7 +121,7 @@ public abstract class AbstractSessionDAO<T extends SessionAccount> {
     /**
      * 需自行实现，可以在子类实现中使用扩展的AbstractSession的创建
      */
-    protected abstract T create(String sessionId, SessionAccount sessionAccount);
+    protected abstract T create(String sessionId, SessionUser sessionUser);
 
     /**
      * 需自行实现，可以实现自定义Session反序列化，可实现在Session中存储自定义信息

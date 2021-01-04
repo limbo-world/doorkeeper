@@ -61,7 +61,8 @@ export default {
          * 登录，登录成功后会返回授权信息，授权信息将设置到state和sessionCache
          */
         login({ commit }, param) {
-            return http.post('/login', param).then(response => {
+
+            return http.get('/login', {params: {...param, realmId: process.env.VUE_APP_realmId}}).then(response => {
                 if (response.code !== 200) {
                     MessageBox({
                         message: response.msg,

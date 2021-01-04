@@ -20,37 +20,32 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import org.limbo.doorkeeper.api.constants.Logic;
-import org.limbo.doorkeeper.api.constants.Intention;
 
 import java.util.Date;
 
 /**
- * 针对某一资源进行处理
+ * 委托方
  *
  * @author Devil
- * @date 2020/12/31 11:00 上午
+ * @date 2020/12/29 4:22 下午
  */
 @Data
-@TableName("permission")
-public class Permission {
-
+@TableName("client")
+public class Client {
     @TableId(type = IdType.AUTO)
-    private Long permissionId;
-
-    private Long resourceId;
-
+    private Long clientId;
+    /**
+     * 属于哪个realm
+     */
+    private Long realmId;
+    /**
+     * 名称 realm唯一
+     */
     private String name;
-
+    /**
+     * 描述
+     */
     private String description;
-    /**
-     * 只有组合类型会有
-     */
-    private Logic logic;
-    /**
-     * 执行逻辑
-     */
-    private Intention intention;
     /**
      * 是否启用
      */
@@ -59,5 +54,4 @@ public class Permission {
     private Date createTime;
 
     private Date updateTime;
-
 }

@@ -1,17 +1,17 @@
 /*
  * Copyright 2020-2024 Limbo Team (https://github.com/limbo-world).
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
  *
- * 	http://www.apache.org/licenses/LICENSE-2.0
+ *   	http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
  */
 
 package org.limbo.doorkeeper.server.entity;
@@ -24,35 +24,48 @@ import lombok.Data;
 import java.util.Date;
 
 /**
+ * realmId clientId name 唯一
+ *
  * @author Devil
- * @date 2020/11/18 7:07 PM
+ * @date 2020/12/29 4:28 下午
  */
 @Data
-@TableName("l_role")
+@TableName("realm_role")
 public class Role {
 
     @TableId(type = IdType.AUTO)
     private Long roleId;
-
-    private Long projectId;
-
     /**
-     * 角色名称
+     * 属于哪个realm
      */
-    private String roleName;
-
+    private Long realmId;
     /**
-     * 角色描述
+     * 属于哪个service 如果不属于服务 则为0
      */
-    private String roleDescribe;
-
+    private Long clientId;
     /**
-     * 默认角色会在用户创建的时候直接绑定
+     * 名称 service唯一
+     */
+    private String name;
+    /**
+     * 描述
+     */
+    private String description;
+    /**
+     * 是否组合
+     */
+    private Boolean isCombine;
+    /**
+     * 是否启用
+     */
+    private Boolean isEnabled;
+    /**
+     * 是否默认添加
      */
     private Boolean isDefault;
 
-    private Date gmtCreated;
+    private Date createTime;
 
-    private Date gmtModified;
+    private Date updateTime;
 
 }

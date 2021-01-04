@@ -17,31 +17,27 @@
 package org.limbo.doorkeeper.api.constants;
 
 /**
- * API请求 业务码
+ * 策略类型
  *
- * @author Brozen
- * @date 2020/3/5 10:51 AM
- * @email brozen@qq.com
+ * @author Devil
+ * @date 2020/12/31 3:01 下午
  */
-public enum ResponseCode {
+public enum PolicyType implements IEnum<String> {
 
-    OK(200),
+    ROLE, USER, COMBINE, TIME,
+    ;
 
-    PARAM_ERROR(400), // 参数异常 bad request
-    UNAUTHORIZED(401), // 请求要求用户的身份认证
-    FORBIDDEN(403), // 权限不够
-    NOT_FOUND(404),
-
-    SERVICE_ERROR(500),;
-
-
-    private int code;
-
-    ResponseCode(int code) {
-        this.code = code;
+    @Override
+    public String getValue() {
+        return toString();
     }
 
-    public int code() {
-        return code;
+    public static PolicyType parse(String p) {
+        for (PolicyType value : values()) {
+            if (value.is(p)) {
+                return value;
+            }
+        }
+        return null;
     }
 }

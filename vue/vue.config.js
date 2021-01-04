@@ -3,7 +3,7 @@ const VueLoaderPlugin = require("vue-loader/lib/plugin");
 module.exports = {
     lintOnSave: false,
     devServer: {
-        port: 8080,
+        port: 8082,
         disableHostCheck: true,
     },
     configureWebpack: {

@@ -14,31 +14,14 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
+package org.limbo.doorkeeper.api.model.vo;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 /**
  * @author Devil
- * @date 2020/12/31 5:29 下午
+ * @date 2021/1/3 6:15 下午
  */
 @Data
-public class LoginParam {
-
-    @NotNull(message = "域不能为空")
-    @Schema(title = "域", required = true)
-    private Long realmId;
-
-    @NotBlank(message = "用户名不能为空")
-    @Schema(title = "用户名", required = true)
-    private String username;
-
-    @NotBlank(message = "密码不能为空")
-    @Schema(title = "密码", required = true)
-    private String password;
-
+public class RealmVO {
 }

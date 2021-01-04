@@ -16,10 +16,7 @@
 
 package org.limbo.doorkeeper.server.controller;
 
-import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.api.model.vo.SessionAccount;
 import org.limbo.doorkeeper.server.support.session.AbstractSessionDAO;
-import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,20 +32,5 @@ public class BaseController {
 
     @Autowired
     protected AbstractSessionDAO sessionDAO;
-
-    protected Long getAccountId() {
-        return getSession().getAccountId();
-    }
-
-    protected Long getProjectId() {
-        String projectIdStr = request.getHeader(DoorkeeperConstants.PROJECT_HEADER);
-        Verifies.notBlank(projectIdStr, "当前操作项目为空");
-        return Long.valueOf(projectIdStr);
-    }
-
-    protected SessionAccount getSession() {
-        String sessionId = request.getHeader(DoorkeeperConstants.SESSION_HEADER);
-        return sessionDAO.readSession(sessionId);
-    }
 
 }

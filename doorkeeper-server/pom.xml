@@ -5,10 +5,9 @@
     <parent>
         <artifactId>doorkeeper</artifactId>
         <groupId>org.limbo</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>2.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
     <artifactId>doorkeeper-server</artifactId>
 
     <properties>
@@ -21,7 +20,7 @@
         <dependency>
             <groupId>org.limbo</groupId>
             <artifactId>doorkeeper-api</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>2.0.0-SNAPSHOT</version>
         </dependency>
 
         <!-- SpringBootStarter -->
@@ -41,17 +40,6 @@
             <groupId>com.github.ulisesbocchio</groupId>
             <artifactId>jasypt-spring-boot-starter</artifactId>
             <version>${jasypt.version}</version>
-        </dependency>
-
-        <!-- SpringCloud Feign -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-openfeign</artifactId>
-        </dependency>
-        <!-- SpringCloud Eureka 服务发现 -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
 
         <!-- Spring -->
@@ -96,13 +84,6 @@
             <groupId>org.redisson</groupId>
             <artifactId>redisson</artifactId>
             <version>${redisson.version}</version>
-        </dependency>
-
-        <!-- 验证码生成 -->
-        <dependency>
-            <groupId>com.github.botaruibo</groupId>
-            <artifactId>xvcode</artifactId>
-            <version>${xvcode.version}</version>
         </dependency>
 
         <!-- logger begin -->
