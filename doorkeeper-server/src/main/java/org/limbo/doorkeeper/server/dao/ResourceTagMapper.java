@@ -17,11 +17,11 @@
 package org.limbo.doorkeeper.server.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.limbo.doorkeeper.server.entity.ResourceUri;
+import org.limbo.doorkeeper.server.entity.ResourceTag;
 
 /**
  * @author Devil
  * @date 2021/1/3 6:08 下午
  */
-public interface ApiMapper extends BaseMapper<ResourceUri> {
+public interface ResourceTagMapper extends BaseMapper<ResourceTag> {
 }

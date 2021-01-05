@@ -35,6 +35,9 @@ public class RoleQueryParam {
     @Schema(title = "委托方")
     private Long clientId;
 
-    @Schema(title = "名称", description = "模糊查询")
+    @Schema(title = "名称", description = "精确查询")
     private String name;
+
+    @Schema(title = "名称", description = "模糊查询")
+    private String dimName;
 }

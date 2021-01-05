@@ -14,27 +14,30 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.constants;
+package org.limbo.doorkeeper.api.model.param;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+
+import java.util.List;
 
 /**
  * @author Devil
- * @date 2020/12/31 3:01 下午
+ * @date 2021/1/5 4:48 下午
  */
-public enum ApiMethod implements IEnum<String> {
+@Data
+public class ResourceUpdateParam {
 
-    GET, POST, PUT, DELETE;
+    @Schema(title = "描述")
+    private String description;
 
-    @Override
-    public String getValue() {
-        return toString();
-    }
+    @Schema(title = "是否启用")
+    private Boolean isEnabled;
 
-    public static ApiMethod parse(String p) {
-        for (ApiMethod value : values()) {
-            if (value.is(p)) {
-                return value;
-            }
-        }
-        return null;
-    }
+    @Schema(title = "资源uri")
+    private List<ResourceUriAddParam> uris;
+
+    @Schema(title = "资源标签")
+    private List<ResourceTagAddParam> tags;
+
 }

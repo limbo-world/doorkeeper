@@ -57,7 +57,8 @@ public class ClientServiceImpl implements ClientService {
         // todo 返回用户能操作的
         List<Client> clients = clientMapper.selectList(Wrappers.<Client>lambdaQuery()
                 .eq(Client::getRealmId, param.getRealmId())
-                .like(StringUtils.isNotBlank(param.getName()), Client::getName, param.getName())
+                .eq(StringUtils.isNotBlank(param.getName()), Client::getName, param.getName())
+                .like(StringUtils.isNotBlank(param.getDimName()), Client::getName, param.getDimName())
                 .orderByDesc(Client::getClientId)
         );
         return EnhancedBeanUtils.createAndCopyList(clients, ClientVO.class);

@@ -9,7 +9,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="名称">
-                    <el-input v-model="queryForm.name" placeholder="输入名称"></el-input>
+                    <el-input v-model="queryForm.dimName" placeholder="输入名称"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="loadRoles" size="mini" icon="el-icon-search">查询</el-button>

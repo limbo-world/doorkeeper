@@ -14,29 +14,26 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
+package org.limbo.doorkeeper.server.service;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
-import org.limbo.doorkeeper.api.constants.ApiMethod;
+import org.limbo.doorkeeper.api.model.Page;
+import org.limbo.doorkeeper.api.model.param.ResourceAddParam;
+import org.limbo.doorkeeper.api.model.param.ResourceQueryParam;
+import org.limbo.doorkeeper.api.model.param.ResourceUpdateParam;
+import org.limbo.doorkeeper.api.model.vo.ResourceVO;
 
 /**
  * @author Devil
- * @date 2020/12/31 2:38 下午
+ * @date 2021/1/5 4:59 下午
  */
-@Data
-@TableName("resource_api")
-public class ResourceApi {
-    @TableId(type = IdType.AUTO)
-    private Long resourceApiId;
+public interface ResourceService {
 
-    private Long resourceId;
+    void add(ResourceAddParam param);
 
-    private ApiMethod method;
-    /**
-     * ant 风格
-     */
-    private String api;
+    void update(Long resourceId, ResourceUpdateParam param);
+
+    ResourceVO get(Long resourceId);
+
+    Page<ResourceVO> page(ResourceQueryParam param);
+
 }

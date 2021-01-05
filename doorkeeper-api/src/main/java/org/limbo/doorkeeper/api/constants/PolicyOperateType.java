@@ -17,32 +17,16 @@
 package org.limbo.doorkeeper.api.constants;
 
 /**
- * 策略类型
+ * 策略操作类型
  *
  * @author Devil
  * @date 2020/12/31 3:01 下午
  */
-public enum PolicyType implements IEnum<String> {
+public enum PolicyOperateType implements IEnum<String> {
     /**
-     * 基于角色
+     * http method
      */
-    ROLE,
-    /**
-     * 基于用户
-     */
-    USER,
-    /**
-     * 多个策略的组合
-     */
-    COMBINE,
-    /**
-     * 基于时间
-     */
-    TIME,
-    /**
-     * 基于操作
-     */
-    OPERATION,
+    HTTP_METHOD,
     ;
 
     @Override
@@ -50,8 +34,8 @@ public enum PolicyType implements IEnum<String> {
         return toString();
     }
 
-    public static PolicyType parse(String p) {
-        for (PolicyType value : values()) {
+    public static PolicyOperateType parse(String p) {
+        for (PolicyOperateType value : values()) {
             if (value.is(p)) {
                 return value;
             }

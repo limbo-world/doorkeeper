@@ -56,27 +56,20 @@ export default [
                 ]
             },
             {
-                path: '/account',
+                path: '/resource',
                 component: RouterView,
-                redirect: '/account/account',
+                redirect: '/resource/resource',
                 children: [
                     {
-                        path: '/account/account',
-                        component: _import('account/Account'),
+                        path: '/resource/resource',
+                        component: _import('resource/Resource'),
+                    },
+                    {
+                        path: '/resource/resource-edit',
+                        component: _import('resource/ResourceEdit'),
                     },
                 ]
             },
-            {
-                path: '/log',
-                component: RouterView,
-                redirect: '/log/b-log',
-                children: [
-                    {
-                        path: '/log/b-log',
-                        component: _import('log/BLog')
-                    }
-                ]
-            }
         ]
     },
 

@@ -50,7 +50,6 @@ public class RoleServiceImpl implements RoleService {
         // todo 是否能操作这个realm 这个client
 
         Role role = EnhancedBeanUtils.createAndCopy(param, Role.class);
-        role.setIsCombine(false);
         try {
             roleMapper.insert(role);
         } catch (DuplicateKeyException e) {

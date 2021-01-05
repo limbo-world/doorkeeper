@@ -1,9 +1,9 @@
 <template>
-    <el-container class="project-page">
+    <el-container class="role-page">
         <el-header class="padding-top-xs" height="50px">
             <el-form ref="searchForm" :inline="true" size="mini">
                 <el-form-item label="名称">
-                    <el-input v-model="queryForm.name" placeholder="输入名称"></el-input>
+                    <el-input v-model="queryForm.dimName" placeholder="输入名称"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="loadRoles" size="mini" icon="el-icon-search">查询</el-button>

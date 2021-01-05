@@ -14,14 +14,27 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.dao;
-
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.limbo.doorkeeper.server.entity.ResourceUri;
+package org.limbo.doorkeeper.api.constants;
 
 /**
  * @author Devil
- * @date 2021/1/3 6:08 下午
+ * @date 2020/12/31 3:01 下午
  */
-public interface ApiMapper extends BaseMapper<ResourceUri> {
+public enum BatchMethod implements IEnum<String> {
+
+    GET, POST, PUT, DELETE;
+
+    @Override
+    public String getValue() {
+        return toString();
+    }
+
+    public static BatchMethod parse(String p) {
+        for (BatchMethod value : values()) {
+            if (value.is(p)) {
+                return value;
+            }
+        }
+        return null;
+    }
 }

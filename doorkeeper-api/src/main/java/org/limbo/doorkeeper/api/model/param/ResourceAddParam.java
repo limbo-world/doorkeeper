@@ -14,42 +14,40 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
+package org.limbo.doorkeeper.api.model.param;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.util.Date;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * @author Devil
- * @date 2020/12/31 10:56 上午
+ * @date 2021/1/5 4:48 下午
  */
 @Data
-@TableName("resource")
-public class Resource {
-    @TableId(type = IdType.AUTO)
-    private Long resourceId;
+public class ResourceAddParam {
 
-    private Long realmId;
-
+    @NotNull(message = "委托方不能为空")
+    @Schema(title = "委托方", required = true)
     private Long clientId;
-    /**
-     * 名称
-     */
+
+    @NotBlank(message = "名称不能为空")
+    @Schema(title = "名称", required = true)
     private String name;
-    /**
-     * 描述
-     */
+
+    @Schema(title = "描述")
     private String description;
-    /**
-     * 是否启用
-     */
+
+    @Schema(title = "是否启用")
     private Boolean isEnabled;
 
-    private Date createTime;
+    @Schema(title = "资源uri")
+    private List<ResourceUriAddParam> uris;
 
-    private Date updateTime;
+    @Schema(title = "资源标签")
+    private List<ResourceTagAddParam> tags;
+
 }

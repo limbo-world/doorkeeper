@@ -16,6 +16,7 @@
         <el-main class="relative">
             <client-edit v-if="tabIndex === 1" :client-id="clientId"></client-edit>
             <role-edit v-if="tabIndex === 2" :client-id="clientId"></role-edit>
+            <resource v-if="tabIndex === 3" :client-id="clientId"></resource>
         </el-main>
     </el-container>
 
@@ -24,10 +25,11 @@
 <script>
     import ClientEdit from "./ClientEdit";
     import RoleEdit from "@/views/role/Role";
+    import Resource from "@/views/resource/Resource";
 
     export default {
         components: {
-            ClientEdit, RoleEdit
+            ClientEdit, RoleEdit, Resource
         },
 
         data: function () {

@@ -14,42 +14,14 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
+package org.limbo.doorkeeper.api.model.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-
-import java.util.Date;
 
 /**
  * @author Devil
- * @date 2020/12/31 10:56 上午
+ * @date 2021/1/5 5:02 下午
  */
 @Data
-@TableName("resource")
-public class Resource {
-    @TableId(type = IdType.AUTO)
-    private Long resourceId;
-
-    private Long realmId;
-
-    private Long clientId;
-    /**
-     * 名称
-     */
-    private String name;
-    /**
-     * 描述
-     */
-    private String description;
-    /**
-     * 是否启用
-     */
-    private Boolean isEnabled;
-
-    private Date createTime;
-
-    private Date updateTime;
+public class ResourceTagVO {
 }

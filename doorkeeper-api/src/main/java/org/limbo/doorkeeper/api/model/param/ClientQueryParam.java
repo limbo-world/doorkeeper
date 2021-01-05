@@ -32,7 +32,10 @@ public class ClientQueryParam {
     @Schema(title = "域id", required = true)
     private String realmId;
 
-    @Schema(title = "名称")
+    @Schema(title = "名称", description = "精确查询")
     private String name;
+
+    @Schema(title = "名称", description = "模糊查询")
+    private String dimName;
 
 }

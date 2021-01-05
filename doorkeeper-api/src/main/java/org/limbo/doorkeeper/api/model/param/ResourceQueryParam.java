@@ -23,27 +23,41 @@ import javax.validation.constraints.NotNull;
 
 /**
  * @author Devil
- * @date 2021/1/5 11:16 上午
+ * @date 2021/1/5 4:48 下午
  */
 @Data
-public class RoleCombineQueryParam {
+public class ResourceQueryParam {
 
     @NotNull(message = "域不能为空")
-    @Schema(title = "域id", required = true)
+    @Schema(title = "域", required = true)
     private Long realmId;
 
     @NotNull(message = "委托方不能为空")
     @Schema(title = "委托方", required = true)
     private Long clientId;
 
-    @NotNull(message = "父角色不能为空")
-    @Schema(title = "父角色", required = true)
-    private Long parentId;
-
-    @Schema(title = "角色名称", description = "精确查询")
+    @Schema(title = "名称", description = "精确查询")
     private String name;
 
-    @Schema(title = "角色名称", description = "模糊查询")
+    @Schema(title = "名称", description = "模糊查询")
     private String dimName;
+
+    @Schema(title = "uri", description = "精确查询")
+    private String uri;
+
+    @Schema(title = "uri", description = "模糊查询")
+    private String dimUri;
+
+    @Schema(title = "标签名", description = "精确查询")
+    private String key;
+
+    @Schema(title = "标签名", description = "模糊查询")
+    private String dimKey;
+
+    @Schema(title = "标签值", description = "精确查询")
+    private String value;
+
+    @Schema(title = "标签值", description = "模糊查询")
+    private String dimValue;
 
 }

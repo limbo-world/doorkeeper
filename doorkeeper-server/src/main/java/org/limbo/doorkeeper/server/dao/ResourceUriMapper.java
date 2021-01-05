@@ -23,5 +23,5 @@ import org.limbo.doorkeeper.server.entity.ResourceUri;
  * @author Devil
  * @date 2021/1/3 6:08 下午
  */
-public interface ApiMapper extends BaseMapper<ResourceUri> {
+public interface ResourceUriMapper extends BaseMapper<ResourceUri> {
 }

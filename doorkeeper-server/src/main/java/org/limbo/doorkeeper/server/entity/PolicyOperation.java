@@ -18,38 +18,21 @@ package org.limbo.doorkeeper.server.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-
-import java.util.Date;
+import org.limbo.doorkeeper.api.constants.PolicyOperateType;
 
 /**
  * @author Devil
- * @date 2020/12/31 10:56 上午
+ * @date 2021/1/5 4:02 下午
  */
 @Data
-@TableName("resource")
-public class Resource {
+public class PolicyOperation {
     @TableId(type = IdType.AUTO)
-    private Long resourceId;
+    private Long policyOperationId;
 
-    private Long realmId;
+    private Long policyId;
 
-    private Long clientId;
-    /**
-     * 名称
-     */
-    private String name;
-    /**
-     * 描述
-     */
-    private String description;
-    /**
-     * 是否启用
-     */
-    private Boolean isEnabled;
+    private PolicyOperateType type;
 
-    private Date createTime;
-
-    private Date updateTime;
+    private String value;
 }

@@ -18,7 +18,7 @@ package org.limbo.doorkeeper.api.model.param;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import org.limbo.doorkeeper.api.constants.ApiMethod;
+import org.limbo.doorkeeper.api.constants.BatchMethod;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -37,7 +37,7 @@ public class RoleCombineUpdateParam {
 
     @NotNull(message = "操作类型不能为空")
     @Schema(title = "操作类型", required = true)
-    private ApiMethod type;
+    private BatchMethod type;
 
     @NotEmpty(message = "角色列表不能为空")
     @Schema(title = "角色列表", required = true)

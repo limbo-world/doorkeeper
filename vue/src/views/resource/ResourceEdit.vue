@@ -50,12 +50,15 @@
                 type: Object,
                 default() {}
             },
+            project: {
+                type: Object,
+                default() {}
+            },
             openMode: {
                 type: Boolean,
                 default: true,
             }
         },
-
         data() {
             const confirmPassword = (rule, value, cb) => {
                 if (this.account.password !== value) {
@@ -83,10 +86,11 @@
         },
 
         created() {
-            pages.adminEdit = this;
+            pages.projectAccountEdit = this;
         },
 
         methods: {
+
             confirmEdit() {
                 const loading = this.$loading();
                 return new Promise((resolve, reject) => {
@@ -113,7 +117,8 @@
             },
 
             doAddAccount(account) {
-                return this.$ajax.post('/account', account);
+                account.projectId = this.project.projectId;
+                return this.$ajax.post('/project-account', account);
             },
 
             doUpdateAccount(account) {
