@@ -24,15 +24,12 @@ import lombok.Data;
  * @date 2021/1/4 2:57 下午
  */
 @Data
-public class RoleUpdateParam {
+public class ClientUpdateParam {
 
-    @Schema(title = "名称")
+    @Schema(title = "描述")
     private String description;
 
     @Schema(title = "是否启用")
     private Boolean isEnabled;
-
-    @Schema(title = "是否默认添加")
-    private Boolean isDefault;
 
 }

@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.param.ClientAddParam;
 import org.limbo.doorkeeper.api.model.param.ClientQueryParam;
+import org.limbo.doorkeeper.api.model.param.ClientUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ClientVO;
 import org.limbo.doorkeeper.server.dao.ClientMapper;
 import org.limbo.doorkeeper.server.entity.Client;
@@ -60,6 +61,22 @@ public class ClientServiceImpl implements ClientService {
                 .orderByDesc(Client::getClientId)
         );
         return EnhancedBeanUtils.createAndCopyList(clients, ClientVO.class);
+    }
+
+    @Override
+    public ClientVO get(Long clientId) {
+        Client client = clientMapper.selectById(clientId);
+        return EnhancedBeanUtils.createAndCopy(client, ClientVO.class);
+    }
+
+    @Override
+    @Transactional
+    public void update(Long clientId, ClientUpdateParam param) {
+        clientMapper.update(null, Wrappers.<Client>lambdaUpdate()
+                .set(param.getDescription() != null, Client::getDescription, param.getDescription())
+                .set(param.getIsEnabled() != null, Client::getIsEnabled, param.getIsEnabled())
+                .eq(Client::getClientId, clientId)
+        );
     }
 
 }

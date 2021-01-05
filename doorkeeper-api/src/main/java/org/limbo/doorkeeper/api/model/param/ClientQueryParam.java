@@ -18,8 +18,6 @@ package org.limbo.doorkeeper.api.model.param;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import org.limbo.doorkeeper.api.model.Page;
-import org.limbo.doorkeeper.api.model.vo.ClientVO;
 
 import javax.validation.constraints.NotNull;
 
@@ -28,7 +26,7 @@ import javax.validation.constraints.NotNull;
  * @date 2021/1/4 2:57 下午
  */
 @Data
-public class ClientQueryParam extends Page<ClientVO> {
+public class ClientQueryParam {
 
     @NotNull(message = "域不能为空")
     @Schema(title = "域id", required = true)

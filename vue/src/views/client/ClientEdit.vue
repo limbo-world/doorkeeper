@@ -15,23 +15,20 @@
   -->
 
 <template>
-    <el-container class="page-role-edit">
+    <el-container class="page-client-edit">
         <el-main>
-            <el-form :model="role" label-width="80px" size="mini" class="edit-form" ref="editForm">
+            <el-form :model="client" label-width="80px" size="mini" class="edit-form" ref="editForm">
                 <el-form-item label="名称">
-                    <el-input v-model="role.name" disabled></el-input>
+                    <el-input v-model="client.name" disabled></el-input>
                 </el-form-item>
                 <el-form-item label="描述">
-                    <el-input type="textarea" v-model="role.description"></el-input>
-                </el-form-item>
-                <el-form-item label="默认角色">
-                    <el-switch v-model="role.isDefault" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+                    <el-input type="textarea" v-model="client.description"></el-input>
                 </el-form-item>
                 <el-form-item label="是否启用">
-                    <el-switch v-model="role.isEnabled" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+                    <el-switch v-model="client.isEnabled" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="updateRole" size="mini" icon="el-icon-refresh">保存</el-button>
+                    <el-button type="primary" @click="updateClient" size="mini" icon="el-icon-refresh">保存</el-button>
                 </el-form-item>
             </el-form>
         </el-main>
@@ -45,7 +42,7 @@ import { mapState, mapActions } from 'vuex';
 
 export default {
     props: {
-        roleId: {
+        clientId: {
             type: Number,
             default: null
         },
@@ -53,29 +50,29 @@ export default {
 
     data: function () {
         return {
-            role: {},
+            client: {},
         }
     },
 
     created() {
-        pages.roleEdit = this;
+        pages.clientEdit = this;
 
-        this.loadRole();
+        this.loadClient();
     },
 
     methods: {
         ...mapActions('ui', ['startProgress', 'stopProgress']),
 
-        loadRole() {
+        loadClient() {
             this.startProgress({ speed: 'fast' });
-            this.$ajax.get(`/admin/role/${this.roleId}`).then(response => {
-                this.role = response.data;
+            this.$ajax.get(`/admin/client/${this.clientId}`).then(response => {
+                this.client = response.data;
             }).finally(() => this.stopProgress());
         },
 
-        updateRole() {
-            this.$ajax.put(`/admin/role/${this.role.roleId}`, this.role).then(response => {
-                this.loadRole()
+        updateClient() {
+            this.$ajax.put(`/admin/client/${this.clientId}`, this.client).then(response => {
+                this.loadClient()
             })
         },
     }

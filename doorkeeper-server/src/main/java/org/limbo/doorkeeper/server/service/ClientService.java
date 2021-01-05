@@ -18,6 +18,7 @@ package org.limbo.doorkeeper.server.service;
 
 import org.limbo.doorkeeper.api.model.param.ClientAddParam;
 import org.limbo.doorkeeper.api.model.param.ClientQueryParam;
+import org.limbo.doorkeeper.api.model.param.ClientUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ClientVO;
 
 import java.util.List;
@@ -31,5 +32,9 @@ public interface ClientService {
     ClientVO add(ClientAddParam param);
 
     List<ClientVO> list(ClientQueryParam param);
+
+    ClientVO get(Long clientId);
+
+    void update(Long clientId, ClientUpdateParam param);
 
 }

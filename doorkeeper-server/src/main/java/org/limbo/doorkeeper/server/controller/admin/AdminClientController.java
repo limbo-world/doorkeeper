@@ -22,12 +22,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.ClientAddParam;
 import org.limbo.doorkeeper.api.model.param.ClientQueryParam;
+import org.limbo.doorkeeper.api.model.param.ClientUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ClientVO;
+import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.server.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -53,6 +56,20 @@ public class AdminClientController {
     @GetMapping
     public Response<List<ClientVO>> list(@Validated ClientQueryParam param) {
         return Response.success(clientService.list(param));
+    }
+
+    @Operation(summary = "查询委托方")
+    @GetMapping("/{clientId}")
+    public Response<ClientVO> get(@Validated @NotNull(message = "未提交委托方ID") @PathVariable("clientId") Long clientId) {
+        return Response.success(clientService.get(clientId));
+    }
+
+    @Operation(summary = "更新委托方")
+    @PutMapping("/{clientId}")
+    public Response<RoleVO> update(@Validated @NotNull(message = "未提交委托方ID") @PathVariable("clientId") Long clientId,
+                                   @Validated @RequestBody ClientUpdateParam param) {
+        clientService.update(clientId, param);
+        return Response.success();
     }
 
 }

@@ -33,7 +33,11 @@ export default [
                     {
                         path: '/client/client',
                         component: _import('client/Client'),
-                    }
+                    },
+                    {
+                        path: '/client/client-edit',
+                        component: _import('client/ClientEditLayout'),
+                    },
                 ]
             },
             {

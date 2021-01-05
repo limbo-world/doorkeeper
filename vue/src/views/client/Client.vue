@@ -118,7 +118,9 @@
             },
 
             toClientEdit(clientId) {
-
+                this.$router.push({path: '/client/client-edit',
+                    query: {clientId: clientId}
+                })
             },
 
         }
