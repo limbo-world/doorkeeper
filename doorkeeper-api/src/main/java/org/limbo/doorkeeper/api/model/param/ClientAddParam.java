@@ -40,7 +40,6 @@ public class ClientAddParam {
     @Schema(title = "描述")
     private String description;
 
-    @NotNull(message = "请设置是否启用不能为空")
-    @Schema(title = "是否启用", required = true)
+    @Schema(title = "是否启用")
     private Boolean isEnabled;
 }

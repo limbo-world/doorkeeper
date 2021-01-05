@@ -123,12 +123,11 @@
                     this.resetPageForm();
                 }
                 this.startProgress();
-                this.$ajax.get('/role/query', {
+                this.$ajax.get('/role', {
                     params: this.queryForm
                 }).then(response => {
                     const page = response.data;
                     this.queryForm.total = page.total >= 0 ? page.total : this.queryForm.total;
-
                     this.roles = page.data;
                 }).finally(() => this.stopProgress());
             },

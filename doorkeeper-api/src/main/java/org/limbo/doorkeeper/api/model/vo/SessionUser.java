@@ -35,4 +35,7 @@ public class SessionUser {
     @Schema(title = "账户昵称")
     private String nickname;
 
+    @Schema(title = "当前选中的域")
+    private RealmVO realm;
+
 }

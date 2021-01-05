@@ -14,23 +14,25 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.dao;
+package org.limbo.doorkeeper.server.entity;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.limbo.doorkeeper.api.model.param.AdminRealmQueryParam;
-import org.limbo.doorkeeper.api.model.vo.AdminRealmVO;
-import org.limbo.doorkeeper.server.entity.AdminRealm;
-
-import java.util.List;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import lombok.Data;
 
 /**
+ * 用户角色绑定关系
  * @author Devil
- * @date 2021/1/3 6:08 下午
+ * @date 2021/1/4 7:11 下午
  */
-public interface AdminRealmMapper extends BaseMapper<AdminRealm> {
+@Data
+public class UserRole {
 
-    long pageVOCount(AdminRealmQueryParam param);
+    @TableId(type = IdType.AUTO)
+    private Long userRoleId;
 
-    List<AdminRealmVO> pageVOS(AdminRealmQueryParam param);
+    private Long userId;
+
+    private Long roleId;
 
 }

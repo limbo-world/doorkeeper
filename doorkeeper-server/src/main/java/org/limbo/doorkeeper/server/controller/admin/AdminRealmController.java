@@ -17,31 +17,28 @@
 package org.limbo.doorkeeper.server.controller.admin;
 
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.AdminRealmQueryParam;
-import org.limbo.doorkeeper.api.model.vo.AdminRealmVO;
-import org.limbo.doorkeeper.server.service.AdminRealmService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.limbo.doorkeeper.api.model.param.RealmAddParam;
+import org.limbo.doorkeeper.api.model.vo.RealmVO;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author Devil
- * @date 2021/1/4 10:55 上午
+ * @date 2021/1/3 5:41 下午
  */
 @Slf4j
 @RestController
-@RequestMapping("/admin/admin-realm")
+@RequestMapping("/admin/realm")
 public class AdminRealmController {
 
-    @Autowired
-    private AdminRealmService adminRealmService;
-
-    @GetMapping
-    public Response<Page<AdminRealmVO>> page(AdminRealmQueryParam param) {
-        return Response.success(adminRealmService.page(param));
+    @PostMapping
+    public Response<RealmVO> addProject(@Validated @RequestBody RealmAddParam param) {
+        return Response.success();
     }
+
 
 }

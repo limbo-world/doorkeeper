@@ -14,11 +14,21 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
+package org.limbo.doorkeeper.server.service;
+
+import org.limbo.doorkeeper.api.model.Page;
+import org.limbo.doorkeeper.api.model.param.RoleAddParam;
+import org.limbo.doorkeeper.api.model.param.RoleQueryParam;
+import org.limbo.doorkeeper.api.model.vo.RoleVO;
 
 /**
  * @author Devil
- * @date 2021/1/4 2:35 下午
+ * @date 2021/1/4 5:29 下午
  */
-public class AdminClient {
+public interface RoleService {
+
+    RoleVO add(RoleAddParam param);
+
+    Page<RoleVO> page(RoleQueryParam param);
+
 }

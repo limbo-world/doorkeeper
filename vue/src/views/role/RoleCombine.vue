@@ -14,7 +14,7 @@
 
         <el-main>
             <el-table :data="clients" size="mini">
-                <el-table-column prop="clientId" label="ID"></el-table-column>
+                <el-table-column prop="roleId" label="ID"></el-table-column>
                 <el-table-column prop="name" label="名称"></el-table-column>
                 <el-table-column prop="description" label="描述"></el-table-column>
                 <el-table-column label="是否启用">
@@ -36,31 +36,9 @@
 
         <el-footer>
             <el-pagination background layout="prev, pager, next" :total="queryForm.total" :page-size="queryForm.size"
-                           :current-page.sync="queryForm.current" @current-change="loadClients">
+                           :current-page.sync="queryForm.current" @current-change="loadProjects">
             </el-pagination>
         </el-footer>
-
-
-        <el-dialog title="新增" :visible.sync="dialogOpened" width="50%" class="edit-dialog" :before-close="preventCloseWhenProcessing">
-            <el-form :model="client" label-width="80px" size="mini" class="edit-form" ref="editForm">
-                <el-form-item label="名称">
-                    <el-input v-model="client.name" placeholder="请输入名称"></el-input>
-                </el-form-item>
-                <el-form-item label="描述">
-                    <el-input v-model="client.description" placeholder="请输入描述"></el-input>
-                </el-form-item>
-                <el-form-item label="是否启用">
-                    <el-switch v-model="client.isEnabled"
-                               active-color="#13ce66"
-                               inactive-color="#ff4949"></el-switch>
-                </el-form-item>
-            </el-form>
-            <el-footer class="text-right">
-                <el-button @click="() => {client = {}; dialogOpened = false;}" :disabled="dialogProcessing">取 消</el-button>
-                <el-button type="primary" @click="addClient" :loading="dialogProcessing"
-                           :disabled="dialogProcessing">确 定</el-button>
-            </el-footer>
-        </el-dialog>
 
     </el-container>
 </template>
@@ -68,6 +46,7 @@
 
 
 <script>
+
     import { mapState, mapActions } from 'vuex';
 
     export default {
@@ -80,9 +59,9 @@
                     total: -1,
                 },
 
-                clients: [],
+                roles: [],
 
-                client: {},
+                role: {},
                 dialogOpened: false,
                 dialogProcessing: false,
             }
@@ -93,9 +72,9 @@
         },
 
         created() {
-            pages.client = this;
+            pages.role = this;
 
-            this.loadClients();
+            this.loadRoles();
         },
 
         methods: {
@@ -106,23 +85,22 @@
                 this.queryForm.total = -1;
             },
 
-            loadClients(current) {
+            loadRoles(current) {
                 if (1 === current) {
                     this.resetPageForm();
                 }
                 this.startProgress();
-                this.$ajax.get('/admin/client', {params: {...this.queryForm, addRealmId: true}}).then(response => {
+                this.$ajax.get('/admin/role', {params: {...this.queryForm, addRealmId: true}}).then(response => {
                     const page = response.data;
                     this.queryForm.total = page.total >= 0 ? page.total : this.queryForm.total;
-                    this.clients = page.data;
+                    this.roles = page.data;
                 }).finally(() => this.stopProgress());
             },
 
-            addClient() {
-                console.log(this.client)
+            addRole() {
                 this.dialogProcessing = true;
-                this.$ajax.post('/admin/client', {...this.client, addRealmId: true}).then(() => {
-                    this.loadClients();
+                this.$ajax.post('/admin/role', {...this.role, addRealmId: true}).then(() => {
+                    this.loadRoles();
                     this.dialogOpened = false;
                 }).finally(() => this.dialogProcessing = false);
             },

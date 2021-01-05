@@ -30,6 +30,7 @@ import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Devil
@@ -42,7 +43,10 @@ public class ClientServiceImpl implements ClientService {
     private ClientMapper clientMapper;
 
     @Override
+    @Transactional
     public ClientVO add(ClientAddParam param) {
+        // todo 用户是否能操作这个realm
+
         Client client = EnhancedBeanUtils.createAndCopy(param, Client.class);
         clientMapper.insert(client);
         return EnhancedBeanUtils.createAndCopy(client, ClientVO.class);
@@ -59,5 +63,12 @@ public class ClientServiceImpl implements ClientService {
         param.setTotal(mpage.getTotal());
         param.setData(EnhancedBeanUtils.createAndCopyList(mpage.getRecords(), ClientVO.class));
         return param;
+    }
+
+    @Override
+    public void deleteById(Long clientId) {
+        Client client = clientMapper.selectById(clientId);
+        // todo 判断用户是否能操作这个client
+
     }
 }

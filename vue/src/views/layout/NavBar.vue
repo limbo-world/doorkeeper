@@ -74,14 +74,9 @@ export default {
 
         // 加载账户拥有的项目
         loadAdminRealms() {
-            this.$ajax.get('/admin/admin-realm', {params: {userId: this.user.userId, size: 100}}).then(response => {
-                let realms = response.data.data;
-                if (!realms) {
-                    realms = []
-                }
-                this.realms = realms;
-                this.$store.dispatch('session/changeRealm', realms[0], false)
-            })
+            let realms = [{name: "doorkeeper", realmId: 100000}]
+            this.realms = realms;
+            this.$store.dispatch('session/changeRealm', realms[0], false)
         },
 
         // 切换

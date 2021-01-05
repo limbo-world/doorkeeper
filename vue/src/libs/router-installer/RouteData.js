@@ -37,6 +37,17 @@ export default [
                 ]
             },
             {
+                path: '/role',
+                component: RouterView,
+                redirect: '/role/role',
+                children: [
+                    {
+                        path: '/role/role',
+                        component: _import('role/Role'),
+                    }
+                ]
+            },
+            {
                 path: '/account',
                 component: RouterView,
                 redirect: '/account/account',

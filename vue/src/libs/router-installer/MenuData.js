@@ -11,7 +11,7 @@ export const MenuRoute = [{
         "menuCode": "001002",
         "menuName": "域角色",
         "icon": "el-icon-c-scale-to-original",
-        "route": "/project/project",
+        "route": "/role/role",
     }]
 }, {
     "menuCode": "002",

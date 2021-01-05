@@ -21,6 +21,8 @@ import lombok.Data;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.vo.ClientVO;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * @author Devil
  * @date 2021/1/4 2:57 下午
@@ -28,10 +30,11 @@ import org.limbo.doorkeeper.api.model.vo.ClientVO;
 @Data
 public class ClientQueryParam extends Page<ClientVO> {
 
+    @NotNull(message = "域不能为空")
     @Schema(title = "域id", required = true)
     private String realmId;
 
-    @Schema(title = "名称", required = true)
+    @Schema(title = "名称")
     private String name;
 
 }

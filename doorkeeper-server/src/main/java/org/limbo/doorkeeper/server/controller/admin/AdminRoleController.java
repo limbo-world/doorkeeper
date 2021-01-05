@@ -21,37 +21,37 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.ClientAddParam;
-import org.limbo.doorkeeper.api.model.param.ClientQueryParam;
-import org.limbo.doorkeeper.api.model.vo.ClientVO;
-import org.limbo.doorkeeper.server.service.ClientService;
+import org.limbo.doorkeeper.api.model.param.RoleAddParam;
+import org.limbo.doorkeeper.api.model.param.RoleQueryParam;
+import org.limbo.doorkeeper.api.model.vo.RoleVO;
+import org.limbo.doorkeeper.server.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
  * @author Devil
- * @date 2021/1/4 2:55 下午
+ * @date 2021/1/4 5:19 下午
  */
-@Tag(name = "委托方")
+@Tag(name = "角色")
 @Slf4j
 @RestController
-@RequestMapping("/admin/client")
-public class ClientController {
+@RequestMapping("/admin/role")
+public class AdminRoleController {
 
     @Autowired
-    private ClientService clientService;
+    private RoleService roleService;
 
-    @Operation(summary = "新建委托方")
+    @Operation(summary = "新建角色")
     @PostMapping
-    public Response<ClientVO> add(@RequestBody @Validated ClientAddParam param) {
-        return Response.success(clientService.add(param));
+    public Response<RoleVO> add(@RequestBody @Validated RoleAddParam param) {
+        return Response.success(roleService.add(param));
     }
 
-    @Operation(summary = "分页查询委托方")
+    @Operation(summary = "分页查询角色")
     @GetMapping
-    public Response<Page<ClientVO>> page(ClientQueryParam param) {
-        return Response.success(clientService.page(param));
+    public Response<Page<RoleVO>> page(@Validated RoleQueryParam param) {
+        return Response.success(roleService.page(param));
     }
 
 }

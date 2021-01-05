@@ -93,12 +93,16 @@ export default {
         /**
          * 从后台读取会话信息，如果成功读取到会话，会更新到state和sessionCache
          */
-        loadSession({ commit }) {
+        loadSession({ state, commit }) {
             return http.get('/session', {
                 ignoreException: { 401: true }
             }).then(response => {
                 // 有会话 设置到state中，并更新sessionCache
                 const user = response.data;
+                const localUser = getSessionUserCache();
+                if (localUser.realm) {
+                    user.realm = localUser.realm;
+                }
                 commit('setUser', user);
                 setSessionUserCache(user);
                 return Promise.resolve();

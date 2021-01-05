@@ -31,4 +31,6 @@ public interface ClientService {
 
     Page<ClientVO> page(ClientQueryParam param);
 
+    void deleteById(Long clientId);
+
 }

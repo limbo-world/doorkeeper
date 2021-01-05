@@ -30,7 +30,7 @@ import java.util.Date;
  * @date 2020/12/29 4:28 下午
  */
 @Data
-@TableName("realm_role")
+@TableName("role")
 public class Role {
 
     @TableId(type = IdType.AUTO)

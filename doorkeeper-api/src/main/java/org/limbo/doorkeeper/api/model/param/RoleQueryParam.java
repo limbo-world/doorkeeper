@@ -18,18 +18,25 @@ package org.limbo.doorkeeper.api.model.param;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import org.limbo.doorkeeper.api.model.Page;
-import org.limbo.doorkeeper.api.model.vo.AdminRealmVO;
+import org.limbo.doorkeeper.api.model.vo.RoleVO;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Devil
- * @date 2021/1/4 11:01 上午
+ * @date 2021/1/4 5:44 下午
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class AdminRealmQueryParam extends Page<AdminRealmVO> {
+public class RoleQueryParam extends Page<RoleVO> {
 
-    @Schema(title = "用户id")
-    private Long userId;
+    @NotNull(message = "域不能为空")
+    @Schema(title = "域id", required = true)
+    private Long realmId;
+
+    @Schema(title = "委托方")
+    private Long clientId;
+
+    @Schema(title = "名称", description = "模糊查询")
+    private String name;
 }

@@ -35,6 +35,13 @@ request.interceptors.request.use(config => {
         // 设置会话header
         config.headers[request.sessionHeader] = user.sessionId;
     }
+    // realm参数
+    if (config.params && config.params.addRealmId) {
+        config.params.realmId = user.realm.realmId;
+    }
+    if (config.data && config.data.addRealmId) {
+        config.data.realmId = user.realm.realmId;
+    }
     return config;
 }, error => {
     Promise.reject(error);
