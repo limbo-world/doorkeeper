@@ -15,6 +15,7 @@
         <!-- 页面主体 -->
         <el-main class="relative">
             <client-edit v-if="tabIndex === 1" :client-id="clientId"></client-edit>
+            <role-edit v-if="tabIndex === 2" :client-id="clientId"></role-edit>
         </el-main>
     </el-container>
 
@@ -22,10 +23,11 @@
 
 <script>
     import ClientEdit from "./ClientEdit";
+    import RoleEdit from "@/views/role/Role";
 
     export default {
         components: {
-            ClientEdit
+            ClientEdit, RoleEdit
         },
 
         data: function () {
