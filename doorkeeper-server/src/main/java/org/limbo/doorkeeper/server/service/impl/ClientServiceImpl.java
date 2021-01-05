@@ -16,10 +16,8 @@
 
 package org.limbo.doorkeeper.server.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.lang3.StringUtils;
-import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.ClientAddParam;
 import org.limbo.doorkeeper.api.model.param.ClientQueryParam;
 import org.limbo.doorkeeper.api.model.vo.ClientVO;
@@ -27,10 +25,11 @@ import org.limbo.doorkeeper.server.dao.ClientMapper;
 import org.limbo.doorkeeper.server.entity.Client;
 import org.limbo.doorkeeper.server.service.ClientService;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
-import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * @author Devil
@@ -53,22 +52,14 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public Page<ClientVO> page(ClientQueryParam param) {
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<Client> mpage = MyBatisPlusUtils.pageOf(param);
-        LambdaQueryWrapper<Client> condition = Wrappers.<Client>lambdaQuery()
+    public List<ClientVO> list(ClientQueryParam param) {
+        // todo 返回用户能操作的
+        List<Client> clients = clientMapper.selectList(Wrappers.<Client>lambdaQuery()
+                .eq(Client::getRealmId, param.getRealmId())
                 .like(StringUtils.isNotBlank(param.getName()), Client::getName, param.getName())
-                .orderByDesc(Client::getClientId);
-        mpage = clientMapper.selectPage(mpage, condition);
-
-        param.setTotal(mpage.getTotal());
-        param.setData(EnhancedBeanUtils.createAndCopyList(mpage.getRecords(), ClientVO.class));
-        return param;
+                .orderByDesc(Client::getClientId)
+        );
+        return EnhancedBeanUtils.createAndCopyList(clients, ClientVO.class);
     }
 
-    @Override
-    public void deleteById(Long clientId) {
-        Client client = clientMapper.selectById(clientId);
-        // todo 判断用户是否能操作这个client
-
-    }
 }

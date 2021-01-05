@@ -51,7 +51,7 @@ public class AdminRoleController {
         return Response.success(roleService.add(param));
     }
 
-    @Operation(summary = "分页查询角色")
+    @Operation(summary = "查询角色列表")
     @GetMapping
     public Response<List<RoleVO>> list(@Validated RoleQueryParam param) {
         return Response.success(roleService.list(param));

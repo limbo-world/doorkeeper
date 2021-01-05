@@ -2,139 +2,123 @@
     <el-container class="project-page">
         <el-header class="padding-top-xs" height="50px">
             <el-form ref="searchForm" :inline="true" size="mini">
+                <el-form-item label="委托方">
+                    <el-select v-model="queryForm.clientId" filterable>
+                        <el-option v-for="item in clients" :key="item.clientId" :label="item.name"
+                                   :value="item.clientId"></el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item label="名称">
                     <el-input v-model="queryForm.name" placeholder="输入名称"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="loadClients(1)" size="mini" icon="el-icon-search">查询</el-button>
-                    <el-button type="primary" @click="() =>{dialogOpened = true;}" size="mini" icon="el-icon-circle-plus">新增</el-button>
+                    <el-button type="primary" @click="loadRoles" size="mini" icon="el-icon-search">查询</el-button>
                 </el-form-item>
             </el-form>
         </el-header>
 
         <el-main>
-            <el-table :data="clients" size="mini">
+            <el-table :data="roles" size="mini">
                 <el-table-column prop="roleId" label="ID"></el-table-column>
                 <el-table-column prop="name" label="名称"></el-table-column>
                 <el-table-column prop="description" label="描述"></el-table-column>
-                <el-table-column label="是否启用">
+                <el-table-column label="是否绑定">
                     <template slot-scope="scope">
-                        {{scope.row.isEnabled ? "已启用" : "未启用"}}
-                    </template>
-                </el-table-column>
-                <el-table-column label="操作">
-                    <template slot-scope="scope">
-                        <div class="operations">
-                            <template>
-                                <i @click="()=>{toClientEdit(scope.row.clientId)}" class="el-icon-edit"></i>
-                            </template>
-                        </div>
+                        <el-switch v-if="scope.row.roleId != roleId" :value="scope.row.roleCombineId ? true : false"
+                                   @change="v => {bindRole(v, scope.row.roleId)}"
+                                   active-color="#13ce66"
+                                   inactive-color="#ff4949"></el-switch>
                     </template>
                 </el-table-column>
             </el-table>
         </el-main>
 
-        <el-footer>
-            <el-pagination background layout="prev, pager, next" :total="queryForm.total" :page-size="queryForm.size"
-                           :current-page.sync="queryForm.current" @current-change="loadProjects">
-            </el-pagination>
-        </el-footer>
-
     </el-container>
 </template>
 
 
-
 <script>
 
-    import { mapState, mapActions } from 'vuex';
+import {mapState, mapActions} from 'vuex';
 
-    export default {
-        data() {
-            return {
-                queryForm: {
-                    name: '',
-                    current: 1,
-                    size: 10,
-                    total: -1,
-                },
-
-                roles: [],
-
-                role: {},
-                dialogOpened: false,
-                dialogProcessing: false,
-            }
+export default {
+    props: {
+        roleId: {
+            type: Number,
+            default: null
         },
+    },
 
-        computed: {
-            ...mapState('session', ['user']),
-        },
-
-        created() {
-            pages.role = this;
-
-            this.loadRoles();
-        },
-
-        methods: {
-            ...mapActions('ui', ['startProgress', 'stopProgress']),
-
-            resetPageForm() {
-                this.queryForm.current = 1;
-                this.queryForm.total = -1;
+    data() {
+        return {
+            queryForm: {
+                name: '',
             },
 
-            loadRoles(current) {
-                if (1 === current) {
-                    this.resetPageForm();
+            roles: [],
+            clients: [],
+            dialogOpened: false,
+            dialogProcessing: false,
+        }
+    },
+
+    computed: {
+        ...mapState('session', ['user']),
+    },
+
+    created() {
+        pages.roleCombine = this;
+
+        this.loadClients();
+    },
+
+    methods: {
+        ...mapActions('ui', ['startProgress', 'stopProgress']),
+
+        loadRoles() {
+            this.startProgress();
+            this.$ajax.get('/admin/role-combine', {
+                params: {
+                    ...this.queryForm, addRealmId: true, parentId: this.roleId
                 }
-                this.startProgress();
-                this.$ajax.get('/admin/role', {params: {...this.queryForm, addRealmId: true}}).then(response => {
-                    const page = response.data;
-                    this.queryForm.total = page.total >= 0 ? page.total : this.queryForm.total;
-                    this.roles = page.data;
-                }).finally(() => this.stopProgress());
-            },
+            }).then(response => {
+                this.roles = response.data;
+            }).finally(() => this.stopProgress());
+        },
 
-            addRole() {
-                this.dialogProcessing = true;
-                this.$ajax.post('/admin/role', {...this.role, addRealmId: true}).then(() => {
-                    this.loadRoles();
-                    this.dialogOpened = false;
-                }).finally(() => this.dialogProcessing = false);
-            },
-
-            preventCloseWhenProcessing() {
-                if (this.dialogProcessing) {
-                    return false;
+        loadClients() {
+            this.startProgress();
+            this.$ajax.get('/admin/client', {params: {addRealmId: true}}).then(response => {
+                let clients = [{clientId: 0, name: "域"}]
+                if (response.data && response.data.length > 0) {
+                    clients = clients.concat(response.data)
                 }
+                this.clients = clients;
+            }).finally(() => this.stopProgress());
+        },
 
-                this.project = {};
-                this.dialogOpened = false;
-            },
-
-            toClientEdit(clientId) {
-
-            },
-
+        bindRole(v, roleId) {
+            const loading = this.$loading();
+            this.$ajax.post('/admin/role-combine', {
+                parentId: this.roleId,
+                roleIds: [roleId],
+                type: v ? "POST" : "DELETE"
+            }).then(response => {
+                this.loadRoles();
+            }).finally(() => loading.close());
         }
 
     }
+
+}
 </script>
 
 <style lang="scss">
-    .project-page {
-        .el-table {
-            .cell {
-                min-height: 22px;
-            }
-        }
-
-        .edit-dialog {
-            .el-dialog {
-                min-width: 500px;
-            }
+.project-page {
+    .el-table {
+        .cell {
+            min-height: 22px;
         }
     }
+}
 </style>

@@ -16,20 +16,20 @@
 
 package org.limbo.doorkeeper.server.service;
 
-import org.limbo.doorkeeper.api.model.param.ClientAddParam;
-import org.limbo.doorkeeper.api.model.param.ClientQueryParam;
-import org.limbo.doorkeeper.api.model.vo.ClientVO;
+import org.limbo.doorkeeper.api.model.param.RoleCombineQueryParam;
+import org.limbo.doorkeeper.api.model.param.RoleCombineUpdateParam;
+import org.limbo.doorkeeper.api.model.vo.RoleCombineVO;
 
 import java.util.List;
 
 /**
  * @author Devil
- * @date 2021/1/4 2:59 下午
+ * @date 2021/1/5 1:58 下午
  */
-public interface ClientService {
+public interface RoleCombineService {
 
-    ClientVO add(ClientAddParam param);
+    List<RoleCombineVO> list(RoleCombineQueryParam param);
 
-    List<ClientVO> list(ClientQueryParam param);
+    void update(RoleCombineUpdateParam param);
 
 }

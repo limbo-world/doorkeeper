@@ -16,10 +16,19 @@
 
 package org.limbo.doorkeeper.server.controller.admin;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.limbo.doorkeeper.api.model.Response;
+import org.limbo.doorkeeper.api.model.param.RoleCombineQueryParam;
+import org.limbo.doorkeeper.api.model.param.RoleCombineUpdateParam;
+import org.limbo.doorkeeper.api.model.vo.RoleCombineVO;
+import org.limbo.doorkeeper.server.service.RoleCombineService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author Devil
@@ -30,4 +39,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/admin/role-combine")
 public class AdminRoleCombineController {
+
+    @Autowired
+    private RoleCombineService roleCombineService;
+
+    @Operation(summary = "查询角色组合列表")
+    @GetMapping
+    public Response<List<RoleCombineVO>> list(@Validated RoleCombineQueryParam param) {
+        return Response.success(roleCombineService.list(param));
+    }
+
+    @Operation(summary = "操作角色组合")
+    @PostMapping
+    public Response<List<RoleCombineVO>> post(@RequestBody @Validated RoleCombineUpdateParam param) {
+        roleCombineService.update(param);
+        return Response.success();
+    }
+
 }

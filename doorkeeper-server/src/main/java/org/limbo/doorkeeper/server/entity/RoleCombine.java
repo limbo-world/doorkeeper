@@ -30,6 +30,7 @@ import lombok.Data;
 @Data
 @TableName("role_combine")
 public class RoleCombine {
+
     @TableId(type = IdType.AUTO)
     private Long roleCombineId;
     /**
@@ -40,4 +41,5 @@ public class RoleCombine {
      * 下级角色
      */
     private Long roleId;
+
 }

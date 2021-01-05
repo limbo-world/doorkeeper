@@ -19,7 +19,6 @@ package org.limbo.doorkeeper.server.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.ClientAddParam;
 import org.limbo.doorkeeper.api.model.param.ClientQueryParam;
@@ -28,6 +27,8 @@ import org.limbo.doorkeeper.server.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author Devil
@@ -48,10 +49,10 @@ public class AdminClientController {
         return Response.success(clientService.add(param));
     }
 
-    @Operation(summary = "分页查询委托方")
+    @Operation(summary = "查询委托方列表")
     @GetMapping
-    public Response<Page<ClientVO>> page(@Validated ClientQueryParam param) {
-        return Response.success(clientService.page(param));
+    public Response<List<ClientVO>> list(@Validated ClientQueryParam param) {
+        return Response.success(clientService.list(param));
     }
 
 }

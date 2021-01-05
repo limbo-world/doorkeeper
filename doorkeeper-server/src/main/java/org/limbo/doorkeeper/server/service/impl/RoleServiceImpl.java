@@ -78,6 +78,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public void update(Long roleId, RoleUpdateParam param) {
+        // todo 能否操作
         roleMapper.update(null, Wrappers.<Role>lambdaUpdate()
                 .set(Role::getName, param.getName())
                 .set(Role::getDescription, param.getDescription())

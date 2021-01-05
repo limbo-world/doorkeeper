@@ -23,8 +23,22 @@ package org.limbo.doorkeeper.api.constants;
  * @date 2020/12/31 3:01 下午
  */
 public enum PolicyType implements IEnum<String> {
-
-    ROLE, USER, COMBINE, TIME,
+    /**
+     * 基于角色
+     */
+    ROLE,
+    /**
+     * 基于用户
+     */
+    USER,
+    /**
+     * 多个策略的组合
+     */
+    COMBINE,
+    /**
+     * 基于时间
+     */
+    TIME,
     ;
 
     @Override

@@ -14,33 +14,29 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
+package org.limbo.doorkeeper.api.model.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import org.limbo.doorkeeper.api.constants.ApiMethod;
-
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import java.util.List;
 
 /**
  * @author Devil
- * @date 2021/1/5 11:16 上午
+ * @date 2021/1/5 1:55 下午
  */
 @Data
-public class RoleCombineUpdateParam {
+public class RoleCombineVO {
 
-    @NotNull(message = "父角色不能为空")
-    @Schema(title = "父角色", required = true)
+    private Long roleCombineId;
+
+    @Schema(title = "上级角色")
     private Long parentId;
 
-    @NotNull(message = "操作类型不能为空")
-    @Schema(title = "操作类型", required = true)
-    private ApiMethod type;
+    @Schema(title = "下级角色")
+    private Long roleId;
 
-    @NotEmpty(message = "角色列表不能为空")
-    @Schema(title = "角色列表", required = true)
-    private List<Long> roleIds;
+    @Schema(title = "角色名称")
+    private String name;
 
+    @Schema(title = "角色名称")
+    private String description;
 }
