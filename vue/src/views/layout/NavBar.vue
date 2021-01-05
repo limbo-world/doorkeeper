@@ -2,11 +2,11 @@
     <div class="nav-bar">
         <div class="flex align-center">
             <i :class="toggleMenuClass" @click="toggleMenu"></i>
-            <span class="margin-left text-3xs">当前域：{{ user && user.realm && user.realm.name }}</span>
+            <span class="margin-left text-3xs">你好，{{ user && user.nickname }}</span>
         </div>
         <el-dropdown>
             <span class="el-dropdown-link" style="cursor: pointer">
-                你好，{{ user && user.nickname }} <i class="el-icon-arrow-down el-icon--right"></i>
+                {{ user && user.realm && user.realm.name }} <i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item v-for="realm in realms" :key="realm.realmId">

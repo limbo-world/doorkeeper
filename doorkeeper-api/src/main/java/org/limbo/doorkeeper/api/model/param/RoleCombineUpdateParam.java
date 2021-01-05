@@ -14,41 +14,22 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.vo;
+package org.limbo.doorkeeper.api.model.param;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.util.Date;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Devil
- * @date 2021/1/4 11:40 上午
+ * @date 2021/1/5 11:16 上午
  */
 @Data
-public class RoleVO {
+public class RoleCombineUpdateParam {
 
+    @NotNull(message = "角色id不能为空")
+    @Schema(title = "角色id", required = true)
     private Long roleId;
 
-    @Schema(title = "属于哪个realm")
-    private Long realmId;
-
-    @Schema(title = "属于哪个委托方", description = "如果为0表示为域角色")
-    private Long clientId;
-
-    @Schema(title = "名称")
-    private String name;
-
-    @Schema(title = "描述")
-    private String description;
-
-    @Schema(title = "是否启用")
-    private Boolean isEnabled;
-
-    @Schema(title = "默认添加")
-    private Boolean isDefault;
-
-    private Date createTime;
-
-    private Date updateTime;
 }

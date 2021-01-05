@@ -21,7 +21,6 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 /**
  * @author Devil
@@ -43,9 +42,6 @@ public class RoleAddParam {
 
     @Schema(title = "名称")
     private String description;
-
-    @Schema(title = "组合角色id列表")
-    private List<Long> combineRoleIds;
 
     @Schema(title = "是否启用")
     private Boolean isEnabled;

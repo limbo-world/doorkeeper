@@ -14,27 +14,20 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
+package org.limbo.doorkeeper.server.controller.admin;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-
-import javax.validation.constraints.NotNull;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author Devil
- * @date 2021/1/4 5:44 下午
+ * @date 2021/1/4 5:19 下午
  */
-@Data
-public class RoleQueryParam {
-
-    @NotNull(message = "域不能为空")
-    @Schema(title = "域id", required = true)
-    private Long realmId;
-
-    @Schema(title = "委托方")
-    private Long clientId;
-
-    @Schema(title = "名称", description = "模糊查询")
-    private String name;
+@Tag(name = "角色组合")
+@Slf4j
+@RestController
+@RequestMapping("/admin/role-combine")
+public class AdminRoleCombineController {
 }

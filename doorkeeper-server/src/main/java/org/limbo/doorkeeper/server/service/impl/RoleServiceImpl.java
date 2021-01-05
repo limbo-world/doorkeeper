@@ -16,28 +16,22 @@
 
 package org.limbo.doorkeeper.server.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.exception.ParamException;
-import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.RoleAddParam;
 import org.limbo.doorkeeper.api.model.param.RoleQueryParam;
+import org.limbo.doorkeeper.api.model.param.RoleUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
-import org.limbo.doorkeeper.server.dao.RoleCombineMapper;
 import org.limbo.doorkeeper.server.dao.RoleMapper;
 import org.limbo.doorkeeper.server.entity.Role;
-import org.limbo.doorkeeper.server.entity.RoleCombine;
 import org.limbo.doorkeeper.server.service.RoleService;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
-import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -50,9 +44,6 @@ public class RoleServiceImpl implements RoleService {
     @Autowired
     private RoleMapper roleMapper;
 
-    @Autowired
-    private RoleCombineMapper roleCombineMapper;
-
     @Override
     @Transactional
     public RoleVO add(RoleAddParam param) {
@@ -60,43 +51,39 @@ public class RoleServiceImpl implements RoleService {
 
         Role role = EnhancedBeanUtils.createAndCopy(param, Role.class);
         role.setIsCombine(false);
-        List<RoleCombine> roleCombines = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(param.getCombineRoleIds())) {
-            // todo 校验这些role
-            role.setIsCombine(true);
-        }
         try {
             roleMapper.insert(role);
         } catch (DuplicateKeyException e) {
             throw new ParamException("角色已存在");
         }
-
-        // 如果是组合的 添加下面的信息
-        if (CollectionUtils.isNotEmpty(param.getCombineRoleIds())) {
-            for (Long combineRoleId : param.getCombineRoleIds()) {
-                RoleCombine roleCombine = new RoleCombine();
-                roleCombine.setParentId(role.getRoleId());
-                roleCombine.setRoleId(combineRoleId);
-                roleCombines.add(roleCombine);
-            }
-            MyBatisPlusUtils.batchSave(roleCombines, RoleCombine.class);
-        }
-
         return EnhancedBeanUtils.createAndCopy(role, RoleVO.class);
     }
 
     @Override
-    public Page<RoleVO> page(RoleQueryParam param) {
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<Role> mpage = MyBatisPlusUtils.pageOf(param);
-        LambdaQueryWrapper<Role> condition = Wrappers.<Role>lambdaQuery()
+    public List<RoleVO> list(RoleQueryParam param) {
+        List<Role> roles = roleMapper.selectList(Wrappers.<Role>lambdaQuery()
                 .eq(Role::getRealmId, param.getRealmId())
                 .like(StringUtils.isNotBlank(param.getName()), Role::getName, param.getName())
                 .eq(param.getClientId() != null, Role::getClientId, param.getClientId())
-                .orderByDesc(Role::getRoleId);
-        mpage = roleMapper.selectPage(mpage, condition);
+                .orderByDesc(Role::getRoleId)
+        );
+        return EnhancedBeanUtils.createAndCopyList(roles, RoleVO.class);
+    }
 
-        param.setTotal(mpage.getTotal());
-        param.setData(EnhancedBeanUtils.createAndCopyList(mpage.getRecords(), RoleVO.class));
-        return param;
+    @Override
+    public RoleVO get(Long roleId) {
+        Role role = roleMapper.selectById(roleId);
+        return EnhancedBeanUtils.createAndCopy(role, RoleVO.class);
+    }
+
+    @Override
+    public void update(Long roleId, RoleUpdateParam param) {
+        roleMapper.update(null, Wrappers.<Role>lambdaUpdate()
+                .set(Role::getName, param.getName())
+                .set(Role::getDescription, param.getDescription())
+                .set(Role::getIsDefault, param.getIsDefault())
+                .set(Role::getIsEnabled, param.getIsEnabled())
+                .eq(Role::getRoleId, roleId)
+        );
     }
 }

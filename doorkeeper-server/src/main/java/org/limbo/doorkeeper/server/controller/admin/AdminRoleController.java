@@ -19,15 +19,18 @@ package org.limbo.doorkeeper.server.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.RoleAddParam;
 import org.limbo.doorkeeper.api.model.param.RoleQueryParam;
+import org.limbo.doorkeeper.api.model.param.RoleUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.server.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * @author Devil
@@ -50,8 +53,22 @@ public class AdminRoleController {
 
     @Operation(summary = "分页查询角色")
     @GetMapping
-    public Response<Page<RoleVO>> page(@Validated RoleQueryParam param) {
-        return Response.success(roleService.page(param));
+    public Response<List<RoleVO>> list(@Validated RoleQueryParam param) {
+        return Response.success(roleService.list(param));
+    }
+
+    @Operation(summary = "查询角色")
+    @GetMapping("/{roleId}")
+    public Response<RoleVO> get(@Validated @NotNull(message = "未提交角色ID") @PathVariable("roleId") Long roleId) {
+        return Response.success(roleService.get(roleId));
+    }
+
+    @Operation(summary = "更新角色")
+    @PutMapping("/{roleId}")
+    public Response<RoleVO> update(@Validated @NotNull(message = "未提交角色ID") @PathVariable("roleId") Long roleId,
+                                @Validated @RequestBody RoleUpdateParam param) {
+        roleService.update(roleId, param);
+        return Response.success();
     }
 
 }

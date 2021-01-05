@@ -44,7 +44,11 @@ export default [
                     {
                         path: '/role/role',
                         component: _import('role/Role'),
-                    }
+                    },
+                    {
+                        path: '/role/role-edit',
+                        component: _import('role/RoleEditLayout'),
+                    },
                 ]
             },
             {

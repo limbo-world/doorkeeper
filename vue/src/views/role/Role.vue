@@ -6,8 +6,8 @@
                     <el-input v-model="queryForm.name" placeholder="输入名称"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="loadClients(1)" size="mini" icon="el-icon-search">查询</el-button>
-                    <el-button type="primary" @click="() =>{dialogOpened = true;dialogOpenMode='新增'}" size="mini" icon="el-icon-circle-plus">新增</el-button>
+                    <el-button type="primary" @click="loadRoles" size="mini" icon="el-icon-search">查询</el-button>
+                    <el-button type="primary" @click="() =>{dialogOpened = true;}" size="mini" icon="el-icon-circle-plus">新增</el-button>
                 </el-form-item>
             </el-form>
         </el-header>
@@ -31,19 +31,13 @@
                     <template slot-scope="scope">
                         <div class="operations">
                             <template>
-                                <i @click="()=>{toClientEdit(scope.row.clientId)}" class="el-icon-edit"></i>
+                                <i @click="()=>{toRoleEdit(scope.row.roleId)}" class="el-icon-edit"></i>
                             </template>
                         </div>
                     </template>
                 </el-table-column>
             </el-table>
         </el-main>
-
-        <el-footer>
-            <el-pagination background layout="prev, pager, next" :total="queryForm.total" :page-size="queryForm.size"
-                           :current-page.sync="queryForm.current" @current-change="loadRoles">
-            </el-pagination>
-        </el-footer>
 
         <el-dialog title="新增" :visible.sync="dialogOpened" width="50%" class="edit-dialog" :before-close="preventCloseWhenProcessing">
             <el-form :model="role" label-width="80px" size="mini" class="edit-form" ref="editForm">
@@ -80,16 +74,12 @@
             return {
                 queryForm: {
                     name: '',
-                    current: 1,
-                    size: 10,
-                    total: -1,
                 },
 
                 roles: [],
 
                 role: {},
                 dialogOpened: false,
-                dialogOpenMode: '',
                 dialogProcessing: false,
             }
         },
@@ -107,20 +97,10 @@
         methods: {
             ...mapActions('ui', ['startProgress', 'stopProgress']),
 
-            resetPageForm() {
-                this.queryForm.current = 1;
-                this.queryForm.total = -1;
-            },
-
-            loadRoles(current) {
-                if (1 === current) {
-                    this.resetPageForm();
-                }
+            loadRoles() {
                 this.startProgress();
                 this.$ajax.get('/admin/role', {params: {...this.queryForm, addRealmId: true}}).then(response => {
-                    const page = response.data;
-                    this.queryForm.total = page.total >= 0 ? page.total : this.queryForm.total;
-                    this.roles = page.data;
+                    this.roles = response.data;
                 }).finally(() => this.stopProgress());
             },
 
@@ -141,8 +121,10 @@
                 this.dialogOpened = false;
             },
 
-            toClientEdit(clientId) {
-
+            toRoleEdit(roleId) {
+                this.$router.push({path: '/role/role-edit',
+                    query: {roleId: roleId}
+                })
             },
 
         }

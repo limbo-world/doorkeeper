@@ -16,10 +16,12 @@
 
 package org.limbo.doorkeeper.server.service;
 
-import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.RoleAddParam;
 import org.limbo.doorkeeper.api.model.param.RoleQueryParam;
+import org.limbo.doorkeeper.api.model.param.RoleUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
+
+import java.util.List;
 
 /**
  * @author Devil
@@ -29,6 +31,10 @@ public interface RoleService {
 
     RoleVO add(RoleAddParam param);
 
-    Page<RoleVO> page(RoleQueryParam param);
+    List<RoleVO> list(RoleQueryParam param);
+
+    RoleVO get(Long roleId);
+
+    void update(Long roleId, RoleUpdateParam param);
 
 }
