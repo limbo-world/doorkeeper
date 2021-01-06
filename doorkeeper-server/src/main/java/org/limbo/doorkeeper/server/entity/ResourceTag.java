@@ -34,7 +34,7 @@ public class ResourceTag {
 
     private Long resourceId;
 
-    private String key;
+    private String k;
 
-    private String value;
+    private String v;
 }

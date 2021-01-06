@@ -16,6 +16,7 @@
 
 package org.limbo.doorkeeper.api.model.vo;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -24,4 +25,14 @@ import lombok.Data;
  */
 @Data
 public class ResourceTagVO {
+
+    private Long resourceTagId;
+
+    private Long resourceId;
+
+    @Schema(title = "标签名")
+    private String k;
+
+    @Schema(title = "标签值")
+    private String v;
 }

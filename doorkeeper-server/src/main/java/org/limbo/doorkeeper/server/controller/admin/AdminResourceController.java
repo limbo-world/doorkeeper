@@ -47,9 +47,8 @@ public class AdminResourceController {
 
     @Operation(summary = "新建资源")
     @PostMapping
-    public Response<Void> add(@RequestBody @Validated ResourceAddParam param) {
-        resourceService.add(param);
-        return Response.success();
+    public Response<ResourceVO> add(@RequestBody @Validated ResourceAddParam param) {
+        return Response.success(resourceService.add(param));
     }
 
     @Operation(summary = "分页查询资源")

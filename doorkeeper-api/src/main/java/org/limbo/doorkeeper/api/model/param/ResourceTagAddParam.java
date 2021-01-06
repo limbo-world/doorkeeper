@@ -33,10 +33,10 @@ public class ResourceTagAddParam {
 
     @NotBlank(message = "标签名不能为空")
     @Schema(title = "标签名", required = true)
-    private String key;
+    private String k;
 
     @NotBlank(message = "标签值不能为空")
     @Schema(title = "标签值", required = true)
-    private String value;
+    private String v;
 
 }

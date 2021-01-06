@@ -28,7 +28,7 @@ import org.limbo.doorkeeper.api.model.vo.ResourceVO;
  */
 public interface ResourceService {
 
-    void add(ResourceAddParam param);
+    ResourceVO add(ResourceAddParam param);
 
     void update(Long resourceId, ResourceUpdateParam param);
 

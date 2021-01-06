@@ -19,7 +19,7 @@
         <el-header class="padding-top-xs" height="80px">
             <el-row>
                 <el-form ref="searchForm" :inline="true" size="mini">
-                    <el-form-item label="账号">
+                    <el-form-item label="名称">
                         <el-input v-model="queryForm.dimName" placeholder="输入名称"></el-input>
                     </el-form-item>
                     <el-form-item label="URI">

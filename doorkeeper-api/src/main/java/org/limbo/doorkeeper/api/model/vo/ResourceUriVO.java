@@ -16,6 +16,7 @@
 
 package org.limbo.doorkeeper.api.model.vo;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -24,4 +25,12 @@ import lombok.Data;
  */
 @Data
 public class ResourceUriVO {
+
+    private Long resourceUriId;
+
+    private Long resourceId;
+
+    @Schema(title = "uri")
+    private String uri;
+
 }

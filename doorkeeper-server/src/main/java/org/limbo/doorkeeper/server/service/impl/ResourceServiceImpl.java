@@ -67,7 +67,7 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     @Transactional
-    public void add(ResourceAddParam param) {
+    public ResourceVO add(ResourceAddParam param) {
         Client client = clientMapper.selectById(param.getClientId());
         Verifies.notNull(client, "委托方不存在");
 
@@ -99,6 +99,8 @@ public class ResourceServiceImpl implements ResourceService {
             }
             MyBatisPlusUtils.batchSave(tags, ResourceTag.class);
         }
+
+        return EnhancedBeanUtils.createAndCopy(resource, ResourceVO.class);
     }
 
     @Override
