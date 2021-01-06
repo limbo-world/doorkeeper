@@ -14,36 +14,26 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
+package org.limbo.doorkeeper.api.model.param.policy;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-
-import javax.validation.constraints.NotNull;
+import lombok.EqualsAndHashCode;
+import org.limbo.doorkeeper.api.model.Page;
+import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 
 /**
  * @author Devil
- * @date 2021/1/5 11:16 上午
+ * @date 2021/1/6 7:53 下午
  */
 @Data
-public class RoleCombineQueryParam {
+@EqualsAndHashCode(callSuper = true)
+public class PolicyQueryParam extends Page<PolicyVO> {
 
-    @NotNull(message = "域不能为空")
-    @Schema(title = "域id", required = true)
-    private Long realmId;
-
-    @NotNull(message = "委托方不能为空")
-    @Schema(title = "委托方", required = true)
-    private Long clientId;
-
-    @NotNull(message = "父角色不能为空")
-    @Schema(title = "父角色", required = true)
-    private Long parentId;
-
-    @Schema(title = "角色名称", description = "精确查询")
+    @Schema(title = "名称", description = "精确查询")
     private String name;
 
-    @Schema(title = "角色名称", description = "模糊查询")
+    @Schema(title = "名称", description = "模糊查询")
     private String dimName;
 
 }

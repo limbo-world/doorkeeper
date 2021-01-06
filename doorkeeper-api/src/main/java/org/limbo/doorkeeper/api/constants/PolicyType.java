@@ -40,9 +40,9 @@ public enum PolicyType implements IEnum<String> {
      */
     TIME,
     /**
-     * 基于操作
+     * 基于标签
      */
-    OPERATION,
+    TAG,
     ;
 
     @Override

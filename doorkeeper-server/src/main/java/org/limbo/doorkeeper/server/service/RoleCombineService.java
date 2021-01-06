@@ -16,20 +16,56 @@
 
 package org.limbo.doorkeeper.server.service;
 
-import org.limbo.doorkeeper.api.model.param.RoleCombineQueryParam;
-import org.limbo.doorkeeper.api.model.param.RoleCombineBatchUpdateParam;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.limbo.doorkeeper.api.model.param.role.RoleCombineBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.role.RoleCombineQueryParam;
 import org.limbo.doorkeeper.api.model.vo.RoleCombineVO;
+import org.limbo.doorkeeper.server.dao.RoleCombineMapper;
+import org.limbo.doorkeeper.server.entity.RoleCombine;
+import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Devil
  * @date 2021/1/5 1:58 下午
  */
-public interface RoleCombineService {
+@Service
+public class RoleCombineService {
 
-    List<RoleCombineVO> list(RoleCombineQueryParam param);
+    @Autowired
+    private RoleCombineMapper roleCombineMapper;
 
-    void batchUpdate(RoleCombineBatchUpdateParam param);
+    public List<RoleCombineVO> list(RoleCombineQueryParam param) {
+        return roleCombineMapper.listVOSByParent(param);
+    }
+
+    @Transactional
+    public void batchUpdate(RoleCombineBatchUpdateParam param) {
+        switch (param.getType()) {
+            case POST: // 新增
+                List<RoleCombine> roleCombines = new ArrayList<>();
+                for (Long roleId : param.getRoleIds()) {
+                    RoleCombine roleCombine = new RoleCombine();
+                    roleCombine.setParentId(param.getParentId());
+                    roleCombine.setRoleId(roleId);
+                    roleCombines.add(roleCombine);
+                }
+                MyBatisPlusUtils.batchSave(roleCombines, RoleCombine.class);
+                break;
+            case DELETE: // 删除
+                roleCombineMapper.delete(Wrappers.<RoleCombine>lambdaQuery()
+                        .eq(RoleCombine::getParentId, param.getParentId())
+                        .in(RoleCombine::getRoleId, param.getRoleIds())
+                );
+                break;
+            default:
+                break;
+        }
+    }
 
 }

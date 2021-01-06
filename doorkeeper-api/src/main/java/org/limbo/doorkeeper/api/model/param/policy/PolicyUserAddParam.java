@@ -14,20 +14,24 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.dao;
+package org.limbo.doorkeeper.api.model.param.policy;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.limbo.doorkeeper.api.model.param.role.RoleCombineQueryParam;
-import org.limbo.doorkeeper.api.model.vo.RoleCombineVO;
-import org.limbo.doorkeeper.server.entity.RoleCombine;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
 
-import java.util.List;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Devil
- * @date 2021/1/3 6:08 下午
+ * @date 2021/1/6 5:13 下午
  */
-public interface RoleCombineMapper extends BaseMapper<RoleCombine> {
+@Data
+public class PolicyUserAddParam {
 
-    List<RoleCombineVO> listVOSByParent(RoleCombineQueryParam param);
+    @Schema(title = "ID", description = "如果存在，表示是一个已经存在")
+    private Long policyUserId;
+
+    @NotNull(message = "用户不能为空")
+    @Schema(title = "用户", required = true)
+    private Long userId;
 }

@@ -14,26 +14,22 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
+package org.limbo.doorkeeper.api.model.param.policy;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+
 /**
- * 基于角色的策略
  * @author Devil
- * @date 2020/12/31 3:13 下午
+ * @date 2021/1/6 5:09 下午
  */
 @Data
-@TableName("policy_role")
-public class PolicyRole {
+public class PolicyCombineAddParam {
 
-    @TableId(type = IdType.AUTO)
-    private Long policyRoleId;
-
+    @NotBlank(message = "下级策略不能为空")
+    @Schema(title = "下级策略", required = true)
     private Long policyId;
 
-    private Long roleId;
 }

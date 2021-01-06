@@ -14,20 +14,26 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.dao;
+package org.limbo.doorkeeper.server.entity.policy;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.limbo.doorkeeper.api.model.param.role.RoleCombineQueryParam;
-import org.limbo.doorkeeper.api.model.vo.RoleCombineVO;
-import org.limbo.doorkeeper.server.entity.RoleCombine;
-
-import java.util.List;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 
 /**
+ * 基于角色的策略
  * @author Devil
- * @date 2021/1/3 6:08 下午
+ * @date 2020/12/31 3:13 下午
  */
-public interface RoleCombineMapper extends BaseMapper<RoleCombine> {
+@Data
+@TableName("policy_role")
+public class PolicyRole {
 
-    List<RoleCombineVO> listVOSByParent(RoleCombineQueryParam param);
+    @TableId(type = IdType.AUTO)
+    private Long policyRoleId;
+
+    private Long policyId;
+
+    private Long roleId;
 }

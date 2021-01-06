@@ -14,26 +14,28 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
+package org.limbo.doorkeeper.api.model.param.policy;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+
 /**
- * 基于用户的策略
- *
  * @author Devil
- * @date 2020/12/31 3:51 下午
+ * @date 2021/1/6 5:10 下午
  */
 @Data
-@TableName("policy_user")
-public class PolicyUser {
-    @TableId(type = IdType.AUTO)
-    private Long policyUserId;
+public class PolicyTagAddParam {
 
-    private Long policyId;
+    @Schema(title = "ID", description = "如果存在，表示是一个已经存在")
+    private Long policyTagId;
 
-    private Long userId;
+    @NotBlank(message = "标签名不能为空")
+    @Schema(title = "标签名", required = true)
+    private String k;
+
+    @NotBlank(message = "标签值不能为空")
+    @Schema(title = "标签值", required = true)
+    private String v;
 }

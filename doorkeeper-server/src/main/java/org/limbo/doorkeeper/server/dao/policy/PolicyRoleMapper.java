@@ -14,25 +14,14 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
+package org.limbo.doorkeeper.server.dao.policy;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import lombok.Data;
-import org.limbo.doorkeeper.api.constants.PolicyOperateType;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.limbo.doorkeeper.server.entity.policy.PolicyRole;
 
 /**
  * @author Devil
- * @date 2021/1/5 4:02 下午
+ * @date 2021/1/3 6:08 下午
  */
-@Data
-public class PolicyOperation {
-    @TableId(type = IdType.AUTO)
-    private Long policyOperationId;
-
-    private Long policyId;
-
-    private PolicyOperateType type;
-
-    private String value;
+public interface PolicyRoleMapper extends BaseMapper<PolicyRole> {
 }

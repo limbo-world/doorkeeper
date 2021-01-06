@@ -14,25 +14,22 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
+package org.limbo.doorkeeper.api.model.vo.policy;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
  * @author Devil
- * @date 2021/1/4 2:57 下午
+ * @date 2021/1/6 8:12 下午
  */
 @Data
-public class RoleUpdateParam {
+public class PolicyTagVO {
 
-    @Schema(title = "名称")
-    private String description;
+    private Long policyTagId;
 
-    @Schema(title = "是否启用")
-    private Boolean isEnabled;
+    private Long policyId;
 
-    @Schema(title = "是否默认添加")
-    private Boolean isDefault;
+    private String k;
 
+    private String v;
 }

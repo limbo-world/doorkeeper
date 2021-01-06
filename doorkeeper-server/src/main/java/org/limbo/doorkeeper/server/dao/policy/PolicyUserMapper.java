@@ -14,14 +14,14 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.dao;
+package org.limbo.doorkeeper.server.dao.policy;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.limbo.doorkeeper.server.entity.Policy;
+import org.limbo.doorkeeper.server.entity.policy.PolicyUser;
 
 /**
  * @author Devil
  * @date 2021/1/3 6:08 下午
  */
-public interface PolicyMapper extends BaseMapper<Policy> {
+public interface PolicyUserMapper extends BaseMapper<PolicyUser> {
 }

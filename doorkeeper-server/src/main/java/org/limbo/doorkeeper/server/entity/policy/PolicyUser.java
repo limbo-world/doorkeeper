@@ -14,57 +14,26 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
+package org.limbo.doorkeeper.server.entity.policy;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import org.limbo.doorkeeper.api.constants.Logic;
-import org.limbo.doorkeeper.api.constants.Intention;
-import org.limbo.doorkeeper.api.constants.PolicyType;
-
-import java.util.Date;
 
 /**
+ * 基于用户的策略
+ *
  * @author Devil
- * @date 2020/12/31 11:00 上午
+ * @date 2020/12/31 3:51 下午
  */
 @Data
-@TableName("policy")
-public class Policy {
-
+@TableName("policy_user")
+public class PolicyUser {
     @TableId(type = IdType.AUTO)
+    private Long policyUserId;
+
     private Long policyId;
 
-    private Long clientId;
-    /**
-     * 名称
-     */
-    private String name;
-    /**
-     * 描述
-     */
-    private String description;
-    /**
-     * 策略类型
-     */
-    private PolicyType type;
-    /**
-     * 只有组合类型会有
-     */
-    private Logic logic;
-    /**
-     * 执行逻辑
-     */
-    private Intention intention;
-    /**
-     * 是否启用
-     */
-    private Boolean isEnabled;
-
-
-    private Date createTime;
-
-    private Date updateTime;
+    private Long userId;
 }

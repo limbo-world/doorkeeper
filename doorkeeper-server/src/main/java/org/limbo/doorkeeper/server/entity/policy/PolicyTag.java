@@ -14,30 +14,30 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
+package org.limbo.doorkeeper.server.entity.policy;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
-
 /**
+ * 基于标签的策略
+ *
  * @author Devil
- * @date 2021/1/4 5:44 下午
+ * @date 2021/1/5 4:02 下午
  */
 @Data
-public class RoleQueryParam {
+public class PolicyTag {
+    @TableId(type = IdType.AUTO)
+    private Long policyTagId;
 
-    @NotNull(message = "域不能为空")
-    @Schema(title = "域id", required = true)
-    private Long realmId;
-
-    @Schema(title = "委托方")
-    private Long clientId;
-
-    @Schema(title = "名称", description = "精确查询")
-    private String name;
-
-    @Schema(title = "名称", description = "模糊查询")
-    private String dimName;
+    private Long policyId;
+    /**
+     * 名
+     */
+    private String k;
+    /**
+     * 值
+     */
+    private String v;
 }

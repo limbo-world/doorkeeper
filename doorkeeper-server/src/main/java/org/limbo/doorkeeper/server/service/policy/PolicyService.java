@@ -1,0 +1,141 @@
+/*
+ * Copyright 2020-2024 Limbo Team (https://github.com/limbo-world).
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *   	http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
+
+package org.limbo.doorkeeper.server.service.policy;
+
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.apache.commons.lang3.StringUtils;
+import org.limbo.doorkeeper.api.exception.ParamException;
+import org.limbo.doorkeeper.api.model.Page;
+import org.limbo.doorkeeper.api.model.param.policy.PolicyAddParam;
+import org.limbo.doorkeeper.api.model.param.policy.PolicyBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.policy.PolicyQueryParam;
+import org.limbo.doorkeeper.api.model.param.policy.PolicyUpdateParam;
+import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
+import org.limbo.doorkeeper.server.dao.policy.PolicyMapper;
+import org.limbo.doorkeeper.server.entity.policy.Policy;
+import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
+import org.limbo.doorkeeper.server.utils.Verifies;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * @author Devil
+ * @date 2021/1/6 5:16 下午
+ */
+@Service
+public class PolicyService {
+
+    @Autowired
+    private PolicyMapper policyMapper;
+
+    @Autowired
+    private PolicyRoleService policyRoleService;
+
+    @Autowired
+    private PolicyUserService policyUserService;
+
+    @Autowired
+    private PolicyTagService policyTagService;
+
+    public PolicyVO add(PolicyAddParam param) {
+        Verifies.notNull(param.getType(), "策略类型不存在");
+        Policy policy = EnhancedBeanUtils.createAndCopy(param, Policy.class);
+        try {
+            policyMapper.insert(policy);
+        } catch (DuplicateKeyException e) {
+            throw new ParamException("策略已存在");
+        }
+        switch (param.getType()) {
+            case ROLE:
+                policyRoleService.batchSave(policy.getPolicyId(), param.getRoles());
+                break;
+            case USER:
+                policyUserService.batchSave(policy.getPolicyId(), param.getUsers());
+                break;
+            case TAG:
+                policyTagService.batchSave(policy.getPolicyId(), param.getTags());
+                break;
+        }
+        return EnhancedBeanUtils.createAndCopy(policy, PolicyVO.class);
+    }
+
+    @Transactional
+    public void batchUpdate(PolicyBatchUpdateParam param) {
+        switch (param.getType()) {
+            case PUT:
+                policyMapper.update(null, Wrappers.<Policy>lambdaUpdate()
+                        .set(param.getIsEnabled() != null, Policy::getIsEnabled, param.getIsEnabled())
+                        .in(Policy::getPolicyId, param.getPolicyIds())
+                );
+            default:
+                break;
+        }
+    }
+
+    public Page<PolicyVO> page(PolicyQueryParam param) {
+        com.baomidou.mybatisplus.extension.plugins.pagination.Page<Policy> mpage = MyBatisPlusUtils.pageOf(param);
+        mpage = policyMapper.selectPage(mpage, Wrappers.<Policy>lambdaQuery()
+                .eq(StringUtils.isNotBlank(param.getName()), Policy::getName, param.getName())
+                .like(StringUtils.isNotBlank(param.getDimName()), Policy::getName, param.getDimName())
+                .orderByDesc(Policy::getPolicyId)
+        );
+
+        param.setTotal(mpage.getTotal());
+        param.setData(EnhancedBeanUtils.createAndCopyList(mpage.getRecords(), PolicyVO.class));
+        return param;
+    }
+
+    public PolicyVO get(Long policyId) {
+        Policy policy = policyMapper.selectById(policyId);
+        Verifies.notNull(policy, "策略不存在");
+        PolicyVO result = EnhancedBeanUtils.createAndCopy(policy, PolicyVO.class);
+        switch (policy.getType()) {
+            case ROLE:
+                result.setRoles(policyRoleService.getByPolicy(policyId));
+                break;
+            case USER:
+                result.setUsers(policyUserService.getByPolicy(policyId));
+                break;
+            case TAG:
+                result.setTags(policyTagService.getByPolicy(policyId));
+                break;
+        }
+
+        return result;
+    }
+
+    @Transactional
+    public void update(Long policyId, PolicyUpdateParam param) {
+        Policy policy = policyMapper.selectById(policyId);
+        Verifies.notNull(policy, "策略不存在");
+        switch (policy.getType()) {
+            case ROLE:
+                policyRoleService.update(policyId, param.getRoles());
+                break;
+            case USER:
+                policyUserService.update(policyId, param.getUsers());
+                break;
+            case TAG:
+                policyTagService.update(policyId, param.getTags());
+                break;
+        }
+    }
+
+}

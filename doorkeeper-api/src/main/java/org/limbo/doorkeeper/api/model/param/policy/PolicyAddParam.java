@@ -14,38 +14,57 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
+package org.limbo.doorkeeper.api.model.param.policy;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.limbo.doorkeeper.api.constants.Intention;
+import org.limbo.doorkeeper.api.constants.Logic;
+import org.limbo.doorkeeper.api.constants.PolicyType;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * @author Devil
- * @date 2021/1/4 2:57 下午
+ * @date 2021/1/5 4:48 下午
  */
 @Data
-public class RoleAddParam {
+public class PolicyAddParam {
 
-    @NotNull(message = "域不能为空")
-    @Schema(title = "域id", required = true)
-    private Long realmId;
-
-    @Schema(title = "委托方id")
+    @NotNull(message = "委托方不能为空")
+    @Schema(title = "委托方", required = true)
     private Long clientId;
 
     @NotBlank(message = "名称不能为空")
     @Schema(title = "名称", required = true)
     private String name;
 
-    @Schema(title = "名称")
+    @Schema(title = "描述")
     private String description;
+
+    @NotNull(message = "类型不能为空")
+    @Schema(title = "类型", required = true)
+    private PolicyType type;
+
+    @Schema(title = "判断逻辑", description = "只有组合策略需要")
+    private Logic logic;
+
+    @NotNull(message = "执行逻辑不能为空")
+    @Schema(title = "执行逻辑", required = true)
+    private Intention intention;
 
     @Schema(title = "是否启用")
     private Boolean isEnabled;
 
-    @Schema(title = "是否默认添加")
-    private Boolean isDefault;
+    @Schema(title = "操作策略")
+    private List<PolicyTagAddParam>  tags;
+
+    @Schema(title = "角色策略")
+    private List<PolicyRoleAddParam>  roles;
+
+    @Schema(title = "用户策略")
+    private List<PolicyUserAddParam>  users;
+
 }

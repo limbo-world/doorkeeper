@@ -14,14 +14,30 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.dao;
+package org.limbo.doorkeeper.api.model.param.role;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.limbo.doorkeeper.server.entity.PolicyRole;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Devil
- * @date 2021/1/3 6:08 下午
+ * @date 2021/1/4 5:44 下午
  */
-public interface PolicyRoleMapper extends BaseMapper<PolicyRole> {
+@Data
+public class RoleQueryParam {
+
+    @NotNull(message = "域不能为空")
+    @Schema(title = "域id", required = true)
+    private Long realmId;
+
+    @Schema(title = "委托方")
+    private Long clientId;
+
+    @Schema(title = "名称", description = "精确查询")
+    private String name;
+
+    @Schema(title = "名称", description = "模糊查询")
+    private String dimName;
 }

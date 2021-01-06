@@ -14,20 +14,32 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.dao;
+package org.limbo.doorkeeper.api.model.param.policy;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.limbo.doorkeeper.api.model.param.role.RoleCombineQueryParam;
-import org.limbo.doorkeeper.api.model.vo.RoleCombineVO;
-import org.limbo.doorkeeper.server.entity.RoleCombine;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import org.limbo.doorkeeper.api.constants.BatchMethod;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
  * @author Devil
- * @date 2021/1/3 6:08 下午
+ * @date 2021/1/5 4:48 下午
  */
-public interface RoleCombineMapper extends BaseMapper<RoleCombine> {
+@Data
+public class PolicyBatchUpdateParam {
 
-    List<RoleCombineVO> listVOSByParent(RoleCombineQueryParam param);
+    @NotNull(message = "操作类型不能为空")
+    @Schema(title = "操作类型", required = true)
+    private BatchMethod type;
+
+    @Schema(title = "是否启用")
+    private Boolean isEnabled;
+
+    @NotEmpty(message = "策略列表不能为空")
+    @Schema(title = "策略列表", required = true)
+    private List<Long> policyIds;
+
 }

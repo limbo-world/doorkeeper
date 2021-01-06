@@ -14,20 +14,21 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.dao;
+package org.limbo.doorkeeper.api.model.vo.policy;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.limbo.doorkeeper.api.model.param.role.RoleCombineQueryParam;
-import org.limbo.doorkeeper.api.model.vo.RoleCombineVO;
-import org.limbo.doorkeeper.server.entity.RoleCombine;
-
-import java.util.List;
+import lombok.Data;
 
 /**
  * @author Devil
- * @date 2021/1/3 6:08 下午
+ * @date 2021/1/6 8:02 下午
  */
-public interface RoleCombineMapper extends BaseMapper<RoleCombine> {
+@Data
+public class PolicyRoleVO {
 
-    List<RoleCombineVO> listVOSByParent(RoleCombineQueryParam param);
+    private Long policyRoleId;
+
+    private Long policyId;
+
+    private Long roleId;
+
 }

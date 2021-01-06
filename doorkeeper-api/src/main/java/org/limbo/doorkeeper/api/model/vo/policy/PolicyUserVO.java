@@ -14,28 +14,20 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
+package org.limbo.doorkeeper.api.model.vo.policy;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 /**
  * @author Devil
- * @date 2020/12/31 4:48 下午
+ * @date 2021/1/6 8:10 下午
  */
 @Data
-@TableName("policy_combine")
-public class PolicyCombine {
+public class PolicyUserVO {
 
-    @TableId(type = IdType.AUTO)
-    private Long policyCombineId;
-    /**
-     * 上级策略
-     */
-    private Long parentId;
+    private Long policyUserId;
 
     private Long policyId;
 
+    private Long userId;
 }
