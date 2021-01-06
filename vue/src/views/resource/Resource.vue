@@ -65,7 +65,10 @@
                 <el-table-column label="操作" align="center" width="100">
                     <template slot-scope="scope">
                         <div class="operations">
-                            <i v-if="!scope.row.isSuperAdmin" class="el-icon-edit" @click="editAccount(scope.row)"></i>
+                            <i class="el-icon-edit" @click="() => {
+                                $router.push({path: '/resource/resource-edit',query: {
+                                    clientId: clientId, resourceId: scope.row.resourceId}
+                                })}"></i>
                         </div>
                     </template>
                 </el-table-column>
@@ -144,7 +147,7 @@ export default {
 
         batchEnable(v) {
             let resourceIds = [];
-            if (this.selectResources && this.selectResources.length > 0 ) {
+            if (this.selectResources && this.selectResources.length > 0) {
                 this.selectResources.forEach(resource => resourceIds.push(resource.resourceId))
             }
             this.startProgress();

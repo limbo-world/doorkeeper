@@ -28,11 +28,17 @@
                             <el-option key="未启用" label="未启用" :value="false"></el-option>
                         </el-select>
                     </el-form-item>
+                    <el-form-item label="类型">
+                        <el-select v-model="queryForm.isEnabled" clearable>
+                            <el-option key="已启用" label="已启用" :value="true"></el-option>
+                            <el-option key="未启用" label="未启用" :value="false"></el-option>
+                        </el-select>
+                    </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="loadResources(1)" size="mini" icon="el-icon-search">查询
                         </el-button>
                         <el-button type="primary" @click="() => {
-                            $router.push({path: '/resource/resource-edit',query: {clientId: clientId}})
+                            $router.push({path: '/policy/policy-edit',query: {clientId: clientId}})
                         }" size="mini" icon="el-icon-circle-plus">新增
                         </el-button>
                         <el-button type="primary" @click="batchEnable(true)" size="mini">批量启用</el-button>
@@ -43,7 +49,7 @@
         </el-header>
 
         <el-main>
-            <el-table :data="resources" size="mini" @selection-change="handleSelectionChange">
+            <el-table :data="policys" size="mini" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="50"></el-table-column>
                 <el-table-column prop="resourceId" label="ID"></el-table-column>
                 <el-table-column prop="name" label="名称"></el-table-column>
@@ -56,7 +62,7 @@
                 <el-table-column label="操作" align="center" width="100">
                     <template slot-scope="scope">
                         <div class="operations">
-                            <i v-if="!scope.row.isSuperAdmin" class="el-icon-edit" @click="editAccount(scope.row)"></i>
+                            <i class="el-icon-edit" @click="editAccount(scope.row)"></i>
                         </div>
                     </template>
                 </el-table-column>
@@ -92,8 +98,8 @@ export default {
                 size: 10,
                 total: -1,
             },
-            resources: [],
-            selectResources: [],
+            policys: [],
+            selectPolicys: [],
         };
     },
 
@@ -103,7 +109,7 @@ export default {
 
     created() {
         pages.resource = this;
-        this.loadResources();
+        this.loadPolicys();
     },
 
 
@@ -115,12 +121,12 @@ export default {
             this.queryForm.total = -1;
         },
 
-        loadResources(current) {
+        loadPolicys(current) {
             if (1 === current) {
                 this.resetPageForm();
             }
             this.startProgress();
-            return this.$ajax.get('/admin/resource', {
+            return this.$ajax.get('/admin/policy', {
                 params: {...this.queryForm, clientId: this.clientId, addRealmId: true}
             }).then(response => {
                 const page = response.data;

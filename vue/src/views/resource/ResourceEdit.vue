@@ -15,7 +15,7 @@
   -->
 
 <template>
-    <el-container>
+    <el-container class="resource-edit-page">
         <el-main>
             <el-form :model="resource" label-width="120px" size="mini" class="edit-form" ref="editForm">
                 <el-form-item label="名称" prop="name">
@@ -25,7 +25,7 @@
                     <el-input type="textarea" v-model="resource.description"></el-input>
                 </el-form-item>
                 <el-form-item label="URI">
-                    <el-row v-for="(uri, idx) in resource.uris">
+                    <el-row v-for="(uri, idx) in resource.uris" class="uri-row">
                         <el-input v-model="uri.uri" style="max-width:700px;"></el-input>
                         <el-button @click="deleteUri(idx)" type="primary" size="mini" icon="el-icon-minus" circle></el-button>
                     </el-row>
@@ -38,7 +38,7 @@
                     注：标签名和标签值用 = 分割，如、颜色=color
                     <el-row>
                         <el-tag v-for="(tag, idx) in resource.tags" :key="idx" closable @close="deleteTag(idx)"
-                                type="success" size="big" :disable-transitions="false">{{tag.k}}={{tag.v}}
+                                type="success" size="big" :disable-transitions="false" class="tag-lab">{{tag.k}}={{tag.v}}
                         </el-tag>
                         <el-input v-model="tagString" size="small" placeholder="输入标签名与标签值" style="width:300px;"
                                   @keyup.enter.native="addTag" @blur="addTag"></el-input>
@@ -49,7 +49,7 @@
                 </el-form-item>
                 <el-form-item>
                     <el-button v-if="!this.resource.resourceId" type="primary" @click="addResource" size="mini">新增</el-button>
-                    <el-button v-if="this.resource.resourceId" type="primary" @click="updateRole" size="mini">保存</el-button>
+                    <el-button v-if="this.resource.resourceId" type="primary" @click="updateResource" size="mini">保存</el-button>
                 </el-form-item>
             </el-form>
         </el-main>
@@ -135,14 +135,28 @@
                 }).finally(() => this.stopProgress());
             },
             addResource() {
-                this.$ajax.post('/admin/resource', {...this.resource, addRealmId: true}).then(response => {
+                this.$ajax.post(`/admin/resource`, {...this.resource, addRealmId: true}).then(response => {
                     this.resource = response.data;
                     this.loadResource();
                 })
             },
             updateResource() {
-                return this.$ajax.put(`/account/${account.accountId}`, account);
+                this.$ajax.put(`/admin/resource/${this.resource.resourceId}`, {...this.resource, addRealmId: true}).then(response => {
+                    this.resource = response.data;
+                    this.loadResource();
+                })
             },
         }
     }
 </script>
+
+<style lang="scss">
+.resource-edit-page {
+    .uri-row {
+        margin-bottom: 10px;
+    }
+    .tag-lab {
+        margin-right: 10px;
+    }
+}
+</style>
