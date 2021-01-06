@@ -40,4 +40,10 @@ public class RoleQueryParam {
 
     @Schema(title = "名称", description = "模糊查询")
     private String dimName;
+
+    @Schema(title = "是否启用")
+    private Boolean isEnabled;
+
+    @Schema(title = "默认添加")
+    private Boolean isDefault;
 }

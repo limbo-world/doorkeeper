@@ -59,6 +59,8 @@ public class RoleService {
     public List<RoleVO> list(RoleQueryParam param) {
         List<Role> roles = roleMapper.selectList(Wrappers.<Role>lambdaQuery()
                 .eq(Role::getRealmId, param.getRealmId())
+                .eq(param.getIsEnabled() != null, Role::getIsEnabled, param.getIsEnabled())
+                .eq(param.getIsDefault() != null, Role::getIsDefault, param.getIsDefault())
                 .like(StringUtils.isNotBlank(param.getName()), Role::getName, param.getName())
                 .eq(param.getClientId() != null, Role::getClientId, param.getClientId())
                 .orderByDesc(Role::getRoleId)

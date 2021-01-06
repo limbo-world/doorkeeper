@@ -5,6 +5,18 @@
                 <el-form-item label="名称">
                     <el-input v-model="queryForm.dimName" placeholder="输入名称"></el-input>
                 </el-form-item>
+                <el-form-item label="启用">
+                    <el-select v-model="queryForm.isEnabled" clearable>
+                        <el-option key="已启用" label="已启用" :value="true"></el-option>
+                        <el-option key="未启用" label="未启用" :value="false"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="默认添加">
+                    <el-select v-model="queryForm.isDefault" clearable>
+                        <el-option key="是" label="是" :value="true"></el-option>
+                        <el-option key="否" label="否" :value="false"></el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="loadRoles" size="mini" icon="el-icon-search">查询</el-button>
                     <el-button type="primary" @click="() =>{dialogOpened = true;}" size="mini"
