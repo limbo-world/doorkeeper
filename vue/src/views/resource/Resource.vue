@@ -26,10 +26,16 @@
                         <el-input v-model="queryForm.dimUri" placeholder="uri"></el-input>
                     </el-form-item>
                     <el-form-item label="标签名">
-                        <el-input v-model="queryForm.dimKey"></el-input>
+                        <el-input v-model="queryForm.dimK"></el-input>
                     </el-form-item>
                     <el-form-item label="标签值">
-                        <el-input v-model="queryForm.dimValue"></el-input>
+                        <el-input v-model="queryForm.dimV"></el-input>
+                    </el-form-item>
+                    <el-form-item label="启用">
+                        <el-select v-model="queryForm.isEnabled" clearable>
+                            <el-option key="已启用" label="已启用" :value="true"></el-option>
+                            <el-option key="未启用" label="未启用" :value="false"></el-option>
+                        </el-select>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="loadResources(1)" size="mini" icon="el-icon-search">查询
@@ -46,9 +52,10 @@
         </el-header>
 
         <el-main>
-            <el-table :data="accounts" size="mini" @selection-change="handleSelectionChange">
+            <el-table :data="resources" size="mini" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="50"></el-table-column>
                 <el-table-column prop="resourceId" label="ID"></el-table-column>
+                <el-table-column prop="name" label="名称"></el-table-column>
                 <el-table-column prop="description" label="描述"></el-table-column>
                 <el-table-column label="是否启用">
                     <template slot-scope="scope">

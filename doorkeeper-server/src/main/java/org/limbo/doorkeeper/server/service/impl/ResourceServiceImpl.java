@@ -173,6 +173,11 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     public Page<ResourceVO> page(ResourceQueryParam param) {
-        return null;
+        long count = resourceMapper.pageVOCount(param);
+        param.setTotal(count);
+        if (count > 0) {
+            param.setData(resourceMapper.pageVOS(param));
+        }
+        return param;
     }
 }

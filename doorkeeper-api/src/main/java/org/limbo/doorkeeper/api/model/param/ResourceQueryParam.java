@@ -18,6 +18,9 @@ package org.limbo.doorkeeper.api.model.param;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.limbo.doorkeeper.api.model.Page;
+import org.limbo.doorkeeper.api.model.vo.ResourceVO;
 
 import javax.validation.constraints.NotNull;
 
@@ -26,7 +29,8 @@ import javax.validation.constraints.NotNull;
  * @date 2021/1/5 4:48 下午
  */
 @Data
-public class ResourceQueryParam {
+@EqualsAndHashCode(callSuper = true)
+public class ResourceQueryParam extends Page<ResourceVO> {
 
     @NotNull(message = "域不能为空")
     @Schema(title = "域", required = true)
@@ -42,6 +46,9 @@ public class ResourceQueryParam {
     @Schema(title = "名称", description = "模糊查询")
     private String dimName;
 
+    @Schema(title = "是否启用")
+    private Boolean isEnabled;
+
     @Schema(title = "uri", description = "精确查询")
     private String uri;
 
@@ -49,15 +56,15 @@ public class ResourceQueryParam {
     private String dimUri;
 
     @Schema(title = "标签名", description = "精确查询")
-    private String key;
+    private String k;
 
     @Schema(title = "标签名", description = "模糊查询")
-    private String dimKey;
+    private String dimK;
 
     @Schema(title = "标签值", description = "精确查询")
-    private String value;
+    private String v;
 
     @Schema(title = "标签值", description = "模糊查询")
-    private String dimValue;
+    private String dimV;
 
 }
