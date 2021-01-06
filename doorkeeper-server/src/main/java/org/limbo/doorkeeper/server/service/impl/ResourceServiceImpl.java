@@ -157,6 +157,20 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
+    @Transactional
+    public void batchUpdate(ResourceBatchUpdateParam param) {
+        switch (param.getType()) {
+            case PUT:
+                resourceMapper.update(null, Wrappers.<Resource>lambdaUpdate()
+                        .set(param.getIsEnabled() != null, Resource::getIsEnabled, param.getIsEnabled())
+                        .in(Resource::getResourceId, param.getResourceIds())
+                );
+            default:
+                break;
+        }
+    }
+
+    @Override
     public ResourceVO get(Long resourceId) {
         Resource resource = resourceMapper.selectById(resourceId);
         List<ResourceTag> resourceTags = resourceTagMapper.selectList(Wrappers.<ResourceTag>lambdaQuery()

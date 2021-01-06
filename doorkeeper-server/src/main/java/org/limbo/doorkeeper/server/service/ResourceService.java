@@ -18,6 +18,7 @@ package org.limbo.doorkeeper.server.service;
 
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.ResourceAddParam;
+import org.limbo.doorkeeper.api.model.param.ResourceBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.ResourceQueryParam;
 import org.limbo.doorkeeper.api.model.param.ResourceUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ResourceVO;
@@ -31,6 +32,8 @@ public interface ResourceService {
     ResourceVO add(ResourceAddParam param);
 
     void update(Long resourceId, ResourceUpdateParam param);
+
+    void batchUpdate(ResourceBatchUpdateParam param);
 
     ResourceVO get(Long resourceId);
 

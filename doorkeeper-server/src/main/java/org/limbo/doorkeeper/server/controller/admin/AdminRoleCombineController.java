@@ -49,9 +49,9 @@ public class AdminRoleCombineController {
         return Response.success(roleCombineService.list(param));
     }
 
-    @Operation(summary = "操作角色组合")
+    @Operation(summary = "批量修改角色组合")
     @PostMapping("/batch")
-    public Response<List<RoleCombineVO>> postBatch(@RequestBody @Validated RoleCombineBatchUpdateParam param) {
+    public Response<List<RoleCombineVO>> batch(@RequestBody @Validated RoleCombineBatchUpdateParam param) {
         roleCombineService.batchUpdate(param);
         return Response.success();
     }

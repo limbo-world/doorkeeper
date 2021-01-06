@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.ResourceAddParam;
+import org.limbo.doorkeeper.api.model.param.ResourceBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.ResourceQueryParam;
 import org.limbo.doorkeeper.api.model.param.ResourceUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ResourceVO;
@@ -49,6 +50,13 @@ public class AdminResourceController {
     @PostMapping
     public Response<ResourceVO> add(@RequestBody @Validated ResourceAddParam param) {
         return Response.success(resourceService.add(param));
+    }
+
+    @Operation(summary = "批量修改资源")
+    @PostMapping("/batch")
+    public Response<Void> batch(@RequestBody @Validated ResourceBatchUpdateParam param) {
+        resourceService.batchUpdate(param);
+        return Response.success();
     }
 
     @Operation(summary = "分页查询资源")

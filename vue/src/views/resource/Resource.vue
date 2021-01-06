@@ -44,8 +44,8 @@
                             $router.push({path: '/resource/resource-edit',query: {clientId: clientId}})
                         }" size="mini" icon="el-icon-circle-plus">新增
                         </el-button>
-                        <el-button type="primary" @click="batchBindAccount(selectAccounts)" size="mini">批量启用</el-button>
-                        <el-button type="primary" @click="batchBindAccount(selectAccounts)" size="mini">批量停用</el-button>
+                        <el-button type="primary" @click="batchEnable(true)" size="mini">批量启用</el-button>
+                        <el-button type="primary" @click="batchEnable(false)" size="mini">批量停用</el-button>
                     </el-form-item>
                 </el-form>
             </el-row>
@@ -141,6 +141,19 @@ export default {
         handleSelectionChange(val) {
             this.selectResources = val;
         },
+
+        batchEnable(v) {
+            let resourceIds = [];
+            if (this.selectResources && this.selectResources.length > 0 ) {
+                this.selectResources.forEach(resource => resourceIds.push(resource.resourceId))
+            }
+            this.startProgress();
+            return this.$ajax.post('/admin/resource/batch', {
+                type: "PUT", isEnabled: v, resourceIds: resourceIds
+            }).then(response => {
+                this.loadResources();
+            }).finally(() => this.stopProgress());
+        }
 
     }
 
