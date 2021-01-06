@@ -17,7 +17,7 @@
 package org.limbo.doorkeeper.server.service;
 
 import org.limbo.doorkeeper.api.model.param.RoleCombineQueryParam;
-import org.limbo.doorkeeper.api.model.param.RoleCombineUpdateParam;
+import org.limbo.doorkeeper.api.model.param.RoleCombineBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.RoleCombineVO;
 
 import java.util.List;
@@ -30,6 +30,6 @@ public interface RoleCombineService {
 
     List<RoleCombineVO> list(RoleCombineQueryParam param);
 
-    void update(RoleCombineUpdateParam param);
+    void batchUpdate(RoleCombineBatchUpdateParam param);
 
 }

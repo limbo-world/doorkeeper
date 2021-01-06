@@ -18,7 +18,7 @@ package org.limbo.doorkeeper.server.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.limbo.doorkeeper.api.model.param.RoleCombineQueryParam;
-import org.limbo.doorkeeper.api.model.param.RoleCombineUpdateParam;
+import org.limbo.doorkeeper.api.model.param.RoleCombineBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.RoleCombineVO;
 import org.limbo.doorkeeper.server.dao.RoleCombineMapper;
 import org.limbo.doorkeeper.server.entity.RoleCombine;
@@ -48,7 +48,7 @@ public class RoleCombineServiceImpl implements RoleCombineService {
 
     @Override
     @Transactional
-    public void update(RoleCombineUpdateParam param) {
+    public void batchUpdate(RoleCombineBatchUpdateParam param) {
         switch (param.getType()) {
             case POST: // 新增
                 List<RoleCombine> roleCombines = new ArrayList<>();

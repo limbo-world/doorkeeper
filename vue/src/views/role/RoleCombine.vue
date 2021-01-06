@@ -99,7 +99,7 @@ export default {
 
         bindRole(v, roleId) {
             const loading = this.$loading();
-            this.$ajax.post('/admin/role-combine', {
+            this.$ajax.post('/admin/role-combine/batch', {
                 parentId: this.roleId,
                 roleIds: [roleId],
                 type: v ? "POST" : "DELETE"

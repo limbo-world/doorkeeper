@@ -29,7 +29,7 @@ import java.util.List;
  * @date 2021/1/5 11:16 上午
  */
 @Data
-public class RoleCombineUpdateParam {
+public class RoleCombineBatchUpdateParam {
 
     @NotNull(message = "父角色不能为空")
     @Schema(title = "父角色", required = true)

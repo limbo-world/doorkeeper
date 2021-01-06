@@ -21,7 +21,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.RoleCombineQueryParam;
-import org.limbo.doorkeeper.api.model.param.RoleCombineUpdateParam;
+import org.limbo.doorkeeper.api.model.param.RoleCombineBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.RoleCombineVO;
 import org.limbo.doorkeeper.server.service.RoleCombineService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,9 +50,9 @@ public class AdminRoleCombineController {
     }
 
     @Operation(summary = "操作角色组合")
-    @PostMapping
-    public Response<List<RoleCombineVO>> post(@RequestBody @Validated RoleCombineUpdateParam param) {
-        roleCombineService.update(param);
+    @PostMapping("/batch")
+    public Response<List<RoleCombineVO>> postBatch(@RequestBody @Validated RoleCombineBatchUpdateParam param) {
+        roleCombineService.batchUpdate(param);
         return Response.success();
     }
 
