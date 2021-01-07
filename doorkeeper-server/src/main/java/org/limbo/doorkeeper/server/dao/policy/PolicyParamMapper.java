@@ -14,37 +14,14 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
+package org.limbo.doorkeeper.server.dao.policy;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.limbo.doorkeeper.server.entity.policy.PolicyParam;
 
 /**
  * @author Devil
- * @date 2020/12/31 2:38 下午
+ * @date 2021/1/6 8:13 下午
  */
-@Data
-@TableName("resource_uri")
-public class ResourceUri {
-
-    @TableId(type = IdType.AUTO)
-    private Long resourceUriId;
-
-    private Long resourceId;
-
-    private Long realmId;
-
-    private Long clientId;
-
-    /**
-     * ant 风格
-     */
-    private String uri;
-    /**
-     * 是否模糊路径
-     */
-    private Boolean isDim;
-
+public interface PolicyParamMapper extends BaseMapper<PolicyParam> {
 }

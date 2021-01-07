@@ -19,7 +19,7 @@
         <el-main>
             <el-form :model="resource" label-width="120px" size="mini" class="edit-form" ref="editForm">
                 <el-form-item label="名称" prop="name">
-                    <el-input v-model="resource.name" :disabled="this.resource.resourceId"></el-input>
+                    <el-input v-model="resource.name" :disabled="resource.resourceId"></el-input>
                 </el-form-item>
                 <el-form-item label="描述">
                     <el-input type="textarea" v-model="resource.description"></el-input>
@@ -48,8 +48,8 @@
                     <el-switch v-model="resource.isEnabled" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
                 </el-form-item>
                 <el-form-item>
-                    <el-button v-if="!this.resource.resourceId" type="primary" @click="addResource" size="mini">新增</el-button>
-                    <el-button v-if="this.resource.resourceId" type="primary" @click="updateResource" size="mini">保存</el-button>
+                    <el-button v-if="!resource.resourceId" type="primary" @click="addResource" size="mini">新增</el-button>
+                    <el-button v-if="resource.resourceId" type="primary" @click="updateResource" size="mini">保存</el-button>
                 </el-form-item>
             </el-form>
         </el-main>

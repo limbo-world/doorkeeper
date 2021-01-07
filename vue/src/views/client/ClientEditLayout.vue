@@ -17,6 +17,7 @@
             <client-edit v-if="tabIndex === 1" :client-id="clientId"></client-edit>
             <role-edit v-if="tabIndex === 2" :client-id="clientId"></role-edit>
             <resource v-if="tabIndex === 3" :client-id="clientId"></resource>
+            <policy v-if="tabIndex === 4" :client-id="clientId"></policy>
         </el-main>
     </el-container>
 
@@ -26,10 +27,11 @@
     import ClientEdit from "./ClientEdit";
     import RoleEdit from "@/views/role/Role";
     import Resource from "@/views/resource/Resource";
+    import Policy from "@/views/policy/Policy";
 
     export default {
         components: {
-            ClientEdit, RoleEdit, Resource
+            Policy, ClientEdit, RoleEdit, Resource
         },
 
         data: function () {

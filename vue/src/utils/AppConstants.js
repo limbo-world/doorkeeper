@@ -14,22 +14,18 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.vo.policy;
+const policyTypes = [
+    {label: '角色', value: 'ROLE'},
+    {label: '用户', value: 'USER'},
+    {label: '参数', value: 'PARAM'}
+];
 
-import lombok.Data;
+const intentions = [
+    {label: '允许', value: 'ALLOW'},
+    {label: '拒绝', value: 'REFUSE'}
+];
 
-/**
- * @author Devil
- * @date 2021/1/6 8:12 下午
- */
-@Data
-public class PolicyTagVO {
-
-    private Long policyTagId;
-
-    private Long policyId;
-
-    private String k;
-
-    private String v;
+export default {
+    policyTypes,
+    intentions
 }

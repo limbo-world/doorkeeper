@@ -70,6 +70,21 @@ export default [
                     },
                 ]
             },
+            {
+                path: '/policy',
+                component: RouterView,
+                redirect: '/policy/policy',
+                children: [
+                    {
+                        path: '/policy/policy',
+                        component: _import('policy/Policy'),
+                    },
+                    {
+                        path: '/policy/policy-edit',
+                        component: _import('policy/PolicyEdit'),
+                    },
+                ]
+            },
         ]
     },
 

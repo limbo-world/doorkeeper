@@ -25,7 +25,9 @@ import org.limbo.doorkeeper.api.model.param.policy.PolicyBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.policy.PolicyQueryParam;
 import org.limbo.doorkeeper.api.model.param.policy.PolicyUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
+import org.limbo.doorkeeper.server.dao.ClientMapper;
 import org.limbo.doorkeeper.server.dao.policy.PolicyMapper;
+import org.limbo.doorkeeper.server.entity.Client;
 import org.limbo.doorkeeper.server.entity.policy.Policy;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
@@ -52,11 +54,20 @@ public class PolicyService {
     private PolicyUserService policyUserService;
 
     @Autowired
-    private PolicyTagService policyTagService;
+    private PolicyParamService policyParamService;
 
+    @Autowired
+    private ClientMapper clientMapper;
+
+    @Transactional
     public PolicyVO add(PolicyAddParam param) {
         Verifies.notNull(param.getType(), "策略类型不存在");
+
+        Client client = clientMapper.selectById(param.getClientId());
+        Verifies.notNull(client, "委托方不存在");
+
         Policy policy = EnhancedBeanUtils.createAndCopy(param, Policy.class);
+        policy.setRealmId(client.getRealmId());
         try {
             policyMapper.insert(policy);
         } catch (DuplicateKeyException e) {
@@ -69,8 +80,8 @@ public class PolicyService {
             case USER:
                 policyUserService.batchSave(policy.getPolicyId(), param.getUsers());
                 break;
-            case TAG:
-                policyTagService.batchSave(policy.getPolicyId(), param.getTags());
+            case PARAM:
+                policyParamService.batchSave(policy.getPolicyId(), param.getParams());
                 break;
         }
         return EnhancedBeanUtils.createAndCopy(policy, PolicyVO.class);
@@ -113,8 +124,8 @@ public class PolicyService {
             case USER:
                 result.setUsers(policyUserService.getByPolicy(policyId));
                 break;
-            case TAG:
-                result.setTags(policyTagService.getByPolicy(policyId));
+            case PARAM:
+                result.setTags(policyParamService.getByPolicy(policyId));
                 break;
         }
 
@@ -132,8 +143,8 @@ public class PolicyService {
             case USER:
                 policyUserService.update(policyId, param.getUsers());
                 break;
-            case TAG:
-                policyTagService.update(policyId, param.getTags());
+            case PARAM:
+                policyParamService.update(policyId, param.getParams());
                 break;
         }
     }

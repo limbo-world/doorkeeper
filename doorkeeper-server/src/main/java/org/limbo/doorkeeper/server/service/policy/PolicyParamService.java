@@ -18,10 +18,10 @@ package org.limbo.doorkeeper.server.service.policy;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
-import org.limbo.doorkeeper.api.model.param.policy.PolicyTagAddParam;
-import org.limbo.doorkeeper.api.model.vo.policy.PolicyTagVO;
-import org.limbo.doorkeeper.server.dao.policy.PolicyTagMapper;
-import org.limbo.doorkeeper.server.entity.policy.PolicyTag;
+import org.limbo.doorkeeper.api.model.param.policy.PolicyParamAddParam;
+import org.limbo.doorkeeper.api.model.vo.policy.PolicyParamVO;
+import org.limbo.doorkeeper.server.dao.policy.PolicyParamMapper;
+import org.limbo.doorkeeper.server.entity.policy.PolicyParam;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.limbo.doorkeeper.server.utils.Verifies;
@@ -39,54 +39,54 @@ import java.util.stream.Collectors;
  * @date 2021/1/6 7:35 下午
  */
 @Service
-public class PolicyTagService {
+public class PolicyParamService {
 
     @Autowired
-    private PolicyTagMapper policyTagMapper;
+    private PolicyParamMapper policyParamMapper;
 
-    public List<PolicyTagVO> getByPolicy(Long policyId) {
-        List<PolicyTag> policyTags = policyTagMapper.selectList(Wrappers.<PolicyTag>lambdaQuery()
-                .eq(PolicyTag::getPolicyId, policyId)
+    public List<PolicyParamVO> getByPolicy(Long policyId) {
+        List<PolicyParam> policyParams = policyParamMapper.selectList(Wrappers.<PolicyParam>lambdaQuery()
+                .eq(PolicyParam::getPolicyId, policyId)
         );
-        return EnhancedBeanUtils.createAndCopyList(policyTags, PolicyTagVO.class);
+        return EnhancedBeanUtils.createAndCopyList(policyParams, PolicyParamVO.class);
     }
 
     @Transactional
-    public void update(Long policyId, List<PolicyTagAddParam> params) {
+    public void update(Long policyId, List<PolicyParamAddParam> params) {
         // 删除
         List<Long> ids = params.stream()
-                .map(PolicyTagAddParam::getPolicyTagId)
+                .map(PolicyParamAddParam::getPolicyParamId)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
-        policyTagMapper.delete(Wrappers.<PolicyTag>lambdaQuery()
-                .notIn(CollectionUtils.isNotEmpty(ids), PolicyTag::getPolicyTagId, ids)
+        policyParamMapper.delete(Wrappers.<PolicyParam>lambdaQuery()
+                .notIn(CollectionUtils.isNotEmpty(ids), PolicyParam::getPolicyParamId, ids)
         );
         // 新增
-        List<PolicyTagAddParam> addParams = params.stream()
-                .filter(obj -> obj.getPolicyTagId() == null)
+        List<PolicyParamAddParam> addParams = params.stream()
+                .filter(obj -> obj.getPolicyParamId() == null)
                 .collect(Collectors.toList());
         if (CollectionUtils.isNotEmpty(addParams)) {
-            List<PolicyTag> list = new ArrayList<>();
-            for (PolicyTagAddParam param : addParams) {
-                PolicyTag po = EnhancedBeanUtils.createAndCopy(param, PolicyTag.class);
+            List<PolicyParam> list = new ArrayList<>();
+            for (PolicyParamAddParam param : addParams) {
+                PolicyParam po = EnhancedBeanUtils.createAndCopy(param, PolicyParam.class);
                 po.setPolicyId(policyId);
                 list.add(po);
             }
-            MyBatisPlusUtils.batchSave(list, PolicyTag.class);
+            MyBatisPlusUtils.batchSave(list, PolicyParam.class);
         }
     }
 
     @Transactional
-    public void batchSave(Long policyId, List<PolicyTagAddParam> params) {
+    public void batchSave(Long policyId, List<PolicyParamAddParam> params) {
         Verifies.verify(CollectionUtils.isNotEmpty(params), "标签列表为空");
-        List<PolicyTag> policyTags = new ArrayList<>();
-        for (PolicyTagAddParam tag : params) {
-            PolicyTag policyTag = new PolicyTag();
-            policyTag.setPolicyId(policyId);
-            policyTag.setK(tag.getK());
-            policyTag.setV(tag.getV());
-            policyTags.add(policyTag);
+        List<PolicyParam> policyParams = new ArrayList<>();
+        for (PolicyParamAddParam tag : params) {
+            PolicyParam policyParam = new PolicyParam();
+            policyParam.setPolicyId(policyId);
+            policyParam.setK(tag.getK());
+            policyParam.setV(tag.getV());
+            policyParams.add(policyParam);
         }
-        MyBatisPlusUtils.batchSave(policyTags, PolicyTag.class);
+        MyBatisPlusUtils.batchSave(policyParams, PolicyParam.class);
     }
 }

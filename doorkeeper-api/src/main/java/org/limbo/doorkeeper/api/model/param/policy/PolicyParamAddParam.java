@@ -14,14 +14,28 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.dao.policy;
+package org.limbo.doorkeeper.api.model.param.policy;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.limbo.doorkeeper.server.entity.policy.PolicyTag;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+
+import javax.validation.constraints.NotBlank;
 
 /**
  * @author Devil
- * @date 2021/1/6 8:13 下午
+ * @date 2021/1/6 5:10 下午
  */
-public interface PolicyTagMapper extends BaseMapper<PolicyTag> {
+@Data
+public class PolicyParamAddParam {
+
+    @Schema(title = "ID", description = "如果存在，表示是一个已经存在")
+    private Long policyParamId;
+
+    @NotBlank(message = "键不能为空")
+    @Schema(title = "键", required = true)
+    private String k;
+
+    @NotBlank(message = "值不能为空")
+    @Schema(title = "值", required = true)
+    private String v;
 }

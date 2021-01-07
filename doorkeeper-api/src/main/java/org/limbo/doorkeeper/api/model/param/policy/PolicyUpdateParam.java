@@ -43,7 +43,7 @@ public class PolicyUpdateParam {
     private Boolean isEnabled;
 
     @Schema(title = "操作策略")
-    private List<PolicyTagAddParam> tags;
+    private List<PolicyParamAddParam> params;
 
     @Schema(title = "角色策略")
     private List<PolicyRoleAddParam>  roles;

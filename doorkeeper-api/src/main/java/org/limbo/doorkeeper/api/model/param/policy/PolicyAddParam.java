@@ -58,8 +58,8 @@ public class PolicyAddParam {
     @Schema(title = "是否启用")
     private Boolean isEnabled;
 
-    @Schema(title = "操作策略")
-    private List<PolicyTagAddParam>  tags;
+    @Schema(title = "参数策略")
+    private List<PolicyParamAddParam>  params;
 
     @Schema(title = "角色策略")
     private List<PolicyRoleAddParam>  roles;

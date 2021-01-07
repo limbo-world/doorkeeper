@@ -17,39 +17,35 @@
 <template>
     <el-container>
         <el-main>
-            <el-form :model="resource" label-width="120px" size="mini" class="edit-form" ref="editForm">
+            <el-form :model="policy" label-width="120px" size="mini" class="edit-form" ref="editForm">
                 <el-form-item label="名称" prop="name">
-                    <el-input v-model="resource.name" :disabled="this.resource.resourceId"></el-input>
+                    <el-input v-model="policy.name" :disabled="policy.policyId"></el-input>
                 </el-form-item>
                 <el-form-item label="描述">
-                    <el-input type="textarea" v-model="resource.description"></el-input>
+                    <el-input type="textarea" v-model="policy.description"></el-input>
                 </el-form-item>
-                <el-form-item label="URI">
-                    <el-row v-for="(uri, idx) in resource.uris">
-                        <el-input v-model="uri.uri" style="max-width:700px;"></el-input>
-                        <el-button @click="deleteUri(idx)" type="primary" size="mini" icon="el-icon-minus" circle></el-button>
-                    </el-row>
-                    <el-row>
-                        <el-input v-model="uriString" style="max-width:700px;"></el-input>
-                        <el-button @click="addUri" type="primary" size="mini" icon="el-icon-plus" circle></el-button>
-                    </el-row>
+                <el-form-item label="类型">
+                    <el-select v-model="policy.type">
+                        <el-option v-for="item in policyTypes" :key="item.value" :label="item.label"
+                                   :value="item.value"></el-option>
+                    </el-select>
                 </el-form-item>
-                <el-form-item label="标签">
-                    注：标签名和标签值用 = 分割，如、颜色=color
-                    <el-row>
-                        <el-tag v-for="(tag, idx) in resource.tags" :key="idx" closable @close="deleteTag(idx)"
-                                type="success" size="big" :disable-transitions="false">{{tag.k}}={{tag.v}}
-                        </el-tag>
-                        <el-input v-model="tagString" size="small" placeholder="输入标签名与标签值" style="width:300px;"
-                                  @keyup.enter.native="addTag" @blur="addTag"></el-input>
-                    </el-row>
+                <template>
+                    <policy-role-edit v-if="policy.type === policyTypes[0].value" @bind-policy-roles="roles => {policy.roles = roles}"
+                                      :policy-id="policy.policyId" :policy-roles="policy.roles"></policy-role-edit>
+                </template>
+                <el-form-item label="执行逻辑">
+                    <el-select v-model="policy.intention">
+                        <el-option v-for="item in intentions" :key="item.value" :label="item.label"
+                                   :value="item.value"></el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="是否启用">
-                    <el-switch v-model="resource.isEnabled" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+                    <el-switch v-model="policy.isEnabled" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
                 </el-form-item>
                 <el-form-item>
-                    <el-button v-if="!this.resource.resourceId" type="primary" @click="addResource" size="mini">新增</el-button>
-                    <el-button v-if="this.resource.resourceId" type="primary" @click="updateRole" size="mini">保存</el-button>
+                    <el-button v-if="!policy.policyId" type="primary" @click="addPolicy" size="mini">新增</el-button>
+                    <el-button v-if="policy.policyId" type="primary" @click="updatePolicy" size="mini">保存</el-button>
                 </el-form-item>
             </el-form>
         </el-main>
@@ -59,89 +55,54 @@
 
 <script>
 
+    import PolicyRoleEdit from "@/views/policy/PolicyRoleEdit";
     import { mapState, mapActions } from 'vuex';
+    import AppConstants from "@/utils/AppConstants";
 
     export default {
+        components: {
+            PolicyRoleEdit
+        },
         data() {
             return {
-                uriString: null,
-                tagString: null,
-                resource: {
-                    uris: [],
-                    tags: []
-                }
+                policy: {
+                    roles: []
+                },
+                policyTypes: AppConstants.policyTypes,
+                intentions: AppConstants.intentions,
             };
         },
 
         created() {
-            pages.resourceEdit = this;
-            this.resource.clientId = this.$route.query.clientId;
-            if (this.$route.query.resourceId) {
-                this.resource.resourceId = this.$route.query.resourceId;
-                this.loadResource();
+            pages.policyEdit = this;
+            this.policy.clientId = this.$route.query.clientId;
+            if (this.$route.query.policyId) {
+                this.policy.policyId = this.$route.query.policyId;
+                this.loadPolicy();
             }
         },
 
         methods: {
             ...mapActions('ui', ['startProgress', 'stopProgress']),
 
-            // ========== uri相关 ==========
-            addUri() {
-                if (!this.uriString || this.uriString.length <= 0) {
-                    return
-                }
-                // 检测是否已经存在
-                for (let uri of this.resource.uris) {
-                    if (uri.uri === this.uriString) {
-                        return
-                    }
-                }
-                this.resource.uris.push({uri: this.uriString})
-                this.uriString = null
-            },
-            deleteUri(idx) {
-                this.resource.uris.splice(idx, 1)
-            },
-
-            // ========== 标签相关 ==========
-            addTag() {
-                if (!this.tagString || this.tagString.indexOf("=") < 0) {
-                    return
-                }
-                let split = this.tagString.split("=");
-                let key = split[0];
-                let value = split[1];
-                if (key.length <= 0 || value <= 0) {
-                    return
-                }
-                // 检测是否已经存在
-                for (let tag of this.resource.tags) {
-                    if (tag.k === key && tag.v === value) {
-                        return
-                    }
-                }
-                this.resource.tags.push({k: key, v: value})
-                this.tagString = null
-            },
-            deleteTag(idx) {
-                this.resource.tags.splice(idx, 1)
-            },
-
             // ========== 资源相关 ==========
-            loadResource() {
+            loadPolicy() {
                 this.startProgress({ speed: 'fast' });
-                this.$ajax.get(`/admin/resource/${this.resource.resourceId}`).then(response => {
-                    this.resource = response.data;
+                this.$ajax.get(`/admin/policy/${this.policy.policyId}`).then(response => {
+                    this.policy = response.data;
                 }).finally(() => this.stopProgress());
             },
-            addResource() {
-                this.$ajax.post('/admin/resource', {...this.resource, addRealmId: true}).then(response => {
-                    this.resource = response.data;
-                    this.loadResource();
+            addPolicy() {
+                this.$ajax.post('/admin/policy', {...this.policy, addRealmId: true}).then(response => {
+                    this.policy = response.data;
+                    this.loadPolicy();
                 })
             },
-            updateResource() {
-                return this.$ajax.put(`/account/${account.accountId}`, account);
+            updatePolicy() {
+                this.$ajax.put(`/admin/policy/${this.policy.policyId}`, {...this.policy, addRealmId: true}).then(response => {
+                    this.policy = response.data;
+                    this.loadPolicy();
+                })
             },
         }
     }

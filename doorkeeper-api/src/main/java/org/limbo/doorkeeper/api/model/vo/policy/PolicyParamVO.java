@@ -14,28 +14,22 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param.policy;
+package org.limbo.doorkeeper.api.model.vo.policy;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-
-import javax.validation.constraints.NotBlank;
 
 /**
  * @author Devil
- * @date 2021/1/6 5:10 下午
+ * @date 2021/1/6 8:12 下午
  */
 @Data
-public class PolicyTagAddParam {
+public class PolicyParamVO {
 
-    @Schema(title = "ID", description = "如果存在，表示是一个已经存在")
     private Long policyTagId;
 
-    @NotBlank(message = "标签名不能为空")
-    @Schema(title = "标签名", required = true)
+    private Long policyId;
+
     private String k;
 
-    @NotBlank(message = "标签值不能为空")
-    @Schema(title = "标签值", required = true)
     private String v;
 }

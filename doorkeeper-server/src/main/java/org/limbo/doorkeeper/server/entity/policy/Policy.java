@@ -17,11 +17,13 @@
 package org.limbo.doorkeeper.server.entity.policy;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.handlers.MybatisEnumTypeHandler;
 import lombok.Data;
-import org.limbo.doorkeeper.api.constants.Logic;
 import org.limbo.doorkeeper.api.constants.Intention;
+import org.limbo.doorkeeper.api.constants.Logic;
 import org.limbo.doorkeeper.api.constants.PolicyType;
 
 import java.util.Date;
@@ -55,6 +57,7 @@ public class Policy {
     /**
      * 只有组合类型会有
      */
+    @TableField(typeHandler = MybatisEnumTypeHandler.class)
     private Logic logic;
     /**
      * 执行逻辑
@@ -64,7 +67,6 @@ public class Policy {
      * 是否启用
      */
     private Boolean isEnabled;
-
 
     private Date createTime;
 

@@ -71,14 +71,6 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     /**
-     * 用于记录业务日志
-     */
-//    @Bean
-//    public PLogAspect pLogAspect() {
-//        return new PLogAspect();
-//    }
-
-    /**
      * MyBatisPlus分页插件
      */
     @Bean
@@ -90,34 +82,5 @@ public class WebConfig implements WebMvcConfigurer {
     public SessionInterceptor sessionInterceptor() {
         return new SessionInterceptor(sessionDAO);
     }
-
-//    @Bean
-//    public AuthenticationInterceptor authenticationInterceptor() {
-//        List<String> adminPath = new ArrayList<>();
-//        adminPath.add("/project/**");
-//        adminPath.add("/project-account/**");
-//        return new AuthenticationInterceptor(sessionDAO, adminPath);
-//    }
-
-//    @Override
-//    public void addInterceptors(InterceptorRegistry registry) {
-//
-//        registry.addInterceptor(sessionInterceptor())
-//                .excludePathPatterns("/login/**")
-//                .excludePathPatterns("/swagger-ui/**")
-//                .excludePathPatterns("/api-docs/**")
-//                .excludePathPatterns("/api-docs.html")
-//                .excludePathPatterns("/error");
-//
-//        registry.addInterceptor(authenticationInterceptor())
-//                .excludePathPatterns("/login/**")
-//                .excludePathPatterns("/session/**")
-//                .excludePathPatterns("/auth/check")
-//                .excludePathPatterns("/swagger-ui/**")
-//                .excludePathPatterns("/api-docs/**")
-//                .excludePathPatterns("/api-docs.html")
-//                .excludePathPatterns("/error");
-//
-//    }
 
 }

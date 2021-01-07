@@ -78,31 +78,19 @@ public class ResourceService {
         }
 
         // 资源uri
-        if (CollectionUtils.isNotEmpty(param.getUris())) {
-            List<ResourceUri> uris = new ArrayList<>();
-            for (ResourceUriAddParam uriParam : param.getUris()) {
-                ResourceUri uri = EnhancedBeanUtils.createAndCopy(uriParam, ResourceUri.class);
-                uri.setResourceId(resource.getResourceId());
-                uris.add(uri);
-            }
-            MyBatisPlusUtils.batchSave(uris, ResourceUri.class);
-        }
+        batchSaveUri(resource.getResourceId(), resource.getRealmId(), resource.getClientId(), param.getUris());
         // 资源标签
-        if (CollectionUtils.isNotEmpty(param.getTags())) {
-            List<ResourceTag> tags = new ArrayList<>();
-            for (ResourceTagAddParam tagParam : param.getTags()) {
-                ResourceTag tag = EnhancedBeanUtils.createAndCopy(tagParam, ResourceTag.class);
-                tag.setResourceId(resource.getResourceId());
-                tags.add(tag);
-            }
-            MyBatisPlusUtils.batchSave(tags, ResourceTag.class);
-        }
+        batchSaveTag(resource.getResourceId(), resource.getRealmId(), resource.getClientId(), param.getTags());
 
         return EnhancedBeanUtils.createAndCopy(resource, ResourceVO.class);
     }
 
     @Transactional
     public void update(Long resourceId, ResourceUpdateParam param) {
+        Resource resource = resourceMapper.selectById(resourceId);
+        Verifies.notNull(resource, "资源不存在");
+
+        // 更新
         resourceMapper.update(null, Wrappers.<Resource>lambdaUpdate()
                 .set(param.getDescription() != null, Resource::getDescription, param.getDescription())
                 .set(param.getIsEnabled() != null, Resource::getIsEnabled, param.getIsEnabled())
@@ -121,15 +109,7 @@ public class ResourceService {
         List<ResourceUriAddParam> uriParams = param.getUris().stream()
                 .filter(uri -> uri.getResourceUriId() == null)
                 .collect(Collectors.toList());
-        if (CollectionUtils.isNotEmpty(uriParams)) {
-            List<ResourceUri> uris = new ArrayList<>();
-            for (ResourceUriAddParam uriParam : uriParams) {
-                ResourceUri uri = EnhancedBeanUtils.createAndCopy(uriParam, ResourceUri.class);
-                uri.setResourceId(resourceId);
-                uris.add(uri);
-            }
-            MyBatisPlusUtils.batchSave(uris, ResourceUri.class);
-        }
+        batchSaveUri(resource.getResourceId(), resource.getRealmId(), resource.getClientId(), uriParams);
         // 删除tag
         List<Long> tagIds = param.getTags().stream()
                 .map(ResourceTagAddParam::getResourceTagId)
@@ -142,15 +122,7 @@ public class ResourceService {
         List<ResourceTagAddParam> tagParams = param.getTags().stream()
                 .filter(tag -> tag.getResourceTagId() == null)
                 .collect(Collectors.toList());
-        if (CollectionUtils.isNotEmpty(tagParams)) {
-            List<ResourceTag> tags = new ArrayList<>();
-            for (ResourceTagAddParam tagParam : tagParams) {
-                ResourceTag tag = EnhancedBeanUtils.createAndCopy(tagParam, ResourceTag.class);
-                tag.setResourceId(resourceId);
-                tags.add(tag);
-            }
-            MyBatisPlusUtils.batchSave(tags, ResourceTag.class);
-        }
+        batchSaveTag(resource.getResourceId(), resource.getRealmId(), resource.getClientId(), tagParams);
     }
 
     @Transactional
@@ -187,6 +159,35 @@ public class ResourceService {
             param.setData(resourceMapper.pageVOS(param));
         }
         return param;
+    }
+
+    private void batchSaveUri(Long resourceId, Long realmId, Long clientId, List<ResourceUriAddParam> params) {
+        if (CollectionUtils.isNotEmpty(params)) {
+            List<ResourceUri> uris = new ArrayList<>();
+            for (ResourceUriAddParam uriParam : params) {
+                ResourceUri uri = EnhancedBeanUtils.createAndCopy(uriParam, ResourceUri.class);
+                uri.setResourceId(resourceId);
+                uri.setRealmId(realmId);
+                uri.setClientId(clientId);
+                // todo dim
+                uris.add(uri);
+            }
+            MyBatisPlusUtils.batchSave(uris, ResourceUri.class);
+        }
+    }
+
+    private void batchSaveTag(Long resourceId, Long realmId, Long clientId, List<ResourceTagAddParam> params) {
+        if (CollectionUtils.isNotEmpty(params)) {
+            List<ResourceTag> tags = new ArrayList<>();
+            for (ResourceTagAddParam tagParam : params) {
+                ResourceTag tag = EnhancedBeanUtils.createAndCopy(tagParam, ResourceTag.class);
+                tag.setResourceId(resourceId);
+                tag.setRealmId(realmId);
+                tag.setClientId(clientId);
+                tags.add(tag);
+            }
+            MyBatisPlusUtils.batchSave(tags, ResourceTag.class);
+        }
     }
 
 }

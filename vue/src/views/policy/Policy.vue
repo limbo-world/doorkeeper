@@ -29,13 +29,13 @@
                         </el-select>
                     </el-form-item>
                     <el-form-item label="类型">
-                        <el-select v-model="queryForm.isEnabled" clearable>
+                        <el-select v-model="queryForm.type" clearable>
                             <el-option key="已启用" label="已启用" :value="true"></el-option>
                             <el-option key="未启用" label="未启用" :value="false"></el-option>
                         </el-select>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="loadResources(1)" size="mini" icon="el-icon-search">查询
+                        <el-button type="primary" @click="loadPolicys(1)" size="mini" icon="el-icon-search">查询
                         </el-button>
                         <el-button type="primary" @click="() => {
                             $router.push({path: '/policy/policy-edit',query: {clientId: clientId}})
@@ -72,7 +72,7 @@
         <el-footer>
             <el-pagination background layout="prev, pager, next" :total="queryForm.total"
                            :current-page.sync="queryForm.current"
-                           :page-size="queryForm.size" @current-change="loadResources">
+                           :page-size="queryForm.size" @current-change="loadPolicys">
             </el-pagination>
         </el-footer>
 

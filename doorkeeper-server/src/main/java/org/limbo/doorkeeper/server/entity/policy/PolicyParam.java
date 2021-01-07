@@ -21,15 +21,15 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 /**
- * 基于标签的策略
+ * 基于参数的策略
  *
  * @author Devil
  * @date 2021/1/5 4:02 下午
  */
 @Data
-public class PolicyTag {
+public class PolicyParam {
     @TableId(type = IdType.AUTO)
-    private Long policyTagId;
+    private Long policyParamId;
 
     private Long policyId;
     /**
