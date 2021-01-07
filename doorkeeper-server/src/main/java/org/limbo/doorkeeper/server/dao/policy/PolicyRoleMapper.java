@@ -17,11 +17,18 @@
 package org.limbo.doorkeeper.server.dao.policy;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+import org.limbo.doorkeeper.api.model.vo.policy.PolicyRoleVO;
 import org.limbo.doorkeeper.server.entity.policy.PolicyRole;
+
+import java.util.List;
 
 /**
  * @author Devil
  * @date 2021/1/3 6:08 下午
  */
 public interface PolicyRoleMapper extends BaseMapper<PolicyRole> {
+
+    List<PolicyRoleVO> listVOSByPolicyId(@Param("policyId") Long policyId);
+
 }

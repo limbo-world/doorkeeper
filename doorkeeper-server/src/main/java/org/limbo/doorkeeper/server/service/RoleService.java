@@ -17,7 +17,6 @@
 package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.exception.ParamException;
 import org.limbo.doorkeeper.api.model.param.role.RoleAddParam;
 import org.limbo.doorkeeper.api.model.param.role.RoleQueryParam;
@@ -57,15 +56,7 @@ public class RoleService {
     }
 
     public List<RoleVO> list(RoleQueryParam param) {
-        List<Role> roles = roleMapper.selectList(Wrappers.<Role>lambdaQuery()
-                .eq(Role::getRealmId, param.getRealmId())
-                .eq(param.getIsEnabled() != null, Role::getIsEnabled, param.getIsEnabled())
-                .eq(param.getIsDefault() != null, Role::getIsDefault, param.getIsDefault())
-                .like(StringUtils.isNotBlank(param.getName()), Role::getName, param.getName())
-                .eq(param.getClientId() != null, Role::getClientId, param.getClientId())
-                .orderByDesc(Role::getRoleId)
-        );
-        return EnhancedBeanUtils.createAndCopyList(roles, RoleVO.class);
+        return roleMapper.listVOS(param);
     }
 
     public RoleVO get(Long roleId) {

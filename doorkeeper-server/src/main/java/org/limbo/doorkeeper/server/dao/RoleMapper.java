@@ -17,11 +17,17 @@
 package org.limbo.doorkeeper.server.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.limbo.doorkeeper.api.model.param.role.RoleQueryParam;
+import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.server.entity.Role;
+
+import java.util.List;
 
 /**
  * @author Devil
  * @date 2021/1/3 6:08 下午
  */
 public interface RoleMapper extends BaseMapper<Role> {
+
+    List<RoleVO> listVOS(RoleQueryParam param);
 }

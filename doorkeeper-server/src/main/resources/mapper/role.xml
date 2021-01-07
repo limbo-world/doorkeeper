@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2020-2024 Limbo Team (https://github.com/limbo-world).
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ 	http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.limbo.doorkeeper.server.dao.RoleMapper" >
+
+    <resultMap id="RoleVO" type="org.limbo.doorkeeper.api.model.vo.RoleVO">
+        <result column="role_id" property="roleId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="realm_id" property="realmId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="client_id" property="clientId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="name" property="name" jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result column="realm_name" property="realmName" jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result column="client_name" property="clientName" jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result column="description" property="description" jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result column="is_default" property="isDefault" jdbcType="BIT" javaType="java.lang.Boolean" />
+        <result column="is_enabled" property="isEnabled" jdbcType="BIT" javaType="java.lang.Boolean" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+    </resultMap>
+
+    <select id="listVOS" resultType="org.limbo.doorkeeper.api.model.vo.RoleVO">
+        select r.*, rm.name as realm_name, c.name as client_name
+        from role r
+        left join realm rm on rm.realm_id = r.realm_id
+        left join client c on c.client_id = r.client_id
+        <where>
+            and r.realm_id = #{realmId}
+            and r.client_id = #{clientId}
+            <if test="isEnabled != null">
+                and r.is_enabled = #{isEnabled}
+            </if>
+            <if test="isDefault != null">
+                and r.is_default = #{isDefault}
+            </if>
+            <if test="name != null and name != ''">
+                and r.name = #{name}
+            </if>
+            <if test="dimName != null and dimName != ''">
+                <bind name="dimName" value="'%' + dimName + '%'"/>
+                and r.name like #{dimName}
+            </if>
+        </where>
+    </select>
+
+</mapper>

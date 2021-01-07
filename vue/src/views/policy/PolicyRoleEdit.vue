@@ -34,19 +34,10 @@
                 </el-form>
             </el-header>
 
-            <el-table :data="roles" size="mini">
-                <el-table-column prop="roleId" label="ID"></el-table-column>
-                <el-table-column prop="name" label="名称"></el-table-column>
-                <el-table-column prop="description" label="描述"></el-table-column>
-                <el-table-column label="是否绑定">
-                    <template slot-scope="scope">
-                        <el-switch :value="scope.row.bind ? true : false"
-                                   @change="v => {bindRole(v, scope.row.roleId)}"
-                                   active-color="#13ce66"
-                                   inactive-color="#ff4949"></el-switch>
-                    </template>
-                </el-table-column>
-            </el-table>
+            <el-main>
+                <el-transfer v-model="selectRoleIds" :data="roles" :titles="['未绑定', '未绑定']"
+                             @change="changeRole"></el-transfer>
+            </el-main>
 
         </el-container>
     </el-form-item>
@@ -74,12 +65,19 @@ export default {
             },
             clients: [],
             roles: [],
+            selectRoleIds: [],
         };
     },
 
     created() {
         pages.policyRoleEdit = this;
         this.loadClients();
+        // 初始化数据
+        this.policyRoles.forEach(policyRole => {
+            policyRole.key = policyRole.roleId;
+            policyRole.label = policyRole.clientName ? policyRole.clientName + "  " + policyRole.name : "域  " + policyRole.name;
+        })
+        this.concatRoles([], []);
     },
 
     methods: {
@@ -99,32 +97,66 @@ export default {
                     ...this.queryForm, addRealmId: true
                 }
             }).then(response => {
-                this.roles = response.data;
-                this.roleBindShow()
+                let roles = response.data;
+                let roleIds = [];
+                for (let role of roles) {
+                    role.key = role.roleId;
+                    role.label = role.clientName ? role.clientName + "  " + role.name : "域  " + role.name;
+                    roleIds.push(role.roleId);
+                }
+                this.concatRoles(roles, roleIds);
             });
         },
-        bindRole(v, roleId) {
-            this.policyRoles = this.policyRoles.filter(policyRole => policyRole.roleId !== roleId)
-            if (v) { // 新增
-                this.policyRoles.push({roleId: roleId})
+        changeRole(roleIds, d, mvRoleIds) {
+            // policyRoles是所有选择的 他不一定在roles里面
+            if (d === 'right') {
+                // 主要用于去除重复
+                this.policyRoles = this.policyRoles.filter(policyRole => mvRoleIds.indexOf(policyRole.roleId) < 0)
+                // 获取新增的role
+                let roles = this.roles.filter(role => mvRoleIds.indexOf(role.roleId) >= 0)
+                this.policyRoles = this.policyRoles.concat(roles)
+            } else {
+                // 删除里面的
+                this.policyRoles = this.policyRoles.filter(policyRole => mvRoleIds.indexOf(policyRole.roleId) < 0)
             }
-            this.roleBindShow()
             this.$emit('bind-policy-roles', this.policyRoles)
         },
-        roleBindShow() {
-            if (this.roles && this.roles.length > 0) {
-                for (let i = 0; i < this.roles.length; i++) {
-                    this.$set(this.roles, i, {...this.roles[i], bind: false})
-                }
-                for (let policyRole of this.policyRoles) {
-                    for (let i = 0; i < this.roles.length; i++) {
-                        if (policyRole.roleId === this.roles[i].roleId) {
-                            this.$set(this.roles, i, {...this.roles[i], bind: true})
-                        }
-                    }
-                }
-            }
+        concatRoles(roles, roleIds) {
+            // 把不存在的加入进来
+            let policyRoles = this.policyRoles.filter(policyRole => roleIds.indexOf(policyRole.roleId) < 0)
+            roles = roles.concat(policyRoles);
+            this.roles = roles;
+            // 每次查询完，需要把已有的加入
+            this.selectRoleIds = this.policyRoles.map(policyRole => policyRole.roleId)
         }
     }
 }
 </script>
+
+<style lang="scss">
+.policy-role-edit-page {
+    .el-transfer {
+        .el-transfer-panel {
+            width: 300px;
+            .el-transfer-panel__item {
+                margin-left: 0;
+                display: block!important;
+            }
+        }
+    }
+
+    // 本来考虑两个穿梭框隐藏掉右边元素达到查询的效果
+    //.el-transfer {
+    //    display: inline-block;
+    //    .el-transfer__buttons {
+    //        display: none;
+    //    }
+    //    .el-transfer-panel {
+    //        width: 300px;
+    //    }
+    //    >div.el-transfer-panel:last-of-type {
+    //        display: none;
+    //    }
+    //}
+}
+</style>

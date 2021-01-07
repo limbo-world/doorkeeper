@@ -20,21 +20,21 @@ package org.limbo.doorkeeper.api.constants;
  * @author Devil
  * @date 2020/12/31 3:01 下午
  */
-public enum BatchMethod implements IEnum<String> {
-
-    GET, POST, PUT, DELETE;
-
-    @Override
-    public String getValue() {
-        return toString();
-    }
-
-    public static BatchMethod parse(String p) {
-        for (BatchMethod value : values()) {
-            if (value.is(p)) {
-                return value;
-            }
-        }
-        return null;
-    }
+public enum BatchMethod {
+    /**
+     * 获取
+     */
+    GET,
+    /**
+     * 新增
+     */
+    POST,
+    /**
+     * 修改
+     */
+    PUT,
+    /**
+     * 删除
+     */
+    DELETE;
 }

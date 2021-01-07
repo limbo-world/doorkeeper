@@ -51,7 +51,7 @@
         <el-main>
             <el-table :data="policys" size="mini" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="50"></el-table-column>
-                <el-table-column prop="resourceId" label="ID"></el-table-column>
+                <el-table-column prop="policyId" label="ID"></el-table-column>
                 <el-table-column prop="name" label="名称"></el-table-column>
                 <el-table-column prop="description" label="描述"></el-table-column>
                 <el-table-column label="是否启用">
@@ -62,7 +62,9 @@
                 <el-table-column label="操作" align="center" width="100">
                     <template slot-scope="scope">
                         <div class="operations">
-                            <i class="el-icon-edit" @click="editAccount(scope.row)"></i>
+                            <i class="el-icon-edit" @click="() => {
+                                $router.push({path: '/policy/policy-edit',query: {clientId: clientId, policyId: scope.row.policyId}})
+                            }"></i>
                         </div>
                     </template>
                 </el-table-column>
@@ -131,7 +133,7 @@ export default {
             }).then(response => {
                 const page = response.data;
                 this.queryForm.total = page.total >= 0 ? page.total : this.queryForm.total;
-                this.resources = page.data;
+                this.policys = page.data;
             }).finally(() => this.stopProgress());
         },
 

@@ -16,6 +16,8 @@
 
 package org.limbo.doorkeeper.api.constants;
 
+import com.baomidou.mybatisplus.core.enums.IEnum;
+
 /**
  * 策略类型
  *
@@ -52,7 +54,7 @@ public enum PolicyType implements IEnum<String> {
 
     public static PolicyType parse(String p) {
         for (PolicyType value : values()) {
-            if (value.is(p)) {
+            if (value.getValue().equalsIgnoreCase(p)) {
                 return value;
             }
         }

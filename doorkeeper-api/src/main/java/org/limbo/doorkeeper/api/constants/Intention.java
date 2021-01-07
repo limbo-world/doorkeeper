@@ -16,6 +16,8 @@
 
 package org.limbo.doorkeeper.api.constants;
 
+import com.baomidou.mybatisplus.core.enums.IEnum;
+
 /**
  * 意图
  *
@@ -42,7 +44,7 @@ public enum Intention implements IEnum<String> {
 
     public static Intention parse(String p) {
         for (Intention value : values()) {
-            if (value.is(p)) {
+            if (value.getValue().equalsIgnoreCase(p)) {
                 return value;
             }
         }

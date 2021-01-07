@@ -30,7 +30,6 @@ public class RoleVO {
 
     private Long roleId;
 
-    @Schema(title = "属于哪个realm")
     private Long realmId;
 
     @Schema(title = "属于哪个委托方", description = "如果为0表示为域角色")
@@ -38,6 +37,12 @@ public class RoleVO {
 
     @Schema(title = "名称")
     private String name;
+
+    @Schema(title = "域名称")
+    private String realmName;
+
+    @Schema(title = "委托方名称")
+    private String clientName;
 
     @Schema(title = "描述")
     private String description;

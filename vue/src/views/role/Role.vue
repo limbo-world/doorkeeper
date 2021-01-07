@@ -89,7 +89,7 @@ export default {
     props: {
         clientId: {
             type: Number,
-            default: null
+            default: 0
         },
     },
 

@@ -16,6 +16,8 @@
 
 package org.limbo.doorkeeper.api.constants;
 
+import com.baomidou.mybatisplus.core.enums.IEnum;
+
 /**
  * 逻辑
  *
@@ -52,7 +54,7 @@ public enum Logic implements IEnum<String> {
 
     public static Logic parse(String p) {
         for (Logic value : values()) {
-            if (value.is(p)) {
+            if (value.getValue().equalsIgnoreCase(p)) {
                 return value;
             }
         }

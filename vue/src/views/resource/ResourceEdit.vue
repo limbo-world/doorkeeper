@@ -151,12 +151,12 @@
 </script>
 
 <style lang="scss">
-.resource-edit-page {
-    .uri-row {
-        margin-bottom: 10px;
+    .resource-edit-page {
+        .uri-row {
+            margin-bottom: 10px;
+        }
+        .tag-lab {
+            margin-right: 10px;
+        }
     }
-    .tag-lab {
-        margin-right: 10px;
-    }
-}
 </style>

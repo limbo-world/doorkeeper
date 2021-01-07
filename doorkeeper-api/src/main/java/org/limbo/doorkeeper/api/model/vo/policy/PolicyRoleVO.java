@@ -16,6 +16,7 @@
 
 package org.limbo.doorkeeper.api.model.vo.policy;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -30,5 +31,18 @@ public class PolicyRoleVO {
     private Long policyId;
 
     private Long roleId;
+
+    private Long realmId;
+
+    private Long clientId;
+
+    @Schema(title = "角色名称")
+    private String name;
+
+    @Schema(title = "域名称")
+    private String realmName;
+
+    @Schema(title = "委托方名称")
+    private String clientName;
 
 }

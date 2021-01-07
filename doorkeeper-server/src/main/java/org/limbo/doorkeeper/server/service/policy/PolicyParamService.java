@@ -31,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -54,12 +53,8 @@ public class PolicyParamService {
     @Transactional
     public void update(Long policyId, List<PolicyParamAddParam> params) {
         // 删除
-        List<Long> ids = params.stream()
-                .map(PolicyParamAddParam::getPolicyParamId)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
         policyParamMapper.delete(Wrappers.<PolicyParam>lambdaQuery()
-                .notIn(CollectionUtils.isNotEmpty(ids), PolicyParam::getPolicyParamId, ids)
+                .eq(PolicyParam::getPolicyId, policyId)
         );
         // 新增
         List<PolicyParamAddParam> addParams = params.stream()

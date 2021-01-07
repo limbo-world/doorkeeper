@@ -136,6 +136,15 @@ public class PolicyService {
     public void update(Long policyId, PolicyUpdateParam param) {
         Policy policy = policyMapper.selectById(policyId);
         Verifies.notNull(policy, "策略不存在");
+
+        policyMapper.update(null, Wrappers.<Policy>lambdaUpdate()
+                .set(param.getDescription() != null, Policy::getDescription, param.getDescription())
+                .set(param.getLogic() != null, Policy::getLogic, param.getLogic())
+                .set(param.getIntention() != null, Policy::getIntention, param.getIntention())
+                .set(param.getIsEnabled() != null, Policy::getIsEnabled, param.getIsEnabled())
+                .eq(Policy::getPolicyId, policyId)
+        );
+
         switch (policy.getType()) {
             case ROLE:
                 policyRoleService.update(policyId, param.getRoles());

@@ -19,6 +19,7 @@ springdoc:
 # DAO层基于MyBatisPlus
 mybatis-plus:
   mapper-locations: classpath*:mapper/*.xml
+  type-enums-package: org.limbo.doorkeeper.api.constants
 
 # log
 logging:

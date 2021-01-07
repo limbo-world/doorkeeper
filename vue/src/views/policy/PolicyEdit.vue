@@ -99,8 +99,7 @@
                 })
             },
             updatePolicy() {
-                this.$ajax.put(`/admin/policy/${this.policy.policyId}`, {...this.policy, addRealmId: true}).then(response => {
-                    this.policy = response.data;
+                this.$ajax.put(`/admin/policy/${this.policy.policyId}`, {...this.policy}).then(response => {
                     this.loadPolicy();
                 })
             },

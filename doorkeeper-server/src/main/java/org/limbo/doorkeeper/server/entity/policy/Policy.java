@@ -57,7 +57,6 @@ public class Policy {
     /**
      * 只有组合类型会有
      */
-    @TableField(typeHandler = MybatisEnumTypeHandler.class)
     private Logic logic;
     /**
      * 执行逻辑

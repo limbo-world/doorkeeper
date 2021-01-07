@@ -31,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -45,21 +44,14 @@ public class PolicyRoleService {
     private PolicyRoleMapper policyRoleMapper;
 
     public List<PolicyRoleVO> getByPolicy(Long policyId) {
-        List<PolicyRole> policyRoles = policyRoleMapper.selectList(Wrappers.<PolicyRole>lambdaQuery()
-                .eq(PolicyRole::getPolicyId, policyId)
-        );
-        return EnhancedBeanUtils.createAndCopyList(policyRoles, PolicyRoleVO.class);
+        return policyRoleMapper.listVOSByPolicyId(policyId);
     }
 
     @Transactional
     public void update(Long policyId, List<PolicyRoleAddParam> params) {
         // 删除
-        List<Long> ids = params.stream()
-                .map(PolicyRoleAddParam::getPolicyRoleId)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
         policyRoleMapper.delete(Wrappers.<PolicyRole>lambdaQuery()
-                .notIn(CollectionUtils.isNotEmpty(ids), PolicyRole::getPolicyRoleId, ids)
+                .eq(PolicyRole::getPolicyId, policyId)
         );
         // 新增
         List<PolicyRoleAddParam> addParams = params.stream()
