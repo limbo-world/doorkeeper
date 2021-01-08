@@ -35,6 +35,10 @@ Vue.use(CacheInstaller);
 import DirectivesInstaller from './libs/directives';
 Vue.use(DirectivesInstaller);
 
+// 常量
+import AppConstants from "@/utils/AppConstants";
+Vue.prototype.$constants = AppConstants;
+
 // 通过$set变更data中变量的属性，达到强制刷新渲染的效果，性能不高，慎用
 Vue.prototype.$refreshData = function(variable) {
     this.$delete(variable, '$refreshTicker');

@@ -108,6 +108,7 @@ public class PolicyService {
                 .eq(StringUtils.isNotBlank(param.getName()), Policy::getName, param.getName())
                 .like(StringUtils.isNotBlank(param.getDimName()), Policy::getName, param.getDimName())
                 .eq(param.getIsEnabled() != null, Policy::getIsEnabled, param.getIsEnabled())
+                .eq(param.getType() != null, Policy::getType, param.getType())
                 .orderByDesc(Policy::getPolicyId)
         );
 

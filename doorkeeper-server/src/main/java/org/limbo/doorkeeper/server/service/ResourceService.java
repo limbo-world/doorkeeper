@@ -128,7 +128,7 @@ public class ResourceService {
     @Transactional
     public void batchUpdate(ResourceBatchUpdateParam param) {
         switch (param.getType()) {
-            case PUT:
+            case UPDATE:
                 resourceMapper.update(null, Wrappers.<Resource>lambdaUpdate()
                         .set(param.getIsEnabled() != null, Resource::getIsEnabled, param.getIsEnabled())
                         .in(Resource::getResourceId, param.getResourceIds())

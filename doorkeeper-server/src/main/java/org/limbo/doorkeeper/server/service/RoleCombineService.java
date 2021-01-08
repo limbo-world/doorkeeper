@@ -47,7 +47,7 @@ public class RoleCombineService {
     @Transactional
     public void batchUpdate(RoleCombineBatchUpdateParam param) {
         switch (param.getType()) {
-            case POST: // 新增
+            case SAVE: // 新增
                 List<RoleCombine> roleCombines = new ArrayList<>();
                 for (Long roleId : param.getRoleIds()) {
                     RoleCombine roleCombine = new RoleCombine();

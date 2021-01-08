@@ -15,7 +15,7 @@
   -->
 
 <template>
-    <el-form-item label="角色" prop="name">
+    <el-form-item label="角色">
         <el-container class="policy-role-edit-page">
             <el-header height="30px">
                 <el-form ref="searchForm" :inline="true" size="mini">
@@ -36,7 +36,7 @@
 
             <el-main>
                 <el-transfer v-model="selectRoleIds" :data="roles" :titles="['未绑定', '未绑定']"
-                             @change="changeRole"></el-transfer>
+                             @change="changeRole" filterable></el-transfer>
             </el-main>
 
         </el-container>
@@ -137,7 +137,7 @@ export default {
 .policy-role-edit-page {
     .el-transfer {
         .el-transfer-panel {
-            width: 300px;
+            width: 350px;
             .el-transfer-panel__item {
                 margin-left: 0;
                 display: block!important;

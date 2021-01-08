@@ -24,14 +24,14 @@
                     </el-form-item>
                     <el-form-item label="启用">
                         <el-select v-model="queryForm.isEnabled" clearable>
-                            <el-option key="已启用" label="已启用" :value="true"></el-option>
-                            <el-option key="未启用" label="未启用" :value="false"></el-option>
+                            <el-option v-for="item in $constants.enableTypes" :key="item.value" :label="item.label"
+                                       :value="item.value"></el-option>
                         </el-select>
                     </el-form-item>
                     <el-form-item label="类型">
                         <el-select v-model="queryForm.type" clearable>
-                            <el-option key="已启用" label="已启用" :value="true"></el-option>
-                            <el-option key="未启用" label="未启用" :value="false"></el-option>
+                            <el-option v-for="item in $constants.policyTypes" :key="item.value" :label="item.label"
+                                       :value="item.value"></el-option>
                         </el-select>
                     </el-form-item>
                     <el-form-item>
@@ -54,6 +54,12 @@
                 <el-table-column prop="policyId" label="ID"></el-table-column>
                 <el-table-column prop="name" label="名称"></el-table-column>
                 <el-table-column prop="description" label="描述"></el-table-column>
+                <el-table-column label="类型">
+                    <template slot-scope="scope">
+                        {{ $constants.policyTypes.filter(type => type.value === scope.row.type).length > 0 ?
+                            $constants.policyTypes.filter(type => type.value === scope.row.type)[0].label : '' }}
+                    </template>
+                </el-table-column>
                 <el-table-column label="是否启用">
                     <template slot-scope="scope">
                         {{ scope.row.isEnabled ? "已启用" : "未启用" }}
@@ -84,7 +90,6 @@
 
 <script>
 
-import AppConstants from "@/utils/AppConstants";
 import {mapActions, mapState} from 'vuex';
 
 export default {
@@ -104,7 +109,6 @@ export default {
             },
             policys: [],
             selectPolicys: [],
-            batchMethod: AppConstants.batchMethod
         };
     },
 
@@ -151,7 +155,7 @@ export default {
             }
             this.startProgress();
             return this.$ajax.post('/admin/policy/batch', {
-                type: this.batchMethod.UPDATE, isEnabled: v, policyIds: policyIds
+                type: this.$constants.batchMethod.UPDATE, isEnabled: v, policyIds: policyIds
             }).then(response => {
                 this.loadPolicys();
             }).finally(() => this.stopProgress());

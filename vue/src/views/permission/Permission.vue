@@ -24,21 +24,15 @@
                     </el-form-item>
                     <el-form-item label="启用">
                         <el-select v-model="queryForm.isEnabled" clearable>
-                            <el-option key="已启用" label="已启用" :value="true"></el-option>
-                            <el-option key="未启用" label="未启用" :value="false"></el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="类型">
-                        <el-select v-model="queryForm.type" clearable>
-                            <el-option key="已启用" label="已启用" :value="true"></el-option>
-                            <el-option key="未启用" label="未启用" :value="false"></el-option>
+                            <el-option v-for="item in $constants.enableTypes" :key="item.value" :label="item.label"
+                                       :value="item.value"></el-option>
                         </el-select>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="loadPolicys(1)" size="mini" icon="el-icon-search">查询
                         </el-button>
                         <el-button type="primary" @click="() => {
-                            $router.push({path: '/policy/policy-edit',query: {clientId: clientId}})
+                            $router.push({path: '/permission/permission-edit',query: {clientId: clientId}})
                         }" size="mini" icon="el-icon-circle-plus">新增
                         </el-button>
                         <el-button type="primary" @click="batchEnable(true)" size="mini">批量启用</el-button>
@@ -51,7 +45,7 @@
         <el-main>
             <el-table :data="policys" size="mini" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="50"></el-table-column>
-                <el-table-column prop="policyId" label="ID"></el-table-column>
+                <el-table-column prop="permissionId" label="ID"></el-table-column>
                 <el-table-column prop="name" label="名称"></el-table-column>
                 <el-table-column prop="description" label="描述"></el-table-column>
                 <el-table-column label="是否启用">
@@ -63,7 +57,9 @@
                     <template slot-scope="scope">
                         <div class="operations">
                             <i class="el-icon-edit" @click="() => {
-                                $router.push({path: '/policy/policy-edit',query: {clientId: clientId, policyId: scope.row.policyId}})
+                                $router.push({path: '/permission/permission-edit',query: {
+                                    clientId: clientId, permissionId: scope.row.permissionId}
+                                })
                             }"></i>
                         </div>
                     </template>
@@ -74,7 +70,7 @@
         <el-footer>
             <el-pagination background layout="prev, pager, next" :total="queryForm.total"
                            :current-page.sync="queryForm.current"
-                           :page-size="queryForm.size" @current-change="loadPolicys">
+                           :page-size="queryForm.size" @current-change="loadPermissions">
             </el-pagination>
         </el-footer>
 
@@ -148,7 +144,7 @@ export default {
             }
             this.startProgress();
             return this.$ajax.post('/admin/permission/batch', {
-                type: "PUT", isEnabled: v, permissionIds: permissionIds
+                type: this.$constants.batchMethod.UPDATE, isEnabled: v, permissionIds: permissionIds
             }).then(response => {
                 this.loadPermissions();
             }).finally(() => this.stopProgress());
