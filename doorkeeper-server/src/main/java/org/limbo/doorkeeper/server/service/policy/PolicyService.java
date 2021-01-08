@@ -90,7 +90,7 @@ public class PolicyService {
     @Transactional
     public void batchUpdate(PolicyBatchUpdateParam param) {
         switch (param.getType()) {
-            case PUT:
+            case UPDATE:
                 policyMapper.update(null, Wrappers.<Policy>lambdaUpdate()
                         .set(param.getIsEnabled() != null, Policy::getIsEnabled, param.getIsEnabled())
                         .in(Policy::getPolicyId, param.getPolicyIds())
@@ -103,8 +103,11 @@ public class PolicyService {
     public Page<PolicyVO> page(PolicyQueryParam param) {
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<Policy> mpage = MyBatisPlusUtils.pageOf(param);
         mpage = policyMapper.selectPage(mpage, Wrappers.<Policy>lambdaQuery()
+                .eq(Policy::getRealmId, param.getRealmId())
+                .eq(Policy::getClientId, param.getClientId())
                 .eq(StringUtils.isNotBlank(param.getName()), Policy::getName, param.getName())
                 .like(StringUtils.isNotBlank(param.getDimName()), Policy::getName, param.getDimName())
+                .eq(param.getIsEnabled() != null, Policy::getIsEnabled, param.getIsEnabled())
                 .orderByDesc(Policy::getPolicyId)
         );
 

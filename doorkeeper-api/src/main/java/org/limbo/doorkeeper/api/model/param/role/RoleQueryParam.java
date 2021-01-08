@@ -33,7 +33,7 @@ public class RoleQueryParam {
     private Long realmId;
 
     @NotNull(message = "委托方不能为空")
-    @Schema(title = "委托方", required = true)
+    @Schema(title = "委托方", required = true, description = "查询域角色，传 0")
     private Long clientId;
 
     @Schema(title = "名称", description = "精确查询")

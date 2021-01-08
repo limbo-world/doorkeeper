@@ -14,15 +14,30 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
+package org.limbo.doorkeeper.api.model.param.resource;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * @author Devil
- * @date 2021/1/3 6:15 下午
+ * @date 2021/1/5 4:48 下午
  */
 @Data
-public class RealmAddParam {
+public class ResourceUpdateParam {
+
+    @Schema(title = "描述")
+    private String description;
+
+    @Schema(title = "是否启用")
+    private Boolean isEnabled;
+
+    @Schema(title = "资源uri")
+    private List<ResourceUriAddParam> uris;
+
+    @Schema(title = "资源标签")
+    private List<ResourceTagAddParam> tags;
 
 }

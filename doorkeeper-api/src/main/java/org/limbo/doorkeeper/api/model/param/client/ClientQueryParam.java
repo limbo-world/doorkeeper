@@ -14,32 +14,28 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
+package org.limbo.doorkeeper.api.model.param.client;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import org.limbo.doorkeeper.api.constants.BatchMethod;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 /**
  * @author Devil
- * @date 2021/1/5 4:48 下午
+ * @date 2021/1/4 2:57 下午
  */
 @Data
-public class ResourceBatchUpdateParam {
+public class ClientQueryParam {
 
-    @NotNull(message = "操作类型不能为空")
-    @Schema(title = "操作类型", required = true)
-    private BatchMethod type;
+    @NotNull(message = "域不能为空")
+    @Schema(title = "域id", required = true)
+    private String realmId;
 
-    @Schema(title = "是否启用")
-    private Boolean isEnabled;
+    @Schema(title = "名称", description = "精确查询")
+    private String name;
 
-    @NotEmpty(message = "资源列表不能为空")
-    @Schema(title = "资源列表", required = true)
-    private List<Long> resourceIds;
+    @Schema(title = "名称", description = "模糊查询")
+    private String dimName;
 
 }

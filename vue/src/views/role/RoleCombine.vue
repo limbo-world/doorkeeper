@@ -39,6 +39,7 @@
 
 <script>
 
+import AppConstants from "@/utils/AppConstants";
 import {mapState, mapActions} from 'vuex';
 
 export default {
@@ -59,6 +60,7 @@ export default {
             clients: [],
             dialogOpened: false,
             dialogProcessing: false,
+            batchMethod: AppConstants.batchMethod
         }
     },
 
@@ -102,7 +104,7 @@ export default {
             this.$ajax.post('/admin/role-combine/batch', {
                 parentId: this.roleId,
                 roleIds: [roleId],
-                type: v ? "POST" : "DELETE"
+                type: v ? this.batchMethod.SAVE : this.batchMethod.DELETE
             }).then(response => {
                 this.loadRoles();
             }).finally(() => loading.close());

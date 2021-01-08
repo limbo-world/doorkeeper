@@ -85,6 +85,21 @@ export default [
                     },
                 ]
             },
+            {
+                path: '/permission',
+                component: RouterView,
+                redirect: '/permission/permission',
+                children: [
+                    {
+                        path: '/permission/permission',
+                        component: _import('permission/Permission'),
+                    },
+                    {
+                        path: '/permission/permission-edit',
+                        component: _import('permission/PermissionEdit'),
+                    },
+                ]
+            },
         ]
     },
 

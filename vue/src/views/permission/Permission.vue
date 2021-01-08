@@ -15,7 +15,7 @@
   -->
 
 <template>
-    <el-container class="policy-page">
+    <el-container class="permission-page">
         <el-header class="padding-top-xs" height="80px">
             <el-row>
                 <el-form ref="searchForm" :inline="true" size="mini">
@@ -83,8 +83,6 @@
 
 
 <script>
-
-import AppConstants from "@/utils/AppConstants";
 import {mapActions, mapState} from 'vuex';
 
 export default {
@@ -102,9 +100,8 @@ export default {
                 size: 10,
                 total: -1,
             },
-            policys: [],
-            selectPolicys: [],
-            batchMethod: AppConstants.batchMethod
+            permissions: [],
+            selectPermissions: []
         };
     },
 
@@ -113,8 +110,8 @@ export default {
     },
 
     created() {
-        pages.policy = this;
-        this.loadPolicys();
+        pages.permission = this;
+        this.loadPermissions();
     },
 
 
@@ -126,34 +123,34 @@ export default {
             this.queryForm.total = -1;
         },
 
-        loadPolicys(current) {
+        loadPermissions(current) {
             if (1 === current) {
                 this.resetPageForm();
             }
             this.startProgress();
-            return this.$ajax.get('/admin/policy', {
+            return this.$ajax.get('/admin/permission', {
                 params: {...this.queryForm, clientId: this.clientId, addRealmId: true}
             }).then(response => {
                 const page = response.data;
                 this.queryForm.total = page.total >= 0 ? page.total : this.queryForm.total;
-                this.policys = page.data;
+                this.permissions = page.data;
             }).finally(() => this.stopProgress());
         },
 
         handleSelectionChange(val) {
-            this.selectPolicys = val;
+            this.selectPermissions = val;
         },
 
         batchEnable(v) {
-            let policyIds = [];
-            if (this.selectPolicys && this.selectPolicys.length > 0 ) {
-                this.selectPolicys.forEach(policy => policyIds.push(policy.policyId))
+            let permissionIds = [];
+            if (this.selectPermissions && this.selectPermissions.length > 0 ) {
+                this.selectPermissions.forEach(permission => permissionIds.push(permission.permissionId))
             }
             this.startProgress();
-            return this.$ajax.post('/admin/policy/batch', {
-                type: this.batchMethod.UPDATE, isEnabled: v, policyIds: policyIds
+            return this.$ajax.post('/admin/permission/batch', {
+                type: "PUT", isEnabled: v, permissionIds: permissionIds
             }).then(response => {
-                this.loadPolicys();
+                this.loadPermissions();
             }).finally(() => this.stopProgress());
         }
 

@@ -38,13 +38,15 @@ public class Permission {
     @TableId(type = IdType.AUTO)
     private Long permissionId;
 
-    private Long resourceId;
+    private Long realmId;
+
+    private Long clientId;
 
     private String name;
 
     private String description;
     /**
-     * 只有组合类型会有
+     * 判断逻辑
      */
     private Logic logic;
     /**

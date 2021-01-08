@@ -14,21 +14,24 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
+package org.limbo.doorkeeper.api.model.param.permission;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.limbo.doorkeeper.api.constants.Intention;
+import org.limbo.doorkeeper.api.constants.Logic;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
  * @author Devil
- * @date 2021/1/5 4:48 下午
+ * @date 2021/1/8 9:30 上午
  */
 @Data
-public class ResourceAddParam {
+public class PermissionAddParam {
 
     @NotNull(message = "委托方不能为空")
     @Schema(title = "委托方", required = true)
@@ -41,13 +44,23 @@ public class ResourceAddParam {
     @Schema(title = "描述")
     private String description;
 
+    @NotNull(message = "判断逻辑不能为空")
+    @Schema(title = "判断逻辑", required = true)
+    private Logic logic;
+
+    @NotNull(message = "执行逻辑不能为空")
+    @Schema(title = "执行逻辑", required = true)
+    private Intention intention;
+
     @Schema(title = "是否启用")
     private Boolean isEnabled;
 
-    @Schema(title = "资源uri")
-    private List<ResourceUriAddParam> uris;
+    @NotEmpty(message = "资源列表不能为空")
+    @Schema(title = "资源列表", required = true)
+    private List<PermissionResourceAddParam> resources;
 
-    @Schema(title = "资源标签")
-    private List<ResourceTagAddParam> tags;
+    @NotEmpty(message = "策略列表不能为空")
+    @Schema(title = "策略列表", required = true)
+    private List<PermissionPolicyAddParam> policys;
 
 }

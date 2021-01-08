@@ -28,11 +28,11 @@ public enum BatchMethod {
     /**
      * 新增
      */
-    POST,
+    SAVE,
     /**
      * 修改
      */
-    PUT,
+    UPDATE,
     /**
      * 删除
      */

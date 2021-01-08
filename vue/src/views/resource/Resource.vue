@@ -87,6 +87,8 @@
 
 
 <script>
+
+import AppConstants from "@/utils/AppConstants";
 import {mapActions, mapState} from 'vuex';
 
 export default {
@@ -106,6 +108,7 @@ export default {
             },
             resources: [],
             selectResources: [],
+            batchMethod: AppConstants.batchMethod
         };
     },
 
@@ -152,7 +155,7 @@ export default {
             }
             this.startProgress();
             return this.$ajax.post('/admin/resource/batch', {
-                type: "PUT", isEnabled: v, resourceIds: resourceIds
+                type: this.batchMethod.UPDATE, isEnabled: v, resourceIds: resourceIds
             }).then(response => {
                 this.loadResources();
             }).finally(() => this.stopProgress());

@@ -14,30 +14,32 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
+package org.limbo.doorkeeper.api.model.param.permission;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.limbo.doorkeeper.api.constants.BatchMethod;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
  * @author Devil
- * @date 2021/1/5 4:48 下午
+ * @date 2021/1/8 9:30 上午
  */
 @Data
-public class ResourceUpdateParam {
+public class PermissionBatchUpdateParam {
 
-    @Schema(title = "描述")
-    private String description;
+    @NotNull(message = "操作类型不能为空")
+    @Schema(title = "操作类型", required = true)
+    private BatchMethod type;
 
     @Schema(title = "是否启用")
     private Boolean isEnabled;
 
-    @Schema(title = "资源uri")
-    private List<ResourceUriAddParam> uris;
-
-    @Schema(title = "资源标签")
-    private List<ResourceTagAddParam> tags;
+    @NotEmpty(message = "权限列表不能为空")
+    @Schema(title = "权限列表", required = true)
+    private List<Long> permissionIds;
 
 }

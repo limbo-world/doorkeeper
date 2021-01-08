@@ -14,24 +14,26 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
+package org.limbo.doorkeeper.server.entity;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-
-import javax.validation.constraints.NotBlank;
 
 /**
  * @author Devil
- * @date 2021/1/5 4:52 下午
+ * @date 2021/1/8 9:38 上午
  */
 @Data
-public class ResourceUriAddParam {
+@TableName("permission_resource")
+public class PermissionResource {
 
-    @Schema(title = "资源uri ID", description = "如果存在，表示是一个已经存在的uri")
-    private Long resourceUriId;
+    @TableId(type = IdType.AUTO)
+    private Long permissionResourceId;
 
-    @NotBlank(message = "uri不能为空")
-    @Schema(title = "uri", required = true, description = "ant 风格")
-    private String uri;
+    private Long permissionId;
+
+    private Long resourceId;
+
 }

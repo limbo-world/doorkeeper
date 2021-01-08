@@ -14,23 +14,24 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.dao;
+package org.limbo.doorkeeper.api.model.param.resource;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.limbo.doorkeeper.api.model.param.resource.ResourceQueryParam;
-import org.limbo.doorkeeper.api.model.vo.ResourceVO;
-import org.limbo.doorkeeper.server.entity.Resource;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
 
-import java.util.List;
+import javax.validation.constraints.NotBlank;
 
 /**
  * @author Devil
- * @date 2021/1/3 6:08 下午
+ * @date 2021/1/5 4:52 下午
  */
-public interface ResourceMapper extends BaseMapper<Resource> {
+@Data
+public class ResourceUriAddParam {
 
-    long pageVOCount(ResourceQueryParam param);
+    @Schema(title = "资源uri ID", description = "如果存在，表示是一个已经存在的uri")
+    private Long resourceUriId;
 
-    List<ResourceVO> pageVOS(ResourceQueryParam param);
-
+    @NotBlank(message = "uri不能为空")
+    @Schema(title = "uri", required = true, description = "ant 风格")
+    private String uri;
 }

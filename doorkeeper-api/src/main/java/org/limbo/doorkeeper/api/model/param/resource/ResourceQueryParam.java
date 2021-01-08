@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
+package org.limbo.doorkeeper.api.model.param.resource;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

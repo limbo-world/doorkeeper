@@ -25,7 +25,15 @@ const intentions = [
     {label: '拒绝', value: 'REFUSE'}
 ];
 
+const batchMethod = {
+    GET: 'GET',
+    SAVE: 'SAVE',
+    UPDATE: 'UPDATE',
+    DELETE: 'DELETE'
+}
+
 export default {
     policyTypes,
-    intentions
+    intentions,
+    batchMethod
 }

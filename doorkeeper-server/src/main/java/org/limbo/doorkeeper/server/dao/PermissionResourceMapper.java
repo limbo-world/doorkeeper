@@ -14,29 +14,14 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
+package org.limbo.doorkeeper.server.dao;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-
-import javax.validation.constraints.NotBlank;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.limbo.doorkeeper.server.entity.PermissionResource;
 
 /**
  * @author Devil
- * @date 2021/1/5 4:53 下午
+ * @date 2021/1/3 6:08 下午
  */
-@Data
-public class ResourceTagAddParam {
-
-    @Schema(title = "资源标签 ID", description = "如果存在，表示是一个已经存在的标签")
-    private Long resourceTagId;
-
-    @NotBlank(message = "标签名不能为空")
-    @Schema(title = "标签名", required = true)
-    private String k;
-
-    @NotBlank(message = "标签值不能为空")
-    @Schema(title = "标签值", required = true)
-    private String v;
-
+public interface PermissionResourceMapper extends BaseMapper<PermissionResource> {
 }

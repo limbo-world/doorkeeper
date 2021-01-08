@@ -16,7 +16,12 @@
 
 package org.limbo.doorkeeper.api.model.vo;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.limbo.doorkeeper.api.constants.Intention;
+import org.limbo.doorkeeper.api.constants.Logic;
+
+import java.util.List;
 
 /**
  * @author Devil
@@ -24,4 +29,32 @@ import lombok.Data;
  */
 @Data
 public class PermissionVO {
+
+    private Long permissionId;
+
+    private Long realmId;
+
+    private Long clientId;
+
+    @Schema(title = "名称")
+    private String name;
+
+    @Schema(title = "描述")
+    private String description;
+
+    @Schema(title = "判断逻辑")
+    private Logic logic;
+
+    @Schema(title = "执行逻辑")
+    private Intention intention;
+
+    @Schema(title = "是否启用")
+    private Boolean isEnabled;
+
+    @Schema(title = "资源列表")
+    private List<PermissionResourceVO> resources;
+
+    @Schema(title = "策略列表")
+    private List<PermissionPolicyVO>  policys;
+
 }

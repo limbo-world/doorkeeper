@@ -14,32 +14,47 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
+package org.limbo.doorkeeper.api.model.param.permission;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.limbo.doorkeeper.api.constants.Intention;
+import org.limbo.doorkeeper.api.constants.Logic;
+import org.limbo.doorkeeper.api.model.Page;
+import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
  * @author Devil
- * @date 2021/1/4 2:57 下午
+ * @date 2021/1/8 9:32 上午
  */
 @Data
-public class ClientAddParam {
+@EqualsAndHashCode(callSuper = true)
+public class PermissionQueryParam extends Page<PermissionVO> {
 
     @NotNull(message = "域不能为空")
-    @Schema(title = "域id", required = true)
+    @Schema(title = "域", required = true)
     private Long realmId;
 
-    @NotBlank(message = "名称不能为空")
-    @Schema(title = "名称", required = true)
+    @NotNull(message = "委托方不能为空")
+    @Schema(title = "委托方", required = true)
+    private Long clientId;
+
+    @Schema(title = "名称", description = "精确查询")
     private String name;
 
-    @Schema(title = "描述")
-    private String description;
+    @Schema(title = "名称", description = "模糊查询")
+    private String dimName;
+
+    @Schema(title = "判断逻辑")
+    private Logic logic;
+
+    @Schema(title = "执行逻辑")
+    private Intention intention;
 
     @Schema(title = "是否启用")
     private Boolean isEnabled;
+
 }
