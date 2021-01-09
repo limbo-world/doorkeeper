@@ -94,7 +94,6 @@
             },
             addPolicy() {
                 this.$ajax.post('/admin/policy', {...this.policy, addRealmId: true}).then(response => {
-                    this.policy = response.data;
                     this.loadPolicy();
                 })
             },

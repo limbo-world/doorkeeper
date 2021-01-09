@@ -136,7 +136,6 @@
             },
             addResource() {
                 this.$ajax.post(`/admin/resource`, {...this.resource, addRealmId: true}).then(response => {
-                    this.resource = response.data;
                     this.loadResource();
                 })
             },

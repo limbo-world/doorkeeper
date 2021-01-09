@@ -49,10 +49,10 @@
                         <el-header height="30px">
                             <el-form :inline="true" size="mini">
                                 <el-form-item label="名称">
-                                    <el-input v-model="resourceQueryForm.dimName" placeholder="输入名称"></el-input>
+                                    <el-input v-model="policyQueryForm.dimName" placeholder="输入名称"></el-input>
                                 </el-form-item>
                                 <el-form-item>
-                                    <el-button type="primary" @click="loadResources" size="mini" icon="el-icon-search">查询</el-button>
+                                    <el-button type="primary" @click="loadPolicys" size="mini" icon="el-icon-search">查询</el-button>
                                 </el-form-item>
                             </el-form>
                         </el-header>
@@ -209,7 +209,7 @@
             },
             addPermission() {
                 this.$ajax.post('/admin/permission', {...this.permission, addRealmId: true}).then(response => {
-                    this.policy = response.data;
+                    this.permission = response.data;
                     this.loadPermission();
                 })
             },

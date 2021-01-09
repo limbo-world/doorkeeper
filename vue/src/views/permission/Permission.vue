@@ -29,12 +29,11 @@
                         </el-select>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="loadPolicys(1)" size="mini" icon="el-icon-search">查询
+                        <el-button type="primary" @click="loadPermissions(1)" size="mini" icon="el-icon-search">查询
                         </el-button>
                         <el-button type="primary" @click="() => {
                             $router.push({path: '/permission/permission-edit',query: {clientId: clientId}})
-                        }" size="mini" icon="el-icon-circle-plus">新增
-                        </el-button>
+                            }" size="mini" icon="el-icon-circle-plus">新增</el-button>
                         <el-button type="primary" @click="batchEnable(true)" size="mini">批量启用</el-button>
                         <el-button type="primary" @click="batchEnable(false)" size="mini">批量停用</el-button>
                     </el-form-item>
@@ -43,7 +42,7 @@
         </el-header>
 
         <el-main>
-            <el-table :data="policys" size="mini" @selection-change="handleSelectionChange">
+            <el-table :data="permissions" size="mini" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="50"></el-table-column>
                 <el-table-column prop="permissionId" label="ID"></el-table-column>
                 <el-table-column prop="name" label="名称"></el-table-column>
