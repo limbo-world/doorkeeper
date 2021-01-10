@@ -14,25 +14,27 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.vo;
+package org.limbo.doorkeeper.api.model.param.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
  * @author Devil
- * @date 2020/11/23 8:17 PM
+ * @date 2021/1/9 7:56 下午
  */
 @Data
-public class SessionUser {
+public class UserUpdateParam {
 
-    @Schema(title = "会话id")
-    private String sessionId;
-
-    @Schema(title = "账户唯一ID")
-    private Long userId;
-
-    @Schema(title = "账户昵称")
+    @Schema(title = "昵称")
     private String nickname;
 
+    @Schema(title = "密码")
+    private String password;
+
+    @Schema(title = "描述")
+    private String description;
+
+    @Schema(title = "是否启用")
+    private Boolean isEnabled;
 }

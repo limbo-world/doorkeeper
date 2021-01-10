@@ -136,12 +136,12 @@
             },
             addResource() {
                 this.$ajax.post(`/admin/resource`, {...this.resource, addRealmId: true}).then(response => {
+                    this.resource = response.data;
                     this.loadResource();
                 })
             },
             updateResource() {
-                this.$ajax.put(`/admin/resource/${this.resource.resourceId}`, {...this.resource, addRealmId: true}).then(response => {
-                    this.resource = response.data;
+                this.$ajax.put(`/admin/resource/${this.resource.resourceId}`, {...this.resource}).then(response => {
                     this.loadResource();
                 })
             },

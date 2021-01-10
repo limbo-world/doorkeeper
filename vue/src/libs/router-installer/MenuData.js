@@ -1,6 +1,6 @@
 export const MenuRoute = [{
     "menuCode": "001",
-    "menuName": "权限管理",
+    "menuName": "配置管理",
     "icon": "el-icon-setting",
     "children": [{
         "menuCode": "001001",
@@ -15,12 +15,12 @@ export const MenuRoute = [{
     }]
 }, {
     "menuCode": "002",
-    "menuName": "账户管理",
+    "menuName": "用户管理",
     "icon": "el-icon-lock",
     "children": [{
         "menuCode": "002001",
-        "menuName": "账户列表",
+        "menuName": "用户列表",
         "icon": "el-icon-user",
-        "route": "/account/account",
+        "route": "/user/user",
     }]
 }];

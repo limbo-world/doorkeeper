@@ -17,7 +17,7 @@
 package org.limbo.doorkeeper.server.support.authc;
 
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.api.constants.SessionConstants;
 import org.limbo.doorkeeper.api.model.vo.SessionUser;
 import org.limbo.doorkeeper.server.support.session.RedisSessionDAO;
 import org.limbo.doorkeeper.server.support.session.exception.SessionException;
@@ -42,7 +42,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         // 判断 url 是否有对应权限
-        String sessionId = request.getHeader(DoorkeeperConstants.SESSION_HEADER);
+        String sessionId = request.getHeader(SessionConstants.SESSION_HEADER);
         SessionUser adminSession = redisSessionDAO.readSessionMayNull(sessionId);
         if (adminSession == null) {
             throw new SessionException("无有效会话");

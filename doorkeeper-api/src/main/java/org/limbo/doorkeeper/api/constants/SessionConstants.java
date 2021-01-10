@@ -20,12 +20,7 @@ package org.limbo.doorkeeper.api.constants;
  * @author Devil
  * @date 2020/11/24 5:18 PM
  */
-public interface DoorkeeperConstants {
-    /**
-     * 请求header 获取 当前项目id
-     */
-    String PROJECT_HEADER = "Doorkeeper-Project";
-
+public interface SessionConstants {
     /**
      * 会话
      */

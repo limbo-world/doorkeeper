@@ -21,8 +21,6 @@ public class Realm {
 
     private String name;
 
-    private Boolean isAdmin;
-
     private Date createTime;
 
     private Date updateTime;

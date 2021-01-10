@@ -14,49 +14,31 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
+package org.limbo.doorkeeper.api.model.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-
-import java.util.Date;
 
 /**
  * @author Devil
- * @date 2020/12/31 3:51 下午
+ * @date 2021/1/9 10:54 上午
  */
 @Data
-@TableName("user")
-public class User {
+public class UserVO {
 
-    @TableId(type = IdType.AUTO)
     private Long userId;
-    /**
-     * 每个user绑定到一个realm
-     */
+
     private Long realmId;
-    /**
-     * realm唯一 登录用
-     */
+
+    @Schema(title = "用户名")
     private String username;
 
-    private String password;
-    /**
-     * 昵称
-     */
+    @Schema(title = "昵称")
     private String nickname;
-    /**
-     * 描述
-     */
+
+    @Schema(title = "描述")
     private String description;
-    /**
-     * 是否启用
-     */
+
+    @Schema(title = "是否启用")
     private Boolean isEnabled;
-
-    private Date createTime;
-
-    private Date updateTime;
 }

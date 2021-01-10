@@ -14,25 +14,14 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.vo;
+package org.limbo.doorkeeper.server.dao;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.limbo.doorkeeper.server.entity.UserAdmin;
 
 /**
  * @author Devil
- * @date 2020/11/23 8:17 PM
+ * @date 2020/12/31 5:44 下午
  */
-@Data
-public class SessionUser {
-
-    @Schema(title = "会话id")
-    private String sessionId;
-
-    @Schema(title = "账户唯一ID")
-    private Long userId;
-
-    @Schema(title = "账户昵称")
-    private String nickname;
-
+public interface UserAdminMapper extends BaseMapper<UserAdmin> {
 }

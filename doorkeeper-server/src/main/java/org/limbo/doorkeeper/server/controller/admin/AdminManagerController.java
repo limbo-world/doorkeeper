@@ -14,25 +14,13 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.vo;
-
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
+package org.limbo.doorkeeper.server.controller.admin;
 
 /**
  * @author Devil
- * @date 2020/11/23 8:17 PM
+ * @date 2021/1/10 10:11 下午
  */
-@Data
-public class SessionUser {
-
-    @Schema(title = "会话id")
-    private String sessionId;
-
-    @Schema(title = "账户唯一ID")
-    private Long userId;
-
-    @Schema(title = "账户昵称")
-    private String nickname;
-
+public class AdminManagerController {
+    // 账户拥有的realm
+    // 账户拥有的client
 }

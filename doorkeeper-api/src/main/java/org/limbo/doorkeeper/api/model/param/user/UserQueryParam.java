@@ -14,25 +14,32 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.vo;
+package org.limbo.doorkeeper.api.model.param.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.limbo.doorkeeper.api.model.Page;
+import org.limbo.doorkeeper.api.model.vo.UserVO;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Devil
- * @date 2020/11/23 8:17 PM
+ * @date 2021/1/9 7:56 下午
  */
 @Data
-public class SessionUser {
+@EqualsAndHashCode(callSuper = true)
+public class UserQueryParam extends Page<UserVO> {
 
-    @Schema(title = "会话id")
-    private String sessionId;
+    @NotNull(message = "域不能为空")
+    @Schema(title = "域id", required = true)
+    private String realmId;
 
-    @Schema(title = "账户唯一ID")
-    private Long userId;
+    @Schema(title = "名称", description = "模糊匹配用户名和昵称")
+    private String dimName;
 
-    @Schema(title = "账户昵称")
-    private String nickname;
+    // private String username;
 
+    // private String nickname;
 }

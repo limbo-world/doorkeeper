@@ -17,7 +17,7 @@
 package org.limbo.doorkeeper.server.support.session;
 
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.api.constants.SessionConstants;
 import org.limbo.doorkeeper.api.model.vo.SessionUser;
 import org.limbo.doorkeeper.server.support.session.exception.SessionException;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -42,7 +42,7 @@ public class SessionInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         // 验证会话存在
-        String sessionId = request.getHeader(DoorkeeperConstants.SESSION_HEADER);
+        String sessionId = request.getHeader(SessionConstants.SESSION_HEADER);
         SessionUser session = redisSessionDAO.readSessionMayNull(sessionId);
         if (session == null) {
             throw new SessionException("无有效会话");

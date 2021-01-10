@@ -100,6 +100,21 @@ export default [
                     },
                 ]
             },
+            {
+                path: '/user',
+                component: RouterView,
+                redirect: '/user/user',
+                children: [
+                    {
+                        path: '/user/user',
+                        component: _import('user/User'),
+                    },
+                    {
+                        path: '/user/user-edit',
+                        component: _import('user/UserEdit'),
+                    },
+                ]
+            },
         ]
     },
 

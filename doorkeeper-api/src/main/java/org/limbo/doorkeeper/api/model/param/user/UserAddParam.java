@@ -14,49 +14,37 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
+package org.limbo.doorkeeper.api.model.param.user;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.util.Date;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Devil
- * @date 2020/12/31 3:51 下午
+ * @date 2021/1/9 10:57 上午
  */
 @Data
-@TableName("user")
-public class User {
+public class UserAddParam {
 
-    @TableId(type = IdType.AUTO)
-    private Long userId;
-    /**
-     * 每个user绑定到一个realm
-     */
+    @NotNull(message = "域不能为空")
+    @Schema(title = "域id", required = true)
     private Long realmId;
-    /**
-     * realm唯一 登录用
-     */
+
+    @NotNull(message = "用户名不能为空")
+    @Schema(title = "用户名", required = true)
     private String username;
 
-    private String password;
-    /**
-     * 昵称
-     */
+    @NotNull(message = "昵称不能为空")
+    @Schema(title = "昵称", required = true)
     private String nickname;
-    /**
-     * 描述
-     */
-    private String description;
-    /**
-     * 是否启用
-     */
+
+    @NotNull(message = "密码不能为空")
+    @Schema(title = "密码", required = true)
+    private String password;
+
+    @Schema(title = "是否启用")
     private Boolean isEnabled;
 
-    private Date createTime;
-
-    private Date updateTime;
 }

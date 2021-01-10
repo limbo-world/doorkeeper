@@ -18,6 +18,7 @@ package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.lang3.StringUtils;
+import org.limbo.doorkeeper.api.exception.ParamException;
 import org.limbo.doorkeeper.api.model.param.client.ClientAddParam;
 import org.limbo.doorkeeper.api.model.param.client.ClientQueryParam;
 import org.limbo.doorkeeper.api.model.param.client.ClientUpdateParam;
@@ -26,6 +27,7 @@ import org.limbo.doorkeeper.server.dao.ClientMapper;
 import org.limbo.doorkeeper.server.entity.Client;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,7 +48,11 @@ public class ClientService {
         // todo 用户是否能操作这个realm
 
         Client client = EnhancedBeanUtils.createAndCopy(param, Client.class);
-        clientMapper.insert(client);
+        try {
+            clientMapper.insert(client);
+        } catch (DuplicateKeyException e) {
+            throw new ParamException("委托方已存在");
+        }
         return EnhancedBeanUtils.createAndCopy(client, ClientVO.class);
     }
 

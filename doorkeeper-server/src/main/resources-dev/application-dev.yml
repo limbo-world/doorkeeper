@@ -16,7 +16,7 @@ spring:
       password: ENC(KNg4F1am9e6SudjCk4gsLg==)
   # redis
   redis:
-    host: 10.219.192.172
+    host: 127.0.0.1 # 10.219.192.172
     port: 6379
-    password: ENC(Hd/NWS3hUezXfRPWFjbQBw==)
+    #password: ENC(Hd/NWS3hUezXfRPWFjbQBw==)
     database: 0
