@@ -14,21 +14,31 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param.resource;
+package org.limbo.doorkeeper.server.entity;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-
-import javax.validation.constraints.NotBlank;
+import org.limbo.doorkeeper.api.constants.UserBindType;
 
 /**
+ * 用户-域 绑定关系
+ *
  * @author Devil
- * @date 2021/1/3 6:15 下午
+ * @date 2021/1/10 10:38 下午
  */
 @Data
-public class RealmAddParam {
+@TableName("user_realm")
+public class UserRealm {
 
-    @NotBlank(message = "名称不能为空")
-    @Schema(title = "名称", required = true)
-    private String name;
+    @TableId(type = IdType.AUTO)
+    private Long userRealmId;
+
+    private Long userId;
+
+    private Long realmId;
+
+    private UserBindType type;
+
 }

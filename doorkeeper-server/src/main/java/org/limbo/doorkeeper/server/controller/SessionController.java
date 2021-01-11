@@ -58,5 +58,4 @@ public class SessionController extends BaseController {
         return Response.success(true);
     }
 
-
 }

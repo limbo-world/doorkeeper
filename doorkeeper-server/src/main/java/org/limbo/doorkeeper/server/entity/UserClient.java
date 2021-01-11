@@ -14,14 +14,31 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.dao;
+package org.limbo.doorkeeper.server.entity;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.limbo.doorkeeper.server.entity.UserAdmin;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+import org.limbo.doorkeeper.api.constants.UserBindType;
 
 /**
+ * 用户-client 绑定关系
+ *
  * @author Devil
- * @date 2020/12/31 5:44 下午
+ * @date 2021/1/10 10:38 下午
  */
-public interface UserAdminMapper extends BaseMapper<UserAdmin> {
+@Data
+@TableName("user_client")
+public class UserClient {
+
+    @TableId(type = IdType.AUTO)
+    private Long userClientId;
+
+    private Long userId;
+
+    private Long clientId;
+
+    private UserBindType type;
+
 }

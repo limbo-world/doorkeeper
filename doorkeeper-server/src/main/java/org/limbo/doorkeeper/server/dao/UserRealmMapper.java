@@ -14,21 +14,14 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param.resource;
+package org.limbo.doorkeeper.server.dao;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-
-import javax.validation.constraints.NotBlank;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.limbo.doorkeeper.server.entity.UserRealm;
 
 /**
  * @author Devil
- * @date 2021/1/3 6:15 下午
+ * @date 2020/12/31 5:44 下午
  */
-@Data
-public class RealmAddParam {
-
-    @NotBlank(message = "名称不能为空")
-    @Schema(title = "名称", required = true)
-    private String name;
+public interface UserRealmMapper extends BaseMapper<UserRealm> {
 }

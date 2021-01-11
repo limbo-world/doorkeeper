@@ -13,6 +13,9 @@
                     <span @click="changeRealm(realm.realmId)" style="display:block;">{{ realm.name }}</span>
                 </el-dropdown-item>
                 <el-dropdown-item divided>
+                    <span @click="realmAddDialogOpened = true" style="display:block;">新建域</span>
+                </el-dropdown-item>
+                <el-dropdown-item>
                     <span @click="passwordDialogOpened = true" style="display:block;">修改密码</span>
                 </el-dropdown-item>
                 <el-dropdown-item>
@@ -21,6 +24,14 @@
             </el-dropdown-menu>
         </el-dropdown>
 
+        <el-dialog title="新建域" :visible.sync="realmAddDialogOpened" width="50%" class="edit-dialog"
+                   @close="realmAddDialogOpened = false" :append-to-body="true">
+            <realm-add-edit @cancel="realmAddDialogOpened = false" ref="realmAddEdit"/>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="realmAddDialogOpened = false">取 消</el-button>
+                <el-button type="primary" @click="realmAddDialogConfirm">确 定</el-button>
+            </span>
+        </el-dialog>
 
         <el-dialog title="修改密码" :visible.sync="passwordDialogOpened" width="50%" class="edit-dialog"
                    @close="passwordDialogOpened = false" :append-to-body="true">
@@ -37,17 +48,19 @@
 <script>
 
 import {mapState, mapMutations, mapActions} from 'vuex';
+import RealmAddEdit from "@/views/layout/RealmAddEdit";
 import PasswordEdit from './PasswordEdit';
 import {http} from "@/libs/axios-installer";
 
 export default {
     components: {
-        PasswordEdit
+        PasswordEdit, RealmAddEdit
     },
 
     data() {
         return {
             passwordDialogOpened: false,
+            realmAddDialogOpened: false,
 
             realms: []
         }
@@ -82,6 +95,17 @@ export default {
         // 切换
         changeRealm(realm) {
             this.$store.dispatch('session/changeRealm', realm, true);
+        },
+
+        // 新建realm
+        realmAddDialogConfirm() {
+            this.$refs.realmAddEdit.addRealm().then(() => {
+                this.$message.success('新建成功');
+                this.$refs.realmAddEdit.clearData();
+                this.realmAddDialogOpened = false;
+            }).catch(data => {
+                this.$message.error('创建失败');
+            });
         },
 
         // 重置密码

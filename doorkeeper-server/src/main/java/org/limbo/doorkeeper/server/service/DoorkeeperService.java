@@ -16,40 +16,68 @@
 
 package org.limbo.doorkeeper.server.service;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.limbo.doorkeeper.api.constants.UserBindType;
 import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.server.entity.Resource;
+import org.limbo.doorkeeper.server.dao.ClientMapper;
+import org.limbo.doorkeeper.server.dao.RealmMapper;
+import org.limbo.doorkeeper.server.dao.UserClientMapper;
+import org.limbo.doorkeeper.server.dao.UserRealmMapper;
+import org.limbo.doorkeeper.server.entity.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Devil
  * @date 2021/1/10 10:39 上午
  */
+@Service
 public class DoorkeeperService {
 
-    private Long dkRealmId = 0L;
-    private Long dkClientId = 0L;
+    @Autowired
+    private RealmMapper realmMapper;
 
-    // 对于client为dk的来说 下面的资源是不能新增删除的 由系统定义
-    //
+    @Autowired
+    private ClientMapper clientMapper;
 
-    public void createRealm(String realmName) {
-        Resource resource = new Resource();
-        resource.setRealmId(dkRealmId);
-        resource.setClientId(dkClientId);
-        resource.setName(realmName + "-" + DoorkeeperConstants.REALM);
+    @Autowired
+    private UserRealmMapper userRealmMapper;
 
-        // todo uri tag
+    @Autowired
+    private UserClientMapper userClientMapper;
+
+    @Transactional
+    public void createRealm(Long userId, Long realmId, String realmName) {
+        Realm realm = realmMapper.selectOne(Wrappers.<Realm>lambdaQuery()
+                .eq(Realm::getName, DoorkeeperConstants.REALM_NAME)
+        );
+
+        Client client = new Client();
+        client.setRealmId(realm.getRealmId());
+        client.setName(realmName);
+        client.setIsEnabled(true);
+        clientMapper.insert(client);
+
+        // 绑定用户realm关系
+        UserRealm userRealm = new UserRealm();
+        userRealm.setUserId(userId);
+        userRealm.setRealmId(realmId);
+        userRealm.setType(UserBindType.OWNER);
+        userRealmMapper.insert(userRealm);
 
         // todo realm相关权限操作
         // 1. 委托方 2. 域角色 3. 用户 4. 用户角色绑定
     }
 
-    public void creatClient(String realmName, String clientName) {
-        Resource resource = new Resource();
-        resource.setRealmId(dkRealmId);
-        resource.setClientId(dkClientId);
-        resource.setName(realmName + "-" + clientName + "-" + DoorkeeperConstants.CLIENT);
-
-        // todo uri tag
+    @Transactional
+    public void creatClient(Long userId, Long clientId, String clientName) {
+        // 绑定用户client关系
+        UserClient userClient = new UserClient();
+        userClient.setUserId(userId);
+        userClient.setClientId(clientId);
+        userClient.setType(UserBindType.OWNER);
+        userClientMapper.insert(userClient);
 
         // todo client相关操作
         // 1. 委托方角色 2. 资源 3. 策略 4 权限

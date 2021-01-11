@@ -25,6 +25,7 @@ import org.limbo.doorkeeper.api.model.param.client.ClientQueryParam;
 import org.limbo.doorkeeper.api.model.param.client.ClientUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ClientVO;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
+import org.limbo.doorkeeper.server.controller.BaseController;
 import org.limbo.doorkeeper.server.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -41,7 +42,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/admin/client")
-public class AdminClientController {
+public class AdminClientController extends BaseController {
 
     @Autowired
     private ClientService clientService;
@@ -49,13 +50,13 @@ public class AdminClientController {
     @Operation(summary = "新建委托方")
     @PostMapping
     public Response<ClientVO> add(@RequestBody @Validated ClientAddParam param) {
-        return Response.success(clientService.add(param));
+        return Response.success(clientService.add(getUserId(), param));
     }
 
-    @Operation(summary = "查询委托方列表")
+    @Operation(summary = "查询账户拥有的委托方")
     @GetMapping
-    public Response<List<ClientVO>> list(@Validated ClientQueryParam param) {
-        return Response.success(clientService.list(param));
+    public Response<List<ClientVO>> userClients(@Validated ClientQueryParam param) {
+        return Response.success(clientService.userClients(getUserId(), param));
     }
 
     @Operation(summary = "查询委托方")

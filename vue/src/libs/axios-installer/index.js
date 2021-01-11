@@ -19,16 +19,6 @@ request.interceptors.request.use(config => {
         config.url = config.url + '?t=' + Date.now();
     }
 
-    // const user = store.getters['session/user'];
-    // if (user && user.securityDigest) {
-    //     // 设置会话header
-    //     config.headers[request.sessionHeader] = user.sessionId;
-    //     // 设置签名header
-    //     request.encrypt.setPublicKey(user.securityDigest.publicKey);
-    //     let signContent = "url=" + config.url.split("?")[0] + "&sessionId=" + user.sessionId + "&ts=" +Date.now();
-    //     config.headers[request.signHeader] = request.encrypt.encrypt(signContent);
-    // }
-
     // 设置认证header
     const user = store.getters['session/user'];
     if (user && user.sessionId) {

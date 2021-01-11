@@ -16,15 +16,18 @@
 
 package org.limbo.doorkeeper.server.controller.admin;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.resource.RealmAddParam;
 import org.limbo.doorkeeper.api.model.vo.RealmVO;
+import org.limbo.doorkeeper.server.controller.BaseController;
+import org.limbo.doorkeeper.server.service.RealmService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author Devil
@@ -33,12 +36,21 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequestMapping("/admin/realm")
-public class AdminRealmController {
+public class AdminRealmController extends BaseController {
 
+    @Autowired
+    private RealmService realmService;
+
+    @Operation(summary = "新建域")
     @PostMapping
-    public Response<RealmVO> addProject(@Validated @RequestBody RealmAddParam param) {
-        return Response.success();
+    public Response<RealmVO> add(@RequestBody @Validated RealmAddParam param) {
+        return Response.success(realmService.add(getUserId(), param));
     }
 
+    @Operation(summary = "查询账户拥有的域")
+    @GetMapping
+    public Response<List<RealmVO>> userRealms() {
+        return Response.success(realmService.userRealms(getUserId()));
+    }
 
 }

@@ -17,6 +17,7 @@
 package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.exception.ParamException;
 import org.limbo.doorkeeper.api.model.param.client.ClientAddParam;
@@ -24,14 +25,19 @@ import org.limbo.doorkeeper.api.model.param.client.ClientQueryParam;
 import org.limbo.doorkeeper.api.model.param.client.ClientUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ClientVO;
 import org.limbo.doorkeeper.server.dao.ClientMapper;
+import org.limbo.doorkeeper.server.dao.UserClientMapper;
 import org.limbo.doorkeeper.server.entity.Client;
+import org.limbo.doorkeeper.server.entity.UserClient;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Devil
@@ -43,25 +49,53 @@ public class ClientService {
     @Autowired
     private ClientMapper clientMapper;
 
-    @Transactional
-    public ClientVO add(ClientAddParam param) {
-        // todo 用户是否能操作这个realm
+    @Autowired
+    private UserClientMapper userClientMapper;
 
+    @Autowired
+    private DoorkeeperService doorkeeperService;
+
+    @Transactional
+    public ClientVO add(Long userId, ClientAddParam param) {
         Client client = EnhancedBeanUtils.createAndCopy(param, Client.class);
         try {
             clientMapper.insert(client);
         } catch (DuplicateKeyException e) {
             throw new ParamException("委托方已存在");
         }
+
+        // 初始化client数据
+        doorkeeperService.creatClient(userId, client.getClientId(), client.getName());
+
         return EnhancedBeanUtils.createAndCopy(client, ClientVO.class);
     }
 
     public List<ClientVO> list(ClientQueryParam param) {
-        // todo 返回用户能操作的
         List<Client> clients = clientMapper.selectList(Wrappers.<Client>lambdaQuery()
                 .eq(Client::getRealmId, param.getRealmId())
                 .eq(StringUtils.isNotBlank(param.getName()), Client::getName, param.getName())
                 .like(StringUtils.isNotBlank(param.getDimName()), Client::getName, param.getDimName())
+                .orderByDesc(Client::getClientId)
+        );
+        return EnhancedBeanUtils.createAndCopyList(clients, ClientVO.class);
+    }
+
+    /**
+     * user拥有哪些client
+     */
+    public List<ClientVO> userClients(Long userId, ClientQueryParam param) {
+        List<UserClient> userClients = userClientMapper.selectList(Wrappers.<UserClient>lambdaQuery()
+                .eq(UserClient::getUserId, userId)
+        );
+        if (CollectionUtils.isEmpty(userClients)) {
+            return new ArrayList<>();
+        }
+        Set<Long> clientIds = userClients.stream().map(UserClient::getClientId).collect(Collectors.toSet());
+        List<Client> clients = clientMapper.selectList(Wrappers.<Client>lambdaQuery()
+                .eq(Client::getRealmId, param.getRealmId())
+                .eq(StringUtils.isNotBlank(param.getName()), Client::getName, param.getName())
+                .like(StringUtils.isNotBlank(param.getDimName()), Client::getName, param.getDimName())
+                .in(Client::getClientId, clientIds)
                 .orderByDesc(Client::getClientId)
         );
         return EnhancedBeanUtils.createAndCopyList(clients, ClientVO.class);

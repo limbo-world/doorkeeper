@@ -14,32 +14,14 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.entity;
+package org.limbo.doorkeeper.server.dao;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
-import org.limbo.doorkeeper.server.constants.UserAdminType;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.limbo.doorkeeper.server.entity.UserClient;
 
 /**
- * DK 也就是管理端Realm下用户的关系类型
- *
  * @author Devil
- * @date 2021/1/10 10:17 下午
+ * @date 2020/12/31 5:44 下午
  */
-@Data
-@TableName("user_admin")
-public class UserAdmin {
-
-    @TableId(type = IdType.AUTO)
-    private Long userId;
-
-    private Long realmId;
-    /**
-     * 0 表示为realm的关系类型 不为0则为client的关系属性
-     */
-    private Long clientId;
-
-    private UserAdminType type;
+public interface UserClientMapper extends BaseMapper<UserClient> {
 }

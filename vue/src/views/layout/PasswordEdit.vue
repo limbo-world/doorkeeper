@@ -34,10 +34,9 @@
             return {
                 rules: {
                     originalPassword: [Rules.required('旧密码')],
-                    newPassword: [ Rules.required('新密码'), Rules.length(6, 32), ],
+                    newPassword: [ Rules.required('新密码') ],
                     confirmPassword: [
                         Rules.required('确认密码'),
-                        Rules.length(6, 32),
                         {
                             validator: confirmPassword,
                             trigger: 'blur'
@@ -57,13 +56,7 @@
         },
 
         methods: {
-            clearData() {
-                if (this.$refs.editForm) {
-                    this.$refs.editForm.clearValidate();
-                }
-            },
-
-            updatePassword() {
+            addRealm() {
                 return new Promise((resolve, reject) => {
                     this.$refs.editForm.validate(valid => {
                         if (!valid) {
@@ -71,7 +64,7 @@
                             return;
                         }
 
-                        this.$ajax.put(`/session/repassword`, this.account).then((response) => {
+                        this.$ajax.put(`/admin/user/${this.user.userId}`, {password: this.account.newPassword}).then((response) => {
                             resolve(response);
                         }).catch(reject);
                     });

@@ -35,9 +35,13 @@ public class BaseController {
     @Autowired
     protected AbstractSessionDAO sessionDAO;
 
-
     protected SessionUser getSession() {
         String sessionId = request.getHeader(SessionConstants.SESSION_HEADER);
         return sessionDAO.readSession(sessionId);
     }
+
+    protected Long getUserId() {
+        return getSession().getUserId();
+    }
+
 }
