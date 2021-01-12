@@ -26,6 +26,8 @@ import lombok.Data;
 @Data
 public class RealmVO {
 
+    private Long realmId;
+
     @Schema(title = "名称")
     private String name;
 

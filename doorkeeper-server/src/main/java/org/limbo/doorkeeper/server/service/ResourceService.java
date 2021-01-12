@@ -71,6 +71,7 @@ public class ResourceService {
 
         Resource resource = EnhancedBeanUtils.createAndCopy(param, Resource.class);
         resource.setRealmId(client.getRealmId());
+        resource.setClientId(client.getClientId());
         try {
             resourceMapper.insert(resource);
         } catch (DuplicateKeyException e) {

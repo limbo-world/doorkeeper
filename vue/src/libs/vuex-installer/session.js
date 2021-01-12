@@ -23,6 +23,8 @@ export default {
         // 当前选择域
         realm: null,
 
+        realms: [],
+
         // 全部菜单
         menus: [],
 
@@ -50,6 +52,10 @@ export default {
 
         setRealm: (state, realm) => {
             state.realm = realm;
+        },
+
+        setRealms: (state, realms) => {
+            state.realms = realms;
         },
 
         // 设置state中的菜单
@@ -108,6 +114,15 @@ export default {
                 const user = response.data;
                 commit('setUser', user);
                 setSessionUserCache(user);
+                return Promise.resolve();
+            });
+        },
+
+        loadRealms({ state, commit }) {
+            return http.get(`/admin/realm`).then(response => {
+                // 有会话 设置到state中，并更新sessionCache
+                const realms = response.data;
+                commit('setRealms', realms);
                 return Promise.resolve();
             });
         },

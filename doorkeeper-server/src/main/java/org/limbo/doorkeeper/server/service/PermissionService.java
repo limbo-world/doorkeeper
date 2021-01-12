@@ -67,6 +67,7 @@ public class PermissionService {
 
         Permission permission = EnhancedBeanUtils.createAndCopy(param, Permission.class);
         permission.setRealmId(client.getRealmId());
+        permission.setClientId(client.getClientId());
 
         permissionMapper.insert(permission);
 

@@ -68,8 +68,34 @@ const RouterInstaller = {
 
 // 检查会话，会话不存在应跳转到登录页
 const checkSession = (to, from, next) => {
+    // 加载会话
     store.dispatch('session/loadSession').then(() => {
-        next();
+        // 加载用户拥有的域
+        store.dispatch('session/loadRealms').then(() => {
+            const realm = store.state.session.realm
+            const realms = store.state.session.realms
+            let needChange = true;
+            // 设置当前选中的域 如果已经有选了则不需要切换了
+            if (realm) {
+                needChange = false;
+                // 如果已选的不在列表里面 也需要切换
+                let realmIds = realms.map(realm => realm.realmId);
+                if (realmIds.indexOf(realm.realmId) < 0) {
+                    needChange = true;
+                }
+            }
+            if (needChange) {
+                store.dispatch('session/changeRealm', realms[0], false).then(() => {
+                    next();
+                }).catch(reject => {
+                    console.log("realm切换失败", reject)
+                })
+            } else {
+                next();
+            }
+        }).catch(reject => {
+            console.log("realms加载失败", reject)
+        })
     }).catch(() => {
         if (to.path === '/login') {
             next();

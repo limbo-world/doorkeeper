@@ -68,6 +68,7 @@ public class PolicyService {
 
         Policy policy = EnhancedBeanUtils.createAndCopy(param, Policy.class);
         policy.setRealmId(client.getRealmId());
+        policy.setClientId(client.getClientId());
         try {
             policyMapper.insert(policy);
         } catch (DuplicateKeyException e) {

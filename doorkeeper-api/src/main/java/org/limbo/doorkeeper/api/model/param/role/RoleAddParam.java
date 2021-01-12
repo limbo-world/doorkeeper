@@ -32,7 +32,7 @@ public class RoleAddParam {
     @Schema(title = "名称", required = true)
     private String name;
 
-    @Schema(title = "名称")
+    @Schema(title = "描述")
     private String description;
 
     @Schema(title = "是否启用")

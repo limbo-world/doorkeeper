@@ -51,6 +51,7 @@ import {mapState, mapMutations, mapActions} from 'vuex';
 import RealmAddEdit from "@/views/layout/RealmAddEdit";
 import PasswordEdit from './PasswordEdit';
 import {http} from "@/libs/axios-installer";
+import store from "@/libs/vuex-installer";
 
 export default {
     components: {
@@ -67,7 +68,7 @@ export default {
     },
 
     computed: {
-        ...mapState('session', ['user', 'realm']),
+        ...mapState('session', ['user', 'realm', 'realms']),
         ...mapState('ui', ['breadcrumbs']),
 
         toggleMenuClass() {
@@ -78,19 +79,11 @@ export default {
 
     created() {
         pages.navBar = this;
-        this.loadAdminRealms();
     },
 
     methods: {
         ...mapMutations('ui', ['toggleMenu']),
         ...mapActions('session', ['logout']),
-
-        // 加载账户拥有的项目
-        loadAdminRealms() {
-            let realms = [{name: "doorkeeper", realmId: 100000}]
-            this.realms = realms;
-            this.$store.dispatch('session/changeRealm', realms[0], false)
-        },
 
         // 切换
         changeRealm(realm) {
@@ -103,6 +96,31 @@ export default {
                 this.$message.success('新建成功');
                 this.$refs.realmAddEdit.clearData();
                 this.realmAddDialogOpened = false;
+
+                // 加载用户拥有的域
+                this.$store.dispatch('session/loadRealms').then(() => {
+                    const realm = store.state.session.realm
+                    const realms = store.state.session.realms
+                    let needChange = true;
+                    // 设置当前选中的域 如果已经有选了则不需要切换了
+                    if (realm) {
+                        needChange = false;
+                        // 如果已选的不在列表里面 也需要切换
+                        let realmIds = realms.map(realm => realm.realmId);
+                        if (realmIds.indexOf(realm.realmId) < 0) {
+                            needChange = true;
+                        }
+                    }
+                    if (needChange) {
+                        this.$store.dispatch('session/changeRealm', realms[0], false).then(() => {
+                            next();
+                        }).catch(reject => {
+                            console.log("realm切换失败", reject)
+                        })
+                    }
+                }).catch(reject => {
+                    console.log("realms加载失败", reject)
+                })
             }).catch(data => {
                 this.$message.error('创建失败');
             });
