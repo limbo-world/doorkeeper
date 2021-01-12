@@ -101,7 +101,7 @@ export default {
     },
 
     computed: {
-        ...mapState('session', ['user', 'authExpEvaluator']),
+        ...mapState('session', ['realm', 'authExpEvaluator']),
     },
 
     created() {
@@ -123,7 +123,7 @@ export default {
                 this.resetPageForm();
             }
             this.startProgress();
-            return this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/permission`, {
+            return this.$ajax.get(`/admin/realm/${this.realm.realmId}/client/${this.clientId}/permission`, {
                 params: this.queryForm
             }).then(response => {
                 const page = response.data;
@@ -142,7 +142,7 @@ export default {
                 this.selectPermissions.forEach(permission => permissionIds.push(permission.permissionId))
             }
             this.startProgress();
-            return this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/permission/batch`, {
+            return this.$ajax.post(`/admin/realm/${this.realm.realmId}/client/${this.clientId}/permission/batch`, {
                 type: this.$constants.batchMethod.UPDATE, isEnabled: v, permissionIds: permissionIds
             }).then(response => {
                 this.loadPermissions();

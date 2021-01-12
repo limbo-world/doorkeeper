@@ -51,7 +51,7 @@ export default {
         };
     },
     computed: {
-        ...mapState('session', ['user']),
+        ...mapState('session', ['realm']),
     },
     created() {
         pages.policyRoleEdit = this;
@@ -61,7 +61,7 @@ export default {
 
     methods: {
         loadRealmRoles() {
-            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/0/role`).then(response => {
+            this.$ajax.get(`/admin/realm/${this.realm.realmId}/client/0/role`).then(response => {
                 let roles = response.data;
                 for (let role of roles) {
                     role.key = role.roleId;
@@ -71,7 +71,7 @@ export default {
             });
         },
         loadClientRoles() {
-            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/role`).then(response => {
+            this.$ajax.get(`/admin/realm/${this.realm.realmId}/client/${this.clientId}/role`).then(response => {
                 let roles = response.data;
                 for (let role of roles) {
                     role.key = role.roleId;

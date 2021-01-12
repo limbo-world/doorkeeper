@@ -113,7 +113,7 @@ export default {
     },
 
     computed: {
-        ...mapState('session', ['user', 'authExpEvaluator']),
+        ...mapState('session', ['realm', 'authExpEvaluator']),
     },
 
     created() {
@@ -135,7 +135,7 @@ export default {
                 this.resetPageForm();
             }
             this.startProgress();
-            return this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/resource`, {
+            return this.$ajax.get(`/admin/realm/${this.realm.realmId}/client/${this.clientId}/resource`, {
                 params: this.queryForm
             }).then(response => {
                 const page = response.data;
@@ -154,7 +154,7 @@ export default {
                 this.selectResources.forEach(resource => resourceIds.push(resource.resourceId))
             }
             this.startProgress();
-            return this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/resource/batch`, {
+            return this.$ajax.post(`/admin/realm/${this.realm.realmId}/client/${this.clientId}/resource/batch`, {
                 type: this.batchMethod.UPDATE, isEnabled: v, resourceIds: resourceIds
             }).then(response => {
                 this.loadResources();

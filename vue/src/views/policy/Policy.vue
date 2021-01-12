@@ -113,7 +113,7 @@ export default {
     },
 
     computed: {
-        ...mapState('session', ['user']),
+        ...mapState('session', ['realm']),
     },
 
     created() {
@@ -135,7 +135,7 @@ export default {
                 this.resetPageForm();
             }
             this.startProgress();
-            return this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/policy`, {
+            return this.$ajax.get(`/admin/realm/${this.realm.realmId}/client/${this.clientId}/policy`, {
                 params: this.queryForm
             }).then(response => {
                 const page = response.data;
@@ -154,7 +154,7 @@ export default {
                 this.selectPolicys.forEach(policy => policyIds.push(policy.policyId))
             }
             this.startProgress();
-            return this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/policy/batch`, {
+            return this.$ajax.post(`/admin/realm/${this.realm.realmId}/client/${this.clientId}/policy/batch`, {
                 type: this.$constants.batchMethod.UPDATE, isEnabled: v, policyIds: policyIds
             }).then(response => {
                 this.loadPolicys();

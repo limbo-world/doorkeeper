@@ -74,7 +74,7 @@
         },
 
         computed: {
-            ...mapState('session', ['user', 'authExpEvaluator']),
+            ...mapState('session', ['realm', 'authExpEvaluator']),
         },
 
         created() {
@@ -134,18 +134,18 @@
             // ========== 资源相关 ==========
             loadResource() {
                 this.startProgress({ speed: 'fast' });
-                this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/resource/${this.resource.resourceId}`).then(response => {
+                this.$ajax.get(`/admin/realm/${this.realm.realmId}/client/${this.clientId}/resource/${this.resource.resourceId}`).then(response => {
                     this.resource = response.data;
                 }).finally(() => this.stopProgress());
             },
             addResource() {
-                this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/resource`, this.resource).then(response => {
+                this.$ajax.post(`/admin/realm/${this.realm.realmId}/client/${this.clientId}/resource`, this.resource).then(response => {
                     this.resource = response.data;
                     this.loadResource();
                 })
             },
             updateResource() {
-                this.$ajax.put(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/resource/${this.resource.resourceId}`, this.resource).then(response => {
+                this.$ajax.put(`/admin/realm/${this.realm.realmId}/client/${this.clientId}/resource/${this.resource.resourceId}`, this.resource).then(response => {
                     this.loadResource();
                 })
             },

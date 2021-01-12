@@ -63,7 +63,7 @@ export default {
     },
 
     computed: {
-        ...mapState('session', ['user']),
+        ...mapState('session', ['realm']),
     },
 
     created() {
@@ -76,7 +76,7 @@ export default {
 
         loadRoles() {
             this.startProgress();
-            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/role/${this.roleId}/role-combine`, {
+            this.$ajax.get(`/admin/realm/${this.realm.realmId}/client/${this.clientId}/role/${this.roleId}/role-combine`, {
                 params: this.queryForm
             }).then(response => {
                 this.roles = response.data;
@@ -85,7 +85,7 @@ export default {
 
         bindRole(v, roleId) {
             const loading = this.$loading();
-            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/role/${this.roleId}/role-combine/batch`, {
+            this.$ajax.post(`/admin/realm/${this.realm.realmId}/client/${this.clientId}/role/${this.roleId}/role-combine/batch`, {
                 roleIds: [roleId], type: v ? this.batchMethod.SAVE : this.batchMethod.DELETE
             }).then(response => {
                 this.loadRoles();

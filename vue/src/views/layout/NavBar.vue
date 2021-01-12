@@ -6,7 +6,7 @@
         </div>
         <el-dropdown>
             <span class="el-dropdown-link" style="cursor: pointer">
-                {{ user && user.realm && user.realm.name }} <i class="el-icon-arrow-down el-icon--right"></i>
+                {{ realm && realm.name }} <i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item v-for="realm in realms" :key="realm.realmId">
@@ -67,7 +67,7 @@ export default {
     },
 
     computed: {
-        ...mapState('session', ['user']),
+        ...mapState('session', ['user', 'realm']),
         ...mapState('ui', ['breadcrumbs']),
 
         toggleMenuClass() {

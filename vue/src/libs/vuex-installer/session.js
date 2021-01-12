@@ -20,6 +20,9 @@ export default {
         // 登录用户
         user: null,
 
+        // 当前选择域
+        realm: null,
+
         // 全部菜单
         menus: [],
 
@@ -43,6 +46,10 @@ export default {
         // 设置state中的菜单
         setUser: (state, user) => {
             state.user = user;
+        },
+
+        setRealm: (state, realm) => {
+            state.realm = realm;
         },
 
         // 设置state中的菜单
@@ -99,10 +106,6 @@ export default {
             }).then(response => {
                 // 有会话 设置到state中，并更新sessionCache
                 const user = response.data;
-                const localUser = getSessionUserCache();
-                if (localUser.realm) {
-                    user.realm = localUser.realm;
-                }
                 commit('setUser', user);
                 setSessionUserCache(user);
                 return Promise.resolve();
@@ -152,10 +155,7 @@ export default {
          */
         changeRealm({ state, commit }, realm, reload) {
             return new Promise((resolve, reject) => {
-                const user = state.user;
-                user.realm = realm;
-                commit('setUser', user);
-                setSessionUserCache(user);
+                commit('setRealm', realm);
                 resolve();
             }).then(() => {
                 if (reload) {
