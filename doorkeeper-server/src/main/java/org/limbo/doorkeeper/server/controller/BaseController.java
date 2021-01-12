@@ -18,10 +18,17 @@ package org.limbo.doorkeeper.server.controller;
 
 import org.limbo.doorkeeper.api.constants.SessionConstants;
 import org.limbo.doorkeeper.api.model.vo.SessionUser;
+import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.support.session.AbstractSessionDAO;
+import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /**
  * @author Devil
@@ -42,6 +49,22 @@ public class BaseController {
 
     protected Long getUserId() {
         return getSession().getUserId();
+    }
+
+    protected Long getRealmId() {
+        NativeWebRequest webRequest = new ServletWebRequest(request);
+        Map<String, String> uriTemplateVars = (Map<String, String>) webRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
+        String realmId = uriTemplateVars.get(DoorkeeperConstants.REALM_ID);
+        Verifies.notBlank(realmId, "请选择域");
+        return Long.valueOf(realmId);
+    }
+
+    protected Long getClientId() {
+        NativeWebRequest webRequest = new ServletWebRequest(request);
+        Map<String, String> uriTemplateVars = (Map<String, String>) webRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
+        String clientId = uriTemplateVars.get(DoorkeeperConstants.CLIENT_ID);
+        Verifies.notBlank(clientId, "请选择委托方");
+        return Long.valueOf(clientId);
     }
 
 }

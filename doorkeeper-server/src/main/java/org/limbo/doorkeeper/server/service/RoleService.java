@@ -25,6 +25,7 @@ import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.server.dao.RoleMapper;
 import org.limbo.doorkeeper.server.entity.Role;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -43,10 +44,10 @@ public class RoleService {
     private RoleMapper roleMapper;
 
     @Transactional
-    public RoleVO add(RoleAddParam param) {
-        // todo 是否能操作这个realm 这个client
-
+    public RoleVO add(Long realmId, Long clientId, RoleAddParam param) {
         Role role = EnhancedBeanUtils.createAndCopy(param, Role.class);
+        role.setRealmId(realmId);
+        role.setClientId(clientId);
         try {
             roleMapper.insert(role);
         } catch (DuplicateKeyException e) {
@@ -55,17 +56,22 @@ public class RoleService {
         return EnhancedBeanUtils.createAndCopy(role, RoleVO.class);
     }
 
-    public List<RoleVO> list(RoleQueryParam param) {
+    public List<RoleVO> list(Long realmId, Long clientId, RoleQueryParam param) {
+        param.setRealmId(realmId);
+        param.setClientId(clientId);
         return roleMapper.listVOS(param);
     }
 
-    public RoleVO get(Long roleId) {
-        Role role = roleMapper.selectById(roleId);
+    public RoleVO get(Long realmId, Long clientId, Long roleId) {
+        Role role = roleMapper.getById(realmId, clientId, roleId);
+        Verifies.notNull(role, "角色不存在");
         return EnhancedBeanUtils.createAndCopy(role, RoleVO.class);
     }
 
-    public void update(Long roleId, RoleUpdateParam param) {
-        // todo 能否操作
+    public void update(Long realmId, Long clientId, Long roleId, RoleUpdateParam param) {
+        Role role = roleMapper.getById(realmId, clientId, roleId);
+        Verifies.notNull(role, "角色不存在");
+
         roleMapper.update(null, Wrappers.<Role>lambdaUpdate()
                 .set(Role::getDescription, param.getDescription())
                 .set(Role::getIsDefault, param.getIsDefault())

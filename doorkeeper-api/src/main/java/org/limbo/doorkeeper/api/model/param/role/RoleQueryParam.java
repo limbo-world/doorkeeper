@@ -19,8 +19,6 @@ package org.limbo.doorkeeper.api.model.param.role;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
-
 /**
  * @author Devil
  * @date 2021/1/4 5:44 下午
@@ -28,12 +26,8 @@ import javax.validation.constraints.NotNull;
 @Data
 public class RoleQueryParam {
 
-    @NotNull(message = "域不能为空")
-    @Schema(title = "域id", required = true)
     private Long realmId;
 
-    @NotNull(message = "委托方不能为空")
-    @Schema(title = "委托方", required = true, description = "查询域角色，传 0")
     private Long clientId;
 
     @Schema(title = "名称", description = "精确查询")

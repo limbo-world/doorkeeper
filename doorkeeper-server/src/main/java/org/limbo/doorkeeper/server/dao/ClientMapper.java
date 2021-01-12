@@ -17,6 +17,8 @@
 package org.limbo.doorkeeper.server.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.limbo.doorkeeper.server.entity.Client;
 
 /**
@@ -24,4 +26,8 @@ import org.limbo.doorkeeper.server.entity.Client;
  * @date 2021/1/3 6:08 下午
  */
 public interface ClientMapper extends BaseMapper<Client> {
+
+    @Select("select * from client where realm_id = #{realId} and client_id =#{clientId}")
+    Client getById(@Param("realId") Long realId, @Param("clientId") Long clientId);
+
 }

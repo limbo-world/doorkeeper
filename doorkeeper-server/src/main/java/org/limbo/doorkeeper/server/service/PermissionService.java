@@ -55,11 +55,14 @@ public class PermissionService {
     private PermissionResourceService permissionResourceService;
 
     @Transactional
-    public PermissionVO add(PermissionAddParam param) {
+    public PermissionVO add(Long realmId, Long clientId, PermissionAddParam param) {
         Verifies.notNull(param.getLogic(), "判断逻辑不存在");
         Verifies.notNull(param.getIntention(), "执行逻辑不存在");
 
-        Client client = clientMapper.selectById(param.getClientId());
+        Client client = clientMapper.selectOne(Wrappers.<Client>lambdaQuery()
+                .eq(Client::getRealmId, realmId)
+                .eq(Client::getClientId, clientId)
+        );
         Verifies.notNull(client, "委托方不存在");
 
         Permission permission = EnhancedBeanUtils.createAndCopy(param, Permission.class);
@@ -75,23 +78,25 @@ public class PermissionService {
     }
 
     @Transactional
-    public void batchUpdate(PermissionBatchUpdateParam param) {
+    public void batchUpdate(Long realmId, Long clientId, PermissionBatchUpdateParam param) {
         switch (param.getType()) {
             case UPDATE:
                 permissionMapper.update(null, Wrappers.<Permission>lambdaUpdate()
                         .set(param.getIsEnabled() != null, Permission::getIsEnabled, param.getIsEnabled())
                         .in(Permission::getPermissionId, param.getPermissionIds())
+                        .eq(Permission::getRealmId, realmId)
+                        .eq(Permission::getClientId, clientId)
                 );
             default:
                 break;
         }
     }
 
-    public Page<PermissionVO> page(PermissionQueryParam param) {
+    public Page<PermissionVO> page(Long realmId, Long clientId, PermissionQueryParam param) {
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<Permission> mpage = MyBatisPlusUtils.pageOf(param);
         mpage = permissionMapper.selectPage(mpage, Wrappers.<Permission>lambdaQuery()
-                .eq(Permission::getRealmId, param.getRealmId())
-                .eq(Permission::getClientId, param.getClientId())
+                .eq(Permission::getRealmId, realmId)
+                .eq(Permission::getClientId, clientId)
                 .eq(StringUtils.isNotBlank(param.getName()), Permission::getName, param.getName())
                 .like(StringUtils.isNotBlank(param.getDimName()), Permission::getName, param.getDimName())
                 .eq(param.getLogic() != null, Permission::getLogic, param.getLogic())
@@ -105,8 +110,8 @@ public class PermissionService {
         return param;
     }
 
-    public PermissionVO get(Long permissionId) {
-        Permission permission = permissionMapper.selectById(permissionId);
+    public PermissionVO get(Long realmId, Long clientId, Long permissionId) {
+        Permission permission = permissionMapper.getById(realmId, clientId, permissionId);
         Verifies.notNull(permission, "权限不存在");
         PermissionVO result = EnhancedBeanUtils.createAndCopy(permission, PermissionVO.class);
 
@@ -116,8 +121,8 @@ public class PermissionService {
     }
 
     @Transactional
-    public void update(Long permissionId, PermissionUpdateParam param) {
-        Permission permission = permissionMapper.selectById(permissionId);
+    public void update(Long realmId, Long clientId, Long permissionId, PermissionUpdateParam param) {
+        Permission permission = permissionMapper.getById(realmId, clientId, permissionId);
         Verifies.notNull(permission, "权限不存在");
 
         permissionMapper.update(null, Wrappers.<Permission>lambdaUpdate()
@@ -126,6 +131,8 @@ public class PermissionService {
                 .set(param.getLogic() != null, Permission::getLogic, param.getLogic())
                 .set(param.getIntention() != null, Permission::getIntention, param.getIntention())
                 .set(param.getIsEnabled() != null, Permission::getIsEnabled, param.getIsEnabled())
+                .eq(Permission::getRealmId, realmId)
+                .eq(Permission::getClientId, clientId)
                 .eq(Permission::getPermissionId, permissionId)
         );
 

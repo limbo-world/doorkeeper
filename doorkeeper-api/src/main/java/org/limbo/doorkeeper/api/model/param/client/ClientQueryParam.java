@@ -28,10 +28,6 @@ import javax.validation.constraints.NotNull;
 @Data
 public class ClientQueryParam {
 
-    @NotNull(message = "域不能为空")
-    @Schema(title = "域id", required = true)
-    private String realmId;
-
     @Schema(title = "名称", description = "精确查询")
     private String name;
 

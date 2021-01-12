@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.controller.admin;
+package org.limbo.doorkeeper.server.controller.realm;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -41,7 +41,7 @@ import java.util.List;
 @Tag(name = "委托方")
 @Slf4j
 @RestController
-@RequestMapping("/admin/client")
+@RequestMapping("/admin/realm/{realmId}/client")
 public class AdminClientController extends BaseController {
 
     @Autowired
@@ -50,26 +50,26 @@ public class AdminClientController extends BaseController {
     @Operation(summary = "新建委托方")
     @PostMapping
     public Response<ClientVO> add(@RequestBody @Validated ClientAddParam param) {
-        return Response.success(clientService.add(getUserId(), param));
+        return Response.success(clientService.add(getRealmId(), getUserId(), param));
     }
 
     @Operation(summary = "查询账户拥有的委托方")
     @GetMapping
     public Response<List<ClientVO>> userClients(@Validated ClientQueryParam param) {
-        return Response.success(clientService.userClients(getUserId(), param));
+        return Response.success(clientService.userClients(getRealmId(), getUserId(), param));
     }
 
     @Operation(summary = "查询委托方")
     @GetMapping("/{clientId}")
     public Response<ClientVO> get(@Validated @NotNull(message = "未提交委托方ID") @PathVariable("clientId") Long clientId) {
-        return Response.success(clientService.get(clientId));
+        return Response.success(clientService.get(getRealmId(), clientId));
     }
 
     @Operation(summary = "更新委托方")
     @PutMapping("/{clientId}")
     public Response<RoleVO> update(@Validated @NotNull(message = "未提交委托方ID") @PathVariable("clientId") Long clientId,
                                    @Validated @RequestBody ClientUpdateParam param) {
-        clientService.update(clientId, param);
+        clientService.update(getRealmId(), clientId, param);
         return Response.success();
     }
 

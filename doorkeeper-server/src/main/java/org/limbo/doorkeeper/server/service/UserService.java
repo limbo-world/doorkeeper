@@ -45,8 +45,9 @@ public class UserService {
     private UserMapper userMapper;
 
     @Transactional
-    public UserVO add(UserAddParam param) {
+    public UserVO add(Long realmId, UserAddParam param) {
         User user = EnhancedBeanUtils.createAndCopy(param, User.class);
+        user.setRealmId(realmId);
         user.setPassword(MD5Utils.md5WithSalt(param.getPassword()));
         try {
             userMapper.insert(user);
@@ -57,10 +58,10 @@ public class UserService {
         return EnhancedBeanUtils.createAndCopy(user, UserVO.class);
     }
 
-    public Page<UserVO> page(UserQueryParam param) {
+    public Page<UserVO> page(Long realmId, UserQueryParam param) {
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<User> mpage = MyBatisPlusUtils.pageOf(param);
         mpage = userMapper.selectPage(mpage, Wrappers.<User>lambdaQuery()
-                .eq(User::getRealmId, param.getRealmId())
+                .eq(User::getRealmId, realmId)
                 .like(StringUtils.isNotBlank(param.getDimName()), User::getUsername, param.getDimName())
                 .like(StringUtils.isNotBlank(param.getDimName()), User::getNickname, param.getDimName())
                 .orderByDesc(User::getUserId)
@@ -71,20 +72,24 @@ public class UserService {
         return param;
     }
 
-    public UserVO get(Long userId) {
-        User user = userMapper.selectById(userId);
+    public UserVO get(Long realmId, Long userId) {
+        User user = userMapper.selectOne(Wrappers.<User>lambdaQuery()
+                .eq(User::getUserId, userId)
+                .eq(User::getRealmId, realmId)
+        );
         user.setPassword(null);
         return EnhancedBeanUtils.createAndCopy(user, UserVO.class);
     }
 
     @Transactional
-    public void update(Long userId, UserUpdateParam param) {
+    public void update(Long realmId, Long userId, UserUpdateParam param) {
         userMapper.update(null, Wrappers.<User>lambdaUpdate()
                 .set(StringUtils.isNotBlank(param.getNickname()), User::getNickname, param.getNickname())
                 .set(StringUtils.isNotBlank(param.getPassword()), User::getPassword, MD5Utils.md5WithSalt(param.getPassword()))
                 .set(param.getDescription() != null, User::getDescription, param.getDescription())
                 .set(param.getIsEnabled() != null, User::getIsEnabled, param.getIsEnabled())
                 .eq(User::getUserId, userId)
+                .eq(User::getRealmId, realmId)
         );
     }
 }

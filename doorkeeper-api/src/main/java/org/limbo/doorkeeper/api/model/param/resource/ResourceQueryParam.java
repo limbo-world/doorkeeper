@@ -32,12 +32,8 @@ import javax.validation.constraints.NotNull;
 @EqualsAndHashCode(callSuper = true)
 public class ResourceQueryParam extends Page<ResourceVO> {
 
-    @NotNull(message = "域不能为空")
-    @Schema(title = "域", required = true)
     private Long realmId;
 
-    @NotNull(message = "委托方不能为空")
-    @Schema(title = "委托方", required = true)
     private Long clientId;
 
     @Schema(title = "名称", description = "精确查询")

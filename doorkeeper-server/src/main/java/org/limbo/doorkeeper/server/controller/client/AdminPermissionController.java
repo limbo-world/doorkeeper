@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.controller.admin;
+package org.limbo.doorkeeper.server.controller.client;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,6 +26,7 @@ import org.limbo.doorkeeper.api.model.param.permission.PermissionBatchUpdatePara
 import org.limbo.doorkeeper.api.model.param.permission.PermissionQueryParam;
 import org.limbo.doorkeeper.api.model.param.permission.PermissionUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
+import org.limbo.doorkeeper.server.controller.BaseController;
 import org.limbo.doorkeeper.server.service.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -40,8 +41,8 @@ import javax.validation.constraints.NotNull;
 @Tag(name = "权限")
 @Slf4j
 @RestController
-@RequestMapping("/admin/permission")
-public class AdminPermissionController {
+@RequestMapping("/admin/realm/{realmId}/client/{clientId}/permission")
+public class AdminPermissionController extends BaseController {
 
     @Autowired
     private PermissionService permissionService;
@@ -49,33 +50,33 @@ public class AdminPermissionController {
     @Operation(summary = "新建权限")
     @PostMapping
     public Response<PermissionVO> add(@RequestBody @Validated PermissionAddParam param) {
-        return Response.success(permissionService.add(param));
+        return Response.success(permissionService.add(getRealmId(), getClientId(), param));
     }
 
     @Operation(summary = "批量修改权限")
     @PostMapping("/batch")
     public Response<Void> batch(@RequestBody @Validated PermissionBatchUpdateParam param) {
-        permissionService.batchUpdate(param);
+        permissionService.batchUpdate(getRealmId(), getClientId(), param);
         return Response.success();
     }
 
     @Operation(summary = "分页查询权限")
     @GetMapping
     public Response<Page<PermissionVO>> page(@Validated PermissionQueryParam param) {
-        return Response.success(permissionService.page(param));
+        return Response.success(permissionService.page(getRealmId(), getClientId(), param));
     }
 
     @Operation(summary = "查询权限")
     @GetMapping("/{permissionId}")
     public Response<PermissionVO> get(@Validated @NotNull(message = "未提交权限ID") @PathVariable("permissionId") Long permissionId) {
-        return Response.success(permissionService.get(permissionId));
+        return Response.success(permissionService.get(getRealmId(), getClientId(), permissionId));
     }
 
     @Operation(summary = "更新权限")
     @PutMapping("/{permissionId}")
     public Response<Void> update(@Validated @NotNull(message = "未提交权限ID") @PathVariable("permissionId") Long permissionId,
                                    @Validated @RequestBody PermissionUpdateParam param) {
-        permissionService.update(permissionId, param);
+        permissionService.update(getRealmId(), getClientId(), permissionId, param);
         return Response.success();
     }
 }

@@ -17,6 +17,8 @@
 package org.limbo.doorkeeper.server.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.limbo.doorkeeper.server.entity.Permission;
 
 /**
@@ -24,4 +26,9 @@ import org.limbo.doorkeeper.server.entity.Permission;
  * @date 2021/1/3 6:08 下午
  */
 public interface PermissionMapper extends BaseMapper<Permission> {
+
+    @Select("select * from permission where realm_id = #{realId} and" +
+            " client_id =#{clientId} and permission_id = #{permissionId}")
+    Permission getById(@Param("realId") Long realId, @Param("clientId") Long clientId,
+                   @Param("permissionId") Long permissionId);
 }

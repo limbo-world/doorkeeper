@@ -55,7 +55,7 @@ public class PolicyVO {
     private Boolean isEnabled;
 
     @Schema(title = "操作策略")
-    private List<PolicyParamVO> tags;
+    private List<PolicyParamVO> params;
 
     @Schema(title = "角色策略")
     private List<PolicyRoleVO>  roles;

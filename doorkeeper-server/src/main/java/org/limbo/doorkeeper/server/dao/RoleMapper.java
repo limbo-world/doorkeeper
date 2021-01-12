@@ -17,6 +17,8 @@
 package org.limbo.doorkeeper.server.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.limbo.doorkeeper.api.model.param.role.RoleQueryParam;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.server.entity.Role;
@@ -28,6 +30,11 @@ import java.util.List;
  * @date 2021/1/3 6:08 下午
  */
 public interface RoleMapper extends BaseMapper<Role> {
+
+    @Select("select * from role where realm_id = #{realId} and" +
+            " client_id =#{clientId} and role_id = #{roleId}")
+    Role getById(@Param("realId") Long realId, @Param("clientId") Long clientId,
+                       @Param("roleId") Long roleId);
 
     List<RoleVO> listVOS(RoleQueryParam param);
 }

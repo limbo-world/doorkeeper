@@ -29,6 +29,7 @@ import org.limbo.doorkeeper.server.dao.UserClientMapper;
 import org.limbo.doorkeeper.server.entity.Client;
 import org.limbo.doorkeeper.server.entity.UserClient;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -56,8 +57,9 @@ public class ClientService {
     private DoorkeeperService doorkeeperService;
 
     @Transactional
-    public ClientVO add(Long userId, ClientAddParam param) {
+    public ClientVO add(Long realmId, Long userId, ClientAddParam param) {
         Client client = EnhancedBeanUtils.createAndCopy(param, Client.class);
+        client.setRealmId(realmId);
         try {
             clientMapper.insert(client);
         } catch (DuplicateKeyException e) {
@@ -65,25 +67,15 @@ public class ClientService {
         }
 
         // 初始化client数据
-        doorkeeperService.creatClient(userId, client.getClientId(), client.getName());
+//        doorkeeperService.creatClient(userId, client.getClientId(), client.getName());
 
         return EnhancedBeanUtils.createAndCopy(client, ClientVO.class);
-    }
-
-    public List<ClientVO> list(ClientQueryParam param) {
-        List<Client> clients = clientMapper.selectList(Wrappers.<Client>lambdaQuery()
-                .eq(Client::getRealmId, param.getRealmId())
-                .eq(StringUtils.isNotBlank(param.getName()), Client::getName, param.getName())
-                .like(StringUtils.isNotBlank(param.getDimName()), Client::getName, param.getDimName())
-                .orderByDesc(Client::getClientId)
-        );
-        return EnhancedBeanUtils.createAndCopyList(clients, ClientVO.class);
     }
 
     /**
      * user拥有哪些client
      */
-    public List<ClientVO> userClients(Long userId, ClientQueryParam param) {
+    public List<ClientVO> userClients(Long realmId, Long userId, ClientQueryParam param) {
         List<UserClient> userClients = userClientMapper.selectList(Wrappers.<UserClient>lambdaQuery()
                 .eq(UserClient::getUserId, userId)
         );
@@ -92,7 +84,7 @@ public class ClientService {
         }
         Set<Long> clientIds = userClients.stream().map(UserClient::getClientId).collect(Collectors.toSet());
         List<Client> clients = clientMapper.selectList(Wrappers.<Client>lambdaQuery()
-                .eq(Client::getRealmId, param.getRealmId())
+                .eq(Client::getRealmId, realmId)
                 .eq(StringUtils.isNotBlank(param.getName()), Client::getName, param.getName())
                 .like(StringUtils.isNotBlank(param.getDimName()), Client::getName, param.getDimName())
                 .in(Client::getClientId, clientIds)
@@ -101,13 +93,17 @@ public class ClientService {
         return EnhancedBeanUtils.createAndCopyList(clients, ClientVO.class);
     }
 
-    public ClientVO get(Long clientId) {
-        Client client = clientMapper.selectById(clientId);
+    public ClientVO get(Long realmId, Long clientId) {
+        Client client = clientMapper.getById(realmId, clientId);
+        Verifies.notNull(client, "委托方不存在");
         return EnhancedBeanUtils.createAndCopy(client, ClientVO.class);
     }
 
     @Transactional
-    public void update(Long clientId, ClientUpdateParam param) {
+    public void update(Long realmId, Long clientId, ClientUpdateParam param) {
+        Client client = clientMapper.getById(realmId, clientId);
+        Verifies.notNull(client, "委托方不存在");
+
         clientMapper.update(null, Wrappers.<Client>lambdaUpdate()
                 .set(param.getDescription() != null, Client::getDescription, param.getDescription())
                 .set(param.getIsEnabled() != null, Client::getIsEnabled, param.getIsEnabled())

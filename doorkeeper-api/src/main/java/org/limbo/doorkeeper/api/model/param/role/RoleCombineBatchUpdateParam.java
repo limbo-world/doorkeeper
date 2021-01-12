@@ -31,10 +31,6 @@ import java.util.List;
 @Data
 public class RoleCombineBatchUpdateParam {
 
-    @NotNull(message = "父角色不能为空")
-    @Schema(title = "父角色", required = true)
-    private Long parentId;
-
     @NotNull(message = "操作类型不能为空")
     @Schema(title = "操作类型", required = true)
     private BatchMethod type;

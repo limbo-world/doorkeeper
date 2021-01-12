@@ -22,8 +22,6 @@ import lombok.EqualsAndHashCode;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.vo.UserVO;
 
-import javax.validation.constraints.NotNull;
-
 /**
  * @author Devil
  * @date 2021/1/9 7:56 下午
@@ -31,10 +29,6 @@ import javax.validation.constraints.NotNull;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class UserQueryParam extends Page<UserVO> {
-
-    @NotNull(message = "域不能为空")
-    @Schema(title = "域id", required = true)
-    private String realmId;
 
     @Schema(title = "名称", description = "模糊匹配用户名和昵称")
     private String dimName;

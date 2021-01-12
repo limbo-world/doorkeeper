@@ -17,6 +17,8 @@
 package org.limbo.doorkeeper.server.dao.policy;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.limbo.doorkeeper.server.entity.policy.Policy;
 
 /**
@@ -24,4 +26,10 @@ import org.limbo.doorkeeper.server.entity.policy.Policy;
  * @date 2021/1/3 6:08 下午
  */
 public interface PolicyMapper extends BaseMapper<Policy> {
+
+    @Select("select * from policy where realm_id = #{realId} and" +
+            " client_id =#{clientId} and policy_id = #{policyId}")
+    Policy getById(@Param("realId") Long realId, @Param("clientId") Long clientId,
+                   @Param("policyId") Long policyId);
+
 }

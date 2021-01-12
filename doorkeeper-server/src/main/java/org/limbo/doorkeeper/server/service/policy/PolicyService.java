@@ -60,10 +60,10 @@ public class PolicyService {
     private ClientMapper clientMapper;
 
     @Transactional
-    public PolicyVO add(PolicyAddParam param) {
+    public PolicyVO add(Long realmId, Long clientId, PolicyAddParam param) {
         Verifies.notNull(param.getType(), "策略类型不存在");
 
-        Client client = clientMapper.selectById(param.getClientId());
+        Client client = clientMapper.getById(realmId, clientId);
         Verifies.notNull(client, "委托方不存在");
 
         Policy policy = EnhancedBeanUtils.createAndCopy(param, Policy.class);
@@ -88,23 +88,25 @@ public class PolicyService {
     }
 
     @Transactional
-    public void batchUpdate(PolicyBatchUpdateParam param) {
+    public void batchUpdate(Long realmId, Long clientId, PolicyBatchUpdateParam param) {
         switch (param.getType()) {
             case UPDATE:
                 policyMapper.update(null, Wrappers.<Policy>lambdaUpdate()
                         .set(param.getIsEnabled() != null, Policy::getIsEnabled, param.getIsEnabled())
                         .in(Policy::getPolicyId, param.getPolicyIds())
+                        .eq(Policy::getRealmId, realmId)
+                        .eq(Policy::getClientId, clientId)
                 );
             default:
                 break;
         }
     }
 
-    public Page<PolicyVO> page(PolicyQueryParam param) {
+    public Page<PolicyVO> page(Long realmId, Long clientId, PolicyQueryParam param) {
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<Policy> mpage = MyBatisPlusUtils.pageOf(param);
         mpage = policyMapper.selectPage(mpage, Wrappers.<Policy>lambdaQuery()
-                .eq(Policy::getRealmId, param.getRealmId())
-                .eq(Policy::getClientId, param.getClientId())
+                .eq(Policy::getRealmId, realmId)
+                .eq(Policy::getClientId, clientId)
                 .eq(StringUtils.isNotBlank(param.getName()), Policy::getName, param.getName())
                 .like(StringUtils.isNotBlank(param.getDimName()), Policy::getName, param.getDimName())
                 .eq(param.getIsEnabled() != null, Policy::getIsEnabled, param.getIsEnabled())
@@ -117,8 +119,8 @@ public class PolicyService {
         return param;
     }
 
-    public PolicyVO get(Long policyId) {
-        Policy policy = policyMapper.selectById(policyId);
+    public PolicyVO get(Long realmId, Long clientId, Long policyId) {
+        Policy policy = policyMapper.getById(realmId, clientId, policyId);
         Verifies.notNull(policy, "策略不存在");
         PolicyVO result = EnhancedBeanUtils.createAndCopy(policy, PolicyVO.class);
         switch (policy.getType()) {
@@ -129,7 +131,7 @@ public class PolicyService {
                 result.setUsers(policyUserService.getByPolicy(policyId));
                 break;
             case PARAM:
-                result.setTags(policyParamService.getByPolicy(policyId));
+                result.setParams(policyParamService.getByPolicy(policyId));
                 break;
         }
 
@@ -137,8 +139,8 @@ public class PolicyService {
     }
 
     @Transactional
-    public void update(Long policyId, PolicyUpdateParam param) {
-        Policy policy = policyMapper.selectById(policyId);
+    public void update(Long realmId, Long clientId, Long policyId, PolicyUpdateParam param) {
+        Policy policy = policyMapper.getById(realmId, clientId, policyId);
         Verifies.notNull(policy, "策略不存在");
 
         policyMapper.update(null, Wrappers.<Policy>lambdaUpdate()

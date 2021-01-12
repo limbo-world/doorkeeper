@@ -51,6 +51,7 @@ public class LoginService {
 
         SessionUser sessionUser = new SessionUser();
         sessionUser.setUserId(user.getUserId());
+        sessionUser.setRealmId(user.getRealmId());
         sessionUser.setNickname(user.getNickname());
         return sessionDAO.createSession(sessionUser);
     }

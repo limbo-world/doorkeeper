@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.controller.admin;
+package org.limbo.doorkeeper.server.controller.realm;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,6 +25,7 @@ import org.limbo.doorkeeper.api.model.param.user.UserAddParam;
 import org.limbo.doorkeeper.api.model.param.user.UserQueryParam;
 import org.limbo.doorkeeper.api.model.param.user.UserUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.UserVO;
+import org.limbo.doorkeeper.server.controller.BaseController;
 import org.limbo.doorkeeper.server.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -39,8 +40,8 @@ import javax.validation.constraints.NotNull;
 @Tag(name = "用户")
 @Slf4j
 @RestController
-@RequestMapping("/admin/user")
-public class AdminUserController {
+@RequestMapping("/admin/realm/{realmId}/user")
+public class AdminUserController extends BaseController {
 
     @Autowired
     private UserService userService;
@@ -48,26 +49,26 @@ public class AdminUserController {
     @Operation(summary = "新建用户")
     @PostMapping
     public Response<UserVO> add(@RequestBody @Validated UserAddParam param) {
-        return Response.success(userService.add(param));
+        return Response.success(userService.add(getRealmId(), param));
     }
 
     @Operation(summary = "分页查询用户")
     @GetMapping
     public Response<Page<UserVO>> page(@Validated UserQueryParam param) {
-        return Response.success(userService.page(param));
+        return Response.success(userService.page(getRealmId(), param));
     }
 
     @Operation(summary = "查询用户")
     @GetMapping("/{userId}")
     public Response<UserVO> get(@Validated @NotNull(message = "未提交用户ID") @PathVariable("userId") Long userId) {
-        return Response.success(userService.get(userId));
+        return Response.success(userService.get(getRealmId(), userId));
     }
 
     @Operation(summary = "更新用户")
     @PutMapping("/{userId}")
     public Response<Void> update(@Validated @NotNull(message = "未提交用户ID") @PathVariable("userId") Long userId,
                                    @Validated @RequestBody UserUpdateParam param) {
-        userService.update(userId, param);
+        userService.update(getRealmId(), userId, param);
         return Response.success();
     }
 

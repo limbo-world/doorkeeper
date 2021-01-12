@@ -14,33 +14,13 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param.user;
-
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-
-import javax.validation.constraints.NotNull;
+package org.limbo.doorkeeper.server.constants;
 
 /**
  * @author Devil
- * @date 2021/1/9 10:57 上午
+ * @date 2021/1/11 4:25 下午
  */
-@Data
-public class UserAddParam {
+public enum  HttpMethod {
 
-    @NotNull(message = "用户名不能为空")
-    @Schema(title = "用户名", required = true)
-    private String username;
-
-    @NotNull(message = "昵称不能为空")
-    @Schema(title = "昵称", required = true)
-    private String nickname;
-
-    @NotNull(message = "密码不能为空")
-    @Schema(title = "密码", required = true)
-    private String password;
-
-    @Schema(title = "是否启用")
-    private Boolean isEnabled;
-
+    GET, POST, PUT, DELETE;
 }

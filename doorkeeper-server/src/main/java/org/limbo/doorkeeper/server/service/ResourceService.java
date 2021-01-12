@@ -65,8 +65,8 @@ public class ResourceService {
     private ResourceTagMapper resourceTagMapper;
 
     @Transactional
-    public ResourceVO add(ResourceAddParam param) {
-        Client client = clientMapper.selectById(param.getClientId());
+    public ResourceVO add(Long realmId, Long clientId, ResourceAddParam param) {
+        Client client = clientMapper.getById(realmId, clientId);
         Verifies.notNull(client, "委托方不存在");
 
         Resource resource = EnhancedBeanUtils.createAndCopy(param, Resource.class);
@@ -86,8 +86,8 @@ public class ResourceService {
     }
 
     @Transactional
-    public void update(Long resourceId, ResourceUpdateParam param) {
-        Resource resource = resourceMapper.selectById(resourceId);
+    public void update(Long realmId, Long clientId, Long resourceId, ResourceUpdateParam param) {
+        Resource resource = resourceMapper.getById(realmId, clientId, resourceId);
         Verifies.notNull(resource, "资源不存在");
 
         // 更新
@@ -126,20 +126,23 @@ public class ResourceService {
     }
 
     @Transactional
-    public void batchUpdate(ResourceBatchUpdateParam param) {
+    public void batchUpdate(Long realmId, Long clientId, ResourceBatchUpdateParam param) {
         switch (param.getType()) {
             case UPDATE:
                 resourceMapper.update(null, Wrappers.<Resource>lambdaUpdate()
                         .set(param.getIsEnabled() != null, Resource::getIsEnabled, param.getIsEnabled())
                         .in(Resource::getResourceId, param.getResourceIds())
+                        .eq(Resource::getRealmId, realmId)
+                        .eq(Resource::getClientId, clientId)
                 );
             default:
                 break;
         }
     }
 
-    public ResourceVO get(Long resourceId) {
-        Resource resource = resourceMapper.selectById(resourceId);
+    public ResourceVO get(Long realmId, Long clientId, Long resourceId) {
+        Resource resource = resourceMapper.getById(realmId, clientId, resourceId);
+        Verifies.notNull(resource, "资源不存在");
         List<ResourceTag> resourceTags = resourceTagMapper.selectList(Wrappers.<ResourceTag>lambdaQuery()
                 .eq(ResourceTag::getResourceId, resourceId)
         );
@@ -152,7 +155,9 @@ public class ResourceService {
         return result;
     }
 
-    public Page<ResourceVO> page(ResourceQueryParam param) {
+    public Page<ResourceVO> page(Long realmId, Long clientId, ResourceQueryParam param) {
+        param.setRealmId(realmId);
+        param.setClientId(clientId);
         long count = resourceMapper.pageVOCount(param);
         param.setTotal(count);
         if (count > 0) {

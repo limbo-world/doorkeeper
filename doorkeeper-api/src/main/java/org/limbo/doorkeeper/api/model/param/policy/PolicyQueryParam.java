@@ -23,8 +23,6 @@ import org.limbo.doorkeeper.api.constants.PolicyType;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 
-import javax.validation.constraints.NotNull;
-
 /**
  * @author Devil
  * @date 2021/1/6 7:53 下午
@@ -32,14 +30,6 @@ import javax.validation.constraints.NotNull;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class PolicyQueryParam extends Page<PolicyVO> {
-
-    @NotNull(message = "域不能为空")
-    @Schema(title = "域", required = true)
-    private Long realmId;
-
-    @NotNull(message = "委托方不能为空")
-    @Schema(title = "委托方", required = true)
-    private Long clientId;
 
     @Schema(title = "名称", description = "精确查询")
     private String name;

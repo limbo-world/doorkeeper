@@ -40,18 +40,21 @@ public class RoleCombineService {
     @Autowired
     private RoleCombineMapper roleCombineMapper;
 
-    public List<RoleCombineVO> list(RoleCombineQueryParam param) {
+    public List<RoleCombineVO> list(Long realmId, Long clientId, Long parentId, RoleCombineQueryParam param) {
+        param.setRealmId(realmId);
+        param.setClientId(clientId);
+        param.setParentId(parentId);
         return roleCombineMapper.listVOSByParent(param);
     }
 
     @Transactional
-    public void batchUpdate(RoleCombineBatchUpdateParam param) {
+    public void batchUpdate(Long realmId, Long clientId, Long parentId, RoleCombineBatchUpdateParam param) {
         switch (param.getType()) {
             case SAVE: // 新增
                 List<RoleCombine> roleCombines = new ArrayList<>();
                 for (Long roleId : param.getRoleIds()) {
                     RoleCombine roleCombine = new RoleCombine();
-                    roleCombine.setParentId(param.getParentId());
+                    roleCombine.setParentId(parentId);
                     roleCombine.setRoleId(roleId);
                     roleCombines.add(roleCombine);
                 }
@@ -59,7 +62,7 @@ public class RoleCombineService {
                 break;
             case DELETE: // 删除
                 roleCombineMapper.delete(Wrappers.<RoleCombine>lambdaQuery()
-                        .eq(RoleCombine::getParentId, param.getParentId())
+                        .eq(RoleCombine::getParentId, parentId)
                         .in(RoleCombine::getRoleId, param.getRoleIds())
                 );
                 break;

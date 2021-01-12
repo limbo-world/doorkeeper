@@ -33,10 +33,6 @@ import java.util.List;
 @Data
 public class PolicyAddParam {
 
-    @NotNull(message = "委托方不能为空")
-    @Schema(title = "委托方", required = true)
-    private Long clientId;
-
     @NotBlank(message = "名称不能为空")
     @Schema(title = "名称", required = true)
     private String name;

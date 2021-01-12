@@ -17,6 +17,8 @@
 package org.limbo.doorkeeper.server.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.limbo.doorkeeper.api.model.param.resource.ResourceQueryParam;
 import org.limbo.doorkeeper.api.model.vo.ResourceVO;
 import org.limbo.doorkeeper.server.entity.Resource;
@@ -28,6 +30,11 @@ import java.util.List;
  * @date 2021/1/3 6:08 下午
  */
 public interface ResourceMapper extends BaseMapper<Resource> {
+
+    @Select("select * from resource where realm_id = #{realId} and" +
+            " client_id =#{clientId} and resource_id = #{resourceId}")
+    Resource getById(@Param("realId") Long realId, @Param("clientId") Long clientId,
+                       @Param("resourceId") Long resourceId);
 
     long pageVOCount(ResourceQueryParam param);
 

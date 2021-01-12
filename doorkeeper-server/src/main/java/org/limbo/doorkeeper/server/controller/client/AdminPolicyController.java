@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.controller.admin;
+package org.limbo.doorkeeper.server.controller.client;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,6 +26,7 @@ import org.limbo.doorkeeper.api.model.param.policy.PolicyBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.policy.PolicyQueryParam;
 import org.limbo.doorkeeper.api.model.param.policy.PolicyUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
+import org.limbo.doorkeeper.server.controller.BaseController;
 import org.limbo.doorkeeper.server.service.policy.PolicyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -40,8 +41,8 @@ import javax.validation.constraints.NotNull;
 @Tag(name = "策略")
 @Slf4j
 @RestController
-@RequestMapping("/admin/policy")
-public class AdminPolicyController {
+@RequestMapping("/admin/realm/{realmId}/client/{clientId}/policy")
+public class AdminPolicyController extends BaseController {
 
     @Autowired
     private PolicyService policyService;
@@ -49,33 +50,33 @@ public class AdminPolicyController {
     @Operation(summary = "新建策略")
     @PostMapping
     public Response<PolicyVO> add(@RequestBody @Validated PolicyAddParam param) {
-        return Response.success(policyService.add(param));
+        return Response.success(policyService.add(getRealmId(), getClientId(), param));
     }
 
     @Operation(summary = "批量修改策略")
     @PostMapping("/batch")
     public Response<Void> batch(@RequestBody @Validated PolicyBatchUpdateParam param) {
-        policyService.batchUpdate(param);
+        policyService.batchUpdate(getRealmId(), getClientId(), param);
         return Response.success();
     }
 
     @Operation(summary = "分页查询策略")
     @GetMapping
     public Response<Page<PolicyVO>> page(@Validated PolicyQueryParam param) {
-        return Response.success(policyService.page(param));
+        return Response.success(policyService.page(getRealmId(), getClientId(), param));
     }
 
     @Operation(summary = "查询策略")
     @GetMapping("/{policyId}")
     public Response<PolicyVO> get(@Validated @NotNull(message = "未提交策略ID") @PathVariable("policyId") Long policyId) {
-        return Response.success(policyService.get(policyId));
+        return Response.success(policyService.get(getRealmId(), getClientId(), policyId));
     }
 
     @Operation(summary = "更新策略")
     @PutMapping("/{policyId}")
     public Response<Void> update(@Validated @NotNull(message = "未提交策略ID") @PathVariable("policyId") Long policyId,
                                    @Validated @RequestBody PolicyUpdateParam param) {
-        policyService.update(policyId, param);
+        policyService.update(getRealmId(), getClientId(), policyId, param);
         return Response.success();
     }
 }

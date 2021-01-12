@@ -14,16 +14,15 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.controller.admin;
+package org.limbo.doorkeeper.server.controller.realm;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.role.RoleCombineQueryParam;
-import org.limbo.doorkeeper.api.model.param.role.RoleCombineBatchUpdateParam;
-import org.limbo.doorkeeper.api.model.vo.RoleCombineVO;
-import org.limbo.doorkeeper.server.service.RoleCombineService;
+import org.limbo.doorkeeper.api.model.param.resource.RealmAddParam;
+import org.limbo.doorkeeper.api.model.vo.RealmVO;
+import org.limbo.doorkeeper.server.controller.BaseController;
+import org.limbo.doorkeeper.server.service.RealmService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -32,28 +31,26 @@ import java.util.List;
 
 /**
  * @author Devil
- * @date 2021/1/4 5:19 下午
+ * @date 2021/1/3 5:41 下午
  */
-@Tag(name = "角色组合")
 @Slf4j
 @RestController
-@RequestMapping("/admin/role-combine")
-public class AdminRoleCombineController {
+@RequestMapping("/admin/realm")
+public class AdminRealmController extends BaseController {
 
     @Autowired
-    private RoleCombineService roleCombineService;
+    private RealmService realmService;
 
-    @Operation(summary = "查询角色组合列表")
-    @GetMapping
-    public Response<List<RoleCombineVO>> list(@Validated RoleCombineQueryParam param) {
-        return Response.success(roleCombineService.list(param));
+    @Operation(summary = "新建域")
+    @PostMapping
+    public Response<RealmVO> add(@RequestBody @Validated RealmAddParam param) {
+        return Response.success(realmService.add(getUserId(), param));
     }
 
-    @Operation(summary = "批量修改角色组合")
-    @PostMapping("/batch")
-    public Response<List<RoleCombineVO>> batch(@RequestBody @Validated RoleCombineBatchUpdateParam param) {
-        roleCombineService.batchUpdate(param);
-        return Response.success();
+    @Operation(summary = "查询账户拥有的域")
+    @GetMapping
+    public Response<List<RealmVO>> userRealms() {
+        return Response.success(realmService.userRealms(getUserId()));
     }
 
 }

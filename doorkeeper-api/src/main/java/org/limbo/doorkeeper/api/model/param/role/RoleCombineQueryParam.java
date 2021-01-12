@@ -19,8 +19,6 @@ package org.limbo.doorkeeper.api.model.param.role;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
-
 /**
  * @author Devil
  * @date 2021/1/5 11:16 上午
@@ -28,16 +26,10 @@ import javax.validation.constraints.NotNull;
 @Data
 public class RoleCombineQueryParam {
 
-    @NotNull(message = "域不能为空")
-    @Schema(title = "域id", required = true)
     private Long realmId;
 
-    @NotNull(message = "委托方不能为空")
-    @Schema(title = "委托方", required = true)
     private Long clientId;
 
-    @NotNull(message = "父角色不能为空")
-    @Schema(title = "父角色", required = true)
     private Long parentId;
 
     @Schema(title = "角色名称", description = "精确查询")
