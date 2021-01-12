@@ -113,7 +113,7 @@ export default {
     },
 
     computed: {
-        ...mapState('session', ['user', 'authExpEvaluator']),
+        ...mapState('session', ['user']),
     },
 
     created() {
@@ -135,8 +135,8 @@ export default {
                 this.resetPageForm();
             }
             this.startProgress();
-            return this.$ajax.get('/admin/policy', {
-                params: {...this.queryForm, clientId: this.clientId, addRealmId: true}
+            return this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/policy`, {
+                params: this.queryForm
             }).then(response => {
                 const page = response.data;
                 this.queryForm.total = page.total >= 0 ? page.total : this.queryForm.total;
@@ -154,7 +154,7 @@ export default {
                 this.selectPolicys.forEach(policy => policyIds.push(policy.policyId))
             }
             this.startProgress();
-            return this.$ajax.post('/admin/policy/batch', {
+            return this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/policy/batch`, {
                 type: this.$constants.batchMethod.UPDATE, isEnabled: v, policyIds: policyIds
             }).then(response => {
                 this.loadPolicys();

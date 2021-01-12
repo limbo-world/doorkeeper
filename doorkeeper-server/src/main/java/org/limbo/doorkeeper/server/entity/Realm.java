@@ -16,6 +16,7 @@ import java.util.Date;
 @Data
 @TableName("realm")
 public class Realm {
+
     @TableId(type = IdType.AUTO)
     private Long realmId;
 
@@ -24,4 +25,5 @@ public class Realm {
     private Date createTime;
 
     private Date updateTime;
+
 }

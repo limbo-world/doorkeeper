@@ -2,12 +2,6 @@
     <el-container class="project-page">
         <el-header class="padding-top-xs" height="50px">
             <el-form ref="searchForm" :inline="true" size="mini">
-                <el-form-item label="委托方">
-                    <el-select v-model="queryForm.clientId" filterable>
-                        <el-option v-for="item in clients" :key="item.clientId" :label="item.name"
-                                   :value="item.clientId"></el-option>
-                    </el-select>
-                </el-form-item>
                 <el-form-item label="名称">
                     <el-input v-model="queryForm.dimName" placeholder="输入名称"></el-input>
                 </el-form-item>
@@ -48,6 +42,10 @@ export default {
             type: Number,
             default: null
         },
+        clientId: {
+            type: Number,
+            default: 0
+        },
     },
 
     data() {
@@ -70,8 +68,7 @@ export default {
 
     created() {
         pages.roleCombine = this;
-
-        this.loadClients();
+        this.loadRoles();
     },
 
     methods: {
@@ -79,32 +76,17 @@ export default {
 
         loadRoles() {
             this.startProgress();
-            this.$ajax.get('/admin/role-combine', {
-                params: {
-                    ...this.queryForm, addRealmId: true, parentId: this.roleId
-                }
+            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/role/${this.roleId}/role-combine`, {
+                params: this.queryForm
             }).then(response => {
                 this.roles = response.data;
             }).finally(() => this.stopProgress());
         },
 
-        loadClients() {
-            this.startProgress();
-            this.$ajax.get('/admin/client', {params: {addRealmId: true}}).then(response => {
-                let clients = [{clientId: 0, name: "域"}]
-                if (response.data && response.data.length > 0) {
-                    clients = clients.concat(response.data)
-                }
-                this.clients = clients;
-            }).finally(() => this.stopProgress());
-        },
-
         bindRole(v, roleId) {
             const loading = this.$loading();
-            this.$ajax.post('/admin/role-combine/batch', {
-                parentId: this.roleId,
-                roleIds: [roleId],
-                type: v ? this.batchMethod.SAVE : this.batchMethod.DELETE
+            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/role/${this.roleId}/role-combine/batch`, {
+                roleIds: [roleId], type: v ? this.batchMethod.SAVE : this.batchMethod.DELETE
             }).then(response => {
                 this.loadRoles();
             }).finally(() => loading.close());

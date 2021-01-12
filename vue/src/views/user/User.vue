@@ -33,7 +33,8 @@
                         </el-button>
                         <el-button type="primary" @click="() => {
                             $router.push({path: '/user/user-edit'})
-                            }" size="mini" icon="el-icon-circle-plus">新增</el-button>
+                            }" size="mini" icon="el-icon-circle-plus">新增
+                        </el-button>
                         <el-button type="primary" @click="batchEnable(true)" size="mini">批量启用</el-button>
                         <el-button type="primary" @click="batchEnable(false)" size="mini">批量停用</el-button>
                     </el-form-item>
@@ -115,9 +116,7 @@ export default {
                 this.resetPageForm();
             }
             this.startProgress();
-            return this.$ajax.get('/admin/user', {
-                params: {...this.queryForm, addRealmId: true}
-            }).then(response => {
+            return this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/user`, {params: this.queryForm}).then(response => {
                 const page = response.data;
                 this.queryForm.total = page.total >= 0 ? page.total : this.queryForm.total;
                 this.users = page.data;
@@ -130,7 +129,7 @@ export default {
 
         batchEnable(v) {
             let permissionIds = [];
-            if (this.selectPermissions && this.selectPermissions.length > 0 ) {
+            if (this.selectPermissions && this.selectPermissions.length > 0) {
                 this.selectPermissions.forEach(permission => permissionIds.push(permission.permissionId))
             }
             this.startProgress();

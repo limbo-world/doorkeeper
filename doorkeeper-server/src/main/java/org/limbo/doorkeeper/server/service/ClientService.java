@@ -17,7 +17,6 @@
 package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.exception.ParamException;
 import org.limbo.doorkeeper.api.model.param.client.ClientAddParam;
@@ -25,9 +24,7 @@ import org.limbo.doorkeeper.api.model.param.client.ClientQueryParam;
 import org.limbo.doorkeeper.api.model.param.client.ClientUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ClientVO;
 import org.limbo.doorkeeper.server.dao.ClientMapper;
-import org.limbo.doorkeeper.server.dao.UserClientMapper;
 import org.limbo.doorkeeper.server.entity.Client;
-import org.limbo.doorkeeper.server.entity.UserClient;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,10 +32,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author Devil
@@ -49,9 +43,6 @@ public class ClientService {
 
     @Autowired
     private ClientMapper clientMapper;
-
-    @Autowired
-    private UserClientMapper userClientMapper;
 
     @Autowired
     private DoorkeeperService doorkeeperService;
@@ -76,18 +67,13 @@ public class ClientService {
      * user拥有哪些client
      */
     public List<ClientVO> userClients(Long realmId, Long userId, ClientQueryParam param) {
-        List<UserClient> userClients = userClientMapper.selectList(Wrappers.<UserClient>lambdaQuery()
-                .eq(UserClient::getUserId, userId)
-        );
-        if (CollectionUtils.isEmpty(userClients)) {
-            return new ArrayList<>();
-        }
-        Set<Long> clientIds = userClients.stream().map(UserClient::getClientId).collect(Collectors.toSet());
+        // todo
+//        Set<Long> clientIds = userClients.stream().map(UserClient::getClientId).collect(Collectors.toSet());
         List<Client> clients = clientMapper.selectList(Wrappers.<Client>lambdaQuery()
                 .eq(Client::getRealmId, realmId)
                 .eq(StringUtils.isNotBlank(param.getName()), Client::getName, param.getName())
                 .like(StringUtils.isNotBlank(param.getDimName()), Client::getName, param.getDimName())
-                .in(Client::getClientId, clientIds)
+//                .in(Client::getClientId, new ArrayList<>())
                 .orderByDesc(Client::getClientId)
         );
         return EnhancedBeanUtils.createAndCopyList(clients, ClientVO.class);

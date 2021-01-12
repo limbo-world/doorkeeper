@@ -19,19 +19,14 @@ package org.limbo.doorkeeper.server.service;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.PolicyType;
-import org.limbo.doorkeeper.api.constants.UserBindType;
 import org.limbo.doorkeeper.api.model.param.policy.PolicyAddParam;
 import org.limbo.doorkeeper.api.model.param.policy.PolicyParamAddParam;
 import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.constants.HttpMethod;
 import org.limbo.doorkeeper.server.dao.ClientMapper;
 import org.limbo.doorkeeper.server.dao.RealmMapper;
-import org.limbo.doorkeeper.server.dao.UserClientMapper;
-import org.limbo.doorkeeper.server.dao.UserRealmMapper;
 import org.limbo.doorkeeper.server.entity.Client;
 import org.limbo.doorkeeper.server.entity.Realm;
-import org.limbo.doorkeeper.server.entity.UserClient;
-import org.limbo.doorkeeper.server.entity.UserRealm;
 import org.limbo.doorkeeper.server.service.policy.PolicyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,12 +49,6 @@ public class DoorkeeperService {
     private ClientMapper clientMapper;
 
     @Autowired
-    private UserRealmMapper userRealmMapper;
-
-    @Autowired
-    private UserClientMapper userClientMapper;
-
-    @Autowired
     private PolicyService policyService;
 
     @Transactional
@@ -74,18 +63,14 @@ public class DoorkeeperService {
         client.setIsEnabled(true);
         clientMapper.insert(client);
 
-        // 绑定用户realm关系
-        UserRealm userRealm = new UserRealm();
-        userRealm.setUserId(userId);
-        userRealm.setRealmId(realmId);
-        userRealm.setType(UserBindType.OWNER);
-        userRealmMapper.insert(userRealm);
+        // uri资源
 
         // http策略
-        List<PolicyAddParam> httpPolicy = createHttpPolicy(client.getClientId());
+        List<PolicyAddParam> httpPolicy = createHttpPolicy();
         for (PolicyAddParam policyAddParam : httpPolicy) {
-            policyService.add(policyAddParam);
+            policyService.add(dkRealm.getRealmId(), client.getClientId(), policyAddParam);
         }
+
     }
 
     @Transactional
@@ -94,39 +79,23 @@ public class DoorkeeperService {
                 .eq(Realm::getName, DoorkeeperConstants.REALM_NAME)
         );
 
-        Realm realm = realmMapper.selectById(realmId);
-
-        Client client = new Client();
-        client.setRealmId(dkRealm.getRealmId());
-        client.setName(realm.getName() + "-" + clientName);
-        client.setIsEnabled(true);
-        clientMapper.insert(client);
-
-        // 绑定用户client关系
-        UserClient userClient = new UserClient();
-        userClient.setUserId(userId);
-        userClient.setClientId(clientId);
-        userClient.setType(UserBindType.OWNER);
-        userClientMapper.insert(userClient);
-
         // todo client相关操作
         // 1. 委托方角色 2. 资源 3. 策略 4 权限
 
         // http策略
-        List<PolicyAddParam> httpPolicy = createHttpPolicy(client.getClientId());
+        List<PolicyAddParam> httpPolicy = createHttpPolicy();
         for (PolicyAddParam policyAddParam : httpPolicy) {
-            policyService.add(policyAddParam);
+            policyService.add(dkRealm.getRealmId(), clientId, policyAddParam);
         }
     }
 
     /**
      * 基于http的策略
      */
-    public List<PolicyAddParam> createHttpPolicy(Long clientId) {
+    private List<PolicyAddParam> createHttpPolicy() {
         List<PolicyAddParam> policyAddParams = new ArrayList<>();
         for (HttpMethod httpMethod : HttpMethod.values()) {
             PolicyAddParam policy = new PolicyAddParam();
-            policy.setClientId(clientId);
             policy.setName(httpMethod.name() + "请求");
             policy.setType(PolicyType.PARAM);
             policy.setIntention(Intention.ALLOW);
@@ -145,5 +114,11 @@ public class DoorkeeperService {
 
         return policyAddParams;
     }
+
+//    private List<ResourceAddParam> createRealmResource() {
+//
+//    }
+
+
 
 }

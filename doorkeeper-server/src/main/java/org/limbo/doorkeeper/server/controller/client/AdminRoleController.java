@@ -34,6 +34,7 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
+ * 如果是域角色 clientId 为 0
  * @author Devil
  * @date 2021/1/4 5:19 下午
  */
@@ -41,7 +42,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/admin/realm/{realmId}/client/{clientId}/role")
-public class AdminClientRoleController extends BaseController {
+public class AdminRoleController extends BaseController {
 
     @Autowired
     private RoleService roleService;

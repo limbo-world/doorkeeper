@@ -17,24 +17,18 @@
 package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.exception.ParamException;
 import org.limbo.doorkeeper.api.model.param.resource.RealmAddParam;
 import org.limbo.doorkeeper.api.model.vo.RealmVO;
 import org.limbo.doorkeeper.server.dao.RealmMapper;
-import org.limbo.doorkeeper.server.dao.UserRealmMapper;
 import org.limbo.doorkeeper.server.entity.Realm;
-import org.limbo.doorkeeper.server.entity.UserRealm;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author Devil
@@ -45,9 +39,6 @@ public class RealmService {
 
     @Autowired
     private RealmMapper realmMapper;
-
-    @Autowired
-    private UserRealmMapper userRealmMapper;
 
     @Autowired
     private DoorkeeperService doorkeeperService;
@@ -71,14 +62,10 @@ public class RealmService {
      * user拥有哪些realm
      */
     public List<RealmVO> userRealms(Long userId) {
-        List<UserRealm> userRealms = userRealmMapper.selectList(Wrappers.<UserRealm>lambdaQuery()
-                .eq(UserRealm::getUserId, userId)
-        );
-        if (CollectionUtils.isEmpty(userRealms)) {
-            return new ArrayList<>();
-        }
-        Set<Long> realmIds = userRealms.stream().map(UserRealm::getRealmId).collect(Collectors.toSet());
-        List<Realm> realms = realmMapper.selectBatchIds(realmIds);
+        // todo
+//        Set<Long> realmIds = userRealms.stream().map(UserRealm::getRealmId).collect(Collectors.toSet());
+//        List<Realm> realms = realmMapper.selectBatchIds(new ArrayList<>())
+       List<Realm> realms = realmMapper.selectList(Wrappers.emptyWrapper());
         return EnhancedBeanUtils.createAndCopyList(realms, RealmVO.class);
     }
 }

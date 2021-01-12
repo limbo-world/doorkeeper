@@ -54,6 +54,10 @@ export default {
         }
     },
 
+    computed: {
+        ...mapState('session', ['user']),
+    },
+
     created() {
         pages.clientEdit = this;
 
@@ -65,13 +69,13 @@ export default {
 
         loadClient() {
             this.startProgress({ speed: 'fast' });
-            this.$ajax.get(`/admin/client/${this.clientId}`).then(response => {
+            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}`).then(response => {
                 this.client = response.data;
             }).finally(() => this.stopProgress());
         },
 
         updateClient() {
-            this.$ajax.put(`/admin/client/${this.clientId}`, this.client).then(response => {
+            this.$ajax.put(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}`, this.client).then(response => {
                 this.loadClient()
             })
         },

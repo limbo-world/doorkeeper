@@ -123,8 +123,8 @@ export default {
                 this.resetPageForm();
             }
             this.startProgress();
-            return this.$ajax.get('/admin/permission', {
-                params: {...this.queryForm, clientId: this.clientId, addRealmId: true}
+            return this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/permission`, {
+                params: this.queryForm
             }).then(response => {
                 const page = response.data;
                 this.queryForm.total = page.total >= 0 ? page.total : this.queryForm.total;
@@ -142,7 +142,7 @@ export default {
                 this.selectPermissions.forEach(permission => permissionIds.push(permission.permissionId))
             }
             this.startProgress();
-            return this.$ajax.post('/admin/permission/batch', {
+            return this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/permission/batch`, {
                 type: this.$constants.batchMethod.UPDATE, isEnabled: v, permissionIds: permissionIds
             }).then(response => {
                 this.loadPermissions();

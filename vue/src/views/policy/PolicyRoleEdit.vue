@@ -16,35 +16,19 @@
 
 <template>
     <el-form-item label="角色">
-        <el-container class="policy-role-edit-page">
-            <el-header height="30px">
-                <el-form ref="searchForm" :inline="true" size="mini">
-                    <el-form-item label="委托方">
-                        <el-select v-model="queryForm.clientId" filterable>
-                            <el-option v-for="item in clients" :key="item.clientId" :label="item.name"
-                                       :value="item.clientId"></el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="名称">
-                        <el-input v-model="queryForm.dimName" placeholder="输入名称"></el-input>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button type="primary" @click="loadRoles" size="mini" icon="el-icon-search">查询</el-button>
-                    </el-form-item>
-                </el-form>
-            </el-header>
-
-            <el-main>
-                <el-transfer v-model="selectRoleIds" :data="roles" :titles="['未绑定', '未绑定']"
-                             @change="changeRole" filterable></el-transfer>
-            </el-main>
-
-        </el-container>
+        <div class="policy-role-edit-div">
+            <el-transfer v-model="selectRealmRoleIds" :data="realmRoles" :titles="['域角色', '已绑定']"
+                         filterable></el-transfer>
+            <el-transfer v-model="selectClientRoleIds" :data="clientRoles" :titles="['委托方角色', '已绑定']"
+                         filterable style="margin-top: 30px"></el-transfer>
+        </div>
     </el-form-item>
 </template>
 
 
 <script>
+
+import {mapState, mapActions} from 'vuex';
 
 export default {
     props: {
@@ -52,95 +36,63 @@ export default {
             type: Number,
             default: null
         },
-        policyRoles: {
-            type: Array,
-            default: []
+        clientId: {
+            type: Number,
+            default: 0
         }
     },
 
     data() {
         return {
-            queryForm: {
-                name: '',
-            },
-            clients: [],
-            roles: [],
-            selectRoleIds: [],
+            realmRoles: [],
+            clientRoles: [],
+            selectRealmRoleIds: [],
+            selectClientRoleIds: [],
         };
     },
-
+    computed: {
+        ...mapState('session', ['user']),
+    },
     created() {
         pages.policyRoleEdit = this;
-        this.loadClients();
-        // 初始化数据
-        this.policyRoles.forEach(policyRole => {
-            policyRole.key = policyRole.roleId;
-            policyRole.label = policyRole.clientName ? policyRole.clientName + "  " + policyRole.name : "域  " + policyRole.name;
-        })
-        this.concatRoles([], []);
+        this.loadRealmRoles();
+        this.loadClientRoles();
     },
 
     methods: {
-        loadClients() {
-            this.$ajax.get('/admin/client', {params: {addRealmId: true}}).then(response => {
-                let clients = [{clientId: 0, name: "域"}]
-                if (response.data && response.data.length > 0) {
-                    clients = clients.concat(response.data)
-                }
-                this.clients = clients;
-            });
-        },
-
-        loadRoles() {
-            this.$ajax.get('/admin/role', {
-                params: {
-                    ...this.queryForm, addRealmId: true
-                }
-            }).then(response => {
+        loadRealmRoles() {
+            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/0/role`).then(response => {
                 let roles = response.data;
-                let roleIds = [];
                 for (let role of roles) {
                     role.key = role.roleId;
-                    role.label = role.clientName ? role.clientName + "  " + role.name : "域  " + role.name;
-                    roleIds.push(role.roleId);
+                    role.label = role.name;
                 }
-                this.concatRoles(roles, roleIds);
+                this.realmRoles = roles;
             });
         },
-        changeRole(roleIds, d, mvRoleIds) {
-            // policyRoles是所有选择的 他不一定在roles里面
-            if (d === 'right') {
-                // 主要用于去除重复
-                this.policyRoles = this.policyRoles.filter(policyRole => mvRoleIds.indexOf(policyRole.roleId) < 0)
-                // 获取新增的role
-                let roles = this.roles.filter(role => mvRoleIds.indexOf(role.roleId) >= 0)
-                this.policyRoles = this.policyRoles.concat(roles)
-            } else {
-                // 删除里面的
-                this.policyRoles = this.policyRoles.filter(policyRole => mvRoleIds.indexOf(policyRole.roleId) < 0)
-            }
-            this.$emit('bind-policy-roles', this.policyRoles)
-        },
-        concatRoles(roles, roleIds) {
-            // 把不存在的加入进来
-            let policyRoles = this.policyRoles.filter(policyRole => roleIds.indexOf(policyRole.roleId) < 0)
-            roles = roles.concat(policyRoles);
-            this.roles = roles;
-            // 每次查询完，需要把已有的加入
-            this.selectRoleIds = this.policyRoles.map(policyRole => policyRole.roleId)
+        loadClientRoles() {
+            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/role`).then(response => {
+                let roles = response.data;
+                for (let role of roles) {
+                    role.key = role.roleId;
+                    role.label = role.name;
+                }
+                this.clientRoles = roles;
+            });
         }
     }
 }
 </script>
 
 <style lang="scss">
-.policy-role-edit-page {
+.policy-role-edit-div {
     .el-transfer {
         .el-transfer-panel {
             width: 350px;
+
             .el-transfer-panel__item {
                 margin-left: 0;
-                display: block!important;
+                display: block !important;
             }
         }
     }

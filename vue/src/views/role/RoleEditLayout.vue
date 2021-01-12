@@ -11,8 +11,8 @@
 
         <!-- 页面主体 -->
         <el-main class="relative">
-            <role-edit v-if="tabIndex === 1" :role-id="roleId"></role-edit>
-            <role-combine v-if="tabIndex === 2" :role-id="roleId"></role-combine>
+            <role-edit v-if="tabIndex === 1" :role-id="roleId" :client-id="clientId"></role-edit>
+            <role-combine v-if="tabIndex === 2" :role-id="roleId" :client-id="clientId"></role-combine>
         </el-main>
     </el-container>
 
@@ -30,6 +30,7 @@
         data: function () {
             return {
                 roleId: null,
+                clientId: 0,
                 tabIndex: 1,
             }
         },
@@ -40,6 +41,7 @@
             pages.roleEditLayout = this;
 
             this.roleId = this.$route.query.roleId;
+            this.clientId = this.$route.query.clientId;
         },
 
         methods: {
