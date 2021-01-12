@@ -14,40 +14,21 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.vo;
+package org.limbo.doorkeeper.server.dao;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.limbo.doorkeeper.api.model.param.user.UserRoleQueryParam;
+import org.limbo.doorkeeper.api.model.vo.UserRoleVO;
+import org.limbo.doorkeeper.server.entity.UserRole;
 
-import java.util.Date;
+import java.util.List;
 
 /**
  * @author Devil
- * @date 2021/1/4 11:40 上午
+ * @date 2021/1/12 3:32 下午
  */
-@Data
-public class RoleVO {
+public interface UserRoleMapper extends BaseMapper<UserRole> {
 
-    private Long roleId;
+    List<UserRoleVO> listVOS(UserRoleQueryParam param);
 
-    private Long realmId;
-
-    @Schema(title = "属于哪个委托方", description = "如果为0表示为域角色")
-    private Long clientId;
-
-    @Schema(title = "名称")
-    private String name;
-
-    @Schema(title = "描述")
-    private String description;
-
-    @Schema(title = "是否启用")
-    private Boolean isEnabled;
-
-    @Schema(title = "默认添加")
-    private Boolean isDefault;
-
-    private Date createTime;
-
-    private Date updateTime;
 }

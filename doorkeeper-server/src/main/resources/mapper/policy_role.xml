@@ -25,16 +25,12 @@
         <result column="realm_id" property="realmId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="client_id" property="clientId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="name" property="name" jdbcType="VARCHAR" javaType="java.lang.String" />
-        <result column="realm_name" property="realmName" jdbcType="VARCHAR" javaType="java.lang.String" />
-        <result column="client_name" property="clientName" jdbcType="VARCHAR" javaType="java.lang.String" />
     </resultMap>
 
     <select id="listVOSByPolicyId" resultType="org.limbo.doorkeeper.api.model.vo.policy.PolicyRoleVO">
-        select pr.*, r.realm_id, r.client_id, r.name, rm.name as realm_name, c.name as client_name
+        select pr.*, r.realm_id, r.client_id
         from policy_role pr
         left join role r on r.role_id = pr.role_id
-        left join realm rm on rm.realm_id = r.realm_id
-        left join client c on c.client_id = r.client_id
         where pr.policy_id = #{policyId}
     </select>
 </mapper>

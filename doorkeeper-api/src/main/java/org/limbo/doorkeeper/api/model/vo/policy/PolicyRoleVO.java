@@ -39,10 +39,4 @@ public class PolicyRoleVO {
     @Schema(title = "角色名称")
     private String name;
 
-    @Schema(title = "域名称")
-    private String realmName;
-
-    @Schema(title = "委托方名称")
-    private String clientName;
-
 }

@@ -85,7 +85,7 @@ public class AdminRoleController extends BaseController {
 
     @Operation(summary = "批量修改角色组合")
     @PostMapping("/{roleId}/role-combine/batch")
-    public Response<List<RoleCombineVO>> batch(@Validated @NotNull(message = "未提交角色ID") @PathVariable("roleId") Long roleId,
+    public Response<Void> batch(@Validated @NotNull(message = "未提交角色ID") @PathVariable("roleId") Long roleId,
                                                @RequestBody @Validated RoleCombineBatchUpdateParam param) {
         roleCombineService.batchUpdate(getRealmId(), getClientId(), roleId, param);
         return Response.success();

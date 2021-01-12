@@ -19,35 +19,37 @@ package org.limbo.doorkeeper.api.model.vo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.util.Date;
-
 /**
  * @author Devil
- * @date 2021/1/4 11:40 上午
+ * @date 2021/1/5 1:55 下午
  */
 @Data
-public class RoleVO {
+public class UserRoleVO {
+
+    private Long userRoleId;
+
+    private Long userId;
 
     private Long roleId;
 
+    @Schema(title = "角色所属域")
     private Long realmId;
 
-    @Schema(title = "属于哪个委托方", description = "如果为0表示为域角色")
+    @Schema(title = "角色所委托方")
     private Long clientId;
 
-    @Schema(title = "名称")
+    @Schema(title = "角色名称")
     private String name;
 
-    @Schema(title = "描述")
+    @Schema(title = "角色描述")
     private String description;
+
+    @Schema(title = "是否组合角色")
+    private Boolean isCombine;
 
     @Schema(title = "是否启用")
     private Boolean isEnabled;
 
-    @Schema(title = "默认添加")
+    @Schema(title = "是否默认添加")
     private Boolean isDefault;
-
-    private Date createTime;
-
-    private Date updateTime;
 }

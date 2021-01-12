@@ -34,8 +34,11 @@
             and r.realm_id = #{realmId}
             and r.client_id = #{clientId}
             <if test="name != null and name != ''">
-                <bind name="name" value="'%' + name + '%'"/>
-                and r.name like #{name}
+                and r.name = #{name}
+            </if>
+            <if test="dimName != null and dimName != ''">
+                <bind name="dimName" value="'%' + dimName + '%'"/>
+                and r.name like #{dimName}
             </if>
         </where>
         order by r.role_id desc

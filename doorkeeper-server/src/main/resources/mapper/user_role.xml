@@ -16,31 +16,29 @@
   -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="org.limbo.doorkeeper.server.dao.RoleMapper" >
+<mapper namespace="org.limbo.doorkeeper.server.dao.UserRoleMapper" >
 
-    <resultMap id="RoleVO" type="org.limbo.doorkeeper.api.model.vo.RoleVO">
+    <resultMap id="UserRoleVO" type="org.limbo.doorkeeper.api.model.vo.UserRoleVO">
+        <result column="user_role_id" property="userRoleId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="user_id" property="userId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="role_id" property="roleId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="realm_id" property="realmId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="client_id" property="clientId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="name" property="name" jdbcType="VARCHAR" javaType="java.lang.String" />
         <result column="description" property="description" jdbcType="VARCHAR" javaType="java.lang.String" />
         <result column="is_default" property="isDefault" jdbcType="BIT" javaType="java.lang.Boolean" />
+        <result column="is_combine" property="isCombine" jdbcType="BIT" javaType="java.lang.Boolean" />
         <result column="is_enabled" property="isEnabled" jdbcType="BIT" javaType="java.lang.Boolean" />
-        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" javaType="java.util.Date" />
-        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" javaType="java.util.Date" />
     </resultMap>
 
-    <select id="listVOS" resultType="org.limbo.doorkeeper.api.model.vo.RoleVO">
-        select r.*
-        from role r
+    <select id="listVOS" resultMap="UserRoleVO">
+        select r.*, ur.user_role_id, ur.user_id
+        from `role` r
+        left join user_role ur on ur.role_id = r.role_id and ur.user_id = #{userId}
         <where>
             and r.realm_id = #{realmId}
-            and r.client_id = #{clientId}
-            <if test="isEnabled != null">
-                and r.is_enabled = #{isEnabled}
-            </if>
-            <if test="isDefault != null">
-                and r.is_default = #{isDefault}
+            <if test="clientId != null">
+                and r.client_id like #{clientId}
             </if>
             <if test="name != null and name != ''">
                 and r.name = #{name}
@@ -50,6 +48,7 @@
                 and r.name like #{dimName}
             </if>
         </where>
+        order by r.role_id desc
     </select>
 
 </mapper>

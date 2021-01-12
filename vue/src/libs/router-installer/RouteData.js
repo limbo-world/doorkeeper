@@ -113,6 +113,10 @@ export default [
                         path: '/user/user-edit',
                         component: _import('user/UserEdit'),
                     },
+                    {
+                        path: '/user/user-role-edit',
+                        component: _import('user/UserRoleEdit'),
+                    },
                 ]
             },
         ]

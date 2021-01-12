@@ -35,16 +35,13 @@
                             $router.push({path: '/user/user-edit'})
                             }" size="mini" icon="el-icon-circle-plus">新增
                         </el-button>
-                        <el-button type="primary" @click="batchEnable(true)" size="mini">批量启用</el-button>
-                        <el-button type="primary" @click="batchEnable(false)" size="mini">批量停用</el-button>
                     </el-form-item>
                 </el-form>
             </el-row>
         </el-header>
 
         <el-main>
-            <el-table :data="users" size="mini" @selection-change="handleSelectionChange">
-                <el-table-column type="selection" width="50"></el-table-column>
+            <el-table :data="users" size="mini">
                 <el-table-column prop="userId" label="ID"></el-table-column>
                 <el-table-column prop="username" label="用户名"></el-table-column>
                 <el-table-column prop="nickname" label="昵称"></el-table-column>
@@ -52,6 +49,15 @@
                 <el-table-column label="是否启用">
                     <template slot-scope="scope">
                         {{ scope.row.isEnabled ? "已启用" : "未启用" }}
+                    </template>
+                </el-table-column>
+                <el-table-column label="角色" align="center" width="100">
+                    <template slot-scope="scope">
+                        <div class="operations">
+                            <i class="el-icon-edit" @click="() => {
+                                $router.push({path: '/user/user-role-edit',query: {
+                                    userId: scope.row.userId}})}"></i>
+                        </div>
                     </template>
                 </el-table-column>
                 <el-table-column label="操作" align="center" width="100">
@@ -122,24 +128,6 @@ export default {
                 this.users = page.data;
             }).finally(() => this.stopProgress());
         },
-
-        handleSelectionChange(val) {
-            this.selectPermissions = val;
-        },
-
-        batchEnable(v) {
-            let permissionIds = [];
-            if (this.selectPermissions && this.selectPermissions.length > 0) {
-                this.selectPermissions.forEach(permission => permissionIds.push(permission.permissionId))
-            }
-            this.startProgress();
-            return this.$ajax.post('/admin/permission/batch', {
-                type: this.$constants.batchMethod.UPDATE, isEnabled: v, permissionIds: permissionIds
-            }).then(response => {
-                this.loadPermissions();
-            }).finally(() => this.stopProgress());
-        }
-
     }
 
 }
