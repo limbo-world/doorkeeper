@@ -62,8 +62,6 @@ export default {
         return {
             passwordDialogOpened: false,
             realmAddDialogOpened: false,
-
-            realms: []
         }
     },
 
