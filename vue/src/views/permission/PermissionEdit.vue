@@ -102,10 +102,12 @@
 
                 resourceQueryForm: {
                     name: '',
+                    size: 100
                 },
 
                 policyQueryForm: {
                     name: '',
+                    size: 100
                 },
 
                 resources: [],
@@ -134,7 +136,7 @@
 
             // ========== 资源相关  ==========
             loadResources() {
-                this.$ajax.get(`/admin/realm/${this.realm.realmId}/client/${this.clientId}/resource`, {
+                this.$ajax.get(`/admin/realm/${this.realm.realmId}/client/${this.permission.clientId}/resource`, {
                     params: this.resourceQueryForm
                 }).then(response => {
                     let resources = response.data.data;
@@ -170,7 +172,7 @@
 
             // ========== 策略相关  ==========
             loadPolicys() {
-                this.$ajax.get(`/admin/realm/${this.realm.realmId}/client/${this.clientId}/policy`, {
+                this.$ajax.get(`/admin/realm/${this.realm.realmId}/client/${this.permission.clientId}/policy`, {
                     params: this.policyQueryForm
                 }).then(response => {
                     let policys = response.data.data;
@@ -207,18 +209,20 @@
             // ========== 权限相关 ==========
             loadPermission() {
                 this.startProgress({ speed: 'fast' });
-                this.$ajax.get(`/admin/realm/${this.realm.realmId}/client/${this.clientId}/permission/${this.permission.permissionId}`).then(response => {
+                this.$ajax.get(`/admin/realm/${this.realm.realmId}/client/${this.permission.clientId}/permission/${this.permission.permissionId}`).then(response => {
                     this.permission = response.data;
+                    this.loadResources();
+                    this.loadPolicys();
                 }).finally(() => this.stopProgress());
             },
             addPermission() {
-                this.$ajax.post(`/admin/realm/${this.realm.realmId}/client/${this.clientId}/permission`, this.permission).then(response => {
+                this.$ajax.post(`/admin/realm/${this.realm.realmId}/client/${this.permission.clientId}/permission`, this.permission).then(response => {
                     this.permission = response.data;
                     this.loadPermission();
                 })
             },
             updatePermission() {
-                this.$ajax.put(`/admin/realm/${this.realm.realmId}/client/${this.clientId}/permission/${this.permission.permissionId}`, this.permission).then(response => {
+                this.$ajax.put(`/admin/realm/${this.realm.realmId}/client/${this.permission.clientId}/permission/${this.permission.permissionId}`, this.permission).then(response => {
                     this.loadPermission();
                 })
             },

@@ -24,4 +24,11 @@ import lombok.Data;
  */
 @Data
 public class PermissionResourceVO {
+
+    private Long permissionResourceId;
+
+    private Long permissionId;
+
+    private Long resourceId;
+
 }

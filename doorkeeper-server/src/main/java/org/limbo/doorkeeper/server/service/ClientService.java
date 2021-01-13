@@ -58,7 +58,7 @@ public class ClientService {
         }
 
         // 初始化client数据
-//        doorkeeperService.creatClient(userId, client.getClientId(), client.getName());
+        doorkeeperService.creatClientData(userId, realmId, client.getClientId(), client.getName());
 
         return EnhancedBeanUtils.createAndCopy(client, ClientVO.class);
     }

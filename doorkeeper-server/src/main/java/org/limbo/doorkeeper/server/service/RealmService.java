@@ -53,7 +53,7 @@ public class RealmService {
         }
 
         // 初始化realm数据
-        doorkeeperService.createRealm(userId, realm.getRealmId(), realm.getName());
+        doorkeeperService.createRealmData(userId, realm.getRealmId(), realm.getName());
 
         return EnhancedBeanUtils.createAndCopy(realm, RealmVO.class);
     }

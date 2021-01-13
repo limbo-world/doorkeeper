@@ -26,6 +26,7 @@ import org.limbo.doorkeeper.server.dao.policy.PolicyMapper;
 import org.limbo.doorkeeper.server.entity.Permission;
 import org.limbo.doorkeeper.server.entity.PermissionPolicy;
 import org.limbo.doorkeeper.server.entity.policy.Policy;
+import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +54,10 @@ public class PermissionPolicyService {
     private PolicyMapper policyMapper;
 
     public List<PermissionPolicyVO> getByPermissionId(Long permissionId) {
-        return null;
+        List<PermissionPolicy> permissionPolicies = permissionPolicyMapper.selectList(Wrappers.<PermissionPolicy>lambdaQuery()
+                .eq(PermissionPolicy::getPermissionId, permissionId)
+        );
+        return permissionPolicies == null ? new ArrayList<>() : EnhancedBeanUtils.createAndCopyList(permissionPolicies, PermissionPolicyVO.class);
     }
 
     @Transactional

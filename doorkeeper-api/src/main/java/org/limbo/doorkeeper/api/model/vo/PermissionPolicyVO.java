@@ -24,4 +24,11 @@ import lombok.Data;
  */
 @Data
 public class PermissionPolicyVO {
+
+    private Long permissionPolicyId;
+
+    private Long permissionId;
+
+    private Long policyId;
+
 }
