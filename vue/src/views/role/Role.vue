@@ -108,7 +108,7 @@ export default {
     },
 
     computed: {
-        ...mapState('session', ['realm']),
+        ...mapState('session', ['user']),
     },
 
     created() {
@@ -122,7 +122,7 @@ export default {
 
         loadRoles() {
             this.startProgress();
-            this.$ajax.get(`/admin/realm/${this.realm.realmId}/client/${this.clientId}/role`, {
+            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/role`, {
                 params: this.queryForm
             }).then(response => {
                 this.roles = response.data;
@@ -131,7 +131,7 @@ export default {
 
         addRole() {
             this.dialogProcessing = true;
-            this.$ajax.post(`/admin/realm/${this.realm.realmId}/client/${this.clientId}/role`, this.role).then(() => {
+            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/role`, this.role).then(() => {
                 this.loadRoles();
                 this.dialogOpened = false;
             }).finally(() => this.dialogProcessing = false);

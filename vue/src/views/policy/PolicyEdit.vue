@@ -74,7 +74,7 @@
         },
 
         computed: {
-            ...mapState('session', ['realm']),
+            ...mapState('session', ['user']),
         },
 
         created() {
@@ -92,17 +92,17 @@
             // ========== 资源相关 ==========
             loadPolicy() {
                 this.startProgress({ speed: 'fast' });
-                this.$ajax.get(`/admin/realm/${this.realm.realmId}/client/${this.clientId}/policy/${this.policy.policyId}`).then(response => {
+                this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/policy/${this.policy.policyId}`).then(response => {
                     this.policy = response.data;
                 }).finally(() => this.stopProgress());
             },
             addPolicy() {
-                this.$ajax.post(`/admin/realm/${this.realm.realmId}/client/${this.clientId}/policy`, this.policy).then(response => {
+                this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/policy`, this.policy).then(response => {
                     this.loadPolicy();
                 })
             },
             updatePolicy() {
-                this.$ajax.put(`/admin/realm/${this.realm.realmId}/client/${this.clientId}/policy/${this.policy.policyId}`, this.policy).then(response => {
+                this.$ajax.put(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/policy/${this.policy.policyId}`, this.policy).then(response => {
                     this.loadPolicy();
                 })
             },

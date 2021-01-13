@@ -72,20 +72,20 @@ const checkSession = (to, from, next) => {
     store.dispatch('session/loadSession').then(() => {
         // 加载用户拥有的域
         store.dispatch('session/loadRealms').then(() => {
-            const realm = store.state.session.realm
+            const user = store.getters['session/user']
             const realms = store.state.session.realms
             let needChange = true;
             // 设置当前选中的域 如果已经有选了则不需要切换了
-            if (realm) {
+            if (user.realm) {
                 needChange = false;
                 // 如果已选的不在列表里面 也需要切换
                 let realmIds = realms.map(realm => realm.realmId);
-                if (realmIds.indexOf(realm.realmId) < 0) {
+                if (realmIds.indexOf(user.realm.realmId) < 0) {
                     needChange = true;
                 }
             }
             if (needChange) {
-                store.dispatch('session/changeRealm', realms[0], false).then(() => {
+                store.dispatch('session/changeRealm', realms[0]).then(() => {
                     next();
                 }).catch(reject => {
                     console.log("realm切换失败", reject)

@@ -59,7 +59,7 @@ export default {
     },
 
     computed: {
-        ...mapState('session', ['realm']),
+        ...mapState('session', ['user']),
     },
 
     created() {
@@ -73,7 +73,7 @@ export default {
 
         loadClients() {
             this.startProgress();
-            this.$ajax.get(`/admin/realm/${this.realm.realmId}/client`).then(response => {
+            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client`).then(response => {
                 let clients = [{clientId: 0, name: "域"}]
                 if (response.data && response.data.length > 0) {
                     clients = clients.concat(response.data)
@@ -84,7 +84,7 @@ export default {
 
         loadRoles() {
             this.startProgress();
-            this.$ajax.get(`/admin/realm/${this.realm.realmId}/user/${this.userId}/user-role`, {
+            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/user/${this.userId}/user-role`, {
                 params: this.queryForm
             }).then(response => {
                 this.roles = response.data;
@@ -93,7 +93,7 @@ export default {
 
         bindRole(v, roleId) {
             const loading = this.$loading();
-            this.$ajax.post(`/admin/realm/${this.realm.realmId}/user/${this.userId}/user-role/batch`, {
+            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/user/${this.userId}/user-role/batch`, {
                 roleIds: [roleId], type: v ? this.$constants.batchMethod.SAVE : this.$constants.batchMethod.DELETE
             }).then(response => {
                 this.loadRoles();

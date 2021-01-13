@@ -17,11 +17,8 @@ export default {
     namespaced: true,
 
     state: {
-        // 登录用户
+        // 用户信息
         user: null,
-
-        // 当前选择域
-        realm: null,
 
         realms: [],
 
@@ -49,11 +46,6 @@ export default {
         setUser: (state, user) => {
             state.user = user;
         },
-
-        setRealm: (state, realm) => {
-            state.realm = realm;
-        },
-
         setRealms: (state, realms) => {
             state.realms = realms;
         },
@@ -74,7 +66,6 @@ export default {
          * 登录，登录成功后会返回授权信息，授权信息将设置到state和sessionCache
          */
         login({ commit }, param) {
-
             return http.get('/login', {params: {...param, realmId: process.env.VUE_APP_realmId}}).then(response => {
                 if (response.code !== 200) {
                     MessageBox({
@@ -85,6 +76,11 @@ export default {
                     return Promise.reject();
                 }
                 const user = response.data;
+
+                let sessionUserCache = getSessionUserCache();
+                if (sessionUserCache.realm) {
+                    user.realm = sessionUserCache.realm;
+                }
                 commit('setUser', user);
                 setSessionUserCache(user);
                 return Promise.resolve();
@@ -112,6 +108,11 @@ export default {
             }).then(response => {
                 // 有会话 设置到state中，并更新sessionCache
                 const user = response.data;
+
+                let sessionUserCache = getSessionUserCache();
+                if (sessionUserCache.realm) {
+                    user.realm = sessionUserCache.realm;
+                }
                 commit('setUser', user);
                 setSessionUserCache(user);
                 return Promise.resolve();
@@ -168,14 +169,16 @@ export default {
         /**
          * 切换当前选中的域
          */
-        changeRealm({ state, commit }, realm, reload) {
+        changeRealm({ state, commit }, realm) {
+            console.log(realm)
             return new Promise((resolve, reject) => {
-                commit('setRealm', realm);
+
+                let sessionUserCache = getSessionUserCache();
+                sessionUserCache.realm = realm;
+
+                commit('setUser', sessionUserCache);
+                setSessionUserCache(sessionUserCache);
                 resolve();
-            }).then(() => {
-                if (reload) {
-                    window.location.reload();
-                }
             })
         },
 

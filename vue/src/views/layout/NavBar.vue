@@ -6,11 +6,11 @@
         </div>
         <el-dropdown>
             <span class="el-dropdown-link" style="cursor: pointer">
-                {{ realm && realm.name }} <i class="el-icon-arrow-down el-icon--right"></i>
+                {{ user && user.realm && user.realm.name }} <i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item v-for="realm in realms" :key="realm.realmId">
-                    <span @click="changeRealm(realm.realmId)" style="display:block;">{{ realm.name }}</span>
+                    <span @click="changeRealm(realm)" style="display:block;">{{ realm.name }}</span>
                 </el-dropdown-item>
                 <el-dropdown-item divided>
                     <span @click="realmAddDialogOpened = true" style="display:block;">新建域</span>
@@ -66,7 +66,7 @@ export default {
     },
 
     computed: {
-        ...mapState('session', ['user', 'realm', 'realms']),
+        ...mapState('session', ['user', 'realms']),
         ...mapState('ui', ['breadcrumbs']),
 
         toggleMenuClass() {
@@ -85,7 +85,9 @@ export default {
 
         // 切换
         changeRealm(realm) {
-            this.$store.dispatch('session/changeRealm', realm, true);
+            this.$store.dispatch('session/changeRealm', realm).then(() => {
+                window.location.reload();
+            });
         },
 
         // 新建realm
@@ -97,21 +99,21 @@ export default {
 
                 // 加载用户拥有的域
                 this.$store.dispatch('session/loadRealms').then(() => {
-                    const realm = store.state.session.realm
+                    const user = store.getters['session/user']
                     const realms = store.state.session.realms
                     let needChange = true;
                     // 设置当前选中的域 如果已经有选了则不需要切换了
-                    if (realm) {
+                    if (user.realm) {
                         needChange = false;
                         // 如果已选的不在列表里面 也需要切换
                         let realmIds = realms.map(realm => realm.realmId);
-                        if (realmIds.indexOf(realm.realmId) < 0) {
+                        if (realmIds.indexOf(user.realm.realmId) < 0) {
                             needChange = true;
                         }
                     }
                     if (needChange) {
-                        this.$store.dispatch('session/changeRealm', realms[0], false).then(() => {
-                            next();
+                        this.$store.dispatch('session/changeRealm', realms[0]).then(() => {
+                            window.location.reload();
                         }).catch(reject => {
                             console.log("realm切换失败", reject)
                         })

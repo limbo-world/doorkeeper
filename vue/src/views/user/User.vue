@@ -100,7 +100,7 @@ export default {
     },
 
     computed: {
-        ...mapState('session', ['realm', 'authExpEvaluator']),
+        ...mapState('session', ['user', 'authExpEvaluator']),
     },
 
     created() {
@@ -122,7 +122,7 @@ export default {
                 this.resetPageForm();
             }
             this.startProgress();
-            return this.$ajax.get(`/admin/realm/${this.realm.realmId}/user`, {params: this.queryForm}).then(response => {
+            return this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/user`, {params: this.queryForm}).then(response => {
                 const page = response.data;
                 this.queryForm.total = page.total >= 0 ? page.total : this.queryForm.total;
                 this.users = page.data;

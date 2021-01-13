@@ -75,7 +75,7 @@
             };
         },
         computed: {
-            ...mapState('session', ['realm']),
+            ...mapState('session', ['user']),
         },
         created() {
             pages.resourceEdit = this;
@@ -90,7 +90,7 @@
 
             loadUser() {
                 this.startProgress({ speed: 'fast' });
-                this.$ajax.get(`/admin/realm/${this.realm.realmId}/user/${this.user.userId}`).then(response => {
+                this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/user/${this.user.userId}`).then(response => {
                     this.user = response.data;
                 }).finally(() => this.stopProgress());
             },
@@ -120,10 +120,10 @@
                 }).finally(() => loading.close())
             },
             addUser() {
-                return this.$ajax.post(`/admin/realm/${this.realm.realmId}/user`, this.user);
+                return this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/user`, this.user);
             },
             updateUser() {
-                return this.$ajax.put(`/admin/realm/${this.realm.realmId}/user/${this.user.userId}`, this.user);
+                return this.$ajax.put(`/admin/realm/${this.user.realm.realmId}/user/${this.user.userId}`, this.user);
             },
         }
     }

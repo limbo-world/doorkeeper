@@ -80,7 +80,7 @@
         },
 
         computed: {
-            ...mapState('session', ['realm']),
+            ...mapState('session', ['user']),
         },
 
         created() {
@@ -94,7 +94,7 @@
 
             loadClients() {
                 this.startProgress();
-                this.$ajax.get(`/admin/realm/${this.realm.realmId}/client`, {params: this.queryForm}).then(response => {
+                this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client`, {params: this.queryForm}).then(response => {
                     this.clients = response.data;
                 }).finally(() => this.stopProgress());
             },
@@ -102,7 +102,7 @@
             addClient() {
                 console.log(this.client)
                 this.dialogProcessing = true;
-                this.$ajax.post(`/admin/realm/${this.realm.realmId}/client`,this.client).then(() => {
+                this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client`,this.client).then(() => {
                     this.loadClients();
                     this.dialogOpened = false;
                 }).finally(() => this.dialogProcessing = false);
