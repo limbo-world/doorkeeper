@@ -30,4 +30,7 @@ public interface ClientMapper extends BaseMapper<Client> {
     @Select("select * from client where realm_id = #{realId} and client_id =#{clientId}")
     Client getById(@Param("realId") Long realId, @Param("clientId") Long clientId);
 
+    @Select("select * from client where realm_id = #{realId} and name =#{name}")
+    Client getByName(@Param("realId") Long realId, @Param("name") String name);
+
 }

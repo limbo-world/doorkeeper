@@ -36,5 +36,10 @@ public interface RoleMapper extends BaseMapper<Role> {
     Role getById(@Param("realId") Long realId, @Param("clientId") Long clientId,
                        @Param("roleId") Long roleId);
 
+    @Select("select * from role where realm_id = #{realId} and" +
+            " client_id =#{clientId} and name = #{name}")
+    Role getByName(@Param("realId") Long realId, @Param("clientId") Long clientId,
+                 @Param("name") String name);
+
     List<RoleVO> listVOS(RoleQueryParam param);
 }

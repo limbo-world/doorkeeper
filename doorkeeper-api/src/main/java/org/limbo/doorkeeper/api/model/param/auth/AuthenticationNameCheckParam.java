@@ -14,50 +14,30 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.vo.policy;
+package org.limbo.doorkeeper.api.model.param.auth;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Devil
- * @date 2021/1/6 4:58 下午
+ * @date 2021/1/13 3:31 下午
  */
 @Data
-public class PolicyVO {
+public class AuthenticationNameCheckParam {
 
-    private Long policyId;
+    @Schema(name = "用户ID")
+    private Long userId;
 
-    private Long realmId;
-
+    @Schema(name = "委托方ID")
     private Long clientId;
 
-    @Schema(title = "名称")
-    private String name;
+    @Schema(name = "资源名称")
+    private List<String> names;
 
-    @Schema(title = "描述")
-    private String description;
-
-    @Schema(title = "类型")
-    private String type;
-
-    @Schema(title = "判断逻辑", description = "只有组合策略需要")
-    private String logic;
-
-    @Schema(title = "执行逻辑")
-    private String intention;
-
-    @Schema(title = "是否启用")
-    private Boolean isEnabled;
-
-    @Schema(title = "操作策略")
-    private List<PolicyParamVO> params;
-
-    @Schema(title = "角色策略")
-    private List<PolicyRoleVO>  roles;
-
-    @Schema(title = "用户策略")
-    private List<PolicyUserVO>  users;
+    @Schema(name = "参数")
+    private Map<String, String> params;
 }

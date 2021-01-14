@@ -28,23 +28,15 @@ public enum Logic implements IEnum<String> {
     /**
      * 一致 所有通过
      */
-    CONSISTENT,
+    ALL,
     /**
      * 肯定 满足一个通过
      */
-    AFFIRM,
+    ONE,
     /**
-     * 否定 满足一个拦截
+     * 满足大于不满足的条数
      */
-    DENY,
-    /**
-     * 通过大于拦截
-     */
-    MORE_ALLOW,
-    /**
-     * 拦截大于通过
-     */
-    MORE_REFUSE,
+    MORE,
     ;
 
     @Override

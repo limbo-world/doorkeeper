@@ -17,10 +17,8 @@
 package org.limbo.doorkeeper.server.entity.policy;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.extension.handlers.MybatisEnumTypeHandler;
 import lombok.Data;
 import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.Logic;
@@ -55,7 +53,7 @@ public class Policy {
      */
     private PolicyType type;
     /**
-     * 只有组合类型会有
+     * 特定的才有 如组合 角色
      */
     private Logic logic;
     /**

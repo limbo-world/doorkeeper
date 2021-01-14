@@ -18,8 +18,6 @@ package org.limbo.doorkeeper.api.model.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import org.limbo.doorkeeper.api.constants.Intention;
-import org.limbo.doorkeeper.api.constants.Logic;
 
 import java.util.List;
 
@@ -43,10 +41,10 @@ public class PermissionVO {
     private String description;
 
     @Schema(title = "判断逻辑")
-    private Logic logic;
+    private String logic;
 
     @Schema(title = "执行逻辑")
-    private Intention intention;
+    private String intention;
 
     @Schema(title = "是否启用")
     private Boolean isEnabled;

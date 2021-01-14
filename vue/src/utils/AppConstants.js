@@ -38,11 +38,9 @@ const enableTypes = [
 ];
 
 const logics = [
-    {label: '所有通过', value: 'CONSISTENT'},
-    {label: '满足一个通过', value: 'AFFIRM'},
-    {label: '满足一个拦截', value: 'DENY'},
-    {label: '通过大于拦截', value: 'MORE_ALLOW'},
-    {label: '拦截大于通过', value: 'MORE_REFUSE'},
+    {label: '满足所有', value: 'ALL'},
+    {label: '满足一个', value: 'ONE'},
+    {label: '满足大于不满足', value: 'MORE'},
 ];
 
 export default {
