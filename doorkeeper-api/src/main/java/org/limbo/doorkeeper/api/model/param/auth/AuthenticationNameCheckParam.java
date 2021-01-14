@@ -18,26 +18,18 @@ package org.limbo.doorkeeper.api.model.param.auth;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Devil
  * @date 2021/1/13 3:31 下午
  */
 @Data
-public class AuthenticationNameCheckParam {
-
-    @Schema(name = "用户ID")
-    private Long userId;
-
-    @Schema(name = "委托方ID")
-    private Long clientId;
+@EqualsAndHashCode(callSuper = true)
+public class AuthenticationNameCheckParam extends AuthenticationCheckParam {
 
     @Schema(name = "资源名称")
     private List<String> names;
-
-    @Schema(name = "参数")
-    private Map<String, String> params;
 }

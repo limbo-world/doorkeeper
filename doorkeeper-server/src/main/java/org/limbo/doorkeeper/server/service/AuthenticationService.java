@@ -1,80 +1,60 @@
-///*
-// * Copyright 2020-2024 Limbo Team (https://github.com/limbo-world).
-// *
-// *   Licensed under the Apache License, Version 2.0 (the "License");
-// *   you may not use this file except in compliance with the License.
-// *   You may obtain a copy of the License at
-// *
-// *   	http://www.apache.org/licenses/LICENSE-2.0
-// *
-// *   Unless required by applicable law or agreed to in writing, software
-// *   distributed under the License is distributed on an "AS IS" BASIS,
-// *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// *   See the License for the specific language governing permissions and
-// *   limitations under the License.
-// */
-//
-//package org.limbo.doorkeeper.server.service;
-//
-//import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-//import org.apache.commons.collections4.CollectionUtils;
-//import org.apache.commons.lang3.StringUtils;
-//import org.limbo.doorkeeper.api.constants.Intention;
-//import org.limbo.doorkeeper.api.constants.Logic;
-//import org.limbo.doorkeeper.api.constants.PolicyType;
-//import org.limbo.doorkeeper.api.model.param.auth.AuthenticationNameCheckParam;
-//import org.limbo.doorkeeper.api.model.vo.PermissionPolicyVO;
-//import org.limbo.doorkeeper.api.model.vo.PermissionVO;
-//import org.limbo.doorkeeper.api.model.vo.policy.PolicyParamVO;
-//import org.limbo.doorkeeper.api.model.vo.policy.PolicyRoleVO;
-//import org.limbo.doorkeeper.api.model.vo.policy.PolicyUserVO;
-//import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
-//import org.limbo.doorkeeper.server.dao.ClientMapper;
-//import org.limbo.doorkeeper.server.dao.PermissionResourceMapper;
-//import org.limbo.doorkeeper.server.dao.ResourceMapper;
-//import org.limbo.doorkeeper.server.dao.UserRoleMapper;
-//import org.limbo.doorkeeper.server.entity.Client;
-//import org.limbo.doorkeeper.server.entity.PermissionResource;
-//import org.limbo.doorkeeper.server.entity.Resource;
-//import org.limbo.doorkeeper.server.entity.UserRole;
-//import org.limbo.doorkeeper.server.service.policy.PolicyService;
-//import org.limbo.doorkeeper.server.utils.EasyAntPathMatcher;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.stereotype.Service;
-//
-//import java.util.*;
-//import java.util.stream.Collectors;
-//
-///**
-// * @author Devil
-// * @date 2021/1/13 3:29 下午
-// */
-//@Service
-//public class AuthenticationService {
-//
-//    private static final ThreadLocal<EasyAntPathMatcher> PATH_MATCHER = ThreadLocal.withInitial(EasyAntPathMatcher::new);
-//
-//    @Autowired
-//    private PolicyService policyService;
-//
-//    @Autowired
-//    private UserRoleMapper userRoleMapper;
-//
-//    @Autowired
-//    private ClientMapper clientMapper;
-//
-//    @Autowired
-//    private ResourceMapper resourceMapper;
-//
-//    @Autowired
-//    private PermissionResourceMapper permissionResourceMapper;
-//
-//    @Autowired
-//    private PermissionService permissionService;
-//
-//    /**
-//     * 检查是否有权访问资源
-//     */
+/*
+ * Copyright 2020-2024 Limbo Team (https://github.com/limbo-world).
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *   	http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
+
+package org.limbo.doorkeeper.server.service;
+
+import org.limbo.doorkeeper.server.dao.ClientMapper;
+import org.limbo.doorkeeper.server.dao.PermissionResourceMapper;
+import org.limbo.doorkeeper.server.dao.ResourceMapper;
+import org.limbo.doorkeeper.server.dao.UserRoleMapper;
+import org.limbo.doorkeeper.server.service.policy.PolicyService;
+import org.limbo.doorkeeper.server.utils.EasyAntPathMatcher;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+/**
+ * @author Devil
+ * @date 2021/1/13 3:29 下午
+ */
+@Service
+public class AuthenticationService {
+
+    private static final ThreadLocal<EasyAntPathMatcher> PATH_MATCHER = ThreadLocal.withInitial(EasyAntPathMatcher::new);
+
+    @Autowired
+    private PolicyService policyService;
+
+    @Autowired
+    private UserRoleMapper userRoleMapper;
+
+    @Autowired
+    private ClientMapper clientMapper;
+
+    @Autowired
+    private ResourceMapper resourceMapper;
+
+    @Autowired
+    private PermissionResourceMapper permissionResourceMapper;
+
+    @Autowired
+    private PermissionService permissionService;
+
+    /**
+     * 检查是否有权访问资源
+     */
 //    public boolean accessAllowed(List<PermissionVO> permissions) {
 //        List<PermissionVO> permissions = getPermissionVOS(param);
 //        if (CollectionUtils.isEmpty(permissions)) {
@@ -103,10 +83,10 @@
 //        }
 //        return false;
 //    }
-//
-//    /**
-//     * 成功或者失败 list里面是资源名称
-//     */
+
+    /**
+     * 成功或者失败 list里面是资源名称
+     */
 //    public Map<Intention, List<String>> accessAllowedByName(AuthenticationNameCheckParam param) {
 //        // 获取对应的client
 //        Client client = clientMapper.selectById(param.getClientId());
@@ -154,30 +134,35 @@
 //
 //            // 找到拦截的权限 如果满足 返回false
 //            Set<PermissionVO> refuse = intentionPermissions.get(Intention.REFUSE);
-//            boolean r = false;
-//            for (PermissionVO permissionVO : refuse) {
-//                if (permissionExecute(param.getUserId(), permissionVO, param.getParams())) {
-//                    r = true;
-//                    break;
+//            if (CollectionUtils.isNotEmpty(refuse)) {
+//                boolean r = false;
+//                for (PermissionVO permissionVO : refuse) {
+//                    if (permissionExecute(param.getUserId(), client.getRealmId(), client.getClientId(), permissionVO, param.getParams())) {
+//                        r = true;
+//                        break;
+//                    }
 //                }
-//            }
-//            if (r) {
-//                result.get(Intention.REFUSE).add(resource.getName());
-//                continue;
+//                if (r) {
+//                    result.get(Intention.REFUSE).add(resource.getName());
+//                    continue;
+//                }
 //            }
 //
+//
 //            // 找到放行的权限 如果满足 返回true
-//            Set<PermissionVO> allow = intentionPermissions.get(Intention.REFUSE);
-//            boolean a = false;
-//            for (PermissionVO permissionVO : allow) {
-//                if (permissionExecute(param.getUserId(), permissionVO, param.getParams())) {
-//                    a = true;
-//                    break;
+//            Set<PermissionVO> allow = intentionPermissions.get(Intention.ALLOW);
+//            if (CollectionUtils.isNotEmpty(allow)) {
+//                boolean a = false;
+//                for (PermissionVO permissionVO : allow) {
+//                    if (permissionExecute(param.getUserId(), client.getRealmId(), client.getClientId(), permissionVO, param.getParams())) {
+//                        a = true;
+//                        break;
+//                    }
 //                }
-//            }
-//            if (a) {
-//                result.get(Intention.ALLOW).add(resource.getName());
-//                continue;
+//                if (a) {
+//                    result.get(Intention.ALLOW).add(resource.getName());
+//                    continue;
+//                }
 //            }
 //
 //            result.get(Intention.REFUSE).add(resource.getName());
@@ -186,12 +171,12 @@
 //
 //        return result;
 //    }
-//
-//    private boolean permissionExecute(Long userId, PermissionVO permissionVO, Map<String, String> params) {
+
+//    private boolean permissionExecute(Long userId, Long realmId, Long clientId, PermissionVO permissionVO, Map<String, String> params) {
 //        Logic logic = Logic.parse(permissionVO.getLogic());
 //        int allow = 0;
 //        for (PermissionPolicyVO policy : permissionVO.getPolicys()) {
-//            PolicyVO policyVO = policyService.get(client.getRealmId(), client.getClientId(), policy.getPolicyId());
+//            PolicyVO policyVO = policyService.get(realmId, clientId, policy.getPolicyId());
 //            Intention policyIntention = policyExecute(userId, policyVO, params);
 //            if (Intention.ALLOW == policyIntention) {
 //                allow++;
@@ -294,5 +279,5 @@
 //        EasyAntPathMatcher antPathMatcher = PATH_MATCHER.get();
 //        return antPathMatcher.match(StringUtils.trim(pattern), StringUtils.trim(path));
 //    }
-//
-//}
+
+}
