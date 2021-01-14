@@ -54,7 +54,7 @@ public abstract class AbstractAllowedExecutor<P extends AuthenticationCheckParam
     @Autowired
     private UserRoleMapper userRoleMapper;
 
-    public abstract Map<Intention, List<T>> accessAllowedByName(Long userId, Long clientId, P p);
+    public abstract Map<Intention, List<T>> accessAllowed(Long userId, Long clientId, P p);
 
     protected boolean permissionExecute(Long userId, Long realmId, Long clientId, PermissionVO permissionVO, Map<String, String> params) {
         Logic logic = Logic.parse(permissionVO.getLogic());

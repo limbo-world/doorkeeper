@@ -19,9 +19,8 @@ package org.limbo.doorkeeper.api.model.param.auth;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.limbo.doorkeeper.api.model.vo.ResourceTagVO;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * @author Devil
@@ -32,6 +31,6 @@ import java.util.List;
 public class AuthenticationTagCheckParam extends AuthenticationCheckParam {
 
     @Schema(name = "资源标签")
-    private List<ResourceTagVO> tags;
+    private Map<String, String> tags;
 
 }

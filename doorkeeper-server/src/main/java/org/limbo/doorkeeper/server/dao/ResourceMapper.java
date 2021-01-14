@@ -36,6 +36,11 @@ public interface ResourceMapper extends BaseMapper<Resource> {
     Resource getById(@Param("realId") Long realId, @Param("clientId") Long clientId,
                        @Param("resourceId") Long resourceId);
 
+    @Select("select * from resource where realm_id = #{realId} and" +
+            " client_id =#{clientId} and name = #{name}")
+    Resource getByName(@Param("realId") Long realId, @Param("clientId") Long clientId,
+                     @Param("name") String name);
+
     long pageVOCount(ResourceQueryParam param);
 
     List<ResourceVO> pageVOS(ResourceQueryParam param);

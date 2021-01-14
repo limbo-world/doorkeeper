@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
  */
 public class NameAllowExecutor extends AbstractAllowedExecutor<AuthenticationNameCheckParam, String> {
 
+
     @Autowired
     private ClientMapper clientMapper;
 
@@ -52,31 +53,32 @@ public class NameAllowExecutor extends AbstractAllowedExecutor<AuthenticationNam
     private PermissionService permissionService;
 
     @Override
-    public Map<Intention, List<String>> accessAllowedByName(Long userId, Long clientId, AuthenticationNameCheckParam param) {
+    public Map<Intention, List<String>> accessAllowed(Long userId, Long clientId, AuthenticationNameCheckParam param) {
         // 获取对应的client
         Client client = clientMapper.selectById(clientId);
-
-        List<Resource> resources = resourceMapper.selectList(Wrappers.<Resource>lambdaQuery()
-                .eq(Resource::getRealmId, client.getRealmId())
-                .eq(Resource::getClientId, client.getClientId())
-                .in(Resource::getName, param.getNames())
-        );
 
         Map<Intention, List<String>> result = new HashMap<>();
         result.put(Intention.ALLOW, new ArrayList<>());
         result.put(Intention.REFUSE, new ArrayList<>());
 
-        if (CollectionUtils.isEmpty(resources)) {
-            result.put(Intention.REFUSE, param.getNames());
+        if (CollectionUtils.isEmpty(param.getNames())) {
             return result;
         }
 
-        for (Resource resource : resources) {
+        // 对于每个名字进行匹配
+        for (String name : param.getNames()) {
+
+            Resource resource = resourceMapper.getByName(client.getRealmId(), client.getClientId(), name);
+            if (resource == null) {
+                result.get(Intention.REFUSE).add(name);
+                continue;
+            }
+
             List<PermissionResource> permissionResources = permissionResourceMapper.selectList(Wrappers.<PermissionResource>lambdaQuery()
                     .eq(PermissionResource::getResourceId, resource.getResourceId())
             );
             if (CollectionUtils.isEmpty(permissionResources)) {
-                result.get(Intention.REFUSE).add(resource.getName());
+                result.get(Intention.REFUSE).add(name);
                 continue;
             }
             Set<Long> permissionIds = permissionResources.stream().map(PermissionResource::getPermissionId).collect(Collectors.toSet());
@@ -89,7 +91,7 @@ public class NameAllowExecutor extends AbstractAllowedExecutor<AuthenticationNam
                 }
             }
             if (CollectionUtils.isEmpty(permissions)) {
-                result.get(Intention.REFUSE).add(resource.getName());
+                result.get(Intention.REFUSE).add(name);
                 continue;
             }
             Map<String, Set<PermissionVO>> intentionPermissions = permissions.stream().collect(Collectors.groupingBy(
@@ -108,7 +110,7 @@ public class NameAllowExecutor extends AbstractAllowedExecutor<AuthenticationNam
                     }
                 }
                 if (r) {
-                    result.get(Intention.REFUSE).add(resource.getName());
+                    result.get(Intention.REFUSE).add(name);
                     continue;
                 }
             }
@@ -125,12 +127,12 @@ public class NameAllowExecutor extends AbstractAllowedExecutor<AuthenticationNam
                     }
                 }
                 if (a) {
-                    result.get(Intention.ALLOW).add(resource.getName());
+                    result.get(Intention.ALLOW).add(name);
                     continue;
                 }
             }
 
-            result.get(Intention.REFUSE).add(resource.getName());
+            result.get(Intention.REFUSE).add(name);
 
         }
 
