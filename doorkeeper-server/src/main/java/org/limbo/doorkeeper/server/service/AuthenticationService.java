@@ -69,10 +69,13 @@
 //    @Autowired
 //    private PermissionResourceMapper permissionResourceMapper;
 //
+//    @Autowired
+//    private PermissionService permissionService;
+//
 //    /**
 //     * 检查是否有权访问资源
 //     */
-//    public Map<String, List<String>> accessAllowed(AuthenticationNameCheckParam param) {
+//    public boolean accessAllowed(List<PermissionVO> permissions) {
 //        List<PermissionVO> permissions = getPermissionVOS(param);
 //        if (CollectionUtils.isEmpty(permissions)) {
 //            return false;
@@ -101,7 +104,10 @@
 //        return false;
 //    }
 //
-//    public boolean accessAllowedByName(AuthenticationNameCheckParam param) {
+//    /**
+//     * 成功或者失败 list里面是资源名称
+//     */
+//    public Map<Intention, List<String>> accessAllowedByName(AuthenticationNameCheckParam param) {
 //        // 获取对应的client
 //        Client client = clientMapper.selectById(param.getClientId());
 //
@@ -111,32 +117,74 @@
 //                .in(Resource::getName, param.getNames())
 //        );
 //
+//        Map<Intention, List<String>> result = new HashMap<>();
+//        result.put(Intention.ALLOW, new ArrayList<>());
+//        result.put(Intention.REFUSE, new ArrayList<>());
+//
 //        if (CollectionUtils.isEmpty(resources)) {
+//            result.put(Intention.REFUSE, param.getNames());
+//            return result;
+//        }
+//
+//        for (Resource resource : resources) {
+//            List<PermissionResource> permissionResources = permissionResourceMapper.selectList(Wrappers.<PermissionResource>lambdaQuery()
+//                    .eq(PermissionResource::getResourceId, resource.getResourceId())
+//            );
+//            if (CollectionUtils.isEmpty(permissionResources)) {
+//                result.get(Intention.REFUSE).add(resource.getName());
+//                continue;
+//            }
+//            Set<Long> permissionIds = permissionResources.stream().map(PermissionResource::getPermissionId).collect(Collectors.toSet());
+//            // 找到权限以及对应的策略
+//            List<PermissionVO> permissions = new ArrayList<>();
+//            for (Long permissionId : permissionIds) {
+//                PermissionVO permissionVO = permissionService.get(client.getRealmId(), client.getClientId(), permissionId);
+//                if (permissionVO != null) {
+//                    permissions.add(permissionVO);
+//                }
+//            }
+//            if (CollectionUtils.isEmpty(permissions)) {
+//                result.get(Intention.REFUSE).add(resource.getName());
+//                continue;
+//            }
+//            Map<String, Set<PermissionVO>> intentionPermissions = permissions.stream().collect(Collectors.groupingBy(
+//                    PermissionVO::getIntention,
+//                    Collectors.mapping(p -> p, Collectors.toSet())
+//            ));
+//
+//            // 找到拦截的权限 如果满足 返回false
+//            Set<PermissionVO> refuse = intentionPermissions.get(Intention.REFUSE);
+//            boolean r = false;
+//            for (PermissionVO permissionVO : refuse) {
+//                if (permissionExecute(param.getUserId(), permissionVO, param.getParams())) {
+//                    r = true;
+//                    break;
+//                }
+//            }
+//            if (r) {
+//                result.get(Intention.REFUSE).add(resource.getName());
+//                continue;
+//            }
+//
+//            // 找到放行的权限 如果满足 返回true
+//            Set<PermissionVO> allow = intentionPermissions.get(Intention.REFUSE);
+//            boolean a = false;
+//            for (PermissionVO permissionVO : allow) {
+//                if (permissionExecute(param.getUserId(), permissionVO, param.getParams())) {
+//                    a = true;
+//                    break;
+//                }
+//            }
+//            if (a) {
+//                result.get(Intention.ALLOW).add(resource.getName());
+//                continue;
+//            }
+//
+//            result.get(Intention.REFUSE).add(resource.getName());
 //
 //        }
 //
-//        List<Long> resourceIds = resources.stream().map(Resource::getResourceId).collect(Collectors.toList());
-//        List<PermissionResource> permissionResources = permissionResourceMapper.selectList(Wrappers.<PermissionResource>lambdaQuery()
-//                .in(PermissionResource::getResourceId, resourceIds)
-//        );
-//
-//        Set<Long> permissionIds = permissionResources.stream().map(PermissionResource::getPermissionId).collect(Collectors.toSet());
-//
-//        // 找到权限以及对应的策略
-//        List<PermissionVO> permissions = new ArrayList<>();
-//
-//        return false;
-//    }
-//
-//    private List<PermissionVO> getPermissionVOS(AuthenticationNameCheckParam param) {
-//        if (StringUtils.isBlank(param.getName())) {
-//
-//        } else if (param.getUri() != null) {
-//
-//        } else if (param.getTag() != null) {
-//
-//        }
-//        return new ArrayList<>();
+//        return result;
 //    }
 //
 //    private boolean permissionExecute(Long userId, PermissionVO permissionVO, Map<String, String> params) {
