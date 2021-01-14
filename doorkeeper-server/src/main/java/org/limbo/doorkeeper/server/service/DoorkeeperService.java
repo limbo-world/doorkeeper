@@ -259,7 +259,7 @@ public class DoorkeeperService {
         PolicyAddParam policyAddParam = new PolicyAddParam();
         policyAddParam.setName(name);
         policyAddParam.setType(PolicyType.ROLE);
-        policyAddParam.setLogic(Logic.CONSISTENT);
+        policyAddParam.setLogic(Logic.ALL);
         policyAddParam.setIntention(Intention.ALLOW);
         policyAddParam.setIsEnabled(Boolean.TRUE);
 
@@ -273,7 +273,7 @@ public class DoorkeeperService {
     private PermissionAddParam createPermission(String name, Long resourceId, Long policyId) {
         PermissionAddParam permissionAddParam = new PermissionAddParam();
         permissionAddParam.setName(name);
-        permissionAddParam.setLogic(Logic.CONSISTENT);
+        permissionAddParam.setLogic(Logic.ALL);
         permissionAddParam.setIntention(Intention.ALLOW);
         permissionAddParam.setIsEnabled(Boolean.TRUE);
 
