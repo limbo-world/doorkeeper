@@ -38,7 +38,7 @@
 // * @author Devil
 // * @date 2021/1/14 10:31 上午
 // */
-//public class UriAllowExecutor extends AbstractAllowedExecutor<AuthenticationNameCheckParam, String> {
+//public class UriAllowExecutor extends AbstractAllowedExecutor<AuthenticationUriCheckParam, String> {
 //
 //    @Autowired
 //    private ClientMapper clientMapper;
@@ -53,31 +53,32 @@
 //    private PermissionService permissionService;
 //
 //    @Override
-//    public Map<Intention, List<String>> accessAllowedByName(Long userId, Long clientId, AuthenticationUriCheckParam param) {
+//    public Map<Intention, List<String>> accessAllowed(Long userId, Long clientId, AuthenticationUriCheckParam param) {
 //        // 获取对应的client
 //        Client client = clientMapper.selectById(clientId);
-//
-//        List<Resource> resources = resourceMapper.selectList(Wrappers.<Resource>lambdaQuery()
-//                .eq(Resource::getRealmId, client.getRealmId())
-//                .eq(Resource::getClientId, client.getClientId())
-//                .in(Resource::getName, param.getNames())
-//        );
 //
 //        Map<Intention, List<String>> result = new HashMap<>();
 //        result.put(Intention.ALLOW, new ArrayList<>());
 //        result.put(Intention.REFUSE, new ArrayList<>());
 //
-//        if (CollectionUtils.isEmpty(resources)) {
-//            result.put(Intention.REFUSE, param.getUris());
+//        if (CollectionUtils.isEmpty(param.getUris())) {
 //            return result;
 //        }
 //
-//        for (Resource resource : resources) {
+//        // 对于每个名字进行匹配
+//        for (String name : param.getNames()) {
+//
+//            Resource resource = resourceMapper.getByName(client.getRealmId(), client.getClientId(), name);
+//            if (resource == null) {
+//                result.get(Intention.REFUSE).add(name);
+//                continue;
+//            }
+//
 //            List<PermissionResource> permissionResources = permissionResourceMapper.selectList(Wrappers.<PermissionResource>lambdaQuery()
 //                    .eq(PermissionResource::getResourceId, resource.getResourceId())
 //            );
 //            if (CollectionUtils.isEmpty(permissionResources)) {
-//                result.get(Intention.REFUSE).add(resource.getName());
+//                result.get(Intention.REFUSE).add(name);
 //                continue;
 //            }
 //            Set<Long> permissionIds = permissionResources.stream().map(PermissionResource::getPermissionId).collect(Collectors.toSet());
@@ -90,7 +91,7 @@
 //                }
 //            }
 //            if (CollectionUtils.isEmpty(permissions)) {
-//                result.get(Intention.REFUSE).add(resource.getName());
+//                result.get(Intention.REFUSE).add(name);
 //                continue;
 //            }
 //            Map<String, Set<PermissionVO>> intentionPermissions = permissions.stream().collect(Collectors.groupingBy(
@@ -109,7 +110,7 @@
 //                    }
 //                }
 //                if (r) {
-//                    result.get(Intention.REFUSE).add(resource.getName());
+//                    result.get(Intention.REFUSE).add(name);
 //                    continue;
 //                }
 //            }
@@ -126,12 +127,12 @@
 //                    }
 //                }
 //                if (a) {
-//                    result.get(Intention.ALLOW).add(resource.getName());
+//                    result.get(Intention.ALLOW).add(name);
 //                    continue;
 //                }
 //            }
 //
-//            result.get(Intention.REFUSE).add(resource.getName());
+//            result.get(Intention.REFUSE).add(name);
 //
 //        }
 //

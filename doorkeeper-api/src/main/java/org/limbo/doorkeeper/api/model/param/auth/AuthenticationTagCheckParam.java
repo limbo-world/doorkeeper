@@ -20,6 +20,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,6 +32,6 @@ import java.util.Map;
 public class AuthenticationTagCheckParam extends AuthenticationCheckParam {
 
     @Schema(name = "资源标签")
-    private Map<String, String> tags;
+    private List<Map<String, String>> tags;
 
 }
