@@ -38,4 +38,5 @@ public interface DoorkeeperConstants {
 
     String ADMIN = "admin";
 
+    String BINDER = "binder";
 }

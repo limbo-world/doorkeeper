@@ -78,7 +78,7 @@ export default {
                 const user = response.data;
 
                 let sessionUserCache = getSessionUserCache();
-                if (sessionUserCache.realm) {
+                if (sessionUserCache && sessionUserCache.realm) {
                     user.realm = sessionUserCache.realm;
                 }
                 commit('setUser', user);
@@ -110,7 +110,7 @@ export default {
                 const user = response.data;
 
                 let sessionUserCache = getSessionUserCache();
-                if (sessionUserCache.realm) {
+                if (sessionUserCache && sessionUserCache.realm) {
                     user.realm = sessionUserCache.realm;
                 }
                 commit('setUser', user);

@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.limbo.doorkeeper.server.support.authc.AuthenticationInterceptor;
 import org.limbo.doorkeeper.server.support.format.StringToDateConverter;
 import org.limbo.doorkeeper.server.support.session.RedisSessionDAO;
 import org.limbo.doorkeeper.server.support.session.SessionInterceptor;
@@ -31,6 +32,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.DateFormatter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.text.SimpleDateFormat;
@@ -81,6 +83,25 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public SessionInterceptor sessionInterceptor() {
         return new SessionInterceptor(sessionDAO);
+    }
+
+    @Bean
+    public AuthenticationInterceptor authenticationInterceptor() {
+        return new AuthenticationInterceptor(sessionDAO);
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+
+        registry.addInterceptor(sessionInterceptor())
+                .excludePathPatterns("/login/**")
+                .excludePathPatterns("/swagger-ui/**")
+                .excludePathPatterns("/api-docs/**")
+                .excludePathPatterns("/api-docs.html")
+                .excludePathPatterns("/error");
+
+        registry.addInterceptor(authenticationInterceptor())
+                .addPathPatterns("/admin/realm/*/**");
     }
 
 }

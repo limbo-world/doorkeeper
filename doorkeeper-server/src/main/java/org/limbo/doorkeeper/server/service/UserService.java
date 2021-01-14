@@ -67,6 +67,10 @@ public class UserService {
                 .orderByDesc(User::getUserId)
         );
 
+        for (User user : mpage.getRecords()) {
+            user.setPassword(null);
+        }
+
         param.setTotal(mpage.getTotal());
         param.setData(EnhancedBeanUtils.createAndCopyList(mpage.getRecords(), UserVO.class));
         return param;

@@ -29,6 +29,7 @@ import org.limbo.doorkeeper.server.entity.PermissionResource;
 import org.limbo.doorkeeper.server.entity.Resource;
 import org.limbo.doorkeeper.server.service.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -37,6 +38,7 @@ import java.util.stream.Collectors;
  * @author Devil
  * @date 2021/1/14 10:31 上午
  */
+@Component
 public class NameAllowExecutor extends AbstractAllowedExecutor<AuthenticationNameCheckParam, String> {
 
 
@@ -94,8 +96,8 @@ public class NameAllowExecutor extends AbstractAllowedExecutor<AuthenticationNam
                 result.get(Intention.REFUSE).add(name);
                 continue;
             }
-            Map<String, Set<PermissionVO>> intentionPermissions = permissions.stream().collect(Collectors.groupingBy(
-                    PermissionVO::getIntention,
+            Map<Intention, Set<PermissionVO>> intentionPermissions = permissions.stream().collect(Collectors.groupingBy(
+                    permissionVO -> Intention.parse(permissionVO.getIntention()),
                     Collectors.mapping(p -> p, Collectors.toSet())
             ));
 

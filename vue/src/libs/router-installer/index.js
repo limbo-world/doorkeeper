@@ -74,6 +74,14 @@ const checkSession = (to, from, next) => {
         store.dispatch('session/loadRealms').then(() => {
             const user = store.getters['session/user']
             const realms = store.state.session.realms
+            if (!realms || realms.length <= 0) {
+                store.dispatch('session/logout').then(() => {
+                    next({
+                        path: '/login'
+                    });
+                })
+                return;
+            }
             let needChange = true;
             // 设置当前选中的域 如果已经有选了则不需要切换了
             if (user.realm) {

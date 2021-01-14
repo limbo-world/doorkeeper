@@ -34,6 +34,7 @@ import org.limbo.doorkeeper.server.entity.UserRole;
 import org.limbo.doorkeeper.server.service.policy.PolicyService;
 import org.limbo.doorkeeper.server.utils.EasyAntPathMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +45,7 @@ import java.util.stream.Collectors;
  * @author Devil
  * @date 2021/1/14 10:21 上午
  */
+@Component
 public abstract class AbstractAllowedExecutor<P extends AuthenticationCheckParam, T> {
 
     private static final ThreadLocal<EasyAntPathMatcher> PATH_MATCHER = ThreadLocal.withInitial(EasyAntPathMatcher::new);
@@ -54,6 +56,10 @@ public abstract class AbstractAllowedExecutor<P extends AuthenticationCheckParam
     @Autowired
     private UserRoleMapper userRoleMapper;
 
+    /**
+     * 根据参数找到资源列表 循环每个资源 找到对应的权限和策略
+     * 如果一个资源绑定了多个权限 当有一个权限拦截 则返回拦截 当没有一个权限放行 则也是拦截 否则 才进行放行
+     */
     public abstract Map<Intention, List<T>> accessAllowed(Long userId, Long clientId, P p);
 
     protected boolean permissionExecute(Long userId, Long realmId, Long clientId, PermissionVO permissionVO, Map<String, String> params) {
@@ -157,6 +163,16 @@ public abstract class AbstractAllowedExecutor<P extends AuthenticationCheckParam
                 break;
         }
         return false;
+    }
+
+    public static void main(String[] args) {
+        UriAllowExecutor executor = new UriAllowExecutor();
+        System.out.println(executor.pathMatch("/admin/realm/**", "/admin/realm"));;
+        System.out.println(executor.pathMatch("/admin/realm/**", "/admin/"));;
+
+        System.out.println(executor.pathMatch("/admin/realm/*/**", "/admin/realm"));;
+        System.out.println(executor.pathMatch("/admin/realm/*/**", "/admin/realm/8"));;
+        System.out.println(executor.pathMatch("/admin/realm/*/**", "/admin/realm/8/user"));;
     }
 
     public boolean pathMatch(String pattern, String path) {
