@@ -25,7 +25,7 @@
                     <el-input type="textarea" v-model="resource.description"></el-input>
                 </el-form-item>
                 <el-form-item label="URI">
-                    <el-row v-for="(uri, idx) in resource.uris" class="uri-row">
+                    <el-row v-for="(uri, idx) in resource.uris" :key="uri.resourceUriId" class="uri-row">
                         <el-input v-model="uri.uri" style="max-width:700px;"></el-input>
                         <el-button @click="deleteUri(idx)" type="primary" size="mini" icon="el-icon-minus" circle></el-button>
                     </el-row>
@@ -37,7 +37,7 @@
                 <el-form-item label="标签">
                     注：标签名和标签值用 = 分割，如、颜色=color
                     <el-row>
-                        <el-tag v-for="(tag, idx) in resource.tags" :key="idx" closable @close="deleteTag(idx)"
+                        <el-tag v-for="(tag, idx) in resource.tags" :key="tag.resourceTagId" closable @close="deleteTag(idx)"
                                 type="success" size="big" :disable-transitions="false" class="tag-lab">{{tag.k}}={{tag.v}}
                         </el-tag>
                         <el-input v-model="tagString" size="small" placeholder="输入标签名与标签值" style="width:300px;"
@@ -134,18 +134,18 @@
             // ========== 资源相关 ==========
             loadResource() {
                 this.startProgress({ speed: 'fast' });
-                this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/resource/${this.resource.resourceId}`).then(response => {
+                this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.resource.clientId}/resource/${this.resource.resourceId}`).then(response => {
                     this.resource = response.data;
                 }).finally(() => this.stopProgress());
             },
             addResource() {
-                this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/resource`, this.resource).then(response => {
+                this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.resource.clientId}/resource`, this.resource).then(response => {
                     this.resource = response.data;
                     this.loadResource();
                 })
             },
             updateResource() {
-                this.$ajax.put(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/resource/${this.resource.resourceId}`, this.resource).then(response => {
+                this.$ajax.put(`/admin/realm/${this.user.realm.realmId}/client/${this.resource.clientId}/resource/${this.resource.resourceId}`, this.resource).then(response => {
                     this.loadResource();
                 })
             },
