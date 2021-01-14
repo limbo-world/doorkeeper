@@ -85,11 +85,7 @@ const checkSession = (to, from, next) => {
                 }
             }
             if (needChange) {
-                store.dispatch('session/changeRealm', realms[0]).then(() => {
-                    next();
-                }).catch(reject => {
-                    console.log("realm切换失败", reject)
-                })
+                store.dispatch('session/changeRealm', realms[0])
             } else {
                 next();
             }

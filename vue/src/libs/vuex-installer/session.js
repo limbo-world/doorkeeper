@@ -170,7 +170,6 @@ export default {
          * 切换当前选中的域
          */
         changeRealm({ state, commit }, realm) {
-            console.log(realm)
             return new Promise((resolve, reject) => {
 
                 let sessionUserCache = getSessionUserCache();
@@ -179,6 +178,10 @@ export default {
                 commit('setUser', sessionUserCache);
                 setSessionUserCache(sessionUserCache);
                 resolve();
+            }).then(() => {
+                window.location.href = "/";
+            }).catch(reject => {
+                console.log("realm切换失败", reject)
             })
         },
 

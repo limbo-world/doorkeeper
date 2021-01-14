@@ -85,9 +85,7 @@ export default {
 
         // 切换
         changeRealm(realm) {
-            this.$store.dispatch('session/changeRealm', realm).then(() => {
-                window.location.reload();
-            });
+            this.$store.dispatch('session/changeRealm', realm)
         },
 
         // 新建realm
@@ -112,11 +110,7 @@ export default {
                         }
                     }
                     if (needChange) {
-                        this.$store.dispatch('session/changeRealm', realms[0]).then(() => {
-                            window.location.reload();
-                        }).catch(reject => {
-                            console.log("realm切换失败", reject)
-                        })
+                        this.$store.dispatch('session/changeRealm', realms[0])
                     }
                 }).catch(reject => {
                     console.log("realms加载失败", reject)

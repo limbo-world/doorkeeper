@@ -30,4 +30,6 @@ public class PolicyUserVO {
     private Long policyId;
 
     private Long userId;
+
+    private String username;
 }

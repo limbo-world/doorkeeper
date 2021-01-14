@@ -20,7 +20,9 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.model.param.policy.PolicyUserAddParam;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyUserVO;
+import org.limbo.doorkeeper.server.dao.UserMapper;
 import org.limbo.doorkeeper.server.dao.policy.PolicyUserMapper;
+import org.limbo.doorkeeper.server.entity.User;
 import org.limbo.doorkeeper.server.entity.policy.PolicyUser;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
@@ -43,11 +45,23 @@ public class PolicyUserService {
     @Autowired
     private PolicyUserMapper policyUserMapper;
 
+    @Autowired
+    private UserMapper userMapper;
+
     public List<PolicyUserVO> getByPolicy(Long policyId) {
         List<PolicyUser> policyUsers = policyUserMapper.selectList(Wrappers.<PolicyUser>lambdaQuery()
                 .eq(PolicyUser::getPolicyId, policyId)
         );
-        return EnhancedBeanUtils.createAndCopyList(policyUsers, PolicyUserVO.class);
+        List<PolicyUserVO> policyUserVOS = EnhancedBeanUtils.createAndCopyList(policyUsers, PolicyUserVO.class);
+        List<User> users = userMapper.selectBatchIds(policyUsers.stream().map(PolicyUser::getUserId).collect(Collectors.toList()));
+        for (PolicyUserVO policyUserVO : policyUserVOS) {
+            for (User user : users) {
+                if (policyUserVO.getUserId().equals(user.getUserId())) {
+                    policyUserVO.setUsername(user.getUsername());
+                }
+            }
+        }
+        return policyUserVOS;
     }
 
     @Transactional

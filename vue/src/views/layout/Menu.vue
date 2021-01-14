@@ -18,7 +18,6 @@
                 active-text-color="#409EFF"
                 :unique-opened="false"
                 :router="true"
-                @select="onMenuSelect"
             >
                 <template v-for="menu in menus">
                     <!-- 当前菜单无子菜单，即叶子菜单，直接渲染router-link -->

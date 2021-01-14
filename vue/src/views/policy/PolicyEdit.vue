@@ -26,17 +26,21 @@
                 </el-form-item>
                 <el-form-item label="类型">
                     <el-select v-model="policy.type">
-                        <el-option v-for="item in policyTypes" :key="item.value" :label="item.label"
+                        <el-option v-for="item in $constants.policyTypes" :key="item.value" :label="item.label"
                                    :value="item.value"></el-option>
                     </el-select>
                 </el-form-item>
                 <template>
-                    <policy-role-edit v-if="policy.type === policyTypes[0].value" @bind-policy-roles="roles => {policy.roles = roles}"
+                    <policy-role-edit v-if="policy.type === $constants.policyTypes[0].value"
+                                      @bind-policy-roles="roles => {policy.roles = roles}" :policy-roles="policy.roles"
                                       :policy-id="policy.policyId" :client-id="policy.clientId"></policy-role-edit>
+                    <policy-user-edit v-if="policy.type === $constants.policyTypes[1].value"
+                                      @bind-policy-users="users => {policy.users = users}" :policy-users="policy.users"
+                                      :policy-id="policy.policyId" :client-id="policy.clientId"></policy-user-edit>
                 </template>
                 <el-form-item label="执行逻辑">
                     <el-select v-model="policy.intention">
-                        <el-option v-for="item in intentions" :key="item.value" :label="item.label"
+                        <el-option v-for="item in $constants.intentions" :key="item.value" :label="item.label"
                                    :value="item.value"></el-option>
                     </el-select>
                 </el-form-item>
@@ -56,20 +60,18 @@
 <script>
 
     import PolicyRoleEdit from "@/views/policy/PolicyRoleEdit";
+    import PolicyUserEdit from "@/views/policy/PolicyUserEdit";
     import { mapState, mapActions } from 'vuex';
-    import AppConstants from "@/utils/AppConstants";
 
     export default {
         components: {
-            PolicyRoleEdit
+            PolicyRoleEdit, PolicyUserEdit
         },
         data() {
             return {
                 policy: {
                     roles: []
                 },
-                policyTypes: AppConstants.policyTypes,
-                intentions: AppConstants.intentions,
             };
         },
 
@@ -92,17 +94,18 @@
             // ========== 资源相关 ==========
             loadPolicy() {
                 this.startProgress({ speed: 'fast' });
-                this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/policy/${this.policy.policyId}`).then(response => {
+                this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.policy.clientId}/policy/${this.policy.policyId}`).then(response => {
                     this.policy = response.data;
                 }).finally(() => this.stopProgress());
             },
             addPolicy() {
-                this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/policy`, this.policy).then(response => {
+                this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.policy.clientId}/policy`, this.policy).then(response => {
+                    this.policy = response.data;
                     this.loadPolicy();
                 })
             },
             updatePolicy() {
-                this.$ajax.put(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/policy/${this.policy.policyId}`, this.policy).then(response => {
+                this.$ajax.put(`/admin/realm/${this.user.realm.realmId}/client/${this.policy.clientId}/policy/${this.policy.policyId}`, this.policy).then(response => {
                     this.loadPolicy();
                 })
             },
