@@ -1,12 +1,16 @@
 import {Loading, Message, MessageBox} from 'element-ui';
 import store from '../vuex-installer';
 
+const getTokenCache = () => {
+    return window.localCache.getSync('session/token');
+};
+
 const request = axios.create({
     baseURL: process.env.VUE_APP_baseUrl, // api的base_url 配置后，请求会拼接对应uri
     timeout: 120000 // request timeout
 });
 
-request.sessionHeader = process.env.VUE_APP_sessionHeaderName;
+request.tokenHeader = process.env.VUE_APP_tokenHeaderName;
 // request.signHeader = process.env.VUE_APP_signHeaderName;
 // request.encrypt = new JSEncrypt();
 
@@ -20,11 +24,7 @@ request.interceptors.request.use(config => {
     }
 
     // 设置认证header
-    const user = store.getters['session/user'];
-    if (user && user.sessionId) {
-        // 设置会话header
-        config.headers[request.sessionHeader] = user.sessionId;
-    }
+    config.headers[request.tokenHeader] = getTokenCache();
     return config;
 }, error => {
     Promise.reject(error);

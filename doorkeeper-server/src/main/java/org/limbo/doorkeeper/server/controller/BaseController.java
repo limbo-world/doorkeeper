@@ -16,10 +16,18 @@
 
 package org.limbo.doorkeeper.server.controller;
 
+import com.auth0.jwt.JWT;
+import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.SessionConstants;
-import org.limbo.doorkeeper.api.model.vo.SessionUser;
+import org.limbo.doorkeeper.api.model.vo.UserVO;
 import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.server.support.session.AbstractSessionDAO;
+import org.limbo.doorkeeper.server.dao.RealmMapper;
+import org.limbo.doorkeeper.server.dao.UserMapper;
+import org.limbo.doorkeeper.server.entity.Realm;
+import org.limbo.doorkeeper.server.entity.User;
+import org.limbo.doorkeeper.server.service.UserService;
+import org.limbo.doorkeeper.server.support.session.exception.SessionException;
+import org.limbo.doorkeeper.server.utils.JWTUtil;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -40,15 +48,33 @@ public class BaseController {
     protected HttpServletRequest request;
 
     @Autowired
-    protected AbstractSessionDAO sessionDAO;
+    private UserMapper userMapper;
 
-    protected SessionUser getSession() {
-        String sessionId = request.getHeader(SessionConstants.SESSION_HEADER);
-        return sessionDAO.readSession(sessionId);
+    @Autowired
+    private RealmMapper realmMapper;
+
+    @Autowired
+    private UserService userService;
+
+    protected String getToken() {
+        String token = request.getHeader(SessionConstants.TOKEN_HEADER);
+        if (StringUtils.isBlank(token)) {
+            throw new SessionException("无认证请求");
+        }
+        return token;
     }
 
-    protected Long getUserId() {
-        return getSession().getUserId();
+    protected UserVO getUser() {
+        String token = getToken();
+        Long userId = JWT.decode(token).getClaim("userId").asLong();
+        try {
+            User user = userMapper.selectById(userId);
+            Realm realm = realmMapper.selectById(user.getRealmId());
+            JWTUtil.verifyToken(token, realm.getSecret());
+            return userService.get(realm.getRealmId(), user.getUserId());
+        } catch (Exception e) {
+            throw new SessionException("认证失败");
+        }
     }
 
     protected Long getRealmId() {

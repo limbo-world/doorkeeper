@@ -1,9 +1,16 @@
-
-import { http } from '../axios-installer';
+import {http} from '../axios-installer';
 import TimeUnit from '../cache-installer/time-unit';
-import { Message, MessageBox, Loading } from 'element-ui';
+import {Message, MessageBox, Loading} from 'element-ui';
 import {MenuRoute} from "../router-installer/MenuData";
 import AuthExpressionEvaluator from "@/libs/directives/auth/AuthExpressionEvaluator.ts";
+
+const setTokenCache = (token) => {
+    window.localCache.set('session/token', token, 15, TimeUnit.Days);
+};
+
+const getTokenCache = () => {
+    return window.localCache.getSync('session/token');
+};
 
 const setSessionUserCache = (user) => {
     window.localCache.set('session/user', user, 15, TimeUnit.Days);
@@ -30,10 +37,8 @@ export default {
     },
 
     getters: {
-        /**
-         * 获取user信息，如果state中不存在，会尝试从sessionCache中读取，如果sessionCache中也没有则返回null；
-         */
         user(state) {
+            // 获取user信息，如果state中不存在，会尝试从sessionCache中读取，如果sessionCache中也没有则返回null；
             if (!state.user) {
                 return getSessionUserCache();
             }
@@ -65,7 +70,7 @@ export default {
         /**
          * 登录，登录成功后会返回授权信息，授权信息将设置到state和sessionCache
          */
-        login({ commit }, param) {
+        login({commit}, param) {
             return http.get('/login', {params: {...param, realmId: process.env.VUE_APP_realmId}}).then(response => {
                 if (response.code !== 200) {
                     MessageBox({
@@ -75,14 +80,8 @@ export default {
                     });
                     return Promise.reject();
                 }
-                const user = response.data;
-
-                let sessionUserCache = getSessionUserCache();
-                if (sessionUserCache && sessionUserCache.realm) {
-                    user.realm = sessionUserCache.realm;
-                }
-                commit('setUser', user);
-                setSessionUserCache(user);
+                const token = response.data;
+                setTokenCache(token);
                 return Promise.resolve();
             });
         },
@@ -90,36 +89,50 @@ export default {
         /**
          * 注销，退出登录
          */
-        logout({ commit }) {
+        logout({commit}) {
             http.get('/session/logout').then(() => {
                 commit('setUser', null);
                 window.localCache.remove('session/user');
                 commit('setMenu', []);
-                window.location.href='#/login';
+                window.location.href = '#/login';
             });
         },
 
         /**
          * 从后台读取会话信息，如果成功读取到会话，会更新到state和sessionCache
          */
-        loadSession({ state, commit }) {
-            return http.get('/session', {
-                ignoreException: { 401: true }
+        loadSession({state, commit}) {
+            return http.get('/session/user-info', {
+                ignoreException: {401: true}
             }).then(response => {
                 // 有会话 设置到state中，并更新sessionCache
                 const user = response.data;
+                let localUser = state.user;
+                if (localUser && localUser.realm) {
+                    user.realm = localUser.realm;
+                }
 
+                // 如果本地有选中的realm则继续选中
                 let sessionUserCache = getSessionUserCache();
                 if (sessionUserCache && sessionUserCache.realm) {
                     user.realm = sessionUserCache.realm;
                 }
+
                 commit('setUser', user);
-                setSessionUserCache(user);
+                setSessionUserCache(user)
+
+                // 刷新会话信息
+                http.get('/session/refresh', {
+                    ignoreException: {401: true}
+                }).then(response => {
+                    const token = response.data;
+                    setTokenCache(token);
+                })
                 return Promise.resolve();
             });
         },
 
-        loadRealms({ state, commit }) {
+        loadRealms({state, commit}) {
             return http.get(`/admin/realm`).then(response => {
                 // 有会话 设置到state中，并更新sessionCache
                 const realms = response.data;
@@ -131,7 +144,7 @@ export default {
         /**
          * 初始化权限校验计算器
          */
-        initEvaluator({ state, commit }) {
+        initEvaluator({state, commit}) {
             if (state.authExpEvaluator) {
                 return Promise.resolve(state.authExpEvaluator);
             }
@@ -152,7 +165,7 @@ export default {
         },
 
         // 从后台或其他地方加载菜单信息
-        loadMenus({ state, commit, dispatch }) {
+        loadMenus({state, commit, dispatch}) {
             // 已经加载完成时不再加载
             if (state.menus && state.menus.length > 0) {
                 return Promise.resolve(state.menus);
@@ -169,14 +182,12 @@ export default {
         /**
          * 切换当前选中的域
          */
-        changeRealm({ state, commit }, realm) {
+        changeRealm({state, commit}, realm) {
             return new Promise((resolve, reject) => {
-
-                let sessionUserCache = getSessionUserCache();
-                sessionUserCache.realm = realm;
-
-                commit('setUser', sessionUserCache);
-                setSessionUserCache(sessionUserCache);
+                let user = state.user;
+                user.realm = realm;
+                commit('setUser', user);
+                setSessionUserCache(user)
                 resolve();
             }).then(() => {
                 window.location.href = "/";
@@ -187,7 +198,6 @@ export default {
 
     }
 }
-
 
 
 const organizeMenu = (evaluator) => {

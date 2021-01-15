@@ -16,15 +16,21 @@
 
 package org.limbo.doorkeeper.server.support.session;
 
+import com.auth0.jwt.JWT;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.SessionConstants;
-import org.limbo.doorkeeper.api.model.vo.SessionUser;
+import org.limbo.doorkeeper.server.dao.RealmMapper;
+import org.limbo.doorkeeper.server.dao.UserMapper;
+import org.limbo.doorkeeper.server.entity.Realm;
+import org.limbo.doorkeeper.server.entity.User;
 import org.limbo.doorkeeper.server.support.session.exception.SessionException;
+import org.limbo.doorkeeper.server.utils.JWTUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * @author liuqingtong
@@ -33,22 +39,28 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class SessionInterceptor implements HandlerInterceptor {
 
-    private final RedisSessionDAO redisSessionDAO;
+    @Autowired
+    private UserMapper userMapper;
 
-    public SessionInterceptor(RedisSessionDAO redisSessionDAO) {
-        this.redisSessionDAO = redisSessionDAO;
-    }
+    @Autowired
+    private RealmMapper realmMapper;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         // 验证会话存在
-        String sessionId = request.getHeader(SessionConstants.SESSION_HEADER);
-        SessionUser session = redisSessionDAO.readSessionMayNull(sessionId);
-        if (session == null) {
-            throw new SessionException("无有效会话");
+        String token = request.getHeader(SessionConstants.TOKEN_HEADER);
+        if (StringUtils.isBlank(token)) {
+            throw new SessionException("无认证请求");
         }
-        // 会话正常，则更新会话过期时间，异步执行
-        CompletableFuture.runAsync(() -> redisSessionDAO.touchSession(sessionId));
+        Long userId = JWT.decode(token).getClaim("userId").asLong();
+        try {
+            User user = userMapper.selectById(userId);
+            Realm realm = realmMapper.selectById(user.getRealmId());
+            JWTUtil.verifyToken(token, realm.getSecret());
+        } catch (Exception e) {
+            throw new SessionException();
+        }
+
         return true;
     }
 }

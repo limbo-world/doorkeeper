@@ -50,13 +50,13 @@ public class AdminClientController extends BaseController {
     @Operation(summary = "新建委托方")
     @PostMapping
     public Response<ClientVO> add(@RequestBody @Validated ClientAddParam param) {
-        return Response.success(clientService.add(getRealmId(), getUserId(), param));
+        return Response.success(clientService.add(getRealmId(), getUser().getUserId(), param));
     }
 
     @Operation(summary = "查询账户拥有的委托方")
     @GetMapping
     public Response<List<ClientVO>> userClients(@Validated ClientQueryParam param) {
-        return Response.success(clientService.userClients(getRealmId(), getUserId(), param));
+        return Response.success(clientService.userClients(getRealmId(), getUser().getUserId(), param));
     }
 
     @Operation(summary = "查询委托方")

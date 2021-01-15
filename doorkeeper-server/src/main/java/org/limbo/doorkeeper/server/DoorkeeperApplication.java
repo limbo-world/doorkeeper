@@ -17,7 +17,6 @@
 
 package org.limbo.doorkeeper.server;
 
-import org.limbo.doorkeeper.server.support.config.RedisConfig;
 import org.limbo.doorkeeper.server.support.config.WebConfig;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.WebApplicationType;
@@ -35,7 +34,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableTransactionManagement
 @MapperScan("org.limbo.doorkeeper.server.dao")
-@Import({WebConfig.class, RedisConfig.class})
+@Import({WebConfig.class})
 public class DoorkeeperApplication {
 
     public static void main(String[] args) {

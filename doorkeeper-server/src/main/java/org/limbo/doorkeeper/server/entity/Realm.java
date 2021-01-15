@@ -22,6 +22,8 @@ public class Realm {
 
     private String name;
 
+    private String secret;
+
     private Date createTime;
 
     private Date updateTime;

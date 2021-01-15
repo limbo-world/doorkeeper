@@ -16,23 +16,15 @@
 
 package org.limbo.doorkeeper.server.support.authc;
 
+import com.auth0.jwt.JWT;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.SessionConstants;
 import org.limbo.doorkeeper.api.model.param.auth.AuthenticationUriCheckParam;
-import org.limbo.doorkeeper.api.model.vo.SessionUser;
 import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.server.dao.ClientMapper;
-import org.limbo.doorkeeper.server.dao.RealmMapper;
-import org.limbo.doorkeeper.server.dao.RoleMapper;
-import org.limbo.doorkeeper.server.dao.UserRoleMapper;
-import org.limbo.doorkeeper.server.entity.Client;
-import org.limbo.doorkeeper.server.entity.Realm;
-import org.limbo.doorkeeper.server.entity.Role;
-import org.limbo.doorkeeper.server.entity.UserRole;
-import org.limbo.doorkeeper.server.support.session.RedisSessionDAO;
-import org.limbo.doorkeeper.server.support.session.exception.SessionException;
+import org.limbo.doorkeeper.server.dao.*;
+import org.limbo.doorkeeper.server.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestAttributes;
@@ -53,7 +45,8 @@ import java.util.Map;
 @Slf4j
 public class AuthenticationInterceptor implements HandlerInterceptor {
 
-    private final RedisSessionDAO redisSessionDAO;
+    @Autowired
+    private UserMapper userMapper;
 
     @Autowired
     private RealmMapper realmMapper;
@@ -70,28 +63,22 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     @Autowired
     private UriAllowExecutor uriAllowExecutor;
 
-    public AuthenticationInterceptor(RedisSessionDAO redisSessionDAO) {
-        this.redisSessionDAO = redisSessionDAO;
-    }
-
     /**
      * 校验管理端权限 匹配 /admin/realm/**
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         // 判断 url 是否有对应权限
-        String sessionId = request.getHeader(SessionConstants.SESSION_HEADER);
-        SessionUser adminSession = redisSessionDAO.readSessionMayNull(sessionId);
-        if (adminSession == null) {
-            throw new SessionException("无有效会话");
-        }
+        String token = request.getHeader(SessionConstants.TOKEN_HEADER);
+        Long userId = JWT.decode(token).getClaim("userId").asLong();
+        User user = userMapper.selectById(userId);
 
         Realm dkRealm = realmMapper.selectOne(Wrappers.<Realm>lambdaQuery()
                 .eq(Realm::getName, DoorkeeperConstants.REALM_NAME)
         );
 
         // 判断用户是否属于dk域
-        if (!dkRealm.getRealmId().equals(adminSession.getRealmId())) {
+        if (!dkRealm.getRealmId().equals(user.getRealmId())) {
             return false;
         }
 
@@ -99,7 +86,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         Role dkAdmin = roleMapper.getByName(dkRealm.getRealmId(), DoorkeeperConstants.DEFAULT_PARENT_ID, DoorkeeperConstants.ADMIN);
         if (dkAdmin != null) {
             UserRole userRole = userRoleMapper.selectOne(Wrappers.<UserRole>lambdaQuery()
-                    .eq(UserRole::getUserId, adminSession.getUserId())
+                    .eq(UserRole::getUserId, user.getUserId())
                     .eq(UserRole::getRoleId, dkAdmin.getRoleId())
             );
             if (userRole != null) {
@@ -119,7 +106,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
         AuthenticationUriCheckParam param = new AuthenticationUriCheckParam();
         param.setUris(Collections.singletonList(request.getRequestURI()));
-        Map<Intention, List<String>> intentionListMap = uriAllowExecutor.accessAllowed(adminSession.getUserId(), client.getClientId(), param);
+        Map<Intention, List<String>> intentionListMap = uriAllowExecutor.accessAllowed(user.getUserId(), client.getClientId(), param);
 
         if (intentionListMap.get(Intention.ALLOW).size() <= 0) {
             throw new AuthenticationException();

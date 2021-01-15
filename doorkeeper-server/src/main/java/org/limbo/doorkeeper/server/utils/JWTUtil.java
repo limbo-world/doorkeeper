@@ -14,33 +14,21 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.constants;
+package org.limbo.doorkeeper.server.utils;
+
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.JWTVerifier;
 
 /**
  * @author Devil
- * @date 2021/1/10 10:40 上午
+ * @date 2021/1/15 7:43 下午
  */
-public interface DoorkeeperConstants {
+public class JWTUtil {
 
-    String REALM_NAME = "doorkeeper";
-
-    String ISSUER = "doorkeeper";
-
-    String REALM = "realm";
-
-    String REALM_ID = "realmId";
-
-    String CLIENT = "client";
-
-    String CLIENT_ID = "clientId";
-
-    Long DEFAULT_PARENT_ID = 0L;
-
-    String OWNER = "owner";
-
-    String ADMIN = "admin";
-
-    String BINDER = "binder";
-
-    String TYPE = "type";
+    public static boolean verifyToken(String token, String secret) {
+        JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(secret)).build();
+        jwtVerifier.verify(token);
+        return true;
+    }
 }

@@ -22,7 +22,7 @@ package org.limbo.doorkeeper.api.constants;
  */
 public interface SessionConstants {
     /**
-     * 会话
+     * token
      */
-    String SESSION_HEADER = "Doorkeeper-Session";
+    String TOKEN_HEADER = "Doorkeeper-Token";
 }

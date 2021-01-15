@@ -22,9 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.server.support.authc.AuthenticationInterceptor;
 import org.limbo.doorkeeper.server.support.format.StringToDateConverter;
-import org.limbo.doorkeeper.server.support.session.RedisSessionDAO;
 import org.limbo.doorkeeper.server.support.session.SessionInterceptor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,9 +42,6 @@ import java.text.SimpleDateFormat;
 @Slf4j
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-
-    @Autowired
-    private RedisSessionDAO sessionDAO;
 
     /**
      * json 返回结果处理
@@ -82,12 +77,12 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Bean
     public SessionInterceptor sessionInterceptor() {
-        return new SessionInterceptor(sessionDAO);
+        return new SessionInterceptor();
     }
 
     @Bean
     public AuthenticationInterceptor authenticationInterceptor() {
-        return new AuthenticationInterceptor(sessionDAO);
+        return new AuthenticationInterceptor();
     }
 
     @Override

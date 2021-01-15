@@ -21,7 +21,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.vo.AccountGrantVO;
-import org.limbo.doorkeeper.api.model.vo.SessionUser;
+import org.limbo.doorkeeper.api.model.vo.UserVO;
+import org.limbo.doorkeeper.server.service.LoginService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,11 +38,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/session")
 public class SessionController extends BaseController {
 
-    @Operation(summary = "获取会话")
-    @GetMapping
-    public Response<SessionUser> session() {
-        SessionUser session = getSession();
-        return Response.success(session);
+    @Autowired
+    private LoginService loginService;
+
+    @Operation(summary = "获取用户信息")
+    @GetMapping("/user-info")
+    public Response<UserVO> userInfo() {
+        return Response.success(getUser());
+    }
+
+    @Operation(summary = "刷新token过期时间")
+    @GetMapping("/refresh")
+    public Response<String> refresh() {
+        return Response.success(loginService.refreshToken(getToken()));
     }
 
     @Operation(summary = "获取当前项目页面权限信息")
@@ -48,14 +58,6 @@ public class SessionController extends BaseController {
     public Response<AccountGrantVO> getGrantInfo() {
         // 拿到用户管理端权限
         return Response.success();
-    }
-
-    @Operation(summary = "注销账户")
-    @GetMapping("/logout")
-    public Response<Boolean> logout() {
-        SessionUser session = getSession();
-        sessionDAO.destroySession(session.getSessionId());
-        return Response.success(true);
     }
 
 }

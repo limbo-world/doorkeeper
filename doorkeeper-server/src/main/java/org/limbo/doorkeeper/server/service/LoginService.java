@@ -16,16 +16,24 @@
 
 package org.limbo.doorkeeper.server.service;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.apache.commons.lang3.time.DateUtils;
 import org.limbo.doorkeeper.api.model.param.LoginParam;
-import org.limbo.doorkeeper.api.model.vo.SessionUser;
+import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.server.dao.RealmMapper;
 import org.limbo.doorkeeper.server.dao.UserMapper;
+import org.limbo.doorkeeper.server.entity.Realm;
 import org.limbo.doorkeeper.server.entity.User;
-import org.limbo.doorkeeper.server.support.session.RedisSessionDAO;
+import org.limbo.doorkeeper.server.support.session.exception.SessionException;
+import org.limbo.doorkeeper.server.utils.JWTUtil;
 import org.limbo.doorkeeper.server.utils.MD5Utils;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 /**
  * @author Devil
@@ -38,9 +46,9 @@ public class LoginService {
     private UserMapper userMapper;
 
     @Autowired
-    private RedisSessionDAO sessionDAO;
+    private RealmMapper realmMapper;
 
-    public SessionUser login(LoginParam param) {
+    public String login(LoginParam param) {
         User user = userMapper.selectOne(Wrappers.<User>lambdaQuery()
                 .eq(User::getRealmId, param.getRealmId())
                 .eq(User::getUsername, param.getUsername())
@@ -49,10 +57,39 @@ public class LoginService {
         Verifies.verify(user.getIsEnabled(), "用户未启用");
         Verifies.verify(MD5Utils.verify(param.getPassword(), user.getPassword()), "密码错误");
 
-        SessionUser sessionUser = new SessionUser();
-        sessionUser.setUserId(user.getUserId());
-        sessionUser.setRealmId(user.getRealmId());
-        sessionUser.setNickname(user.getNickname());
-        return sessionDAO.createSession(sessionUser);
+        Realm realm = realmMapper.selectById(user.getRealmId());
+        Verifies.notNull(realm, "realm不存在");
+
+        return token(user.getUserId(), realm.getRealmId(), user.getUsername(), user.getNickname(), realm.getSecret());
     }
+
+    public String token(Long userId, Long realmId, String username, String nickname, String secret) {
+        return JWT.create().withIssuer(DoorkeeperConstants.ISSUER)
+                .withClaim("userId", userId)
+                .withClaim("realmId", realmId)
+                .withClaim("username", username)
+                .withClaim("nickname", nickname)
+                .withExpiresAt(DateUtils.addHours(new Date(), 2))  //设置过期时间
+                .sign(Algorithm.HMAC256(secret));
+    }
+
+    public String refreshToken(String token) {
+        Long userId = JWT.decode(token).getClaim("userId").asLong();
+        User user;
+        Realm realm;
+        try {
+            user = userMapper.selectById(userId);
+            Verifies.notNull(user, "用户不存在");
+            Verifies.verify(user.getIsEnabled(), "用户未启用");
+
+            realm = realmMapper.selectById(user.getRealmId());
+            Verifies.notNull(realm, "realm不存在");
+            JWTUtil.verifyToken(token, realm.getSecret());
+        } catch (Exception e) {
+            throw new SessionException();
+        }
+
+        return token(user.getUserId(), realm.getRealmId(), user.getUsername(), user.getNickname(), realm.getSecret());
+    }
+
 }
