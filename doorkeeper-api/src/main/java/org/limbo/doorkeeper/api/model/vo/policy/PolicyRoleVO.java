@@ -39,4 +39,7 @@ public class PolicyRoleVO {
     @Schema(title = "角色名称")
     private String name;
 
+    @Schema(title = "是否启用")
+    private Boolean isEnabled;
+
 }
