@@ -19,8 +19,13 @@ export const MenuRoute = [{
     "icon": "el-icon-lock",
     "children": [{
         "menuCode": "002001",
-        "menuName": "用户列表",
+        "menuName": "用户",
         "icon": "el-icon-user",
         "route": "/user/user",
+    },{
+        "menuCode": "002002",
+        "menuName": "用户组",
+        "icon": "fa fa-users",
+        "route": "/group/group",
     }]
 }];

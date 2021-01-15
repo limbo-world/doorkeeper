@@ -119,6 +119,21 @@ export default [
                     },
                 ]
             },
+            {
+                path: '/group',
+                component: RouterView,
+                redirect: '/group/group',
+                children: [
+                    {
+                        path: '/group/group',
+                        component: _import('group/Group'),
+                    },
+                    {
+                        path: '/group/group-edit',
+                        component: _import('group/GroupEditLayout'),
+                    },
+                ]
+            },
         ]
     },
 
