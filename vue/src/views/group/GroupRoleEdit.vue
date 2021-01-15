@@ -1,5 +1,5 @@
 <template>
-    <el-container class="user-role-page">
+    <el-container class="group-role-page">
         <el-header class="padding-top-xs" height="50px">
             <el-form ref="searchForm" :inline="true" size="mini">
                 <el-form-item label="归属">
@@ -24,7 +24,7 @@
                 <el-table-column prop="description" label="描述"></el-table-column>
                 <el-table-column label="是否绑定">
                     <template slot-scope="scope">
-                        <el-switch :value="scope.row.userRoleId ? true : false"
+                        <el-switch :value="scope.row.groupRoleId ? true : false"
                                    @change="v => {bindRole(v, scope.row.roleId)}"
                                    active-color="#13ce66"
                                    inactive-color="#ff4949"></el-switch>
@@ -44,13 +44,16 @@ import {mapState, mapActions} from 'vuex';
 
 export default {
     props: {
+        groupId: {
+            type: Number,
+            default: null
+        }
     },
 
     data() {
         return {
             queryForm: {
                 clientId: null,
-                name: '',
             },
 
             roles: [],
@@ -63,8 +66,7 @@ export default {
     },
 
     created() {
-        pages.userRouleEdit = this;
-        this.userId = this.$route.query.userId;
+        pages.groupRoleEdit = this;
         this.loadClients();
     },
 
@@ -84,7 +86,7 @@ export default {
 
         loadRoles() {
             this.startProgress();
-            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/user/${this.userId}/user-role`, {
+            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/group/${this.groupId}/group-role`, {
                 params: this.queryForm
             }).then(response => {
                 this.roles = response.data;
@@ -93,7 +95,7 @@ export default {
 
         bindRole(v, roleId) {
             const loading = this.$loading();
-            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/user/${this.userId}/user-role/batch`, {
+            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/group/${this.groupId}/group-role/batch`, {
                 roleIds: [roleId], type: v ? this.$constants.batchMethod.SAVE : this.$constants.batchMethod.DELETE
             }).then(response => {
                 this.loadRoles();

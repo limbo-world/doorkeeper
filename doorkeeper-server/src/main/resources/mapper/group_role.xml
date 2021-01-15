@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2020-2024 Limbo Team (https://github.com/limbo-world).
+  ~
+  ~   Licensed under the Apache License, Version 2.0 (the "License");
+  ~   you may not use this file except in compliance with the License.
+  ~   You may obtain a copy of the License at
+  ~
+  ~   	http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~   Unless required by applicable law or agreed to in writing, software
+  ~   distributed under the License is distributed on an "AS IS" BASIS,
+  ~   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~   See the License for the specific language governing permissions and
+  ~   limitations under the License.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.limbo.doorkeeper.server.dao.GroupRoleMapper" >
+
+    <resultMap id="GroupRoleVO" type="org.limbo.doorkeeper.api.model.vo.GroupRoleVO">
+        <result column="group_role_id" property="groupRoleId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="group_id" property="groupId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="role_id" property="roleId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="realm_id" property="realmId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="client_id" property="clientId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="name" property="name" jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result column="description" property="description" jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result column="is_default" property="isDefault" jdbcType="BIT" javaType="java.lang.Boolean" />
+        <result column="is_combine" property="isCombine" jdbcType="BIT" javaType="java.lang.Boolean" />
+        <result column="is_enabled" property="isEnabled" jdbcType="BIT" javaType="java.lang.Boolean" />
+    </resultMap>
+
+    <select id="listVOS" resultMap="GroupRoleVO">
+        select r.*, gr.group_role_id, gr.group_id
+        from `role` r
+        left join group_role gr on gr.role_id = r.role_id and gr.group_id = #{groupId}
+        <where>
+            and r.realm_id = #{realmId}
+            <if test="clientId != null">
+                and r.client_id like #{clientId}
+            </if>
+            <if test="name != null and name != ''">
+                and r.name = #{name}
+            </if>
+            <if test="dimName != null and dimName != ''">
+                <bind name="dimName" value="'%' + dimName + '%'"/>
+                and r.name like #{dimName}
+            </if>
+        </where>
+        order by r.role_id desc
+    </select>
+
+</mapper>

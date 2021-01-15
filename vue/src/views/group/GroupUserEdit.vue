@@ -12,9 +12,10 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="loadGroupUsers(1)" size="mini" icon="el-icon-search">查询</el-button>
-                    <el-button type="primary" @click="loadGroupUsers" size="mini" icon="el-icon-search">加入</el-button>
-                    <el-button type="primary" @click="loadGroupUsers" size="mini" icon="el-icon-search">移除</el-button>
+                    <el-button type="primary" @click="loadGroupUsers(1)" size="mini" icon="el-icon-search">查询
+                    </el-button>
+                    <el-button type="primary" @click="usersJoin" size="mini" icon="el-icon-search">加入</el-button>
+                    <el-button type="primary" @click="usersLeave" size="mini" icon="el-icon-search">移除</el-button>
                 </el-form-item>
             </el-form>
         </el-header>
@@ -103,21 +104,30 @@ export default {
 
         handleSelectionChange(val) {
             this.selectUsers = val;
-            console.log(val)
         },
         usersJoin() {
+            let userIds = [];
+            for (let user of this.selectUsers) {
+                if (!user.groupUserId) {
+                    userIds.push(user.userId);
+                }
+            }
             const loading = this.$loading();
             this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/group/${this.groupId}/group-user/batch`, {
-                userIds: [userIds], type: this.$constants.batchMethod.SAVE
+                userIds: userIds, type: this.$constants.batchMethod.SAVE
             }).then(response => {
                 this.loadGroupUsers();
             }).finally(() => loading.close());
         },
 
         usersLeave() {
+            let userIds = [];
+            for (let user of this.selectUsers) {
+                userIds.push(user.userId);
+            }
             const loading = this.$loading();
             this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/group/${this.groupId}/group-user/batch`, {
-                userIds: [userIds], type: this.$constants.batchMethod.DELETE
+                userIds: userIds, type: this.$constants.batchMethod.DELETE
             }).then(response => {
                 this.loadGroupUsers();
             }).finally(() => loading.close());

@@ -47,95 +47,96 @@
 
 <script>
 
-    import { mapState, mapActions } from 'vuex';
+import {mapState, mapActions} from 'vuex';
 
-    export default {
-        data() {
-            const confirmPassword = (rule, value, cb) => {
-                if (this.user.password !== value) {
-                    cb(new Error('两次输入密码不一致'));
-                } else {
-                    cb();
-                }
-            };
-
-            return {
-                rules: {
-                    confirmPassword: [
-                        {
-                            validator: confirmPassword,
-                            trigger: 'blur'
-                        }
-                    ],
-                },
-                user: {
-                    password: '',
-                    confirmPassword: ''
-                },
-            };
-        },
-        computed: {
-            ...mapState('session', ['user']),
-        },
-        created() {
-            pages.resourceEdit = this;
-            if (this.$route.query.userId) {
-                this.user.userId = this.$route.query.userId;
-                this.loadUser();
+export default {
+    data() {
+        const confirmPassword = (rule, value, cb) => {
+            if (this.user.password !== value) {
+                cb(new Error('两次输入密码不一致'));
+            } else {
+                cb();
             }
+        };
+
+        return {
+            rules: {
+                confirmPassword: [
+                    {
+                        validator: confirmPassword,
+                        trigger: 'blur'
+                    }
+                ],
+            },
+            user: {
+                password: '',
+                confirmPassword: ''
+            },
+        };
+    },
+    computed: {
+        stateUser: mapState('session', ['user']).user,
+    },
+    created() {
+        pages.userEdit = this;
+        if (this.$route.query.userId) {
+            this.user.userId = this.$route.query.userId;
+            this.loadUser();
+        }
+    },
+
+    methods: {
+        ...mapActions('ui', ['startProgress', 'stopProgress']),
+
+        loadUser() {
+            this.startProgress({speed: 'fast'});
+            this.$ajax.get(`/admin/realm/${this.stateUser.realm.realmId}/user/${this.user.userId}`).then(response => {
+                this.user = response.data;
+            }).finally(() => this.stopProgress());
         },
 
-        methods: {
-            ...mapActions('ui', ['startProgress', 'stopProgress']),
-
-            loadUser() {
-                this.startProgress({ speed: 'fast' });
-                this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/user/${this.user.userId}`).then(response => {
-                    this.user = response.data;
-                }).finally(() => this.stopProgress());
-            },
-
-            confirmEdit() {
-                let formValid = false;
-                this.$refs.editForm.validate(valid => {
-                    formValid = valid
-                });
-                if (!formValid) {
-                    return
+        confirmEdit() {
+            let formValid = false;
+            this.$refs.editForm.validate(valid => {
+                formValid = valid
+            });
+            if (!formValid) {
+                return
+            }
+            const loading = this.$loading();
+            return new Promise((resolve, reject) => {
+                if (!this.user.userId) {
+                    this.addUser().then(response => {
+                        this.user = response.data;
+                        this.loadUser();
+                        resolve();
+                    }).catch(reject);
+                } else {
+                    this.updateUser().then(() => {
+                        this.loadUser();
+                        resolve();
+                    }).catch(reject);
                 }
-                const loading = this.$loading();
-                return new Promise((resolve, reject) => {
-                    if (!this.user.userId) {
-                        this.addUser().then(response => {
-                            this.user = response.data;
-                            this.loadUser();
-                            resolve();
-                        }).catch(reject);
-                    } else {
-                        this.updateUser().then(() => {
-                            this.loadUser();
-                            resolve();
-                        }).catch(reject);
-                    }
-                }).finally(() => loading.close())
-            },
-            addUser() {
-                return this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/user`, this.user);
-            },
-            updateUser() {
-                return this.$ajax.put(`/admin/realm/${this.user.realm.realmId}/user/${this.user.userId}`, this.user);
-            },
-        }
+            }).finally(() => loading.close())
+        },
+        addUser() {
+            return this.$ajax.post(`/admin/realm/${this.stateUser.realm.realmId}/user`, this.user);
+        },
+        updateUser() {
+            return this.$ajax.put(`/admin/realm/${this.stateUser.realm.realmId}/user/${this.user.userId}`, this.user);
+        },
     }
+}
 </script>
 
 <style lang="scss">
-    .resource-edit-page {
-        .uri-row {
-            margin-bottom: 10px;
-        }
-        .tag-lab {
-            margin-right: 10px;
-        }
+.resource-edit-page {
+    .uri-row {
+        margin-bottom: 10px;
     }
+
+    .tag-lab {
+        margin-right: 10px;
+    }
+}
 </style>

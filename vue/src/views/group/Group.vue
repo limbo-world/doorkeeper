@@ -17,27 +17,29 @@
 <template>
     <el-container class="group-page">
         <el-header class="padding-top-xs" height="30px">
-            <el-button type="primary" @click="() => {dialogOpened = true; group = {parentId: 0}}" size="mini">新增</el-button>
+            <el-button type="primary" @click="() => {dialogOpened = true; group = {parentId: 0}}" size="mini">新增
+            </el-button>
         </el-header>
 
         <el-main class="group-page-main">
             <el-input placeholder="输入关键字进行过滤" v-model="filterText" style="width: 300px"></el-input>
             <el-tree class="filter-tree" ref="groupTree"
-                :data="groups"
-                :props="defaultProps"
-                default-expand-all
-                draggable
-                :filter-node-method="filterNode"
-                @node-drop="dragNode"
-                >
+                     :data="groups"
+                     :props="defaultProps"
+                     default-expand-all
+                     draggable
+                     :filter-node-method="filterNode"
+                     @node-drop="dragNode"
+            >
                 <span class="custom-tree-node" slot-scope="{ node, data }">
                     <span>{{ node.label }}</span>
                     <span>
                         <span>{{ node.data.isDefault ? "默认添加" : "" }}</span>
-                        <el-button type="text" size="mini" @click="() => {dialogOpened = true; group = {parentId: node.data.groupId}}">新增</el-button>
-                        <el-button type="text" size="mini" @click="toGroupEdit(node.data.groupId)">编辑</el-button>
+                        <el-button type="text"
+                                   @click="() => {dialogOpened = true; group = {parentId: node.data.groupId}}">新增</el-button>
+                        <el-button type="text" @click="toGroupEdit(node.data.groupId)">编辑</el-button>
                         <!-- 还没做 -->
-<!--                        <el-button type="text" size="mini" @click="() => removeGroup(node.data.groupId)">删除</el-button>-->
+                        <!--                        <el-button type="text" size="mini" @click="() => removeGroup(node.data.groupId)">删除</el-button>-->
                     </span>
                 </span>
             </el-tree>
@@ -118,6 +120,9 @@ export default {
                 this.groups = organizeGroup;
             })
         },
+        /**
+         * 组织树状数据结构
+         */
         organizeGroup(nodes, groups) {
             if (!nodes) {
                 nodes = [];
@@ -214,7 +219,7 @@ export default {
             })
         },
 
-        test(v){
+        test(v) {
             console.log(111)
             console.log(v)
         },

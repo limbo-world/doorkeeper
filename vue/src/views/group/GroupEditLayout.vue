@@ -6,6 +6,7 @@
             <el-menu :default-active="tabIndex" class="el-menu-demo" mode="horizontal" @select="idx => {tabIndex = idx}">
                 <el-menu-item :index="1">基础信息</el-menu-item>
                 <el-menu-item :index="2">用户</el-menu-item>
+                <el-menu-item :index="3">角色</el-menu-item>
             </el-menu>
         </el-header>
 
@@ -13,6 +14,7 @@
         <el-main class="relative">
             <group-edit v-if="tabIndex === 1" :group-id="groupId"></group-edit>
             <group-user-edit v-if="tabIndex === 2" :group-id="groupId"></group-user-edit>
+            <group-role-edit v-if="tabIndex === 3" :group-id="groupId"></group-role-edit>
         </el-main>
     </el-container>
 
@@ -21,10 +23,11 @@
 <script>
     import GroupEdit from "@/views/group/GroupEdit";
     import GroupUserEdit from "@/views/group/GroupUserEdit";
+    import GroupRoleEdit from "@/views/group/GroupRoleEdit";
 
     export default {
         components: {
-            GroupEdit, GroupUserEdit
+            GroupEdit, GroupUserEdit, GroupRoleEdit
         },
 
         data: function () {

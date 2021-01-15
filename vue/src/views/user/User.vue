@@ -104,7 +104,7 @@ export default {
     },
 
     created() {
-        pages.permission = this;
+        pages.user = this;
         this.loadUsers();
     },
 
