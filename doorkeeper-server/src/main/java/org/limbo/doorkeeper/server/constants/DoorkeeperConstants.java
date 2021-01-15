@@ -32,11 +32,13 @@ public interface DoorkeeperConstants {
 
     String CLIENT_ID = "clientId";
 
-    Long REALM_CLIENT_DEFAULT_ID = 0L;
+    Long DEFAULT_PARENT_ID = 0L;
 
     String OWNER = "owner";
 
     String ADMIN = "admin";
 
     String BINDER = "binder";
+
+    String TYPE = "type";
 }

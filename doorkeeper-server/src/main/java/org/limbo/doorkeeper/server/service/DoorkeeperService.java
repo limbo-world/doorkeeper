@@ -21,6 +21,9 @@ import org.limbo.doorkeeper.api.constants.BatchMethod;
 import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.Logic;
 import org.limbo.doorkeeper.api.constants.PolicyType;
+import org.limbo.doorkeeper.api.model.param.group.GroupAddParam;
+import org.limbo.doorkeeper.api.model.param.group.GroupRoleBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.group.GroupUserBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.permission.PermissionAddParam;
 import org.limbo.doorkeeper.api.model.param.permission.PermissionPolicyAddParam;
 import org.limbo.doorkeeper.api.model.param.permission.PermissionResourceAddParam;
@@ -30,7 +33,7 @@ import org.limbo.doorkeeper.api.model.param.resource.ResourceAddParam;
 import org.limbo.doorkeeper.api.model.param.resource.ResourceTagAddParam;
 import org.limbo.doorkeeper.api.model.param.resource.ResourceUriAddParam;
 import org.limbo.doorkeeper.api.model.param.role.RoleAddParam;
-import org.limbo.doorkeeper.api.model.param.user.UserRoleBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.vo.GroupVO;
 import org.limbo.doorkeeper.api.model.vo.ResourceVO;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
@@ -76,6 +79,15 @@ public class DoorkeeperService {
     @Autowired
     private UserRoleService userRoleService;
 
+    @Autowired
+    private GroupService groupService;
+
+    @Autowired
+    private GroupRoleService groupRoleService;
+
+    @Autowired
+    private GroupUserService groupUserService;
+
     /**
      * @param userId    创建者ID
      * @param realmId   新建的RealmId
@@ -93,111 +105,49 @@ public class DoorkeeperService {
         client.setIsEnabled(true);
         clientMapper.insert(client);
 
-        // 域
+        // 域资源
         ResourceAddParam realmResourceParam = createRealmResource(realmId);
         ResourceVO realmResource = resourceService.add(client.getRealmId(), client.getClientId(), realmResourceParam);
-
-        RoleAddParam realmAdminRoleParam = createRole("域管理员", "拥有域下所有权限");
+        // 域管理员角色
+        RoleAddParam realmAdminRoleParam = createRole("realm admin", "");
         RoleVO realmAdminRole = roleService.add(client.getRealmId(), client.getClientId(), realmAdminRoleParam);
-
-        PolicyAddParam realmAdminPolicyParam = createRolePolicy("放行域管理员", realmAdminRole.getRoleId());
+        // 域管理员策略
+        PolicyAddParam realmAdminPolicyParam = createRolePolicy("realm admin", realmAdminRole.getRoleId());
         PolicyVO realmAdminPolicy = policyService.add(client.getRealmId(), client.getClientId(), realmAdminPolicyParam);
-
-        PermissionAddParam realmAdminPermissionParam = createPermission("域管理", realmResource.getResourceId(), realmAdminPolicy.getPolicyId());
+        // 域管理员权限
+        PermissionAddParam realmAdminPermissionParam = createPermission("realm admin", realmResource.getResourceId(), realmAdminPolicy.getPolicyId());
         permissionService.add(client.getRealmId(), client.getClientId(), realmAdminPermissionParam);
-
-        // 增加角色 用于域的绑定
-        RoleAddParam realmBindParam = createRole(DoorkeeperConstants.BINDER, "绑定域用于查询");
-        RoleVO realmBind = roleService.add(client.getRealmId(), client.getClientId(), realmBindParam);
-
-        // 绑定用户角色
-        List<Long> roleIds = new ArrayList<>();
-        roleIds.add(realmAdminRole.getRoleId());
-        roleIds.add(realmBind.getRoleId());
-        UserRoleBatchUpdateParam userRoleBatchUpdateParam = new UserRoleBatchUpdateParam();
-        userRoleBatchUpdateParam.setType(BatchMethod.SAVE);
-        userRoleBatchUpdateParam.setRoleIds(roleIds);
-        userRoleService.batchUpdate(client.getRealmId(), userId, userRoleBatchUpdateParam);
-
-
-        // 委托方
-        ResourceAddParam realmClientResourceParam = createRealmClientResource(realmId);
-        ResourceVO realmClientResource = resourceService.add(client.getRealmId(), client.getClientId(), realmClientResourceParam);
-
-        RoleAddParam realmClientManagerParam = createRole("委托方管理员", "委托方查看编辑");
-        RoleVO realmClientManager = roleService.add(client.getRealmId(), client.getClientId(), realmClientManagerParam);
-
-        PolicyAddParam realmClientPolicyParam = createRolePolicy("放行委托方管理员", realmClientManager.getRoleId());
-        PolicyVO realmClientPolicy = policyService.add(client.getRealmId(), client.getClientId(), realmClientPolicyParam);
-
-        PermissionAddParam realmClientPermissionParam = createPermission("委托方管理", realmClientResource.getResourceId(), realmClientPolicy.getPolicyId());
-        permissionService.add(client.getRealmId(), client.getClientId(), realmClientPermissionParam);
-
-        // 域角色
-        ResourceAddParam realmRoleResourceParam = createRealmRoleResource(realmId);
-        ResourceVO realmRoleResource = resourceService.add(client.getRealmId(), client.getClientId(), realmRoleResourceParam);
-
-        RoleAddParam realmRoleManagerParam = createRole("域角色管理员", "域角色查看编辑");
-        RoleVO realmRoleManager = roleService.add(client.getRealmId(), client.getClientId(), realmRoleManagerParam);
-
-        PolicyAddParam realmRolePolicyParam = createRolePolicy("放行域角色管理员", realmRoleManager.getRoleId());
-        PolicyVO realmRolePolicy = policyService.add(client.getRealmId(), client.getClientId(), realmRolePolicyParam);
-
-        PermissionAddParam realmRolePermissionParam = createPermission("域角色管理", realmRoleResource.getResourceId(), realmRolePolicy.getPolicyId());
-        permissionService.add(client.getRealmId(), client.getClientId(), realmRolePermissionParam);
-
-        // 用户
-        ResourceAddParam userResourceParam = createUserResource(realmId);
-        ResourceVO userResource = resourceService.add(client.getRealmId(), client.getClientId(), userResourceParam);
-
-        RoleAddParam realmUserManagerParam = createRole("用户管理员", "用户查看编辑");
-        RoleVO realmUserManager = roleService.add(client.getRealmId(), client.getClientId(), realmUserManagerParam);
-
-        PolicyAddParam realmUserPolicyParam = createRolePolicy("放行用户管理员", realmUserManager.getRoleId());
-        PolicyVO realmUserPolicy = policyService.add(client.getRealmId(), client.getClientId(), realmUserPolicyParam);
-
-        PermissionAddParam realmUserPermissionParam = createPermission("用户管理", userResource.getResourceId(), realmUserPolicy.getPolicyId());
-        permissionService.add(client.getRealmId(), client.getClientId(), realmUserPermissionParam);
+        // 增加用户组
+        // 找到名为realm的用户组
+        GroupVO realmGroup = groupService.getRealmGroup();
+        if (realmGroup == null) {
+            GroupAddParam groupAddParam = new GroupAddParam();
+            groupAddParam.setName(realmName);
+            groupAddParam.setParentId(0L);
+            realmGroup = groupService.add(dkRealm.getRealmId(), groupAddParam);
+        }
+        GroupAddParam groupAddParam = new GroupAddParam();
+        groupAddParam.setName(realmName);
+        groupAddParam.setParentId(realmGroup.getGroupId());
+        GroupVO group = groupService.add(dkRealm.getRealmId(), groupAddParam);
+        // 用户组绑定域管理员角色
+        GroupRoleBatchUpdateParam groupRoleBatchUpdateParam = new GroupRoleBatchUpdateParam();
+        groupRoleBatchUpdateParam.setType(BatchMethod.SAVE);
+        groupRoleBatchUpdateParam.setRoleIds(Collections.singletonList(realmAdminRole.getRoleId()));
+        groupRoleService.batchUpdate(dkRealm.getRealmId(), group.getGroupId(), groupRoleBatchUpdateParam);
+        // 用户加入用户组
+        GroupUserBatchUpdateParam groupUserBatchUpdateParam = new GroupUserBatchUpdateParam();
+        groupUserBatchUpdateParam.setType(BatchMethod.SAVE);
+        groupUserBatchUpdateParam.setUserIds(Collections.singletonList(userId));
+        groupUserService.batchUpdate(dkRealm.getRealmId(), userId, groupUserBatchUpdateParam);
     }
-
-//    @Transactional
-//    public void creatClientData(Long userId, Long realmId, Long clientId, String clientName) {
-//        Realm dkRealm = realmMapper.selectOne(Wrappers.<Realm>lambdaQuery()
-//                .eq(Realm::getName, DoorkeeperConstants.REALM_NAME)
-//        );
-//
-//        Realm realm = realmMapper.selectById(realmId);
-//
-//        Client client = clientMapper.selectOne(Wrappers.<Client>lambdaQuery()
-//                .eq(Client::getRealmId, dkRealm.getRealmId())
-//                .eq(Client::getName, realm.getName())
-//        );
-//
-//        ResourceAddParam clientResourceParam = createClientResource(client.getRealmId(), clientId, clientName);
-//        ResourceVO clientResource = resourceService.add(client.getRealmId(), client.getClientId(), clientResourceParam);
-//
-//        RoleAddParam clientAdminRoleParam = createRole(clientName + "-管理员", "拥有委托方" + clientName + "所有权限");
-//        RoleVO clientAdminRole = roleService.add(client.getRealmId(), client.getClientId(), clientAdminRoleParam);
-//
-//        PolicyAddParam clientAdminPolicyParam = createRolePolicy("放行" + clientName + "-管理员", clientAdminRole.getRoleId());
-//        PolicyVO clientAdminPolicy = policyService.add(client.getRealmId(), client.getClientId(), clientAdminPolicyParam);
-//
-//        PermissionAddParam clientAdminPermissionParam = createPermission(clientName + "管理", clientResource.getResourceId(), clientAdminPolicy.getPolicyId());
-//        permissionService.add(client.getRealmId(), client.getClientId(), clientAdminPermissionParam);
-//
-//        // 绑定用户角色
-//        UserRoleBatchUpdateParam userRoleBatchUpdateParam = new UserRoleBatchUpdateParam();
-//        userRoleBatchUpdateParam.setType(BatchMethod.SAVE);
-//        userRoleBatchUpdateParam.setRoleIds(Collections.singletonList(clientAdminRole.getRoleId()));
-//        userRoleService.batchUpdate(client.getRealmId(), userId, userRoleBatchUpdateParam);
-//    }
 
     /**
      * @param realmId 新建的域的id
      */
     private ResourceAddParam createRealmResource(Long realmId) {
         ResourceAddParam resourceAddParam = new ResourceAddParam();
-        resourceAddParam.setName("域");
+        resourceAddParam.setName("realm");
         resourceAddParam.setIsEnabled(true);
 
         ResourceUriAddParam uriAddParam = new ResourceUriAddParam();
@@ -209,78 +159,15 @@ public class DoorkeeperService {
         realmIdTag.setK(DoorkeeperConstants.REALM_ID);
         realmIdTag.setV(realmId + "");
 
-        resourceAddParam.setTags(Collections.singletonList(realmIdTag));
+        ResourceTagAddParam typeTag = new ResourceTagAddParam();
+        typeTag.setK(DoorkeeperConstants.TYPE);
+        typeTag.setV(DoorkeeperConstants.REALM);
 
-        return resourceAddParam;
-    }
+        List<ResourceTagAddParam> tags = new ArrayList<>();
+        tags.add(realmIdTag);
+        tags.add(typeTag);
 
-//    /**
-//     * @param realmId 新建的client的所在域的id
-//     * @param clientId 新建的client的id
-//     */
-//    private ResourceAddParam createClientResource(Long realmId, Long clientId, String clientName) {
-//        ResourceAddParam resourceAddParam = new ResourceAddParam();
-//        resourceAddParam.setName("委托方-" + clientName);
-//        resourceAddParam.setIsEnabled(true);
-//
-//        ResourceUriAddParam uriAddParam = new ResourceUriAddParam();
-//        uriAddParam.setUri("/admin/realm/" + realmId + "/client/" + clientId + "/**");
-//
-//        resourceAddParam.setUris(Collections.singletonList(uriAddParam));
-//
-//        ResourceTagAddParam clientIdTag = new ResourceTagAddParam();
-//        clientIdTag.setK(DoorkeeperConstants.CLIENT_ID);
-//        clientIdTag.setV(clientId + "");
-//
-//        resourceAddParam.setTags(Collections.singletonList(clientIdTag));
-//
-//        return resourceAddParam;
-//    }
-
-    /**
-     * @param realmId 新建的域的id
-     */
-    private ResourceAddParam createRealmRoleResource(Long realmId) {
-        ResourceAddParam resourceAddParam = new ResourceAddParam();
-        resourceAddParam.setName("域角色");
-        resourceAddParam.setIsEnabled(true);
-
-        ResourceUriAddParam uriAddParam = new ResourceUriAddParam();
-        uriAddParam.setUri("/admin/realm/" + realmId + "/client/" + DoorkeeperConstants.REALM_CLIENT_DEFAULT_ID + "/role/**");
-
-        resourceAddParam.setUris(Collections.singletonList(uriAddParam));
-
-        return resourceAddParam;
-    }
-
-    /**
-     * @param realmId 新建的域的id
-     */
-    private ResourceAddParam createRealmClientResource(Long realmId) {
-        ResourceAddParam resourceAddParam = new ResourceAddParam();
-        resourceAddParam.setName("委托方");
-        resourceAddParam.setIsEnabled(true);
-
-        ResourceUriAddParam uriAddParam = new ResourceUriAddParam();
-        uriAddParam.setUri("/admin/realm/" + realmId + "/client/**");
-
-        resourceAddParam.setUris(Collections.singletonList(uriAddParam));
-
-        return resourceAddParam;
-    }
-
-    /**
-     * @param realmId 新建的域的id
-     */
-    private ResourceAddParam createUserResource(Long realmId) {
-        ResourceAddParam resourceAddParam = new ResourceAddParam();
-        resourceAddParam.setName("用户");
-        resourceAddParam.setIsEnabled(true);
-
-        ResourceUriAddParam uriAddParam = new ResourceUriAddParam();
-        uriAddParam.setUri("/admin/realm/" + realmId + "/user/**");
-
-        resourceAddParam.setUris(Collections.singletonList(uriAddParam));
+        resourceAddParam.setTags(tags);
 
         return resourceAddParam;
     }

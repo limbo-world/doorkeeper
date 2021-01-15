@@ -21,8 +21,11 @@ import org.limbo.doorkeeper.api.exception.ParamException;
 import org.limbo.doorkeeper.api.model.param.group.GroupAddParam;
 import org.limbo.doorkeeper.api.model.param.group.GroupUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
+import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.dao.GroupMapper;
+import org.limbo.doorkeeper.server.dao.RealmMapper;
 import org.limbo.doorkeeper.server.entity.Group;
+import org.limbo.doorkeeper.server.entity.Realm;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -40,6 +43,9 @@ public class GroupService {
 
     @Autowired
     private GroupMapper groupMapper;
+
+    @Autowired
+    private RealmMapper realmMapper;
 
     @Transactional
     public GroupVO add(Long realmId, GroupAddParam param) {
@@ -64,6 +70,19 @@ public class GroupService {
         Group group = groupMapper.selectOne(Wrappers.<Group>lambdaQuery()
                 .eq(Group::getGroupId, groupId)
                 .eq(Group::getRealmId, realmId)
+        );
+        return EnhancedBeanUtils.createAndCopy(group, GroupVO.class);
+    }
+
+    public GroupVO getRealmGroup() {
+        Realm dkRealm = realmMapper.selectOne(Wrappers.<Realm>lambdaQuery()
+                .eq(Realm::getName, DoorkeeperConstants.REALM_NAME)
+        );
+
+        Group group = groupMapper.selectOne(Wrappers.<Group>lambdaQuery()
+                .eq(Group::getRealmId, dkRealm.getRealmId())
+                .eq(Group::getParentId, DoorkeeperConstants.DEFAULT_PARENT_ID)
+                .eq(Group::getName, DoorkeeperConstants.REALM)
         );
         return EnhancedBeanUtils.createAndCopy(group, GroupVO.class);
     }
