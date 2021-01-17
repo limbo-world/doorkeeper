@@ -109,13 +109,13 @@ public class DoorkeeperService {
         ResourceAddParam realmResourceParam = createRealmResource(realmId);
         ResourceVO realmResource = resourceService.add(client.getRealmId(), client.getClientId(), realmResourceParam);
         // 域管理员角色
-        RoleAddParam realmAdminRoleParam = createRole("realm admin", "");
+        RoleAddParam realmAdminRoleParam = createRole(DoorkeeperConstants.ADMIN, "");
         RoleVO realmAdminRole = roleService.add(client.getRealmId(), client.getClientId(), realmAdminRoleParam);
         // 域管理员策略
-        PolicyAddParam realmAdminPolicyParam = createRolePolicy("realm admin", realmAdminRole.getRoleId());
+        PolicyAddParam realmAdminPolicyParam = createRolePolicy(DoorkeeperConstants.ADMIN, realmAdminRole.getRoleId());
         PolicyVO realmAdminPolicy = policyService.add(client.getRealmId(), client.getClientId(), realmAdminPolicyParam);
         // 域管理员权限
-        PermissionAddParam realmAdminPermissionParam = createPermission("realm admin", realmResource.getResourceId(), realmAdminPolicy.getPolicyId());
+        PermissionAddParam realmAdminPermissionParam = createPermission(DoorkeeperConstants.ADMIN, realmResource.getResourceId(), realmAdminPolicy.getPolicyId());
         permissionService.add(client.getRealmId(), client.getClientId(), realmAdminPermissionParam);
         // 增加用户组
         // 找到名为realm的用户组
@@ -123,7 +123,7 @@ public class DoorkeeperService {
         if (realmGroup == null) {
             GroupAddParam groupAddParam = new GroupAddParam();
             groupAddParam.setName(realmName);
-            groupAddParam.setParentId(0L);
+            groupAddParam.setParentId(DoorkeeperConstants.DEFAULT_ID);
             realmGroup = groupService.add(dkRealm.getRealmId(), groupAddParam);
         }
         GroupAddParam groupAddParam = new GroupAddParam();

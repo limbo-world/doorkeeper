@@ -47,7 +47,7 @@ public class UserRoleService {
     }
 
     @Transactional
-    public void batchUpdate(Long realmId, Long userId, UserRoleBatchUpdateParam param) {
+    public void batchUpdate(Long userId, UserRoleBatchUpdateParam param) {
         switch (param.getType()) {
             case SAVE: // 新增
                 List<UserRole> userRoles = new ArrayList<>();

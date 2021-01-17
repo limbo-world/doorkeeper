@@ -74,10 +74,10 @@ public class LoginService {
     }
 
     public String refreshToken(String token) {
-        Long userId = JWT.decode(token).getClaim("userId").asLong();
         User user;
         Realm realm;
         try {
+            Long userId = JWT.decode(token).getClaim("userId").asLong();
             user = userMapper.selectById(userId);
             Verifies.notNull(user, "用户不存在");
             Verifies.verify(user.getIsEnabled(), "用户未启用");

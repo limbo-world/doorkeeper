@@ -81,7 +81,7 @@ public class GroupService {
 
         Group group = groupMapper.selectOne(Wrappers.<Group>lambdaQuery()
                 .eq(Group::getRealmId, dkRealm.getRealmId())
-                .eq(Group::getParentId, DoorkeeperConstants.DEFAULT_PARENT_ID)
+                .eq(Group::getParentId, DoorkeeperConstants.DEFAULT_ID)
                 .eq(Group::getName, DoorkeeperConstants.REALM)
         );
         return EnhancedBeanUtils.createAndCopy(group, GroupVO.class);

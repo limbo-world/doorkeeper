@@ -90,12 +90,10 @@ export default {
          * 注销，退出登录
          */
         logout({commit}) {
-            http.get('/session/logout').then(() => {
-                commit('setUser', null);
-                window.localCache.remove('session/user');
-                commit('setMenu', []);
-                window.location.href = '#/login';
-            });
+            commit('setUser', null);
+            window.localCache.remove('session/token');
+            commit('setMenu', []);
+            window.location.href = '#/login';
         },
 
         /**

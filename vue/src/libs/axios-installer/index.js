@@ -24,7 +24,10 @@ request.interceptors.request.use(config => {
     }
 
     // 设置认证header
-    config.headers[request.tokenHeader] = getTokenCache();
+    const token = getTokenCache();
+    if (token) {
+        config.headers[request.tokenHeader] = token;
+    }
     return config;
 }, error => {
     Promise.reject(error);

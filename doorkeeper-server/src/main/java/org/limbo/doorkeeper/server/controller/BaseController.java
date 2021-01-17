@@ -66,8 +66,8 @@ public class BaseController {
 
     protected UserVO getUser() {
         String token = getToken();
-        Long userId = JWT.decode(token).getClaim("userId").asLong();
         try {
+            Long userId = JWT.decode(token).getClaim("userId").asLong();
             User user = userMapper.selectById(userId);
             Realm realm = realmMapper.selectById(user.getRealmId());
             JWTUtil.verifyToken(token, realm.getSecret());

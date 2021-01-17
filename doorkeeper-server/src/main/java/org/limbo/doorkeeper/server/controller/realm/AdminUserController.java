@@ -87,7 +87,7 @@ public class AdminUserController extends BaseController {
     @PostMapping("/{userId}/user-role/batch")
     public Response<Void> batch(@Validated @NotNull(message = "未提交用户ID") @PathVariable("userId") Long userId,
                                                @RequestBody @Validated UserRoleBatchUpdateParam param) {
-        userRoleService.batchUpdate(getRealmId(), userId, param);
+        userRoleService.batchUpdate(userId, param);
         return Response.success();
     }
 

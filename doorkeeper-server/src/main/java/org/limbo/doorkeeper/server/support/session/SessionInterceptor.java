@@ -52,8 +52,8 @@ public class SessionInterceptor implements HandlerInterceptor {
         if (StringUtils.isBlank(token)) {
             throw new SessionException("无认证请求");
         }
-        Long userId = JWT.decode(token).getClaim("userId").asLong();
         try {
+            Long userId = JWT.decode(token).getClaim("userId").asLong();
             User user = userMapper.selectById(userId);
             Realm realm = realmMapper.selectById(user.getRealmId());
             JWTUtil.verifyToken(token, realm.getSecret());

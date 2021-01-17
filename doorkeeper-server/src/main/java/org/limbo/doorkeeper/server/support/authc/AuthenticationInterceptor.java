@@ -83,7 +83,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         }
 
         // 判断是不是DK的REALM admin
-        Role dkAdmin = roleMapper.getByName(dkRealm.getRealmId(), DoorkeeperConstants.DEFAULT_PARENT_ID, DoorkeeperConstants.ADMIN);
+        Role dkAdmin = roleMapper.getByName(dkRealm.getRealmId(), DoorkeeperConstants.DEFAULT_ID, DoorkeeperConstants.ADMIN);
         if (dkAdmin != null) {
             UserRole userRole = userRoleMapper.selectOne(Wrappers.<UserRole>lambdaQuery()
                     .eq(UserRole::getUserId, user.getUserId())

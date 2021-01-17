@@ -34,13 +34,9 @@ public interface DoorkeeperConstants {
 
     String CLIENT_ID = "clientId";
 
-    Long DEFAULT_PARENT_ID = 0L;
-
-    String OWNER = "owner";
+    Long DEFAULT_ID = 0L;
 
     String ADMIN = "admin";
-
-    String BINDER = "binder";
 
     String TYPE = "type";
 }
