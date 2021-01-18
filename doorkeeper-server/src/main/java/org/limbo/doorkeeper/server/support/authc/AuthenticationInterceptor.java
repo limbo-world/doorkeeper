@@ -25,7 +25,9 @@ import org.limbo.doorkeeper.api.model.param.auth.AuthenticationUriCheckParam;
 import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.dao.*;
 import org.limbo.doorkeeper.server.entity.*;
+import org.limbo.doorkeeper.server.support.auth2.AuthorizationCheckResult;
 import org.limbo.doorkeeper.server.support.auth2.AuthorizationCheckerFactory;
+import org.limbo.doorkeeper.server.support.auth2.params.BasicAuthorizationCheckParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestAttributes;
@@ -106,22 +108,22 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         // 获取对应的client
         Client client = clientMapper.getByName(dkRealm.getRealmId(), realm.getName());
 
-        AuthenticationUriCheckParam param = new AuthenticationUriCheckParam();
-        param.setUris(Collections.singletonList(request.getRequestURI()));
-        Map<Intention, List<String>> intentionListMap = uriAllowExecutor.accessAllowed(user.getUserId(), client.getClientId(), param);
-
-        if (intentionListMap.get(Intention.ALLOW).size() <= 0) {
-            throw new AuthenticationException();
-        }
-
-
-//        BasicAuthorizationCheckParam<String> checkParam = new BasicAuthorizationCheckParam<String>()
-//                .setUserId(userId).setClientId(client.getClientId()).setResourceAssigner(Collections.singletonList(request.getRequestURI()));
-//        AuthorizationCheckResult<String> checkResult = authorizationCheckerFactory.newUriAuthorizationChecker(checkParam).check();
+//        AuthenticationUriCheckParam param = new AuthenticationUriCheckParam();
+//        param.setUris(Collections.singletonList(request.getRequestURI()));
+//        Map<Intention, List<String>> intentionListMap = uriAllowExecutor.accessAllowed(user.getUserId(), client.getClientId(), param);
 //
-//        if (checkResult.getAllowed().size() <= 0) {
+//        if (intentionListMap.get(Intention.ALLOW).size() <= 0) {
 //            throw new AuthenticationException();
 //        }
+
+
+        BasicAuthorizationCheckParam<String> checkParam = new BasicAuthorizationCheckParam<String>()
+                .setUserId(userId).setClientId(client.getClientId()).setResourceAssigner(Collections.singletonList(request.getRequestURI()));
+        AuthorizationCheckResult<String> checkResult = authorizationCheckerFactory.newUriAuthorizationChecker(checkParam).check();
+
+        if (checkResult.getAllowed().size() <= 0) {
+            throw new AuthenticationException();
+        }
 
         return true;
     }
