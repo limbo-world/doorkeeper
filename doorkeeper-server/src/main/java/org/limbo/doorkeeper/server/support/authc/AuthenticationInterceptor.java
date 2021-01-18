@@ -25,6 +25,7 @@ import org.limbo.doorkeeper.api.model.param.auth.AuthenticationUriCheckParam;
 import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.dao.*;
 import org.limbo.doorkeeper.server.entity.*;
+import org.limbo.doorkeeper.server.support.auth2.AuthorizationCheckerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestAttributes;
@@ -62,6 +63,9 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
     @Autowired
     private UriAllowExecutor uriAllowExecutor;
+
+    @Autowired
+    private AuthorizationCheckerFactory authorizationCheckerFactory;
 
     /**
      * 校验管理端权限 匹配 /admin/realm/**
@@ -110,6 +114,15 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         if (intentionListMap.get(Intention.ALLOW).size() <= 0) {
             throw new AuthenticationException();
         }
+
+
+//        BasicAuthorizationCheckParam<String> checkParam = new BasicAuthorizationCheckParam<String>()
+//                .setUserId(userId).setClientId(client.getClientId()).setResourceAssigner(Collections.singletonList(request.getRequestURI()));
+//        AuthorizationCheckResult<String> checkResult = authorizationCheckerFactory.newUriAuthorizationChecker(checkParam).check();
+//
+//        if (checkResult.getAllowed().size() <= 0) {
+//            throw new AuthenticationException();
+//        }
 
         return true;
     }
