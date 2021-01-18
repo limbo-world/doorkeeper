@@ -70,14 +70,15 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         // 判断 url 是否有对应权限
         String token = request.getHeader(SessionConstants.TOKEN_HEADER);
-        Long userId = JWT.decode(token).getClaim("userId").asLong();
+        Long userId = JWT.decode(token).getClaim(DoorkeeperConstants.USER_ID).asLong();
         User user = userMapper.selectById(userId);
 
         Realm dkRealm = realmMapper.getDoorkeeperRealm();
+        Realm publicRealm = realmMapper.getPublicRealm();
 
-        // 判断用户是否属于dk域
-        if (!dkRealm.getRealmId().equals(user.getRealmId())) {
-            return false;
+        // 判断用户是否属于dk域或公有域
+        if (!dkRealm.getRealmId().equals(user.getRealmId()) && !publicRealm.getRealmId().equals(user.getRealmId())) {
+            throw new AuthenticationException();
         }
 
         // 判断是不是DK的REALM admin

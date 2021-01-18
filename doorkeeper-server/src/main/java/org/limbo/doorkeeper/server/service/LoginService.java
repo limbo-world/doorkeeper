@@ -65,10 +65,10 @@ public class LoginService {
 
     public String token(Long userId, Long realmId, String username, String nickname, String secret) {
         return JWT.create().withIssuer(DoorkeeperConstants.ISSUER)
-                .withClaim("userId", userId)
-                .withClaim("realmId", realmId)
-                .withClaim("username", username)
-                .withClaim("nickname", nickname)
+                .withClaim(DoorkeeperConstants.USER_ID, userId)
+                .withClaim(DoorkeeperConstants.REALM_ID, realmId)
+                .withClaim(DoorkeeperConstants.USERNAME, username)
+                .withClaim(DoorkeeperConstants.NICKNAME, nickname)
                 .withExpiresAt(DateUtils.addHours(new Date(), 2))  //设置过期时间
                 .sign(Algorithm.HMAC256(secret));
     }
@@ -77,7 +77,7 @@ public class LoginService {
         User user;
         Realm realm;
         try {
-            Long userId = JWT.decode(token).getClaim("userId").asLong();
+            Long userId = JWT.decode(token).getClaim(DoorkeeperConstants.USER_ID).asLong();
             user = userMapper.selectById(userId);
             Verifies.notNull(user, "用户不存在");
             Verifies.verify(user.getIsEnabled(), "用户未启用");
