@@ -43,10 +43,16 @@ const logics = [
     {label: '满足大于不满足', value: 'MORE'},
 ];
 
+const doorkeeperRealmId = process.env.VUE_APP_doorkeeperRealmId;
+const publicRealmId = process.env.VUE_APP_publicRealmId;
+
 export default {
     policyTypes,
     intentions,
     batchMethod,
     enableTypes,
-    logics
+    logics,
+
+    doorkeeperRealmId,
+    publicRealmId
 }

@@ -20,6 +20,7 @@ import com.auth0.jwt.JWT;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.SessionConstants;
+import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.dao.RealmMapper;
 import org.limbo.doorkeeper.server.dao.UserMapper;
 import org.limbo.doorkeeper.server.entity.Realm;
@@ -53,7 +54,7 @@ public class SessionInterceptor implements HandlerInterceptor {
             throw new SessionException("无认证请求");
         }
         try {
-            Long userId = JWT.decode(token).getClaim("userId").asLong();
+            Long userId = JWT.decode(token).getClaim(DoorkeeperConstants.USER_ID).asLong();
             User user = userMapper.selectById(userId);
             Realm realm = realmMapper.selectById(user.getRealmId());
             JWTUtil.verifyToken(token, realm.getSecret());
