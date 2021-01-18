@@ -31,7 +31,16 @@
         <result column="is_enabled" property="isEnabled" jdbcType="BIT" javaType="java.lang.Boolean" />
     </resultMap>
 
-    <select id="listVOS" resultMap="UserRoleVO">
+    <resultMap id="RoleUserVO" type="org.limbo.doorkeeper.api.model.vo.RoleUserVO">
+        <result column="user_role_id" property="userRoleId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="user_id" property="userId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="role_id" property="roleId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="username" property="username" jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result column="nickname" property="nickname" jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result column="description" property="description" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </resultMap>
+
+    <select id="listUserRoleVOS" resultMap="UserRoleVO">
         select r.*, ur.user_role_id, ur.user_id
         from `role` r
         left join user_role ur on ur.role_id = r.role_id and ur.user_id = #{userId}
@@ -49,6 +58,43 @@
             </if>
         </where>
         order by r.role_id desc
+    </select>
+
+
+    <sql id="roleUserQueryCondition">
+        and u.realm_id = #{realmId}
+        <if test="name != null and name != ''">
+            and (u.username = #{name} or u.nickname = #{name})
+        </if>
+        <if test="dimName != null and dimName != ''">
+            <bind name="dimName" value="'%' + dimName + '%'"/>
+            and (u.username like #{dimName} or u.nickname like #{dimName})
+        </if>
+        <choose>
+            <when test="true == isJoin">
+                and ur.user_role_id is not null
+            </when>
+            <when test="false == isJoin">
+                and ur.user_role_id is null
+            </when>
+        </choose>
+    </sql>
+    <select id="listRoleUserCount" resultType="java.lang.Long">
+        select count(*)
+        from `user` u
+        left join user_role ur on ur.user_id = u.user_id and ur.role_id = #{roleId}
+        <where>
+            <include refid="roleUserQueryCondition"></include>
+        </where>
+    </select>
+    <select id="listRoleUserVOS" resultMap="RoleUserVO">
+        select u.user_id, u.username, u.nickname, u.description, ur.user_role_id, ur.role_id
+        from `user` u
+        left join user_role ur on ur.user_id = u.user_id and ur.role_id = #{roleId}
+        <where>
+            <include refid="roleUserQueryCondition"></include>
+        </where>
+        order by u.user_id desc
     </select>
 
 </mapper>

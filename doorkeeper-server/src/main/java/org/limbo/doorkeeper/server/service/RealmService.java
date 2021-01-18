@@ -85,9 +85,7 @@ public class RealmService {
      * user拥有哪些realm
      */
     public List<RealmVO> userRealms(Long userId) {
-        Realm dkRealm = realmMapper.selectOne(Wrappers.<Realm>lambdaQuery()
-                .eq(Realm::getName, DoorkeeperConstants.REALM_NAME)
-        );
+        Realm dkRealm = realmMapper.getDoorkeeperRealm();
 
         // 判断是不是DK的REALM admin
         Role dkAdmin = roleMapper.getByName(dkRealm.getRealmId(), DoorkeeperConstants.DEFAULT_ID, DoorkeeperConstants.ADMIN);

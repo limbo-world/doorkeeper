@@ -54,7 +54,7 @@ public class GroupService {
         try {
             groupMapper.insert(group);
         } catch (DuplicateKeyException e) {
-            throw new ParamException("用户已存在");
+            throw new ParamException("用户组已存在");
         }
         return EnhancedBeanUtils.createAndCopy(group, GroupVO.class);
     }
@@ -76,13 +76,23 @@ public class GroupService {
 
     public GroupVO getRealmGroup() {
         Realm dkRealm = realmMapper.selectOne(Wrappers.<Realm>lambdaQuery()
-                .eq(Realm::getName, DoorkeeperConstants.REALM_NAME)
+                .eq(Realm::getName, DoorkeeperConstants.DOORKEEPER_REALM_NAME)
         );
 
         Group group = groupMapper.selectOne(Wrappers.<Group>lambdaQuery()
                 .eq(Group::getRealmId, dkRealm.getRealmId())
                 .eq(Group::getParentId, DoorkeeperConstants.DEFAULT_ID)
                 .eq(Group::getName, DoorkeeperConstants.REALM)
+        );
+        return EnhancedBeanUtils.createAndCopy(group, GroupVO.class);
+    }
+
+    public GroupVO getPublicGroup() {
+        GroupVO realmGroup = getRealmGroup();
+        Group group = groupMapper.selectOne(Wrappers.<Group>lambdaQuery()
+                .eq(Group::getRealmId, realmGroup.getRealmId())
+                .eq(Group::getParentId, realmGroup.getGroupId())
+                .eq(Group::getName, DoorkeeperConstants.PUBLIC_REALM_NAME)
         );
         return EnhancedBeanUtils.createAndCopy(group, GroupVO.class);
     }

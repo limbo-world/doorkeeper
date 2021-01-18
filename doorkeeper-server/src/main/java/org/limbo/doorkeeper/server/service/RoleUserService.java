@@ -17,10 +17,14 @@
 package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import org.limbo.doorkeeper.api.model.param.user.UserRoleBatchUpdateParam;
-import org.limbo.doorkeeper.api.model.param.user.UserRoleQueryParam;
-import org.limbo.doorkeeper.api.model.vo.UserRoleVO;
+import org.apache.commons.lang3.BooleanUtils;
+import org.limbo.doorkeeper.api.model.Page;
+import org.limbo.doorkeeper.api.model.param.role.RoleUserQueryParam;
+import org.limbo.doorkeeper.api.model.param.role.RoleUserBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.vo.RoleUserVO;
+import org.limbo.doorkeeper.server.dao.RealmMapper;
 import org.limbo.doorkeeper.server.dao.UserRoleMapper;
+import org.limbo.doorkeeper.server.entity.Realm;
 import org.limbo.doorkeeper.server.entity.UserRole;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,26 +36,38 @@ import java.util.List;
 
 /**
  * @author Devil
- * @date 2021/1/12 3:31 下午
+ * @date 2021/1/18 10:15 上午
  */
 @Service
-public class UserRoleService {
+public class RoleUserService {
 
     @Autowired
     private UserRoleMapper userRoleMapper;
 
-    public List<UserRoleVO> list(Long realmId, Long userId, UserRoleQueryParam param) {
+    @Autowired
+    private RealmMapper realmMapper;
+
+    public Page<RoleUserVO> page(Long realmId, Long roleId, RoleUserQueryParam param) {
         param.setRealmId(realmId);
-        param.setUserId(userId);
-        return userRoleMapper.listUserRoleVOS(param);
+        param.setRoleId(roleId);
+        if (BooleanUtils.isTrue(param.getIsPublic())) {
+            Realm publicRealm = realmMapper.getPublicRealm();
+            param.setRealmId(publicRealm.getRealmId());
+        }
+        long count = userRoleMapper.listRoleUserCount(param);
+        param.setTotal(count);
+        if (count > 0) {
+            param.setData(userRoleMapper.listRoleUserVOS(param));
+        }
+        return param;
     }
 
     @Transactional
-    public void batchUpdate(Long userId, UserRoleBatchUpdateParam param) {
+    public void batchUpdate(Long realmId, Long roleId, RoleUserBatchUpdateParam param) {
         switch (param.getType()) {
             case SAVE: // 新增
                 List<UserRole> userRoles = new ArrayList<>();
-                for (Long roleId : param.getRoleIds()) {
+                for (Long userId : param.getUserIds()) {
                     UserRole userRole = new UserRole();
                     userRole.setUserId(userId);
                     userRole.setRoleId(roleId);
@@ -61,8 +77,8 @@ public class UserRoleService {
                 break;
             case DELETE: // 删除
                 userRoleMapper.delete(Wrappers.<UserRole>lambdaQuery()
-                        .eq(UserRole::getUserId, userId)
-                        .in(UserRole::getRoleId, param.getRoleIds())
+                        .eq(UserRole::getRoleId, roleId)
+                        .in(UserRole::getUserId, param.getUserIds())
                 );
                 break;
             default:

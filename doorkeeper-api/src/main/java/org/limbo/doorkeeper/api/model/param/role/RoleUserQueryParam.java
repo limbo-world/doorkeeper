@@ -14,27 +14,36 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.dao;
+package org.limbo.doorkeeper.api.model.param.role;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.limbo.doorkeeper.api.model.param.role.RoleUserQueryParam;
-import org.limbo.doorkeeper.api.model.param.user.UserRoleQueryParam;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.vo.RoleUserVO;
-import org.limbo.doorkeeper.api.model.vo.UserRoleVO;
-import org.limbo.doorkeeper.server.entity.UserRole;
-
-import java.util.List;
 
 /**
  * @author Devil
- * @date 2021/1/12 3:32 下午
+ * @date 2021/1/5 11:16 上午
  */
-public interface UserRoleMapper extends BaseMapper<UserRole> {
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class RoleUserQueryParam extends Page<RoleUserVO> {
 
-    List<UserRoleVO> listUserRoleVOS(UserRoleQueryParam param);
+    private Long realmId;
 
-    long listRoleUserCount(RoleUserQueryParam param);
+    private Long roleId;
 
-    List<RoleUserVO> listRoleUserVOS(RoleUserQueryParam param);
+    @Schema(title = "是否公有域")
+    private Boolean isPublic;
+
+    @Schema(title = "是否公有域")
+    private Boolean isJoin;
+
+    @Schema(title = "角色名称", description = "精确查询")
+    private String name;
+
+    @Schema(title = "角色名称", description = "模糊查询")
+    private String dimName;
 
 }

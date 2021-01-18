@@ -73,9 +73,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         Long userId = JWT.decode(token).getClaim("userId").asLong();
         User user = userMapper.selectById(userId);
 
-        Realm dkRealm = realmMapper.selectOne(Wrappers.<Realm>lambdaQuery()
-                .eq(Realm::getName, DoorkeeperConstants.REALM_NAME)
-        );
+        Realm dkRealm = realmMapper.getDoorkeeperRealm();
 
         // 判断用户是否属于dk域
         if (!dkRealm.getRealmId().equals(user.getRealmId())) {

@@ -17,6 +17,8 @@
 package org.limbo.doorkeeper.server.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Select;
+import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.entity.Realm;
 
 /**
@@ -24,4 +26,10 @@ import org.limbo.doorkeeper.server.entity.Realm;
  * @date 2021/1/3 6:08 下午
  */
 public interface RealmMapper extends BaseMapper<Realm> {
+
+    @Select("select * from realm where name = '" + DoorkeeperConstants.DOORKEEPER_REALM_NAME + "'")
+    Realm getDoorkeeperRealm();
+
+    @Select("select * from realm where name = '" + DoorkeeperConstants.PUBLIC_REALM_NAME + "'")
+    Realm getPublicRealm();
 }

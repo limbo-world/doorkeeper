@@ -131,6 +131,9 @@ public abstract class AbstractAllowedExecutor<P extends AuthenticationCheckParam
         Logic logic = Logic.parse(policyVO.getLogic());
         // 策略绑定的角色 去除未启用的
         List<PolicyRoleVO> roles = policyVO.getRoles().stream().filter(PolicyRoleVO::getIsEnabled).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(roles)) {
+            return false;
+        }
         List<Long> roleIds = roles.stream().map(PolicyRoleVO::getRoleId).collect(Collectors.toList());
         // 用户直接绑定的角色
         List<UserRole> userRoles = userRoleMapper.selectList(Wrappers.<UserRole>lambdaQuery()
@@ -138,9 +141,6 @@ public abstract class AbstractAllowedExecutor<P extends AuthenticationCheckParam
                 .in(UserRole::getRoleId, roleIds)
         );
         Set<Long> userRoleIds = userRoles.stream().map(UserRole::getRoleId).collect(Collectors.toSet());
-        if (CollectionUtils.isEmpty(userRoleIds)) {
-            userRoleIds = new HashSet<>();
-        }
         // 用户所在用户组的角色
         List<GroupUser> groupUsers = groupUserMapper.selectList(Wrappers.<GroupUser>lambdaQuery()
                 .eq(GroupUser::getUserId, userId)
@@ -150,7 +150,7 @@ public abstract class AbstractAllowedExecutor<P extends AuthenticationCheckParam
                     .in(GroupRole::getGroupId, groupUsers.stream().map(GroupUser::getGroupId).collect(Collectors.toList()))
             );
             if (CollectionUtils.isNotEmpty(groupRoles)) {
-                userRoleIds.addAll(groupRoles.stream().map(GroupRole::getRoleId).collect(Collectors.toSet()));
+                userRoleIds.addAll(groupRoles.stream().map(GroupRole::getRoleId).filter(roleIds::contains).collect(Collectors.toSet()));
             }
         }
         return logicResult(logic, roleIds.size(), userRoleIds.size());

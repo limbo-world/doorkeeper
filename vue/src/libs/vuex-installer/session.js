@@ -82,6 +82,8 @@ export default {
                 }
                 const token = response.data;
                 setTokenCache(token);
+                commit('setUser', {});
+                setSessionUserCache({})
                 return Promise.resolve();
             });
         },

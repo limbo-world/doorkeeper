@@ -75,7 +75,7 @@
         <el-footer>
             <el-pagination background layout="prev, pager, next" :total="queryForm.total"
                            :current-page.sync="queryForm.current"
-                           :page-size="queryForm.size" @current-change="loadPermissions">
+                           :page-size="queryForm.size" @current-change="loadUsers">
             </el-pagination>
         </el-footer>
 

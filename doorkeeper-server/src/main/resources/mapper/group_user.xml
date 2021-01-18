@@ -41,9 +41,9 @@
             <when test="true == isJoin">
                 and gu.group_user_id is not null
             </when>
-            <otherwise>
+            <when test="false == isJoin">
                 and gu.group_user_id is null
-            </otherwise>
+            </when>
         </choose>
     </sql>
     <select id="listVOCount" resultType="java.lang.Long">

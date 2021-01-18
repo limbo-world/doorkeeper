@@ -14,31 +14,31 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.constants;
+package org.limbo.doorkeeper.api.model.vo;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
 
 /**
  * @author Devil
- * @date 2021/1/10 10:40 上午
+ * @date 2021/1/5 1:55 下午
  */
-public interface DoorkeeperConstants {
+@Data
+public class RoleUserVO {
 
-    String DOORKEEPER_REALM_NAME = "doorkeeper";
+    private Long userRoleId;
 
-    String ISSUER = "doorkeeper";
+    private Long userId;
 
-    String REALM = "realm";
+    private Long roleId;
 
-    String REALM_ID = "realmId";
+    @Schema(title = "用户名")
+    private String username;
 
-    String CLIENT = "client";
+    @Schema(title = "昵称")
+    private String nickname;
 
-    String CLIENT_ID = "clientId";
+    @Schema(title = "描述")
+    private String description;
 
-    Long DEFAULT_ID = 0L;
-
-    String ADMIN = "admin";
-
-    String TYPE = "type";
-
-    String PUBLIC_REALM_NAME = "public";
 }

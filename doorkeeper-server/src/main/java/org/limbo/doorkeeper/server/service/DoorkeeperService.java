@@ -16,7 +16,6 @@
 
 package org.limbo.doorkeeper.server.service;
 
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.limbo.doorkeeper.api.constants.BatchMethod;
 import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.Logic;
@@ -77,9 +76,6 @@ public class DoorkeeperService {
     private PermissionService permissionService;
 
     @Autowired
-    private UserRoleService userRoleService;
-
-    @Autowired
     private GroupService groupService;
 
     @Autowired
@@ -95,9 +91,7 @@ public class DoorkeeperService {
      */
     @Transactional
     public void createRealmData(Long userId, Long realmId, String realmName) {
-        Realm dkRealm = realmMapper.selectOne(Wrappers.<Realm>lambdaQuery()
-                .eq(Realm::getName, DoorkeeperConstants.REALM_NAME)
-        );
+        Realm dkRealm = realmMapper.getDoorkeeperRealm();
 
         Client client = new Client();
         client.setRealmId(dkRealm.getRealmId());
@@ -136,10 +130,21 @@ public class DoorkeeperService {
         groupRoleBatchUpdateParam.setRoleIds(Collections.singletonList(realmAdminRole.getRoleId()));
         groupRoleService.batchUpdate(dkRealm.getRealmId(), group.getGroupId(), groupRoleBatchUpdateParam);
         // 用户加入用户组
-        GroupUserBatchUpdateParam groupUserBatchUpdateParam = new GroupUserBatchUpdateParam();
-        groupUserBatchUpdateParam.setType(BatchMethod.SAVE);
-        groupUserBatchUpdateParam.setUserIds(Collections.singletonList(userId));
-        groupUserService.batchUpdate(dkRealm.getRealmId(), userId, groupUserBatchUpdateParam);
+        GroupUserBatchUpdateParam dkRealmUserGroupParam = new GroupUserBatchUpdateParam();
+        dkRealmUserGroupParam.setType(BatchMethod.SAVE);
+        dkRealmUserGroupParam.setUserIds(Collections.singletonList(userId));
+        groupUserService.batchUpdate(dkRealm.getRealmId(), group.getGroupId(), dkRealmUserGroupParam);
+    }
+
+    @Transactional
+    public void userJoinPublicRealm(Long userId) {
+        Realm dkRealm = realmMapper.getDoorkeeperRealm();
+        // 用户加入公有域
+        GroupVO publicGroup = groupService.getPublicGroup();
+        GroupUserBatchUpdateParam publicRealmUserGroupParam = new GroupUserBatchUpdateParam();
+        publicRealmUserGroupParam.setType(BatchMethod.SAVE);
+        publicRealmUserGroupParam.setUserIds(Collections.singletonList(userId));
+        groupUserService.batchUpdate(dkRealm.getRealmId(), publicGroup.getGroupId(), publicRealmUserGroupParam);
     }
 
     /**

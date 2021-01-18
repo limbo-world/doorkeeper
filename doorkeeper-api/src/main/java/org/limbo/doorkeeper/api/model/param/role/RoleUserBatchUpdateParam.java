@@ -14,27 +14,29 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.dao;
+package org.limbo.doorkeeper.api.model.param.role;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.limbo.doorkeeper.api.model.param.role.RoleUserQueryParam;
-import org.limbo.doorkeeper.api.model.param.user.UserRoleQueryParam;
-import org.limbo.doorkeeper.api.model.vo.RoleUserVO;
-import org.limbo.doorkeeper.api.model.vo.UserRoleVO;
-import org.limbo.doorkeeper.server.entity.UserRole;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import org.limbo.doorkeeper.api.constants.BatchMethod;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
  * @author Devil
- * @date 2021/1/12 3:32 下午
+ * @date 2021/1/5 11:16 上午
  */
-public interface UserRoleMapper extends BaseMapper<UserRole> {
+@Data
+public class RoleUserBatchUpdateParam {
 
-    List<UserRoleVO> listUserRoleVOS(UserRoleQueryParam param);
+    @NotNull(message = "操作类型不能为空")
+    @Schema(title = "操作类型", required = true)
+    private BatchMethod type;
 
-    long listRoleUserCount(RoleUserQueryParam param);
-
-    List<RoleUserVO> listRoleUserVOS(RoleUserQueryParam param);
+    @NotEmpty(message = "用户列表不能为空")
+    @Schema(title = "用户列表", required = true)
+    private List<Long> userIds;
 
 }

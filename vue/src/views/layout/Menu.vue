@@ -136,7 +136,7 @@
 
         .menu-scroll-content {
             width: 230px;
-            height: calc(100% - 50px);
+            //height: calc(100% - 50px);
             z-index: 90;
         }
     }
