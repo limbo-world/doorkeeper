@@ -19,6 +19,7 @@ package org.limbo.doorkeeper.server.support.auth.checker;
 import org.limbo.doorkeeper.server.entity.Resource;
 import org.limbo.doorkeeper.api.model.param.auth.AuthorizationCheckParam;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +37,7 @@ public class TagAuthorizationChecker<P extends AuthorizationCheckParam<Map<Strin
 
     @Override
     protected List<Resource> assignCheckingResources(Map<String, String> resourcesAssigner) {
-        return null;
+        return new ArrayList<>();
     }
 
 }

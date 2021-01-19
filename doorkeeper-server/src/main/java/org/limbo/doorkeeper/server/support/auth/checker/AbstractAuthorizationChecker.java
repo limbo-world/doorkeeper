@@ -38,6 +38,7 @@ import org.limbo.doorkeeper.api.model.param.auth.AuthorizationCheckParam;
 import org.limbo.doorkeeper.server.support.auth.AuthorizationException;
 import org.limbo.doorkeeper.server.support.auth.policies.PolicyCheckerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -91,8 +92,11 @@ public abstract class AbstractAuthorizationChecker<P extends AuthorizationCheckP
         this.checkParam = checkParam;
         // 设置client
         Client client = clientMapper.selectById(checkParam.getClientId());
-        if (client == null || !client.getIsEnabled()) {
+        if (client == null) {
             throw new AuthorizationException("无法找到Client，clientId=" + checkParam.getClientId());
+        }
+        if (!client.getIsEnabled()) {
+            throw new AuthorizationException("此Client未启用");
         }
         this.client = client;
     }
@@ -112,8 +116,10 @@ public abstract class AbstractAuthorizationChecker<P extends AuthorizationCheckP
             ASSIGNER_ITER:
             for (T assigner : resourceAssigner) {
                 // 找到待检测的资源
-                List<Resource> resources = assignCheckingResources(assigner);
-
+                List<Resource> findResources = assignCheckingResources(assigner);
+                findResources = findResources == null ? new ArrayList<>() : findResources;
+                // 过滤出开启的资源
+                List<Resource> resources = findResources.stream().filter(Resource::getIsEnabled).collect(Collectors.toList());
                 // 遍历资源依次拿到权限Permission
                 List<PermissionVO> permissions = Lists.newArrayList();
                 for (Resource resource : resources) {

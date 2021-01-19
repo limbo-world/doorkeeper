@@ -17,10 +17,9 @@
 package org.limbo.doorkeeper.server.support.auth.checker;
 
 import lombok.Setter;
-import org.limbo.doorkeeper.server.dao.ResourceMapper;
-import org.limbo.doorkeeper.server.entity.Client;
-import org.limbo.doorkeeper.server.entity.Resource;
 import org.limbo.doorkeeper.api.model.param.auth.AuthorizationCheckParam;
+import org.limbo.doorkeeper.server.dao.ResourceMapper;
+import org.limbo.doorkeeper.server.entity.Resource;
 
 import java.util.Collections;
 import java.util.List;
