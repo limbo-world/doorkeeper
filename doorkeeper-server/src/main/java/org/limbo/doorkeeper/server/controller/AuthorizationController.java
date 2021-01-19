@@ -46,12 +46,14 @@ public class AuthorizationController extends BaseController {
     @GetMapping("/{clientId}/check-uri")
     @Operation(summary = "检查用户是否可以访问对应uri的资源")
     public Response<AuthorizationCheckResult<String>> checkByUri(@Validated AuthorizationUriCheckParam param) {
+        param.setUserId(getUser().getUserId());
         return Response.success(authorizationCheckerFactory.newUriAuthorizationChecker(param).check());
     }
 
     @GetMapping("/{clientId}/check-name")
     @Operation(summary = "检查用户是否可以访问对应名称的资源")
     public Response<AuthorizationCheckResult<String>> checkByName(@Validated AuthorizationNameCheckParam param) {
+        param.setUserId(getUser().getUserId());
         return Response.success(authorizationCheckerFactory.newNameAuthorizationChecker(param).check());
     }
 

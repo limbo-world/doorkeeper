@@ -26,7 +26,7 @@ import org.limbo.doorkeeper.server.dao.RealmMapper;
 import org.limbo.doorkeeper.server.dao.UserMapper;
 import org.limbo.doorkeeper.server.entity.Realm;
 import org.limbo.doorkeeper.server.entity.User;
-import org.limbo.doorkeeper.server.support.session.exception.SessionException;
+import org.limbo.doorkeeper.server.support.session.exception.AuthenticationException;
 import org.limbo.doorkeeper.server.utils.JWTUtil;
 import org.limbo.doorkeeper.server.utils.MD5Utils;
 import org.limbo.doorkeeper.server.utils.Verifies;
@@ -86,7 +86,7 @@ public class LoginService {
             Verifies.notNull(realm, "realm不存在");
             JWTUtil.verifyToken(token, realm.getSecret());
         } catch (Exception e) {
-            throw new SessionException();
+            throw new AuthenticationException();
         }
 
         return token(user.getUserId(), realm.getRealmId(), user.getUsername(), user.getNickname(), realm.getSecret());

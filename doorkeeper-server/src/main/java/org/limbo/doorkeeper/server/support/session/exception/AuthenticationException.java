@@ -20,23 +20,23 @@ package org.limbo.doorkeeper.server.support.session.exception;
  * @author Devil
  * @date 2020/11/23 8:18 PM
  */
-public class SessionException extends RuntimeException {
+public class AuthenticationException extends RuntimeException {
 
-    private static String msg = "无有效会话";
+    private static String msg = "认证失败";
 
-    public SessionException() {
+    public AuthenticationException() {
         super(msg);
     }
 
-    public SessionException(String msg) {
+    public AuthenticationException(String msg) {
         super(msg);
     }
 
-    public SessionException(Throwable cause) {
+    public AuthenticationException(Throwable cause) {
         super(msg, cause);
     }
 
-    public SessionException(String msg, Throwable cause) {
+    public AuthenticationException(String msg, Throwable cause) {
         super(msg, cause);
     }
 }

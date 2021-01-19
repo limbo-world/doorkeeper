@@ -18,7 +18,7 @@ package org.limbo.doorkeeper.server.support.session;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.limbo.doorkeeper.api.model.vo.SessionUser;
-import org.limbo.doorkeeper.server.support.session.exception.SessionException;
+import org.limbo.doorkeeper.server.support.session.exception.AuthenticationException;
 import org.limbo.doorkeeper.server.utils.UUIDUtils;
 
 import java.util.Date;
@@ -57,7 +57,7 @@ public abstract class AbstractSessionDAO<T extends SessionUser> {
 
             return session;
         } catch (Exception e) {
-            throw new SessionException("会话创建失败！", e);
+            throw new AuthenticationException("会话创建失败！", e);
         }
     }
 
@@ -69,7 +69,7 @@ public abstract class AbstractSessionDAO<T extends SessionUser> {
         try {
             session = read(sessionId);
         } catch (Exception e) {
-            throw new SessionException("读取会话失败！", e);
+            throw new AuthenticationException("读取会话失败！", e);
         }
         return session;
     }
@@ -80,7 +80,7 @@ public abstract class AbstractSessionDAO<T extends SessionUser> {
     public T readSession(String sessionId) {
         T session = readSessionMayNull(sessionId);
         if (session == null) {
-            throw new SessionException("会话不存在");
+            throw new AuthenticationException("会话不存在");
         }
         return session;
     }
@@ -92,7 +92,7 @@ public abstract class AbstractSessionDAO<T extends SessionUser> {
         try {
             return destroy(sessionId);
         } catch (Exception e) {
-            throw new SessionException("销毁会话失败！", e);
+            throw new AuthenticationException("销毁会话失败！", e);
         }
     }
 

@@ -25,7 +25,7 @@ import org.limbo.doorkeeper.server.dao.RealmMapper;
 import org.limbo.doorkeeper.server.dao.UserMapper;
 import org.limbo.doorkeeper.server.entity.Realm;
 import org.limbo.doorkeeper.server.entity.User;
-import org.limbo.doorkeeper.server.support.session.exception.SessionException;
+import org.limbo.doorkeeper.server.support.session.exception.AuthenticationException;
 import org.limbo.doorkeeper.server.utils.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -51,7 +51,7 @@ public class SessionInterceptor implements HandlerInterceptor {
         // 验证会话存在
         String token = request.getHeader(SessionConstants.TOKEN_HEADER);
         if (StringUtils.isBlank(token)) {
-            throw new SessionException("无认证请求");
+            throw new AuthenticationException("无认证请求");
         }
         try {
             Long userId = JWT.decode(token).getClaim(DoorkeeperConstants.USER_ID).asLong();
@@ -59,7 +59,7 @@ public class SessionInterceptor implements HandlerInterceptor {
             Realm realm = realmMapper.selectById(user.getRealmId());
             JWTUtil.verifyToken(token, realm.getSecret());
         } catch (Exception e) {
-            throw new SessionException();
+            throw new AuthenticationException();
         }
 
         return true;

@@ -100,7 +100,7 @@ public class Response<T> implements Serializable {
      * 未授权，无权限
      */
     public static <T> Response<T> unauthorized(String msg) {
-        return new Response<>(ResponseCode.UNAUTHORIZED, msg);
+        return new Response<>(ResponseCode.FORBIDDEN, msg);
     }
 
     /**

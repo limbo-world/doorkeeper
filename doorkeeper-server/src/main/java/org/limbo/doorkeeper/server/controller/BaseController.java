@@ -26,7 +26,7 @@ import org.limbo.doorkeeper.server.dao.UserMapper;
 import org.limbo.doorkeeper.server.entity.Realm;
 import org.limbo.doorkeeper.server.entity.User;
 import org.limbo.doorkeeper.server.service.UserService;
-import org.limbo.doorkeeper.server.support.session.exception.SessionException;
+import org.limbo.doorkeeper.server.support.session.exception.AuthenticationException;
 import org.limbo.doorkeeper.server.utils.JWTUtil;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +59,7 @@ public class BaseController {
     protected String getToken() {
         String token = request.getHeader(SessionConstants.TOKEN_HEADER);
         if (StringUtils.isBlank(token)) {
-            throw new SessionException("无认证请求");
+            throw new AuthenticationException("无认证请求");
         }
         return token;
     }
@@ -73,7 +73,7 @@ public class BaseController {
             JWTUtil.verifyToken(token, realm.getSecret());
             return userService.get(realm.getRealmId(), user.getUserId());
         } catch (Exception e) {
-            throw new SessionException("认证失败");
+            throw new AuthenticationException("认证失败");
         }
     }
 

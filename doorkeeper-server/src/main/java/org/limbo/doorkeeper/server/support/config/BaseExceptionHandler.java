@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.exception.ParamException;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.server.support.auth.AuthorizationException;
-import org.limbo.doorkeeper.server.support.session.exception.SessionException;
+import org.limbo.doorkeeper.server.support.session.exception.AuthenticationException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -50,8 +50,8 @@ public class BaseExceptionHandler {
         return Response.paramError(e.getMessage());
     }
 
-    @ExceptionHandler(value = { SessionException.class })
-    public Response handSession(SessionException e) {
+    @ExceptionHandler(value = { AuthenticationException.class })
+    public Response handAuthentication(AuthenticationException e) {
         return Response.unauthenticated(e.getMessage());
     }
 
