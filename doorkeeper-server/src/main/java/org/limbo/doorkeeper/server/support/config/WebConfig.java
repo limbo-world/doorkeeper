@@ -20,7 +20,7 @@ import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.server.support.authc.AuthenticationInterceptor;
+import org.limbo.doorkeeper.server.support.auth.AuthorizationInterceptor;
 import org.limbo.doorkeeper.server.support.format.StringToDateConverter;
 import org.limbo.doorkeeper.server.support.session.SessionInterceptor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -81,8 +81,8 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public AuthenticationInterceptor authenticationInterceptor() {
-        return new AuthenticationInterceptor();
+    public AuthorizationInterceptor authenticationInterceptor() {
+        return new AuthorizationInterceptor();
     }
 
     @Override

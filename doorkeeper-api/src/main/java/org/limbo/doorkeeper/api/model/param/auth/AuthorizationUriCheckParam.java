@@ -18,8 +18,10 @@ package org.limbo.doorkeeper.api.model.param.auth;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 
@@ -28,10 +30,22 @@ import java.util.Map;
  * @date 2021/1/13 3:31 下午
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class AuthenticationTagCheckParam extends AuthenticationCheckParam {
+@Accessors(chain = true)
+public class AuthorizationUriCheckParam implements AuthorizationCheckParam<String> {
 
-    @Schema(name = "资源标签")
-    private List<Map<String, String>> tags;
+    @NotNull
+    @Schema(name = "进行权限校验时，需要校验的用户ID", required = true)
+    private Long userId;
+
+    @NotNull
+    @Schema(name = "进行权限校验时，资源所属委托方", required = true)
+    private Long clientId;
+
+    @NotEmpty
+    @Schema(name = "uri列表", required = true)
+    private List<String> resourceAssigner;
+
+    @Schema(name = "进行权限校验时附带的参数")
+    private Map<String, String> params;
 
 }

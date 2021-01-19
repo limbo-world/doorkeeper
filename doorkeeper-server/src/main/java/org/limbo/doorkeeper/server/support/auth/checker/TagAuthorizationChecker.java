@@ -14,23 +14,29 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param.auth;
+package org.limbo.doorkeeper.server.support.auth.checker;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import org.limbo.doorkeeper.server.entity.Resource;
+import org.limbo.doorkeeper.api.model.param.auth.AuthorizationCheckParam;
 
 import java.util.List;
+import java.util.Map;
 
 /**
- * @author Devil
- * @date 2021/1/13 3:31 下午
+ * TODO
+ * @author brozen
+ * @date 2021/1/18
  */
-@Data
-@EqualsAndHashCode(callSuper = true)
-public class AuthenticationUriCheckParam extends AuthenticationCheckParam {
+public class TagAuthorizationChecker<P extends AuthorizationCheckParam<Map<String, String>>>
+        extends AbstractAuthorizationChecker<P, Map<String, String>> {
 
-    @Schema(name = "资源uri")
-    private List<String> uris;
+    public TagAuthorizationChecker(P checkParam) {
+        super(checkParam);
+    }
+
+    @Override
+    protected List<Resource> assignCheckingResources(Map<String, String> resourcesAssigner) {
+        return null;
+    }
 
 }

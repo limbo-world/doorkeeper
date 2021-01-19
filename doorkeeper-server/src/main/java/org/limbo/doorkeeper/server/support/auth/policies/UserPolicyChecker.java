@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.support.auth2.policies;
+package org.limbo.doorkeeper.server.support.auth.policies;
 
 import lombok.Setter;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyUserVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 import org.limbo.doorkeeper.server.dao.UserMapper;
-import org.limbo.doorkeeper.server.support.auth2.params.AuthorizationCheckParam;
+import org.limbo.doorkeeper.server.entity.User;
+import org.limbo.doorkeeper.api.model.param.auth.AuthorizationCheckParam;
 
 import java.util.Objects;
 
@@ -49,8 +50,8 @@ public class UserPolicyChecker extends AbstractPolicyChecker {
     @Override
     protected boolean doCheck(AuthorizationCheckParam<?> authorizationCheckParam) {
         Long userId = authorizationCheckParam.getUserId();
-
-        return policy.getUsers().stream()
+        User user = userMapper.selectById(userId);
+        return user != null && user.getIsEnabled() && policy.getUsers().stream()
                 .map(PolicyUserVO::getUserId)
                 .anyMatch(uid -> Objects.equals(uid, userId));
     }

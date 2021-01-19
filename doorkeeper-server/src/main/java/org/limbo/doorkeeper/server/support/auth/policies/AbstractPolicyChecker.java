@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.support.auth2.policies;
+package org.limbo.doorkeeper.server.support.auth.policies;
 
 import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.Logic;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
-import org.limbo.doorkeeper.server.support.auth2.params.AuthorizationCheckParam;
+import org.limbo.doorkeeper.api.model.param.auth.AuthorizationCheckParam;
 
 /**
  * @author brozen

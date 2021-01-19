@@ -14,22 +14,29 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param.auth;
-
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
-import java.util.List;
+package org.limbo.doorkeeper.server.support.auth;
 
 /**
  * @author Devil
- * @date 2021/1/13 3:31 下午
+ * @date 2020/11/30 10:46 AM
  */
-@Data
-@EqualsAndHashCode(callSuper = true)
-public class AuthenticationNameCheckParam extends AuthenticationCheckParam {
+public class AuthorizationException extends RuntimeException {
 
-    @Schema(name = "资源名称")
-    private List<String> names;
+    private static String msg = "无权访问";
+
+    public AuthorizationException() {
+        super(msg);
+    }
+
+    public AuthorizationException(String msg) {
+        super(msg);
+    }
+
+    public AuthorizationException(Throwable cause) {
+        super(msg, cause);
+    }
+
+    public AuthorizationException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
 }

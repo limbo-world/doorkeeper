@@ -19,20 +19,16 @@ package org.limbo.doorkeeper.server.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.auth.AuthenticationNameCheckParam;
-import org.limbo.doorkeeper.api.model.param.auth.AuthenticationUriCheckParam;
-import org.limbo.doorkeeper.server.support.authc.NameAllowExecutor;
-import org.limbo.doorkeeper.server.support.authc.UriAllowExecutor;
+import org.limbo.doorkeeper.api.model.param.auth.AuthorizationNameCheckParam;
+import org.limbo.doorkeeper.api.model.param.auth.AuthorizationUriCheckParam;
+import org.limbo.doorkeeper.api.model.vo.AuthorizationCheckResult;
+import org.limbo.doorkeeper.server.support.auth.checker.AuthorizationCheckerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author Devil
@@ -41,25 +37,22 @@ import java.util.Map;
 @Tag(name = "鉴权")
 @Slf4j
 @RestController
-@RequestMapping("/authentication")
-public class AuthenticationController extends BaseController {
+@RequestMapping("/authorization")
+public class AuthorizationController extends BaseController {
 
     @Autowired
-    private NameAllowExecutor nameAllowExecutor;
-
-    @Autowired
-    private UriAllowExecutor uriAllowExecutor;
+    private AuthorizationCheckerFactory authorizationCheckerFactory;
 
     @GetMapping("/{clientId}/check-uri")
     @Operation(summary = "检查用户是否可以访问对应uri的资源")
-    public Response<Map<Intention, List<String>>> checkByUri(@Validated AuthenticationUriCheckParam param) {
-        return Response.success(uriAllowExecutor.accessAllowed(getUser().getUserId(), getClientId(), param));
+    public Response<AuthorizationCheckResult<String>> checkByUri(@Validated AuthorizationUriCheckParam param) {
+        return Response.success(authorizationCheckerFactory.newUriAuthorizationChecker(param).check());
     }
 
     @GetMapping("/{clientId}/check-name")
     @Operation(summary = "检查用户是否可以访问对应名称的资源")
-    public Response<Map<Intention, List<String>>> checkByName(@Validated AuthenticationNameCheckParam param) {
-        return Response.success(nameAllowExecutor.accessAllowed(getUser().getUserId(), getClientId(), param));
+    public Response<AuthorizationCheckResult<String>> checkByName(@Validated AuthorizationNameCheckParam param) {
+        return Response.success(authorizationCheckerFactory.newNameAuthorizationChecker(param).check());
     }
 
 }

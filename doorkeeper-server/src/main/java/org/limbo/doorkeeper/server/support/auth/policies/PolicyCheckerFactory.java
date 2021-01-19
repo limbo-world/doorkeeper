@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.support.auth2.policies;
+package org.limbo.doorkeeper.server.support.auth.policies;
 
 import org.limbo.doorkeeper.api.constants.PolicyType;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
@@ -22,6 +22,7 @@ import org.limbo.doorkeeper.server.dao.GroupRoleMapper;
 import org.limbo.doorkeeper.server.dao.GroupUserMapper;
 import org.limbo.doorkeeper.server.dao.UserMapper;
 import org.limbo.doorkeeper.server.dao.UserRoleMapper;
+import org.limbo.doorkeeper.server.support.auth.AuthorizationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -52,12 +53,12 @@ public class PolicyCheckerFactory {
      */
     public PolicyChecker newPolicyChecker(PolicyVO policy) {
         if (policy == null) {
-            throw new IllegalArgumentException("policy不可为null");
+            throw new AuthorizationException("policy不可为null");
         }
 
         PolicyType policyType = PolicyType.parse(policy.getType());
         if (policyType == null) {
-            throw new IllegalArgumentException("解析policy类型失败，类型为null，policy=" + policy);
+            throw new AuthorizationException("解析policy类型失败，类型为null，policy=" + policy);
         }
 
         switch (policyType) {
@@ -73,7 +74,7 @@ public class PolicyCheckerFactory {
             case COMBINE:
             case TIME:
             default:
-                throw new UnsupportedOperationException("不支持的策略类型:" + policyType);
+                throw new AuthorizationException("不支持的策略类型:" + policyType);
         }
     }
 

@@ -14,29 +14,24 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.support.authc;
+package org.limbo.doorkeeper.server.support.auth.policies;
+
+import org.limbo.doorkeeper.api.constants.Intention;
+import org.limbo.doorkeeper.api.model.param.auth.AuthorizationCheckParam;
 
 /**
- * @author Devil
- * @date 2020/11/30 10:46 AM
+ * 策略校验器
+ *
+ * @author brozen
+ * @date 2021/1/14
  */
-public class AuthenticationException extends RuntimeException {
+public interface PolicyChecker {
 
-    private static String msg = "无权访问";
+    /**
+     * 校验策略是否通过
+     * @param authorizationCheckParam 授权校验参数
+     * @return 返回策略是否通过
+     */
+    Intention check(AuthorizationCheckParam<?> authorizationCheckParam);
 
-    public AuthenticationException() {
-        super(msg);
-    }
-
-    public AuthenticationException(String msg) {
-        super(msg);
-    }
-
-    public AuthenticationException(Throwable cause) {
-        super(msg, cause);
-    }
-
-    public AuthenticationException(String msg, Throwable cause) {
-        super(msg, cause);
-    }
 }

@@ -1,20 +1,20 @@
 /*
  * Copyright 2020-2024 Limbo Team (https://github.com/limbo-world).
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
  *
- * 	http://www.apache.org/licenses/LICENSE-2.0
+ *   	http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.support.auth2;
+package org.limbo.doorkeeper.server.support.auth.checker;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Lists;
@@ -23,6 +23,7 @@ import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.Logic;
+import org.limbo.doorkeeper.api.model.vo.AuthorizationCheckResult;
 import org.limbo.doorkeeper.api.model.vo.PermissionPolicyVO;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
@@ -33,8 +34,9 @@ import org.limbo.doorkeeper.server.entity.PermissionResource;
 import org.limbo.doorkeeper.server.entity.Resource;
 import org.limbo.doorkeeper.server.service.PermissionService;
 import org.limbo.doorkeeper.server.service.policy.PolicyService;
-import org.limbo.doorkeeper.server.support.auth2.params.AuthorizationCheckParam;
-import org.limbo.doorkeeper.server.support.auth2.policies.PolicyCheckerFactory;
+import org.limbo.doorkeeper.api.model.param.auth.AuthorizationCheckParam;
+import org.limbo.doorkeeper.server.support.auth.AuthorizationException;
+import org.limbo.doorkeeper.server.support.auth.policies.PolicyCheckerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -95,70 +97,76 @@ public abstract class AbstractAuthorizationChecker<P extends AuthorizationCheckP
     @Override
     public AuthorizationCheckResult<T> check() {
 
-        List<T> refused = Lists.newArrayList();
-        List<T> allowed = Lists.newArrayList();
-        List<T> resourceAssigner = checkParam.getResourceAssigner();
+        try {
+            List<T> refused = Lists.newArrayList();
+            List<T> allowed = Lists.newArrayList();
+            List<T> resourceAssigner = checkParam.getResourceAssigner();
 
-        ASSIGNER_ITER:
-        for (T assigner : resourceAssigner) {
-            // 找到待检测的资源
-            List<Resource> resources = assignCheckingResources(assigner);
+            ASSIGNER_ITER:
+            for (T assigner : resourceAssigner) {
+                // 找到待检测的资源
+                List<Resource> resources = assignCheckingResources(assigner);
 
-            // 遍历资源依次拿到权限Permission
-            List<PermissionVO> permissions = Lists.newArrayList();
-            for (Resource resource : resources) {
-                permissions.addAll(findResourcePermissions(resource));
-            }
+                // 遍历资源依次拿到权限Permission
+                List<PermissionVO> permissions = Lists.newArrayList();
+                for (Resource resource : resources) {
+                    permissions.addAll(findResourcePermissions(resource));
+                }
 
-            // 未授权的情况
-            if (CollectionUtils.isEmpty(permissions)) {
+                // 未授权的情况
+                if (CollectionUtils.isEmpty(permissions)) {
+                    if (refuseWhenUnauthorized) {
+                        refused.add(assigner);
+                    } else {
+                        allowed.add(assigner);
+                    }
+                    continue;
+                }
+
+                // 对Permission的Intention进行分组
+                Map<Intention, Set<PermissionVO>> intentGroupedPerms = permissions.stream()
+                        .collect(Collectors.groupingBy(
+                                permissionVO -> Intention.parse(permissionVO.getIntention()),
+                                Collectors.mapping(Function.identity(), Collectors.toSet())
+                        ));
+
+                // 先检测 REFUSE 的权限，如果存在一个 REFUSE 的权限校验通过，则此资源约束被看作拒绝
+                Set<PermissionVO> refusedPerms = intentGroupedPerms.getOrDefault(Intention.REFUSE, Sets.newHashSet());
+                for (PermissionVO permission : refusedPerms) {
+                    if (checkPermission(permission)) {
+                        refused.add(assigner);
+                        continue ASSIGNER_ITER;
+                    }
+                }
+
+                // 再检测 ALLOW 的权限
+                Set<PermissionVO> allowedPerms = intentGroupedPerms.getOrDefault(Intention.ALLOW, Sets.newHashSet());
+                for (PermissionVO permission : allowedPerms) {
+                    if (checkPermission(permission)) {
+                        allowed.add(assigner);
+                        continue ASSIGNER_ITER;
+                    }
+                }
+
+                // 未授权时，根据配置决定是 refuse 还是 allow
                 if (refuseWhenUnauthorized) {
                     refused.add(assigner);
                 } else {
                     allowed.add(assigner);
                 }
-                continue;
             }
 
-            // 对Permission的Intention进行分组
-            Map<Intention, Set<PermissionVO>> intentGroupedPerms = permissions.stream()
-                    .collect(Collectors.groupingBy(
-                            permissionVO -> Intention.parse(permissionVO.getIntention()),
-                            Collectors.mapping(Function.identity(), Collectors.toSet())
-                    ));
+            return new AuthorizationCheckResult<>(refused, allowed);
 
-            // 先检测 REFUSE 的权限，如果存在一个 REFUSE 的权限校验通过，则此资源约束被看作拒绝
-            Set<PermissionVO> refusedPerms = intentGroupedPerms.getOrDefault(Intention.REFUSE, Sets.newHashSet());
-            for (PermissionVO permission : refusedPerms) {
-                if (checkPermission(permission)) {
-                    refused.add(assigner);
-                    continue ASSIGNER_ITER;
-                }
-            }
-
-            // 再检测 ALLOW 的权限
-            Set<PermissionVO> allowedPerms = intentGroupedPerms.getOrDefault(Intention.ALLOW, Sets.newHashSet());
-            for (PermissionVO permission : allowedPerms) {
-                if (checkPermission(permission)) {
-                    allowed.add(assigner);
-                    continue ASSIGNER_ITER;
-                }
-            }
-
-            // 未授权时，根据配置决定是 refuse 还是 allow
-            if (refuseWhenUnauthorized) {
-                refused.add(assigner);
-            } else {
-                allowed.add(assigner);
-            }
+        } catch (Exception e) {
+            throw new AuthorizationException(e.getMessage());
         }
-
-        return new AuthorizationCheckResult<>(refused, allowed);
     }
 
 
     /**
      * 根据校验参数，查询委托方
+     *
      * @return 委托方PO
      * @throws IllegalArgumentException 当根据clientId查询不到委托方时，会抛出异常
      */
@@ -179,7 +187,6 @@ public abstract class AbstractAuthorizationChecker<P extends AuthorizationCheckP
     }
 
 
-
     /**
      * 决定资源约束对应着哪些资源。
      *
@@ -191,6 +198,7 @@ public abstract class AbstractAuthorizationChecker<P extends AuthorizationCheckP
 
     /**
      * 找到资源关联的权限
+     *
      * @return 资源关联的权限列表
      */
     protected List<PermissionVO> findResourcePermissions(Resource resource) {
@@ -210,6 +218,7 @@ public abstract class AbstractAuthorizationChecker<P extends AuthorizationCheckP
 
     /**
      * 进行Permission的校验
+     *
      * @param permission 待校验的授权信息
      * @return 返回Permission校验是否通过
      */

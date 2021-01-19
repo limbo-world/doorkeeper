@@ -19,7 +19,7 @@ package org.limbo.doorkeeper.server.support.config;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.exception.ParamException;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.server.support.authc.AuthenticationException;
+import org.limbo.doorkeeper.server.support.auth.AuthorizationException;
 import org.limbo.doorkeeper.server.support.session.exception.SessionException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -55,8 +55,8 @@ public class BaseExceptionHandler {
         return Response.unauthenticated(e.getMessage());
     }
 
-    @ExceptionHandler(value = { AuthenticationException.class })
-    public Response handAuthentication(AuthenticationException e) {
+    @ExceptionHandler(value = { AuthorizationException.class })
+    public Response handAuthorization(AuthorizationException e) {
         return Response.unauthorized(e.getMessage());
     }
 

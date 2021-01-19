@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.support.auth2.policies;
+package org.limbo.doorkeeper.server.support.auth.policies;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.Setter;
@@ -27,7 +27,7 @@ import org.limbo.doorkeeper.server.dao.UserRoleMapper;
 import org.limbo.doorkeeper.server.entity.GroupRole;
 import org.limbo.doorkeeper.server.entity.GroupUser;
 import org.limbo.doorkeeper.server.entity.UserRole;
-import org.limbo.doorkeeper.server.support.auth2.params.AuthorizationCheckParam;
+import org.limbo.doorkeeper.api.model.param.auth.AuthorizationCheckParam;
 
 import java.util.List;
 import java.util.Set;

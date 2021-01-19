@@ -1,33 +1,31 @@
 /*
  * Copyright 2020-2024 Limbo Team (https://github.com/limbo-world).
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
  *
- * 	http://www.apache.org/licenses/LICENSE-2.0
+ *   	http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.support.authc;
+package org.limbo.doorkeeper.server.support.auth;
 
 import com.auth0.jwt.JWT;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.SessionConstants;
-import org.limbo.doorkeeper.api.model.param.auth.AuthenticationUriCheckParam;
+import org.limbo.doorkeeper.api.model.param.auth.AuthorizationUriCheckParam;
+import org.limbo.doorkeeper.api.model.vo.AuthorizationCheckResult;
 import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.dao.*;
 import org.limbo.doorkeeper.server.entity.*;
-import org.limbo.doorkeeper.server.support.auth2.AuthorizationCheckResult;
-import org.limbo.doorkeeper.server.support.auth2.AuthorizationCheckerFactory;
-import org.limbo.doorkeeper.server.support.auth2.params.BasicAuthorizationCheckParam;
+import org.limbo.doorkeeper.server.support.auth.checker.AuthorizationCheckerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestAttributes;
@@ -38,7 +36,6 @@ import org.springframework.web.servlet.HandlerMapping;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -46,7 +43,7 @@ import java.util.Map;
  * @date 2020/11/24 19:29
  */
 @Slf4j
-public class AuthenticationInterceptor implements HandlerInterceptor {
+public class AuthorizationInterceptor implements HandlerInterceptor {
 
     @Autowired
     private UserMapper userMapper;
@@ -62,9 +59,6 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
     @Autowired
     private ClientMapper clientMapper;
-
-    @Autowired
-    private UriAllowExecutor uriAllowExecutor;
 
     @Autowired
     private AuthorizationCheckerFactory authorizationCheckerFactory;
@@ -84,7 +78,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
         // 判断用户是否属于dk域或公有域
         if (!dkRealm.getRealmId().equals(user.getRealmId()) && !publicRealm.getRealmId().equals(user.getRealmId())) {
-            throw new AuthenticationException();
+            throw new AuthorizationException();
         }
 
         // 判断是不是DK的REALM admin
@@ -109,21 +103,14 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         // 获取对应的client
         Client client = clientMapper.getByName(dkRealm.getRealmId(), realm.getName());
 
-//        AuthenticationUriCheckParam param = new AuthenticationUriCheckParam();
-//        param.setUris(Collections.singletonList(request.getRequestURI()));
-//        Map<Intention, List<String>> intentionListMap = uriAllowExecutor.accessAllowed(user.getUserId(), client.getClientId(), param);
-//
-//        if (intentionListMap.get(Intention.ALLOW).size() <= 0) {
-//            throw new AuthenticationException();
-//        }
 
-
-        BasicAuthorizationCheckParam<String> checkParam = new BasicAuthorizationCheckParam<String>()
-                .setUserId(userId).setClientId(client.getClientId()).setResourceAssigner(Collections.singletonList(request.getRequestURI()));
+        AuthorizationUriCheckParam checkParam = new AuthorizationUriCheckParam()
+                .setUserId(userId).setClientId(client.getClientId())
+                .setResourceAssigner(Collections.singletonList(request.getRequestURI()));
         AuthorizationCheckResult<String> checkResult = authorizationCheckerFactory.newUriAuthorizationChecker(checkParam).check();
 
         if (checkResult.getAllowed().size() <= 0) {
-            throw new AuthenticationException();
+            throw new AuthorizationException();
         }
 
         return true;
