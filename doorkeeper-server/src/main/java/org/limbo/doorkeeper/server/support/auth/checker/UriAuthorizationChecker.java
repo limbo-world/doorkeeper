@@ -63,7 +63,6 @@ public class UriAuthorizationChecker<P extends AuthorizationCheckParam<String>> 
      */
     @Override
     public AuthorizationCheckResult<String> check() {
-        Client client = getClient();
         this.clientUris = resourceUriMapper.selectList(Wrappers.<ResourceUri>lambdaQuery()
                 .eq(ResourceUri::getRealmId, client.getRealmId())
                 .eq(ResourceUri::getClientId, client.getClientId())

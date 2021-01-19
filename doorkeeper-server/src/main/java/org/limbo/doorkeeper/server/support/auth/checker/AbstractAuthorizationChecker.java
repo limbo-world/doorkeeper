@@ -45,6 +45,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
+ * 目前非线程安全，每次校验需要生成一个新的
+ *
  * @author brozen
  * @date 2021/1/14
  */
@@ -83,10 +85,16 @@ public abstract class AbstractAuthorizationChecker<P extends AuthorizationCheckP
     /**
      * 校验参数中clientId对应的client
      */
-    private volatile Client client;
+    protected Client client;
 
     public AbstractAuthorizationChecker(P checkParam) {
         this.checkParam = checkParam;
+        // 设置client
+        Client client = clientMapper.selectById(checkParam.getClientId());
+        if (client == null || !client.getIsEnabled()) {
+            throw new AuthorizationException("无法找到Client，clientId=" + checkParam.getClientId());
+        }
+        this.client = client;
     }
 
     /**
@@ -96,7 +104,6 @@ public abstract class AbstractAuthorizationChecker<P extends AuthorizationCheckP
      */
     @Override
     public AuthorizationCheckResult<T> check() {
-
         try {
             List<T> refused = Lists.newArrayList();
             List<T> allowed = Lists.newArrayList();
@@ -163,30 +170,6 @@ public abstract class AbstractAuthorizationChecker<P extends AuthorizationCheckP
         }
     }
 
-
-    /**
-     * 根据校验参数，查询委托方
-     *
-     * @return 委托方PO
-     * @throws IllegalArgumentException 当根据clientId查询不到委托方时，会抛出异常
-     */
-    protected Client getClient() throws IllegalArgumentException {
-        if (this.client == null) {
-            synchronized (this) {
-                if (this.client == null) {
-                    this.client = clientMapper.selectById(checkParam.getClientId());
-                }
-            }
-
-            if (this.client == null) {
-                throw new IllegalArgumentException("无法找到Client，clientId=" + checkParam.getClientId());
-            }
-        }
-
-        return this.client;
-    }
-
-
     /**
      * 决定资源约束对应着哪些资源。
      *
@@ -208,8 +191,6 @@ public abstract class AbstractAuthorizationChecker<P extends AuthorizationCheckP
         if (CollectionUtils.isEmpty(permissionResources)) {
             return Lists.newArrayList();
         }
-
-        Client client = getClient();
         return permissionResources.stream()
                 .map(permRsrc -> permissionService.get(client.getRealmId(), client.getClientId(), permRsrc.getPermissionId()))
                 .collect(Collectors.toList());
@@ -234,7 +215,6 @@ public abstract class AbstractAuthorizationChecker<P extends AuthorizationCheckP
         }
 
         int allowedCount = 0;
-        Client client = getClient();
         Logic logic = Logic.parse(permission.getLogic());
         if (logic == null) {
             throw new IllegalArgumentException("无法解析权限的策略，permission=" + permission);
