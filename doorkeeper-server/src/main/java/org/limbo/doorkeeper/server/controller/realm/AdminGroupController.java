@@ -92,7 +92,7 @@ public class AdminGroupController extends BaseController {
     @PostMapping("/{groupId}/group-user/batch")
     public Response<Void> batch(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId,
                                                @RequestBody @Validated GroupUserBatchUpdateParam param) {
-        groupUserService.batchUpdate(getRealmId(), groupId, param);
+        groupUserService.batchUpdate(groupId, param);
         return Response.success();
     }
 

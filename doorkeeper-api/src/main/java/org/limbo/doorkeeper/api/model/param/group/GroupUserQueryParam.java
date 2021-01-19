@@ -34,6 +34,9 @@ public class GroupUserQueryParam extends Page<GroupUserVO> {
 
     private Long groupId;
 
+    @Schema(title = "是否公有域")
+    private Boolean isPublic;
+
     @Schema(title = "角色名称", description = "精确匹配")
     private String name;
 

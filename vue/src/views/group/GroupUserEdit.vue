@@ -2,6 +2,12 @@
     <el-container class="user-role-page">
         <el-header class="padding-top-xs" height="50px">
             <el-form ref="searchForm" :inline="true" size="mini">
+                <el-form-item label="域">
+                    <el-select v-model="queryForm.isPublic">
+                        <el-option :key="true" label="公有域" :value="true"></el-option>
+                        <el-option :key="false" label="当前域" :value="false"></el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item label="名称">
                     <el-input v-model="queryForm.dimName" placeholder="输入名称"></el-input>
                 </el-form-item>
@@ -66,6 +72,7 @@ export default {
                 size: 10,
                 total: -1,
                 isJoin: true,
+                isPublic: false
             },
             users: [],
             selectUsers: []

@@ -133,7 +133,7 @@ public class DoorkeeperService {
         GroupUserBatchUpdateParam dkRealmUserGroupParam = new GroupUserBatchUpdateParam();
         dkRealmUserGroupParam.setType(BatchMethod.SAVE);
         dkRealmUserGroupParam.setUserIds(Collections.singletonList(userId));
-        groupUserService.batchUpdate(dkRealm.getRealmId(), group.getGroupId(), dkRealmUserGroupParam);
+        groupUserService.batchUpdate(group.getGroupId(), dkRealmUserGroupParam);
     }
 
     @Transactional
@@ -144,7 +144,7 @@ public class DoorkeeperService {
         GroupUserBatchUpdateParam publicRealmUserGroupParam = new GroupUserBatchUpdateParam();
         publicRealmUserGroupParam.setType(BatchMethod.SAVE);
         publicRealmUserGroupParam.setUserIds(Collections.singletonList(userId));
-        groupUserService.batchUpdate(dkRealm.getRealmId(), publicGroup.getGroupId(), publicRealmUserGroupParam);
+        groupUserService.batchUpdate(publicGroup.getGroupId(), publicRealmUserGroupParam);
     }
 
     /**
