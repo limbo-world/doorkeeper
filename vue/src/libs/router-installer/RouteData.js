@@ -134,6 +134,17 @@ export default [
                     },
                 ]
             },
+            {
+                path: '/realm',
+                component: RouterView,
+                redirect: '/realm/realm',
+                children: [
+                    {
+                        path: '/realm/realm',
+                        component: _import('realm/Realm'),
+                    },
+                ]
+            },
         ]
     },
 

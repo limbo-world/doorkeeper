@@ -31,4 +31,7 @@ public class RealmAddParam {
     @NotBlank(message = "名称不能为空")
     @Schema(title = "名称", required = true)
     private String name;
+
+    @Schema(title = "secret")
+    private String secret;
 }

@@ -47,7 +47,9 @@
     export default {
         data() {
             return {
-                loginForm: {},
+                loginForm: {
+                    realmId: this.$constants.doorkeeperRealmId
+                },
                 loginFormRule: {
                     username: [
                         {required: true, message: '请填写账号', trigger: 'blur'},

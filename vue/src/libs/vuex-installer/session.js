@@ -3,6 +3,7 @@ import TimeUnit from '../cache-installer/time-unit';
 import {Message, MessageBox, Loading} from 'element-ui';
 import {MenuRoute} from "../router-installer/MenuData";
 import AuthExpressionEvaluator from "@/libs/directives/auth/AuthExpressionEvaluator.ts";
+import AppConstants from "@/utils/AppConstants";
 
 const setTokenCache = (token) => {
     window.localCache.set('session/token', token, 15, TimeUnit.Days);
@@ -214,6 +215,12 @@ const organizeMenu = (evaluator) => {
 };
 
 const organizeSingleMenu = (menu, evaluator) => {
+    if (menu.dk) { // todo 放到 evaluator 里去
+        let user = getSessionUserCache();
+        if (AppConstants.doorkeeperRealmId != user.realm.realmId) { // AppConstants.doorkeeperRealmId是string
+            return null
+        }
+    }
     if (menu.auth && !evaluator.evaluate(menu.auth)) {
         return null;
     }

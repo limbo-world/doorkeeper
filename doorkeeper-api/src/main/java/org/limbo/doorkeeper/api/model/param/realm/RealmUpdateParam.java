@@ -14,24 +14,19 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.vo;
+package org.limbo.doorkeeper.api.model.param.realm;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
  * @author Devil
- * @date 2021/1/3 6:15 下午
+ * @date 2021/1/4 2:57 下午
  */
 @Data
-public class RealmVO {
+public class RealmUpdateParam {
 
-    private Long realmId;
-
-    @Schema(title = "名称")
-    private String name;
-
-    @Schema(title = "秘钥")
+    @Schema(title = "描述")
     private String secret;
 
 }

@@ -56,7 +56,7 @@
         },
 
         methods: {
-            addRealm() {
+            updatePassword() {
                 return new Promise((resolve, reject) => {
                     this.$refs.editForm.validate(valid => {
                         if (!valid) {
@@ -64,7 +64,7 @@
                             return;
                         }
 
-                        this.$ajax.put(`/admin/user/${this.user.userId}`, {password: this.account.newPassword}).then((response) => {
+                        this.$ajax.put(`/admin/realm/${this.user.realmId}/user/${this.user.userId}`, this.account).then((response) => {
                             resolve(response);
                         }).catch(reject);
                     });

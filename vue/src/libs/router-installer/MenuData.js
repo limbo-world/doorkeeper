@@ -4,11 +4,17 @@ export const MenuRoute = [{
     "icon": "el-icon-setting",
     "children": [{
         "menuCode": "001001",
+        "menuName": "域",
+        "icon": "fa fa-server",
+        "route": "/realm/realm",
+        "dk": true
+    }, {
+        "menuCode": "001002",
         "menuName": "委托方",
         "icon": "fa fa-project-diagram",
         "route": "/client/client",
-    },{
-        "menuCode": "001002",
+    }, {
+        "menuCode": "001003",
         "menuName": "域角色",
         "icon": "el-icon-c-scale-to-original",
         "route": "/role/role",
@@ -22,7 +28,7 @@ export const MenuRoute = [{
         "menuName": "用户",
         "icon": "el-icon-user",
         "route": "/user/user",
-    },{
+    }, {
         "menuCode": "002002",
         "menuName": "用户组",
         "icon": "fa fa-users",

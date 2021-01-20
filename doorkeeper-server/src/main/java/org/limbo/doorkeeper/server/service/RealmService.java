@@ -16,9 +16,12 @@
 
 package org.limbo.doorkeeper.server.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.exception.ParamException;
+import org.limbo.doorkeeper.api.model.param.realm.RealmUpdateParam;
 import org.limbo.doorkeeper.api.model.param.resource.RealmAddParam;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
 import org.limbo.doorkeeper.api.model.vo.RealmVO;
@@ -26,6 +29,7 @@ import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.dao.*;
 import org.limbo.doorkeeper.server.entity.*;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.utils.UUIDUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -69,6 +73,9 @@ public class RealmService {
     @Transactional
     public RealmVO add(Long userId, RealmAddParam param) {
         Realm realm = EnhancedBeanUtils.createAndCopy(param, Realm.class);
+        if (StringUtils.isBlank(param.getSecret())) {
+            realm.setSecret(UUIDUtils.get());
+        }
         try {
             realmMapper.insert(realm);
         } catch (DuplicateKeyException e) {
@@ -85,6 +92,8 @@ public class RealmService {
      * user拥有哪些realm
      */
     public List<RealmVO> userRealms(Long userId) {
+        LambdaQueryWrapper<Realm> realmSelect = Wrappers.<Realm>lambdaQuery().select(Realm::getRealmId, Realm::getName);
+
         Realm dkRealm = realmMapper.getDoorkeeperRealm();
 
         // 判断是不是DK的REALM admin
@@ -95,7 +104,7 @@ public class RealmService {
                     .eq(UserRole::getRoleId, dkAdmin.getRoleId())
             );
             if (userRole != null) {
-                List<Realm> realms = realmMapper.selectList(Wrappers.emptyWrapper());
+                List<Realm> realms = realmMapper.selectList(realmSelect);
                 return EnhancedBeanUtils.createAndCopyList(realms, RealmVO.class);
             }
         }
@@ -132,9 +141,21 @@ public class RealmService {
             }
         }
 
-        List<Realm> realms = realmMapper.selectList(Wrappers.<Realm>lambdaQuery()
+        List<Realm> realms = realmMapper.selectList(realmSelect
                 .in(Realm::getName, realmNames)
         );
         return EnhancedBeanUtils.createAndCopyList(realms, RealmVO.class);
+    }
+
+    public RealmVO get(Long realmId) {
+        Realm realm = realmMapper.selectById(realmId);
+        return EnhancedBeanUtils.createAndCopy(realm, RealmVO.class);
+    }
+
+    public void update(Long realmId, RealmUpdateParam param) {
+        realmMapper.update(null, Wrappers.<Realm>lambdaUpdate()
+                .set(StringUtils.isNotBlank(param.getSecret()), Realm::getSecret, param.getSecret())
+                .eq(Realm::getRealmId, realmId)
+        );
     }
 }

@@ -16,6 +16,7 @@
 
 package org.limbo.doorkeeper.server.service;
 
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.exception.ParamException;
@@ -29,6 +30,7 @@ import org.limbo.doorkeeper.server.entity.User;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MD5Utils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
+import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -92,13 +94,27 @@ public class UserService {
 
     @Transactional
     public void update(Long realmId, Long userId, UserUpdateParam param) {
-        userMapper.update(null, Wrappers.<User>lambdaUpdate()
+        LambdaUpdateWrapper<User> updateWrapper = Wrappers.<User>lambdaUpdate()
                 .set(StringUtils.isNotBlank(param.getNickname()), User::getNickname, param.getNickname())
-                .set(StringUtils.isNotBlank(param.getPassword()), User::getPassword, MD5Utils.md5WithSalt(param.getPassword()))
+                .set(StringUtils.isNotBlank(param.getNickname()), User::getNickname, param.getNickname())
                 .set(param.getDescription() != null, User::getDescription, param.getDescription())
                 .set(param.getIsEnabled() != null, User::getIsEnabled, param.getIsEnabled())
                 .eq(User::getUserId, userId)
-                .eq(User::getRealmId, realmId)
-        );
+                .eq(User::getRealmId, realmId);
+
+        // 如果要更新密码 需要进行校验
+        if (StringUtils.isNotBlank(param.getOriginalPassword())) {
+            Verifies.notBlank(param.getNewPassword(), "新密码不能为空");
+
+            User user = userMapper.selectOne(Wrappers.<User>lambdaQuery()
+                    .eq(User::getRealmId, realmId)
+                    .eq(User::getUserId, userId)
+            );
+            Verifies.notNull(user, "用户不存在");
+            Verifies.verify(MD5Utils.verify(param.getOriginalPassword(), user.getPassword()), "密码错误");
+
+            updateWrapper.set(User::getPassword, MD5Utils.md5WithSalt(param.getNewPassword()));
+        }
+        userMapper.update(null, updateWrapper);
     }
 }

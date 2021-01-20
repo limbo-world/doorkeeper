@@ -90,6 +90,7 @@ export default {
 
         // 新建realm
         realmAddDialogConfirm() {
+            const loading = this.$loading();
             this.$refs.realmAddEdit.addRealm().then(() => {
                 this.$message.success('新建成功');
                 this.$refs.realmAddEdit.clearData();
@@ -117,16 +118,17 @@ export default {
                 })
             }).catch(data => {
                 this.$message.error('创建失败');
-            });
+            }).finally(() => loading.close());
         },
 
         // 重置密码
         passwordDialogConfirm() {
+            const loading = this.$loading();
             this.$refs.passwordEdit.updatePassword().then(() => {
                 this.$message.success('修改密码成功，您需要重新登录！');
                 this.passwordDialogOpened = false;
                 this.logout();
-            });
+            }).finally(() => loading.close());
         },
     }
 }
