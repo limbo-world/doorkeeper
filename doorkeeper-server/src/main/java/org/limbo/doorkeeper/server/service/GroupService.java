@@ -87,16 +87,6 @@ public class GroupService {
         return EnhancedBeanUtils.createAndCopy(group, GroupVO.class);
     }
 
-    public GroupVO getPublicGroup() {
-        GroupVO realmGroup = getRealmGroup();
-        Group group = groupMapper.selectOne(Wrappers.<Group>lambdaQuery()
-                .eq(Group::getRealmId, realmGroup.getRealmId())
-                .eq(Group::getParentId, realmGroup.getGroupId())
-                .eq(Group::getName, DoorkeeperConstants.PUBLIC_REALM_NAME)
-        );
-        return EnhancedBeanUtils.createAndCopy(group, GroupVO.class);
-    }
-
     @Transactional
     public void update(Long realmId, Long groupId, GroupUpdateParam param) {
         groupMapper.update(null, Wrappers.<Group>lambdaUpdate()

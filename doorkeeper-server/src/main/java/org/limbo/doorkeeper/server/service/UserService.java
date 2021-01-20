@@ -46,9 +46,6 @@ public class UserService {
     @Autowired
     private UserMapper userMapper;
 
-    @Autowired
-    private DoorkeeperService doorkeeperService;
-
     @Transactional
     public UserVO add(Long realmId, UserAddParam param) {
         User user = EnhancedBeanUtils.createAndCopy(param, User.class);
@@ -60,8 +57,6 @@ public class UserService {
             throw new ParamException("用户已存在");
         }
         user.setPassword(null);
-
-        doorkeeperService.userJoinPublicRealm(user.getUserId());
         return EnhancedBeanUtils.createAndCopy(user, UserVO.class);
     }
 

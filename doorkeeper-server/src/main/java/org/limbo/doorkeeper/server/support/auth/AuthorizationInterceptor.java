@@ -74,10 +74,9 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         User user = userMapper.selectById(userId);
 
         Realm dkRealm = realmMapper.getDoorkeeperRealm();
-        Realm publicRealm = realmMapper.getPublicRealm();
 
         // 判断用户是否属于dk域或公有域
-        if (!dkRealm.getRealmId().equals(user.getRealmId()) && !publicRealm.getRealmId().equals(user.getRealmId())) {
+        if (!dkRealm.getRealmId().equals(user.getRealmId())) {
             throw new AuthorizationException();
         }
 

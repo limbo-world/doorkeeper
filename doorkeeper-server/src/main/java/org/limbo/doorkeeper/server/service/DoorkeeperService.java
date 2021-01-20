@@ -136,17 +136,6 @@ public class DoorkeeperService {
         groupUserService.batchUpdate(group.getGroupId(), dkRealmUserGroupParam);
     }
 
-    @Transactional
-    public void userJoinPublicRealm(Long userId) {
-        Realm dkRealm = realmMapper.getDoorkeeperRealm();
-        // 用户加入公有域
-        GroupVO publicGroup = groupService.getPublicGroup();
-        GroupUserBatchUpdateParam publicRealmUserGroupParam = new GroupUserBatchUpdateParam();
-        publicRealmUserGroupParam.setType(BatchMethod.SAVE);
-        publicRealmUserGroupParam.setUserIds(Collections.singletonList(userId));
-        groupUserService.batchUpdate(publicGroup.getGroupId(), publicRealmUserGroupParam);
-    }
-
     /**
      * @param realmId 新建的域的id
      */

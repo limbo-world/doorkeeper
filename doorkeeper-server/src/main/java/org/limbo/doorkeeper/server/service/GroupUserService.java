@@ -17,7 +17,6 @@
 package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import org.apache.commons.lang3.BooleanUtils;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.group.GroupUserBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.group.GroupUserQueryParam;
@@ -25,7 +24,6 @@ import org.limbo.doorkeeper.api.model.vo.GroupUserVO;
 import org.limbo.doorkeeper.server.dao.GroupUserMapper;
 import org.limbo.doorkeeper.server.dao.RealmMapper;
 import org.limbo.doorkeeper.server.entity.GroupUser;
-import org.limbo.doorkeeper.server.entity.Realm;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,10 +47,6 @@ public class GroupUserService {
 
     public Page<GroupUserVO> page(Long realmId, Long groupId, GroupUserQueryParam param) {
         param.setRealmId(realmId);
-        if (BooleanUtils.isTrue(param.getIsPublic())) {
-            Realm publicRealm = realmMapper.getPublicRealm();
-            param.setRealmId(publicRealm.getRealmId());
-        }
         param.setGroupId(groupId);
         long count = groupUserMapper.listVOCount(param);
         param.setTotal(count);

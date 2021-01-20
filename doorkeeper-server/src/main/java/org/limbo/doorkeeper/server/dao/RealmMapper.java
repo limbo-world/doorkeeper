@@ -30,6 +30,4 @@ public interface RealmMapper extends BaseMapper<Realm> {
     @Select("select * from realm where name = '" + DoorkeeperConstants.DOORKEEPER_REALM_NAME + "'")
     Realm getDoorkeeperRealm();
 
-    @Select("select * from realm where name = '" + DoorkeeperConstants.PUBLIC_REALM_NAME + "'")
-    Realm getPublicRealm();
 }

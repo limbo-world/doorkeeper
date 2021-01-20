@@ -17,14 +17,12 @@
 package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import org.apache.commons.lang3.BooleanUtils;
 import org.limbo.doorkeeper.api.model.Page;
-import org.limbo.doorkeeper.api.model.param.role.RoleUserQueryParam;
 import org.limbo.doorkeeper.api.model.param.role.RoleUserBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.role.RoleUserQueryParam;
 import org.limbo.doorkeeper.api.model.vo.RoleUserVO;
 import org.limbo.doorkeeper.server.dao.RealmMapper;
 import org.limbo.doorkeeper.server.dao.UserRoleMapper;
-import org.limbo.doorkeeper.server.entity.Realm;
 import org.limbo.doorkeeper.server.entity.UserRole;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,10 +48,6 @@ public class RoleUserService {
     public Page<RoleUserVO> page(Long realmId, Long roleId, RoleUserQueryParam param) {
         param.setRealmId(realmId);
         param.setRoleId(roleId);
-        if (BooleanUtils.isTrue(param.getIsPublic())) {
-            Realm publicRealm = realmMapper.getPublicRealm();
-            param.setRealmId(publicRealm.getRealmId());
-        }
         long count = userRoleMapper.listRoleUserCount(param);
         param.setTotal(count);
         if (count > 0) {

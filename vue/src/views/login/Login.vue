@@ -15,12 +15,6 @@
                         <el-form-item label="密码" prop="password">
                             <el-input v-model="loginForm.password" type="password" placeholder="请输入密码"></el-input>
                         </el-form-item>
-                        <el-form-item label="域" prop="password">
-                            <el-select v-model="loginForm.realmId">
-                                <el-option key="doorkeeper" label="doorkeeper" :value="$constants.doorkeeperRealmId"></el-option>
-                                <el-option key="public" label="public" :value="$constants.publicRealmId"></el-option>
-                            </el-select>
-                        </el-form-item>
                         <el-form-item>
                             <el-button type="primary" class="login-btn" @click="login"
                                        :loading="loginProcessing" :disabled="loginProcessing">登录</el-button>
