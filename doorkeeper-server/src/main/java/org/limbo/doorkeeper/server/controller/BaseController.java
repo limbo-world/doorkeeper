@@ -16,7 +16,6 @@
 
 package org.limbo.doorkeeper.server.controller;
 
-import com.auth0.jwt.JWT;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.SessionConstants;
 import org.limbo.doorkeeper.api.model.vo.UserVO;
@@ -24,7 +23,7 @@ import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.dao.RealmMapper;
 import org.limbo.doorkeeper.server.dao.UserMapper;
 import org.limbo.doorkeeper.server.entity.Realm;
-import org.limbo.doorkeeper.server.entity.User;
+import org.limbo.doorkeeper.server.service.RealmService;
 import org.limbo.doorkeeper.server.service.UserService;
 import org.limbo.doorkeeper.server.support.session.exception.AuthenticationException;
 import org.limbo.doorkeeper.server.utils.JWTUtil;
@@ -56,6 +55,9 @@ public class BaseController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private RealmService realmService;
+
     protected String getToken() {
         String token = request.getHeader(SessionConstants.TOKEN_HEADER);
         if (StringUtils.isBlank(token)) {
@@ -67,11 +69,9 @@ public class BaseController {
     protected UserVO getUser() {
         String token = getToken();
         try {
-            Long userId = JWT.decode(token).getClaim(DoorkeeperConstants.USER_ID).asLong();
-            User user = userMapper.selectById(userId);
-            Realm realm = realmMapper.selectById(user.getRealmId());
+            Realm realm = realmService.getRealmByToken(token);
             JWTUtil.verifyToken(token, realm.getSecret());
-            return userService.get(realm.getRealmId(), user.getUserId());
+            return userService.get(realm.getRealmId(), JWTUtil.getUserId(token));
         } catch (Exception e) {
             throw new AuthenticationException("认证失败");
         }

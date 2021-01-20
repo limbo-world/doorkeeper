@@ -16,15 +16,11 @@
 
 package org.limbo.doorkeeper.server.support.session;
 
-import com.auth0.jwt.JWT;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.SessionConstants;
-import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.server.dao.RealmMapper;
-import org.limbo.doorkeeper.server.dao.UserMapper;
 import org.limbo.doorkeeper.server.entity.Realm;
-import org.limbo.doorkeeper.server.entity.User;
+import org.limbo.doorkeeper.server.service.RealmService;
 import org.limbo.doorkeeper.server.support.session.exception.AuthenticationException;
 import org.limbo.doorkeeper.server.utils.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,10 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 public class SessionInterceptor implements HandlerInterceptor {
 
     @Autowired
-    private UserMapper userMapper;
-
-    @Autowired
-    private RealmMapper realmMapper;
+    private RealmService realmService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -54,9 +47,7 @@ public class SessionInterceptor implements HandlerInterceptor {
             throw new AuthenticationException("无认证请求");
         }
         try {
-            Long userId = JWT.decode(token).getClaim(DoorkeeperConstants.USER_ID).asLong();
-            User user = userMapper.selectById(userId);
-            Realm realm = realmMapper.selectById(user.getRealmId());
+            Realm realm = realmService.getRealmByToken(token);
             JWTUtil.verifyToken(token, realm.getSecret());
         } catch (Exception e) {
             throw new AuthenticationException();

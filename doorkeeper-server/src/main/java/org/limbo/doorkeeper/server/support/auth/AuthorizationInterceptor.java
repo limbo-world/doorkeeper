@@ -16,7 +16,6 @@
 
 package org.limbo.doorkeeper.server.support.auth;
 
-import com.auth0.jwt.JWT;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.constants.SessionConstants;
@@ -26,6 +25,7 @@ import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.dao.*;
 import org.limbo.doorkeeper.server.entity.*;
 import org.limbo.doorkeeper.server.support.auth.checker.AuthorizationCheckerFactory;
+import org.limbo.doorkeeper.server.utils.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestAttributes;
@@ -70,7 +70,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         // 判断 url 是否有对应权限
         String token = request.getHeader(SessionConstants.TOKEN_HEADER);
-        Long userId = JWT.decode(token).getClaim(DoorkeeperConstants.USER_ID).asLong();
+        Long userId = JWTUtil.getUserId(token);
         User user = userMapper.selectById(userId);
 
         Realm dkRealm = realmMapper.getDoorkeeperRealm();

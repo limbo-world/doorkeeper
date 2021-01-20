@@ -29,7 +29,9 @@ import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.dao.*;
 import org.limbo.doorkeeper.server.entity.*;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.utils.JWTUtil;
 import org.limbo.doorkeeper.server.utils.UUIDUtils;
+import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -59,7 +61,7 @@ public class RealmService {
     private UserRoleMapper userRoleMapper;
 
     @Autowired
-    private ClientMapper clientMapper;
+    private UserMapper userMapper;
 
     @Autowired
     private GroupMapper groupMapper;
@@ -157,5 +159,16 @@ public class RealmService {
                 .set(StringUtils.isNotBlank(param.getSecret()), Realm::getSecret, param.getSecret())
                 .eq(Realm::getRealmId, realmId)
         );
+    }
+
+    public Realm getRealmByToken(String token) {
+        Long userId = JWTUtil.getUserId(token);
+        User user = userMapper.selectById(userId);
+        Verifies.notNull(user, "用户不存在");
+        Verifies.verify(user.getIsEnabled(), "用户未启用");
+
+        Realm realm = realmMapper.selectById(user.getRealmId());
+        Verifies.notNull(realm, "realm不存在");
+        return realm;
     }
 }

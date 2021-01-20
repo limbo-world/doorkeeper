@@ -48,6 +48,9 @@ public class LoginService {
     @Autowired
     private RealmMapper realmMapper;
 
+    @Autowired
+    private RealmService realmService;
+
     public String login(LoginParam param) {
         User user = userMapper.selectOne(Wrappers.<User>lambdaQuery()
                 .eq(User::getRealmId, param.getRealmId())
@@ -74,22 +77,14 @@ public class LoginService {
     }
 
     public String refreshToken(String token) {
-        User user;
         Realm realm;
         try {
-            Long userId = JWT.decode(token).getClaim(DoorkeeperConstants.USER_ID).asLong();
-            user = userMapper.selectById(userId);
-            Verifies.notNull(user, "用户不存在");
-            Verifies.verify(user.getIsEnabled(), "用户未启用");
-
-            realm = realmMapper.selectById(user.getRealmId());
-            Verifies.notNull(realm, "realm不存在");
-            JWTUtil.verifyToken(token, realm.getSecret());
+            realm = realmService.getRealmByToken(token);
         } catch (Exception e) {
             throw new AuthenticationException();
         }
 
-        return token(user.getUserId(), realm.getRealmId(), user.getUsername(), user.getNickname(), realm.getSecret());
+        return token(JWTUtil.getUserId(token), realm.getRealmId(), JWTUtil.getUsername(token), JWTUtil.getNickname(token), realm.getSecret());
     }
 
 }

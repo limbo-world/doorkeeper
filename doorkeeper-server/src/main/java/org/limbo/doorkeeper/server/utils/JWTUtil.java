@@ -19,6 +19,7 @@ package org.limbo.doorkeeper.server.utils;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.JWTVerifier;
+import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
 
 /**
  * @author Devil
@@ -30,5 +31,21 @@ public class JWTUtil {
         JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(secret)).build();
         jwtVerifier.verify(token);
         return true;
+    }
+
+    public static Long getUserId(String token) {
+        return JWT.decode(token).getClaim(DoorkeeperConstants.USER_ID).asLong();
+    }
+
+    public static String getUsername(String token) {
+        return JWT.decode(token).getClaim(DoorkeeperConstants.USERNAME).asString();
+    }
+
+    public static String getNickname(String token) {
+        return JWT.decode(token).getClaim(DoorkeeperConstants.NICKNAME).asString();
+    }
+
+    public static Long getRealmId(String token) {
+        return JWT.decode(token).getClaim(DoorkeeperConstants.REALM_ID).asLong();
     }
 }
