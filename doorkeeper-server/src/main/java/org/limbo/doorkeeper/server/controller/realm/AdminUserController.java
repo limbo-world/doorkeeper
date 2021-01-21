@@ -62,13 +62,13 @@ public class AdminUserController extends BaseController {
         return Response.success(userService.page(getRealmId(), param));
     }
 
-    @Operation(summary = "查询用户")
+    @Operation(summary = "根据id查询用户")
     @GetMapping("/{userId}")
     public Response<UserVO> getById(@Validated @NotNull(message = "未提交用户ID") @PathVariable("userId") Long userId) {
         return Response.success(userService.get(getRealmId(), userId, null));
     }
 
-    @Operation(summary = "查询用户")
+    @Operation(summary = "查询单个用户")
     @GetMapping("/get")
     public Response<UserVO> get(@RequestParam("userId") Long userId, @RequestParam("username") String username) {
         return Response.success(userService.get(getRealmId(), userId, username));

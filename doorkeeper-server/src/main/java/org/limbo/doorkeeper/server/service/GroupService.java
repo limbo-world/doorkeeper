@@ -66,10 +66,22 @@ public class GroupService {
         return EnhancedBeanUtils.createAndCopyList(groups, GroupVO.class);
     }
 
-    public GroupVO get(Long realmId, Long groupId) {
+    public GroupVO getById(Long realmId, Long groupId) {
         Group group = groupMapper.selectOne(Wrappers.<Group>lambdaQuery()
                 .eq(Group::getGroupId, groupId)
                 .eq(Group::getRealmId, realmId)
+        );
+        return EnhancedBeanUtils.createAndCopy(group, GroupVO.class);
+    }
+
+    public GroupVO get(Long realmId, Long parentId, String name) {
+        if (parentId == null) {
+            parentId = 0L;
+        }
+        Group group = groupMapper.selectOne(Wrappers.<Group>lambdaQuery()
+                .eq(Group::getRealmId, realmId)
+                .eq(Group::getParentId, parentId)
+                .eq(Group::getName, name)
         );
         return EnhancedBeanUtils.createAndCopy(group, GroupVO.class);
     }

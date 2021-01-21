@@ -67,10 +67,16 @@ public class AdminGroupController extends BaseController {
         return Response.success(groupService.list(getRealmId()));
     }
 
-    @Operation(summary = "查询用户组")
+    @Operation(summary = "根据id查询用户组")
     @GetMapping("/{groupId}")
-    public Response<GroupVO> get(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId) {
-        return Response.success(groupService.get(getRealmId(), groupId));
+    public Response<GroupVO> getById(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId) {
+        return Response.success(groupService.getById(getRealmId(), groupId));
+    }
+
+    @Operation(summary = "查询单个用户组")
+    @GetMapping("/get")
+    public Response<GroupVO> get(@RequestParam("parentId") Long parentId, @RequestParam("name") String name) {
+        return Response.success(groupService.get(getRealmId(), parentId, name));
     }
 
     @Operation(summary = "更新用户")
