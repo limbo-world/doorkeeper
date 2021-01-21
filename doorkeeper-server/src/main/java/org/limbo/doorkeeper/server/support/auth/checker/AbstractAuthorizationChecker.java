@@ -100,16 +100,6 @@ public abstract class AbstractAuthorizationChecker<P extends AuthorizationCheckP
     @Override
     public AuthorizationCheckResult<T> check() {
         try {
-            // 设置client
-            Client client = clientMapper.selectById(checkParam.getClientId());
-            if (client == null) {
-                throw new AuthorizationException("无法找到Client，clientId=" + checkParam.getClientId());
-            }
-            if (!client.getIsEnabled()) {
-                throw new AuthorizationException("此Client未启用");
-            }
-            this.client = client;
-
             List<T> refused = Lists.newArrayList();
             List<T> allowed = Lists.newArrayList();
             List<T> resourceAssigner = checkParam.getResourceAssigner();
@@ -178,6 +168,31 @@ public abstract class AbstractAuthorizationChecker<P extends AuthorizationCheckP
     }
 
     /**
+     * 异步初始化 根据校验参数，查询委托方
+     *
+     * @return 委托方PO
+     * @throws IllegalArgumentException 当根据clientId查询不到委托方时，会抛出异常
+     */
+    protected Client getClient() throws IllegalArgumentException {
+        if (this.client == null) {
+            synchronized (this) {
+                if (this.client == null) {
+                    this.client = clientMapper.selectById(checkParam.getClientId());
+                }
+            }
+
+            if (client == null) {
+                throw new AuthorizationException("无法找到Client，clientId=" + checkParam.getClientId());
+            }
+            if (!client.getIsEnabled()) {
+                throw new AuthorizationException("此Client未启用");
+            }
+        }
+
+        return this.client;
+    }
+
+    /**
      * 决定资源约束对应着哪些资源。
      *
      * @param resourcesAssigner 资源约束对象，可以是资源名称、资源URI、资源Tag
@@ -199,7 +214,7 @@ public abstract class AbstractAuthorizationChecker<P extends AuthorizationCheckP
             return Lists.newArrayList();
         }
         return permissionResources.stream()
-                .map(permRsrc -> permissionService.get(client.getRealmId(), client.getClientId(), permRsrc.getPermissionId()))
+                .map(permRsrc -> permissionService.get(getClient().getRealmId(), getClient().getClientId(), permRsrc.getPermissionId()))
                 .collect(Collectors.toList());
     }
 
@@ -230,7 +245,7 @@ public abstract class AbstractAuthorizationChecker<P extends AuthorizationCheckP
         // 逐个policy检查
         for (PermissionPolicyVO permPolicy : policies) {
             // 查找VO
-            PolicyVO policy = policyService.get(client.getRealmId(), client.getClientId(), permPolicy.getPolicyId());
+            PolicyVO policy = policyService.get(getClient().getRealmId(), getClient().getClientId(), permPolicy.getPolicyId());
             Intention policyCheckIntention = policyCheckerFactory.newPolicyChecker(policy).check(checkParam);
 
             // 统计允许的policy个数

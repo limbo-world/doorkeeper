@@ -47,7 +47,7 @@ public class NameAuthorizationChecker<P extends AuthorizationCheckParam<String>>
      */
     @Override
     protected List<Resource> assignCheckingResources(String resourceName) {
-        return Collections.singletonList(resourceMapper.getByName(client.getRealmId(), client.getClientId(), resourceName));
+        return Collections.singletonList(resourceMapper.getByName(getClient().getRealmId(), getClient().getClientId(), resourceName));
     }
 
 }

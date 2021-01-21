@@ -19,13 +19,12 @@ package org.limbo.doorkeeper.server.support.auth.checker;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
+import org.limbo.doorkeeper.api.model.param.auth.AuthorizationCheckParam;
 import org.limbo.doorkeeper.api.model.vo.AuthorizationCheckResult;
 import org.limbo.doorkeeper.server.dao.ResourceMapper;
 import org.limbo.doorkeeper.server.dao.ResourceUriMapper;
-import org.limbo.doorkeeper.server.entity.Client;
 import org.limbo.doorkeeper.server.entity.Resource;
 import org.limbo.doorkeeper.server.entity.ResourceUri;
-import org.limbo.doorkeeper.api.model.param.auth.AuthorizationCheckParam;
 import org.limbo.doorkeeper.server.utils.EasyAntPathMatcher;
 
 import java.util.List;
@@ -64,8 +63,8 @@ public class UriAuthorizationChecker<P extends AuthorizationCheckParam<String>> 
     @Override
     public AuthorizationCheckResult<String> check() {
         this.clientUris = resourceUriMapper.selectList(Wrappers.<ResourceUri>lambdaQuery()
-                .eq(ResourceUri::getRealmId, client.getRealmId())
-                .eq(ResourceUri::getClientId, client.getClientId())
+                .eq(ResourceUri::getRealmId, getClient().getRealmId())
+                .eq(ResourceUri::getClientId, getClient().getClientId())
         );
 
         return super.check();
