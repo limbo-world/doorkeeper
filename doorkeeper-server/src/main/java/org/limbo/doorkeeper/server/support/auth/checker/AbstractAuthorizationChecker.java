@@ -90,15 +90,6 @@ public abstract class AbstractAuthorizationChecker<P extends AuthorizationCheckP
 
     public AbstractAuthorizationChecker(P checkParam) {
         this.checkParam = checkParam;
-        // 设置client
-        Client client = clientMapper.selectById(checkParam.getClientId());
-        if (client == null) {
-            throw new AuthorizationException("无法找到Client，clientId=" + checkParam.getClientId());
-        }
-        if (!client.getIsEnabled()) {
-            throw new AuthorizationException("此Client未启用");
-        }
-        this.client = client;
     }
 
     /**
@@ -109,6 +100,16 @@ public abstract class AbstractAuthorizationChecker<P extends AuthorizationCheckP
     @Override
     public AuthorizationCheckResult<T> check() {
         try {
+            // 设置client
+            Client client = clientMapper.selectById(checkParam.getClientId());
+            if (client == null) {
+                throw new AuthorizationException("无法找到Client，clientId=" + checkParam.getClientId());
+            }
+            if (!client.getIsEnabled()) {
+                throw new AuthorizationException("此Client未启用");
+            }
+            this.client = client;
+
             List<T> refused = Lists.newArrayList();
             List<T> allowed = Lists.newArrayList();
             List<T> resourceAssigner = checkParam.getResourceAssigner();
