@@ -78,11 +78,22 @@ public class UserService {
         return param;
     }
 
-    public UserVO get(Long realmId, Long userId) {
-        User user = userMapper.selectOne(Wrappers.<User>lambdaQuery()
-                .eq(User::getUserId, userId)
-                .eq(User::getRealmId, realmId)
-        );
+    public UserVO get(Long realmId, Long userId, String username) {
+        if (userId == null && StringUtils.isBlank(username)) {
+            throw new ParamException("未传递查询参数");
+        }
+        User user;
+        if (userId != null) {
+            user = userMapper.selectOne(Wrappers.<User>lambdaQuery()
+                    .eq(User::getUserId, userId)
+                    .eq(User::getRealmId, realmId)
+            );
+        } else {
+            user = userMapper.selectOne(Wrappers.<User>lambdaQuery()
+                    .eq(User::getUsername, username)
+                    .eq(User::getRealmId, realmId)
+            );
+        }
         user.setPassword(null);
         return EnhancedBeanUtils.createAndCopy(user, UserVO.class);
     }

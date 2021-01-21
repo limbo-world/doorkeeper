@@ -64,8 +64,14 @@ public class AdminUserController extends BaseController {
 
     @Operation(summary = "查询用户")
     @GetMapping("/{userId}")
-    public Response<UserVO> get(@Validated @NotNull(message = "未提交用户ID") @PathVariable("userId") Long userId) {
-        return Response.success(userService.get(getRealmId(), userId));
+    public Response<UserVO> getById(@Validated @NotNull(message = "未提交用户ID") @PathVariable("userId") Long userId) {
+        return Response.success(userService.get(getRealmId(), userId, null));
+    }
+
+    @Operation(summary = "查询用户")
+    @GetMapping("/get")
+    public Response<UserVO> get(@RequestParam("userId") Long userId, @RequestParam("username") String username) {
+        return Response.success(userService.get(getRealmId(), userId, username));
     }
 
     @Operation(summary = "更新用户")
