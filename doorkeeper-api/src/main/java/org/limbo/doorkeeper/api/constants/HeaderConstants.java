@@ -20,9 +20,9 @@ package org.limbo.doorkeeper.api.constants;
  * @author Devil
  * @date 2020/11/24 5:18 PM
  */
-public interface SessionConstants {
+public interface HeaderConstants {
     /**
      * token
      */
-    String TOKEN_HEADER = "Doorkeeper-Token";
+    String TOKEN_HEADER = "Authorization";
 }

@@ -44,7 +44,6 @@ const logics = [
 ];
 
 const doorkeeperRealmId = process.env.VUE_APP_doorkeeperRealmId;
-const publicRealmId = process.env.VUE_APP_publicRealmId;
 
 export default {
     policyTypes,
@@ -54,5 +53,4 @@ export default {
     logics,
 
     doorkeeperRealmId,
-    publicRealmId
 }

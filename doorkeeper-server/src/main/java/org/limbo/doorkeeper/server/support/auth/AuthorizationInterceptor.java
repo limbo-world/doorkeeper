@@ -18,7 +18,7 @@ package org.limbo.doorkeeper.server.support.auth;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.constants.SessionConstants;
+import org.limbo.doorkeeper.api.constants.HeaderConstants;
 import org.limbo.doorkeeper.api.model.param.auth.AuthorizationUriCheckParam;
 import org.limbo.doorkeeper.api.model.vo.AuthorizationCheckResult;
 import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
@@ -69,7 +69,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         // 判断 url 是否有对应权限
-        String token = request.getHeader(SessionConstants.TOKEN_HEADER);
+        String token = request.getHeader(HeaderConstants.TOKEN_HEADER);
         Long userId = JWTUtil.getUserId(token);
         User user = userMapper.selectById(userId);
 
