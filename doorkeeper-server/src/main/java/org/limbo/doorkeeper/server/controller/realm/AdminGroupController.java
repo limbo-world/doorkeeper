@@ -75,7 +75,8 @@ public class AdminGroupController extends BaseController {
 
     @Operation(summary = "查询单个用户组")
     @GetMapping("/get")
-    public Response<GroupVO> get(@RequestParam("parentId") Long parentId, @RequestParam("name") String name) {
+    public Response<GroupVO> get(@RequestParam(value = "parentId", required = false) Long parentId,
+                                 @RequestParam("name") String name) {
         return Response.success(groupService.get(getRealmId(), parentId, name));
     }
 
@@ -89,14 +90,14 @@ public class AdminGroupController extends BaseController {
 
     @Operation(summary = "查询用户组用户列表")
     @GetMapping("/{groupId}/group-user")
-    public Response<Page<GroupUserVO>> list(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId,
+    public Response<Page<GroupUserVO>> listUser(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId,
                                             @Validated GroupUserQueryParam param) {
         return Response.success(groupUserService.page(getRealmId(), groupId, param));
     }
 
     @Operation(summary = "批量修改用户组用户")
     @PostMapping("/{groupId}/group-user/batch")
-    public Response<Void> batch(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId,
+    public Response<Void> batchUser(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId,
                                                @RequestBody @Validated GroupUserBatchUpdateParam param) {
         groupUserService.batchUpdate(groupId, param);
         return Response.success();
@@ -104,14 +105,14 @@ public class AdminGroupController extends BaseController {
 
     @Operation(summary = "查询用户组角色列表")
     @GetMapping("/{groupId}/group-role")
-    public Response<List<GroupRoleVO>> list(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId,
+    public Response<List<GroupRoleVO>> listRole(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId,
                                             @Validated GroupRoleQueryParam param) {
         return Response.success(groupRoleService.list(getRealmId(), groupId, param));
     }
 
     @Operation(summary = "批量修改用户组角色")
     @PostMapping("/{groupId}/group-role/batch")
-    public Response<Void> batch(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId,
+    public Response<Void> batchRole(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId,
                                 @RequestBody @Validated GroupRoleBatchUpdateParam param) {
         groupRoleService.batchUpdate(getRealmId(), groupId, param);
         return Response.success();

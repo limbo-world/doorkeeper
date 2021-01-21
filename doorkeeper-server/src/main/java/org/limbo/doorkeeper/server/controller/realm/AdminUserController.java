@@ -70,8 +70,8 @@ public class AdminUserController extends BaseController {
 
     @Operation(summary = "查询单个用户")
     @GetMapping("/get")
-    public Response<UserVO> get(@RequestParam("userId") Long userId, @RequestParam("username") String username) {
-        return Response.success(userService.get(getRealmId(), userId, username));
+    public Response<UserVO> get(@RequestParam("username") String username) {
+        return Response.success(userService.get(getRealmId(), null, username));
     }
 
     @Operation(summary = "更新用户")
