@@ -87,13 +87,8 @@
                     }
 
                     this.$store.dispatch('session/login', this.loginForm).then(() => {
-                        this.loadMenus().then(menus => {
-                            this.$router.push({
-                                path: '/home',
-                            });
-                        }).catch(err => {
-                            this.$message.error('加载菜单失败！' + err.msg);
-                            console.error(err);
+                        this.$router.push({
+                            path: '/home',
                         });
                     }).finally(() => this.loginProcessing = false);
                 });
