@@ -71,7 +71,7 @@ public class BaseController {
         try {
             Realm realm = realmService.getRealmByToken(token);
             JWTUtil.verifyToken(token, realm.getSecret());
-            return userService.get(realm.getRealmId(), JWTUtil.getUserId(token));
+            return userService.get(realm.getRealmId(), JWTUtil.getUserId(token), null);
         } catch (Exception e) {
             throw new AuthenticationException("认证失败");
         }
