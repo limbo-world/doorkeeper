@@ -31,6 +31,15 @@
         <result column="is_enabled" property="isEnabled" jdbcType="BIT" javaType="java.lang.Boolean" />
     </resultMap>
 
+    <insert id="batchInsertIgnore" parameterType="org.limbo.doorkeeper.server.entity.GroupRole">
+        INSERT ignore INTO group_role (
+        group_id, role_id
+        ) VALUES
+        <foreach collection="groupRoles" separator="," item="groupRole">
+            ( #{groupRole.groupId}, #{groupRole.roleId} )
+        </foreach>
+    </insert>
+
     <select id="listVOS" resultMap="GroupRoleVO">
         select r.*, gr.group_role_id, gr.group_id
         from `role` r

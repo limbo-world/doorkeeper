@@ -49,6 +49,9 @@ public class GroupService {
 
     @Transactional
     public GroupVO add(Long realmId, GroupAddParam param) {
+        if (param.getParentId() == null) {
+            param.setParentId(DoorkeeperConstants.DEFAULT_ID);
+        }
         Group group = EnhancedBeanUtils.createAndCopy(param, Group.class);
         group.setRealmId(realmId);
         try {
@@ -76,7 +79,7 @@ public class GroupService {
 
     public GroupVO get(Long realmId, Long parentId, String name) {
         if (parentId == null) {
-            parentId = 0L;
+            parentId = DoorkeeperConstants.DEFAULT_ID;
         }
         Group group = groupMapper.selectOne(Wrappers.<Group>lambdaQuery()
                 .eq(Group::getRealmId, realmId)

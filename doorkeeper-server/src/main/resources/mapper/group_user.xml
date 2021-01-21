@@ -28,6 +28,15 @@
         <result column="description" property="description" jdbcType="VARCHAR" javaType="java.lang.String" />
     </resultMap>
 
+    <insert id="batchInsertIgnore" parameterType="org.limbo.doorkeeper.server.entity.GroupUser">
+        INSERT ignore INTO group_user (
+            group_id, user_id
+        ) VALUES
+        <foreach collection="groupUsers" separator="," item="groupUser">
+            ( #{groupUser.groupId}, #{groupUser.userId} )
+        </foreach>
+    </insert>
+
     <sql id="queryCondition">
         and u.realm_id = #{realmId}
         <if test="name != null and name != ''">

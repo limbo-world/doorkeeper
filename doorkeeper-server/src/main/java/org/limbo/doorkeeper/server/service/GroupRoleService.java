@@ -22,7 +22,6 @@ import org.limbo.doorkeeper.api.model.param.group.GroupRoleQueryParam;
 import org.limbo.doorkeeper.api.model.vo.GroupRoleVO;
 import org.limbo.doorkeeper.server.dao.GroupRoleMapper;
 import org.limbo.doorkeeper.server.entity.GroupRole;
-import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,7 +56,7 @@ public class GroupRoleService {
                     groupRole.setRoleId(roleId);
                     groupRoles.add(groupRole);
                 }
-                MyBatisPlusUtils.batchSave(groupRoles, GroupRole.class);
+                groupRoleMapper.batchInsertIgnore(groupRoles);
                 break;
             case DELETE: // 删除
                 groupRoleMapper.delete(Wrappers.<GroupRole>lambdaQuery()

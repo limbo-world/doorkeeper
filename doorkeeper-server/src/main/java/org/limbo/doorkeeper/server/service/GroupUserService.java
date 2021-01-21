@@ -24,7 +24,6 @@ import org.limbo.doorkeeper.api.model.vo.GroupUserVO;
 import org.limbo.doorkeeper.server.dao.GroupUserMapper;
 import org.limbo.doorkeeper.server.dao.RealmMapper;
 import org.limbo.doorkeeper.server.entity.GroupUser;
-import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,7 +66,7 @@ public class GroupUserService {
                     groupUser.setUserId(userId);
                     groupUsers.add(groupUser);
                 }
-                MyBatisPlusUtils.batchSave(groupUsers, GroupUser.class);
+                groupUserMapper.batchInsertIgnore(groupUsers);
                 break;
             case DELETE: // 删除
                 groupUserMapper.delete(Wrappers.<GroupUser>lambdaQuery()

@@ -17,6 +17,7 @@
 package org.limbo.doorkeeper.server.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 import org.limbo.doorkeeper.api.model.param.group.GroupRoleQueryParam;
 import org.limbo.doorkeeper.api.model.vo.GroupRoleVO;
 import org.limbo.doorkeeper.server.entity.GroupRole;
@@ -28,6 +29,8 @@ import java.util.List;
  * @date 2021/1/12 3:32 下午
  */
 public interface GroupRoleMapper extends BaseMapper<GroupRole> {
+
+    void batchInsertIgnore(@Param("groupRoles") List<GroupRole> groupRoles);
 
     List<GroupRoleVO> listVOS(GroupRoleQueryParam param);
 
