@@ -52,6 +52,18 @@ public class User {
      */
     private String description;
     /**
+     * 邮箱
+     */
+    private String email;
+    /**
+     * 电话
+     */
+    private String phone;
+    /**
+     * 扩展信息
+     */
+    private String extend;
+    /**
      * 是否启用
      */
     private Boolean isEnabled;
