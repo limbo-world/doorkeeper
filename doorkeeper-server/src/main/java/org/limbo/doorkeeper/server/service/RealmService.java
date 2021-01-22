@@ -163,7 +163,14 @@ public class RealmService {
 
     public Realm getRealmByToken(String token) {
         Long userId = JWTUtil.getUserId(token);
-        User user = userMapper.selectById(userId);
+        User user;
+        if (userId != null) {
+            user = userMapper.selectById(userId);
+        } else {
+            String username = JWTUtil.getUsername(token);
+            Long realmId = JWTUtil.getRealmId(token);
+            user = userMapper.getByUsername(realmId, username);
+        }
         Verifies.notNull(user, "用户不存在");
         Verifies.verify(user.getIsEnabled(), "用户未启用");
 

@@ -17,6 +17,8 @@
 package org.limbo.doorkeeper.server.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.limbo.doorkeeper.server.entity.User;
 
 /**
@@ -24,4 +26,7 @@ import org.limbo.doorkeeper.server.entity.User;
  * @date 2020/12/31 5:44 下午
  */
 public interface UserMapper extends BaseMapper<User> {
+
+    @Select("select * from `user` where realm_id = #{realmId} and username = #{username}")
+    User getByUsername(@Param("realmId") Long realmId, @Param("userId") String username);
 }

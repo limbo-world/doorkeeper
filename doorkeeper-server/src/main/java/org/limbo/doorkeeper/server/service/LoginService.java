@@ -52,10 +52,7 @@ public class LoginService {
     private RealmService realmService;
 
     public String login(LoginParam param) {
-        User user = userMapper.selectOne(Wrappers.<User>lambdaQuery()
-                .eq(User::getRealmId, param.getRealmId())
-                .eq(User::getUsername, param.getUsername())
-        );
+        User user = userMapper.getByUsername(param.getRealmId(), param.getUsername());
         Verifies.notNull(user, "用户不存在");
         Verifies.verify(user.getIsEnabled(), "用户未启用");
         Verifies.verify(MD5Utils.verify(param.getPassword(), user.getPassword()), "密码错误");
