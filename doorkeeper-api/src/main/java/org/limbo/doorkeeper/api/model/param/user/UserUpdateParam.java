@@ -29,11 +29,8 @@ public class UserUpdateParam {
     @Schema(title = "昵称")
     private String nickname;
 
-    @Schema(title = "旧密码")
-    private String originalPassword;
-
-    @Schema(title = "新密码")
-    private String newPassword;
+    @Schema(title = "密码")
+    private String password;
 
     @Schema(title = "描述")
     private String description;
