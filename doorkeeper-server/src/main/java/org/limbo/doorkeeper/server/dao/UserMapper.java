@@ -28,5 +28,5 @@ import org.limbo.doorkeeper.server.entity.User;
 public interface UserMapper extends BaseMapper<User> {
 
     @Select("select * from `user` where realm_id = #{realmId} and username = #{username}")
-    User getByUsername(@Param("realmId") Long realmId, @Param("userId") String username);
+    User getByUsername(@Param("realmId") Long realmId, @Param("username") String username);
 }
