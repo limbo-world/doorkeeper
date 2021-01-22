@@ -22,15 +22,16 @@
         </el-header>
 
         <el-main class="group-page-main">
-            <el-input placeholder="输入关键字进行过滤" v-model="filterText" style="width: 300px"></el-input>
-            <el-tree class="filter-tree" ref="groupTree"
-                     :data="groups"
-                     :props="defaultProps"
-                     default-expand-all
-                     draggable
-                     :filter-node-method="filterNode"
-                     @node-drop="dragNode"
-            >
+            <div style="width: 70%;">
+                <el-input placeholder="输入关键字进行过滤" v-model="filterText" style="width: 300px"></el-input>
+                <el-tree class="filter-tree" ref="groupTree"
+                         :data="groups"
+                         :props="defaultProps"
+                         default-expand-all
+                         draggable
+                         :filter-node-method="filterNode"
+                         @node-drop="dragNode"
+                >
                 <span class="custom-tree-node" slot-scope="{ node, data }">
                     <span>{{ node.label }}</span>
                     <span>
@@ -42,7 +43,8 @@
                         <!--                        <el-button type="text" size="mini" @click="() => removeGroup(node.data.groupId)">删除</el-button>-->
                     </span>
                 </span>
-            </el-tree>
+                </el-tree>
+            </div>
         </el-main>
 
         <el-dialog title="新增" :visible.sync="dialogOpened" width="50%" class="edit-dialog"
@@ -110,7 +112,7 @@ export default {
 
         filterNode(value, data) {
             if (!value) return true;
-            return data.label.indexOf(value) !== -1;
+            return data.name.indexOf(value) !== -1;
         },
         loadGroup() {
             this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/group`).then(response => {
@@ -130,10 +132,12 @@ export default {
             if (!groups || groups.length <= 0) {
                 return nodes;
             }
+            for (let group of groups) {
+                group.children = [];
+            }
             let remain = [];
             for (let group of groups) {
-                if (group.parentId === 0) {
-                    group.children = [];
+                if (group.parentId === 0) { // 父节点放在根部
                     nodes.push(group);
                 } else {
                     let node = this.findNode(group, nodes);
