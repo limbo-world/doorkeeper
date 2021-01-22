@@ -38,6 +38,12 @@
                                       @bind-policy-users="users => {policy.users = users}" :policy-users="policy.users"
                                       :policy-id="policy.policyId" :client-id="policy.clientId"></policy-user-edit>
                 </template>
+                <el-form-item label="判断逻辑" v-if="policy.type === $constants.policyTypes[0].value">
+                    <el-select v-model="policy.logic">
+                        <el-option v-for="item in $constants.logics" :key="item.value" :label="item.label"
+                                   :value="item.value"></el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item label="执行逻辑">
                     <el-select v-model="policy.intention">
                         <el-option v-for="item in $constants.intentions" :key="item.value" :label="item.label"
