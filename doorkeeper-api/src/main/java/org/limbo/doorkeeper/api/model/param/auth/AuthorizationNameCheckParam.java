@@ -33,8 +33,6 @@ import java.util.Map;
 @Accessors(chain = true)
 public class AuthorizationNameCheckParam implements AuthorizationCheckParam<String> {
 
-    @NotNull
-    @Schema(name = "进行权限校验时，需要校验的用户ID", required = true)
     private Long userId;
 
     @NotNull
