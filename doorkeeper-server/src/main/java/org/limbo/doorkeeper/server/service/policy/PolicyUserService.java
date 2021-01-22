@@ -71,12 +71,9 @@ public class PolicyUserService {
                 .eq(PolicyUser::getPolicyId, policyId)
         );
         // 新增
-        List<PolicyUserAddParam> addParams = params.stream()
-                .filter(obj -> obj.getPolicyUserId() == null)
-                .collect(Collectors.toList());
-        if (CollectionUtils.isNotEmpty(addParams)) {
+        if (CollectionUtils.isNotEmpty(params)) {
             List<PolicyUser> list = new ArrayList<>();
-            for (PolicyUserAddParam param : addParams) {
+            for (PolicyUserAddParam param : params) {
                 PolicyUser po = EnhancedBeanUtils.createAndCopy(param, PolicyUser.class);
                 po.setPolicyId(policyId);
                 list.add(po);

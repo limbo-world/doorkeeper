@@ -67,10 +67,7 @@ public class PermissionPolicyService {
                 .eq(PermissionPolicy::getPermissionId, permissionId)
         );
         // 新增
-        List<PermissionPolicyAddParam> addParams = params.stream()
-                .filter(obj -> obj.getPermissionPolicyId() == null)
-                .collect(Collectors.toList());
-        if (CollectionUtils.isEmpty(addParams)) {
+        if (CollectionUtils.isEmpty(params)) {
             return;
         }
         List<PermissionPolicy> permissionPolicies = verifyPolicyList(permissionId, params);

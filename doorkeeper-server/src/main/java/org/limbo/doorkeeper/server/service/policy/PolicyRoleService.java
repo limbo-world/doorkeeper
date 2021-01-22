@@ -31,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Devil
@@ -54,12 +53,9 @@ public class PolicyRoleService {
                 .eq(PolicyRole::getPolicyId, policyId)
         );
         // 新增
-        List<PolicyRoleAddParam> addParams = params.stream()
-                .filter(obj -> obj.getPolicyRoleId() == null)
-                .collect(Collectors.toList());
-        if (CollectionUtils.isNotEmpty(addParams)) {
+        if (CollectionUtils.isNotEmpty(params)) {
             List<PolicyRole> list = new ArrayList<>();
-            for (PolicyRoleAddParam param : addParams) {
+            for (PolicyRoleAddParam param : params) {
                 PolicyRole po = EnhancedBeanUtils.createAndCopy(param, PolicyRole.class);
                 po.setPolicyId(policyId);
                 list.add(po);

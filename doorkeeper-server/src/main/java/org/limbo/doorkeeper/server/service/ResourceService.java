@@ -42,8 +42,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * @author Devil
@@ -99,31 +97,17 @@ public class ResourceService {
         );
 
         // 删除uri
-        List<Long> uriIds = param.getUris().stream()
-                .map(ResourceUriAddParam::getResourceUriId)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
         resourceUriMapper.delete(Wrappers.<ResourceUri>lambdaQuery()
-                .notIn(CollectionUtils.isNotEmpty(uriIds), ResourceUri::getResourceUriId, uriIds)
+                .eq(ResourceUri::getResourceId, resourceId)
         );
         // 新增uri
-        List<ResourceUriAddParam> uriParams = param.getUris().stream()
-                .filter(uri -> uri.getResourceUriId() == null)
-                .collect(Collectors.toList());
-        batchSaveUri(resource.getResourceId(), resource.getRealmId(), resource.getClientId(), uriParams);
+        batchSaveUri(resource.getResourceId(), resource.getRealmId(), resource.getClientId(), param.getUris());
         // 删除tag
-        List<Long> tagIds = param.getTags().stream()
-                .map(ResourceTagAddParam::getResourceTagId)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
         resourceTagMapper.delete(Wrappers.<ResourceTag>lambdaQuery()
-                .notIn(CollectionUtils.isNotEmpty(tagIds), ResourceTag::getResourceTagId, tagIds)
+                .eq(ResourceTag::getResourceId, resourceId)
         );
         // 新增tag
-        List<ResourceTagAddParam> tagParams = param.getTags().stream()
-                .filter(tag -> tag.getResourceTagId() == null)
-                .collect(Collectors.toList());
-        batchSaveTag(resource.getResourceId(), resource.getRealmId(), resource.getClientId(), tagParams);
+        batchSaveTag(resource.getResourceId(), resource.getRealmId(), resource.getClientId(), param.getTags());
     }
 
     @Transactional

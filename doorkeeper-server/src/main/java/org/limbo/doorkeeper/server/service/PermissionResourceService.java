@@ -67,10 +67,7 @@ public class PermissionResourceService {
                 .eq(PermissionResource::getPermissionId, permissionId)
         );
         // 新增
-        List<PermissionResourceAddParam> addParams = params.stream()
-                .filter(obj -> obj.getPermissionResourceId() == null)
-                .collect(Collectors.toList());
-        if (CollectionUtils.isEmpty(addParams)) {
+        if (CollectionUtils.isEmpty(params)) {
             return;
         }
         List<PermissionResource> permissionResources = verifyResourceList(permissionId, params);
