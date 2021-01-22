@@ -21,14 +21,18 @@ import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyRoleVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
+import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.server.dao.GroupMapper;
 import org.limbo.doorkeeper.server.dao.GroupRoleMapper;
 import org.limbo.doorkeeper.server.dao.GroupUserMapper;
 import org.limbo.doorkeeper.server.dao.UserRoleMapper;
+import org.limbo.doorkeeper.server.entity.Group;
 import org.limbo.doorkeeper.server.entity.GroupRole;
 import org.limbo.doorkeeper.server.entity.GroupUser;
 import org.limbo.doorkeeper.server.entity.UserRole;
 import org.limbo.doorkeeper.api.model.param.auth.AuthorizationCheckParam;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -47,6 +51,9 @@ public class RolePolicyChecker extends AbstractPolicyChecker {
 
     @Setter
     private GroupRoleMapper groupRoleMapper;
+
+    @Setter
+    private GroupMapper groupMapper;
 
     public RolePolicyChecker(PolicyVO policy) {
         super(policy);
@@ -77,20 +84,14 @@ public class RolePolicyChecker extends AbstractPolicyChecker {
                 .eq(GroupUser::getUserId, authorizationCheckParam.getUserId())
         );
         if (CollectionUtils.isNotEmpty(groupUsers)) {
-            List<Long> groupIds = groupUsers.stream().map(GroupUser::getGroupId).collect(Collectors.toList());
-            // FIXME 这里考虑搞到mapper里去，可以简化为一个sql执行完，这样写代码有些臃肿
-            List<Object> groupRoleIdObjs = groupRoleMapper.selectObjs(Wrappers.<GroupRole>lambdaQuery()
+            List<Long> groupIds = userGroupTreeIds(authorizationCheckParam.getUserId());
+            List<GroupRole> groupRoles = groupRoleMapper.selectList(Wrappers.<GroupRole>lambdaQuery()
                     .select(GroupRole::getRoleId)
                     .in(GroupRole::getGroupId, groupIds)
                     .in(GroupRole::getRoleId, roleIds)
             );
-            Set<Long> groupRoleIds = groupRoleIdObjs.stream()
-                    .filter(obj -> obj instanceof Number)
-                    .map(obj -> ((Number) obj).longValue())
-                    .collect(Collectors.toSet());
-            // FIXME 以上
-            if (CollectionUtils.isNotEmpty(groupRoleIds)) {
-                userRoleIds.addAll(groupRoleIds);
+            if (CollectionUtils.isNotEmpty(groupRoles)) {
+                userRoleIds.addAll(groupRoles.stream().map(GroupRole::getRoleId).collect(Collectors.toList()));
             }
         }
 
@@ -98,4 +99,48 @@ public class RolePolicyChecker extends AbstractPolicyChecker {
         // 解析策略逻辑，判断是否满足逻辑条件
         return getPolicyLogic().isSatisfied(roleIds.size(), userRoleIds.size());
     }
+
+    /**
+     * 用户组id 包含父级 比如 用户属于组 A11 获取 A -> A1 -> A11 3 个
+     */
+    private List<Long> userGroupTreeIds(Long userId) {
+        // 用户在哪些组
+        List<GroupUser> groupUsers = groupUserMapper.selectList(Wrappers.<GroupUser>lambdaQuery()
+                .eq(GroupUser::getUserId, userId)
+        );
+        if (CollectionUtils.isEmpty(groupUsers)) {
+            return new ArrayList<>();
+        }
+        List<Long> groupIds = groupUsers.stream().map(GroupUser::getGroupId).collect(Collectors.toList());
+        List<Group> groups = groupMapper.selectList(Wrappers.<Group>lambdaQuery()
+                .in(Group::getGroupId, groupIds)
+        );
+        if (CollectionUtils.isEmpty(groups)) {
+            return new ArrayList<>();
+        }
+
+        // 循环获取用户组织结构 比如 用户属于组 A11 获取 A -> A1 -> A11 3 个
+        List<Long> parentIds = groups.stream().map(Group::getParentId)
+                .filter(id -> !DoorkeeperConstants.DEFAULT_ID.equals(id)).collect(Collectors.toList());
+        int i = 0; // 防止死循环
+        while (i < 10) {
+            if (CollectionUtils.isEmpty(parentIds)) {
+                break;
+            }
+            List<Group> parents = groupMapper.selectList(Wrappers.<Group>lambdaQuery()
+                    .in(Group::getGroupId, parentIds)
+            );
+            if (CollectionUtils.isEmpty(parents)) {
+                break;
+            }
+            groups.addAll(parents);
+
+            // 如果父节点为 0 则已经是顶级节点 排除掉
+            parentIds = parents.stream().map(Group::getParentId)
+                    .filter(id -> !DoorkeeperConstants.DEFAULT_ID.equals(id)).collect(Collectors.toList());
+            i++;
+        }
+        return groups.stream().map(Group::getGroupId).collect(Collectors.toList());
+    }
+
 }
