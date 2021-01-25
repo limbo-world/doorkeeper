@@ -21,6 +21,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.auth.AuthorizationNameCheckParam;
+import org.limbo.doorkeeper.api.model.param.auth.AuthorizationTagCheckParam;
 import org.limbo.doorkeeper.api.model.param.auth.AuthorizationUriCheckParam;
 import org.limbo.doorkeeper.api.model.vo.AuthorizationCheckResult;
 import org.limbo.doorkeeper.server.support.auth.checker.AuthorizationCheckerFactory;
@@ -55,6 +56,13 @@ public class AuthorizationController extends BaseController {
     public Response<AuthorizationCheckResult> checkByName(@Validated AuthorizationNameCheckParam param) {
         param.setUserId(getUser().getUserId());
         return Response.success(authorizationCheckerFactory.newNameAuthorizationChecker(param).check());
+    }
+
+    @GetMapping("/check-tag")
+    @Operation(summary = "检查用户是否可以访问对应标签的资源")
+    public Response<AuthorizationCheckResult> checkByTag(@Validated AuthorizationTagCheckParam param) {
+        param.setUserId(getUser().getUserId());
+        return Response.success(authorizationCheckerFactory.newTagAuthorizationChecker(param).check());
     }
 
 }
