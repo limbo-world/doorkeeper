@@ -71,6 +71,9 @@ public class PolicyCheckerFactory {
             case USER:
                 return newUserPolicyChecker(policy);
 
+            case GROUP:
+                return newGroupPolicyChecker(policy);
+
             case COMBINE:
             case TIME:
             default:

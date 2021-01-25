@@ -202,7 +202,7 @@ public class DoorkeeperService {
 
         PermissionPolicyAddParam permissionPolicyAddParam = new PermissionPolicyAddParam();
         permissionPolicyAddParam.setPolicyId(policyId);
-        permissionAddParam.setPolicyies(Collections.singletonList(permissionPolicyAddParam));
+        permissionAddParam.setPolicies(Collections.singletonList(permissionPolicyAddParam));
         return permissionAddParam;
     }
 

@@ -39,7 +39,7 @@
         <collection property="params" columnPrefix="param_" resultMap="PolicyParamVO" />
         <collection property="roles" columnPrefix="role_" resultMap="PolicyRoleVO" />
         <collection property="users" columnPrefix="user_" resultMap="PolicyUserVO" />
-        <collection property="groups" columnPrefix="group_" resultMap="PolicyUserVO" />
+        <collection property="groups" columnPrefix="group_" resultMap="PolicyGroupVO" />
     </resultMap>
 
     <resultMap id="PolicyParamVO" type="org.limbo.doorkeeper.api.model.vo.policy.PolicyParamVO">

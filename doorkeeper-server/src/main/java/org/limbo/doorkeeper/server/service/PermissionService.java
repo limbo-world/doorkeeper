@@ -80,7 +80,7 @@ public class PermissionService {
 
         permissionResourceService.batchSave(permission.getPermissionId(), param.getResources());
 
-        permissionPolicyService.batchSave(permission.getPermissionId(), param.getPolicyies());
+        permissionPolicyService.batchSave(permission.getPermissionId(), param.getPolicies());
 
         return EnhancedBeanUtils.createAndCopy(permission, PermissionVO.class);
     }
