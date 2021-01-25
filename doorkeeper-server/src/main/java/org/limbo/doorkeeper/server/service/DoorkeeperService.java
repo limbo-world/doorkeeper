@@ -37,10 +37,10 @@ import org.limbo.doorkeeper.api.model.vo.ResourceVO;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.server.dao.ClientMapper;
-import org.limbo.doorkeeper.server.dao.RealmMapper;
-import org.limbo.doorkeeper.server.entity.Client;
-import org.limbo.doorkeeper.server.entity.Realm;
+import org.limbo.doorkeeper.server.dal.mapper.ClientMapper;
+import org.limbo.doorkeeper.server.dal.mapper.RealmMapper;
+import org.limbo.doorkeeper.server.dal.entity.Client;
+import org.limbo.doorkeeper.server.dal.entity.Realm;
 import org.limbo.doorkeeper.server.service.policy.PolicyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -202,7 +202,7 @@ public class DoorkeeperService {
 
         PermissionPolicyAddParam permissionPolicyAddParam = new PermissionPolicyAddParam();
         permissionPolicyAddParam.setPolicyId(policyId);
-        permissionAddParam.setPolicys(Collections.singletonList(permissionPolicyAddParam));
+        permissionAddParam.setPolicyies(Collections.singletonList(permissionPolicyAddParam));
         return permissionAddParam;
     }
 

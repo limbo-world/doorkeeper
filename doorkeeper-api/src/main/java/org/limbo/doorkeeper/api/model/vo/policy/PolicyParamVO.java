@@ -16,6 +16,7 @@
 
 package org.limbo.doorkeeper.api.model.vo.policy;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -25,11 +26,13 @@ import lombok.Data;
 @Data
 public class PolicyParamVO {
 
-    private Long policyTagId;
+    private Long policyParamId;
 
     private Long policyId;
 
+    @Schema(title = "键")
     private String k;
 
+    @Schema(title = "值")
     private String v;
 }

@@ -16,15 +16,35 @@
   -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="org.limbo.doorkeeper.server.dao.ResourceMapper" >
+<mapper namespace="org.limbo.doorkeeper.server.dal.mapper.ResourceMapper" >
 
-    <resultMap id="ResourceVO" type="org.limbo.doorkeeper.api.model.vo.ResourceVO">
+    <resultMap id="BaseResult" type="org.limbo.doorkeeper.server.dal.entity.Resource">
         <result column="resource_id" property="resourceId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="realm_id" property="realmId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="client_id" property="clientId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="name" property="name" jdbcType="VARCHAR" javaType="java.lang.String" />
         <result column="description" property="description" jdbcType="VARCHAR" javaType="java.lang.String" />
         <result column="is_enabled" property="isEnabled" jdbcType="BIT" javaType="java.lang.Boolean"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+    </resultMap>
+
+    <resultMap id="ResourceVO" type="org.limbo.doorkeeper.api.model.vo.ResourceVO" extends="BaseResult">
+        <collection property="tags" columnPrefix="tag_" resultMap="ResourceTagVO" />
+        <collection property="uris" columnPrefix="uri_" resultMap="ResourceUriVO" />
+    </resultMap>
+
+    <resultMap id="ResourceTagVO" type="org.limbo.doorkeeper.api.model.vo.ResourceTagVO">
+        <result column="resource_tag_id" property="resourceTagId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="resource_id" property="resourceId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="k" property="k" jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result column="v" property="v" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </resultMap>
+
+    <resultMap id="ResourceUriVO" type="org.limbo.doorkeeper.api.model.vo.ResourceUriVO">
+        <result column="resource_uri_id" property="resourceUriId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="resource_id" property="resourceId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="uri" property="uri" jdbcType="VARCHAR" javaType="java.lang.String" />
     </resultMap>
 
     <sql id="queryCondition">
@@ -80,4 +100,37 @@
         order by r.resource_id desc
         limit ${offset}, ${size}
     </select>
+
+    <select id="getVOS" resultMap="ResourceVO">
+        select r.*, rt.k as tag_k, rt.v as tag_v, ru.uri as uri_uri
+        from resource r
+        left join resource_tag rt on rt.resource_id = r.resource_id
+        left join resource_uri ru on ru.resource_id = r.resource_id
+        where r.realm_id = #{realmId} and r.client_id = #{clientId}
+        <if test="resourceIds != null and resourceIds.size() > 0">
+            and r.resource_id in (
+            <foreach collection="resourceIds" separator="," item="resourceId">
+                #{resourceId}
+            </foreach>
+            )
+        </if>
+        <if test="names != null and names.size() > 0">
+            and r.name in (
+            <foreach collection="names" separator="," item="name">
+                #{name}
+            </foreach>
+            )
+        </if>
+        <if test="kvs != null and kvs.size() > 0">
+            and r.kv in (
+            <foreach collection="kvs" separator="," item="kv">
+                #{kv}
+            </foreach>
+            )
+        </if>
+        <if test="isEnabled != null">
+            and r.is_enabled = #{isEnabled}
+        </if>
+    </select>
+
 </mapper>

@@ -20,12 +20,12 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.model.param.permission.PermissionPolicyAddParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionPolicyVO;
-import org.limbo.doorkeeper.server.dao.PermissionMapper;
-import org.limbo.doorkeeper.server.dao.PermissionPolicyMapper;
-import org.limbo.doorkeeper.server.dao.policy.PolicyMapper;
-import org.limbo.doorkeeper.server.entity.Permission;
-import org.limbo.doorkeeper.server.entity.PermissionPolicy;
-import org.limbo.doorkeeper.server.entity.policy.Policy;
+import org.limbo.doorkeeper.server.dal.mapper.PermissionMapper;
+import org.limbo.doorkeeper.server.dal.mapper.PermissionPolicyMapper;
+import org.limbo.doorkeeper.server.dal.mapper.policy.PolicyMapper;
+import org.limbo.doorkeeper.server.dal.entity.Permission;
+import org.limbo.doorkeeper.server.dal.entity.PermissionPolicy;
+import org.limbo.doorkeeper.server.dal.entity.policy.Policy;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.limbo.doorkeeper.server.utils.Verifies;
@@ -93,14 +93,14 @@ public class PermissionPolicyService {
 
         // 排除不是同个client的
         List<Long> policyIds = params.stream().map(PermissionPolicyAddParam::getPolicyId).collect(Collectors.toList());
-        List<Policy> policys = policyMapper.selectList(Wrappers.<Policy>lambdaQuery()
+        List<Policy> policies = policyMapper.selectList(Wrappers.<Policy>lambdaQuery()
                 .select(Policy::getPolicyId)
                 .eq(Policy::getRealmId, permission.getRealmId())
                 .eq(Policy::getClientId, permission.getClientId())
                 .in(Policy::getPolicyId, policyIds)
         );
 
-        for (Policy policy : policys) {
+        for (Policy policy : policies) {
             PermissionPolicy po = new PermissionPolicy();
             po.setPermissionId(permissionId);
             po.setPolicyId(policy.getPolicyId());

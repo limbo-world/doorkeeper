@@ -18,10 +18,9 @@ package org.limbo.doorkeeper.server.support.auth.checker;
 
 import lombok.Setter;
 import org.limbo.doorkeeper.api.model.param.auth.AuthorizationCheckParam;
-import org.limbo.doorkeeper.server.dao.ResourceMapper;
-import org.limbo.doorkeeper.server.entity.Resource;
+import org.limbo.doorkeeper.api.model.vo.ResourceVO;
+import org.limbo.doorkeeper.server.dal.dao.ResourceDao;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -31,7 +30,7 @@ import java.util.List;
 public class NameAuthorizationChecker<P extends AuthorizationCheckParam<String>> extends AbstractAuthorizationChecker<P, String> {
 
     @Setter
-    private ResourceMapper resourceMapper;
+    private ResourceDao resourceDao;
 
     public NameAuthorizationChecker(P checkParam) {
         super(checkParam);
@@ -42,12 +41,12 @@ public class NameAuthorizationChecker<P extends AuthorizationCheckParam<String>>
      *
      * 根据资源名称来找到资源
      *
-     * @param resourceName 资源名称
+     * @param resourceNames 资源名称
      * @return
      */
     @Override
-    protected List<Resource> assignCheckingResources(String resourceName) {
-        return Collections.singletonList(resourceMapper.getByName(getClient().getRealmId(), getClient().getClientId(), resourceName));
+    protected List<ResourceVO> assignCheckingResources(List<String> resourceNames) {
+        return resourceDao.getVOSByNames(getClient().getRealmId(), getClient().getClientId(), resourceNames, true);
     }
 
 }

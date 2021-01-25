@@ -19,8 +19,8 @@ package org.limbo.doorkeeper.server.support.auth.policies;
 import lombok.Setter;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyUserVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
-import org.limbo.doorkeeper.server.dao.UserMapper;
-import org.limbo.doorkeeper.server.entity.User;
+import org.limbo.doorkeeper.server.dal.mapper.UserMapper;
+import org.limbo.doorkeeper.server.dal.entity.User;
 import org.limbo.doorkeeper.api.model.param.auth.AuthorizationCheckParam;
 
 import java.util.Objects;

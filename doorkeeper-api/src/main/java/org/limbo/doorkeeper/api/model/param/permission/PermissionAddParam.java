@@ -57,6 +57,6 @@ public class PermissionAddParam {
 
     @NotEmpty(message = "策略列表不能为空")
     @Schema(title = "策略列表", required = true)
-    private List<PermissionPolicyAddParam> policys;
+    private List<PermissionPolicyAddParam> policyies;
 
 }

@@ -20,21 +20,22 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.Logic;
+import org.limbo.doorkeeper.api.model.param.auth.AuthorizationCheckParam;
 import org.limbo.doorkeeper.api.model.vo.AuthorizationCheckResult;
 import org.limbo.doorkeeper.api.model.vo.PermissionPolicyVO;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
+import org.limbo.doorkeeper.api.model.vo.ResourceVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
-import org.limbo.doorkeeper.server.dao.ClientMapper;
-import org.limbo.doorkeeper.server.dao.PermissionResourceMapper;
-import org.limbo.doorkeeper.server.entity.Client;
-import org.limbo.doorkeeper.server.entity.PermissionResource;
-import org.limbo.doorkeeper.server.entity.Resource;
-import org.limbo.doorkeeper.server.service.PermissionService;
-import org.limbo.doorkeeper.server.service.policy.PolicyService;
-import org.limbo.doorkeeper.api.model.param.auth.AuthorizationCheckParam;
+import org.limbo.doorkeeper.server.dal.dao.PermissionDao;
+import org.limbo.doorkeeper.server.dal.dao.PolicyDao;
+import org.limbo.doorkeeper.server.dal.entity.Client;
+import org.limbo.doorkeeper.server.dal.entity.PermissionResource;
+import org.limbo.doorkeeper.server.dal.mapper.ClientMapper;
+import org.limbo.doorkeeper.server.dal.mapper.PermissionResourceMapper;
 import org.limbo.doorkeeper.server.support.auth.AuthorizationException;
 import org.limbo.doorkeeper.server.support.auth.policies.PolicyCheckerFactory;
 
@@ -51,13 +52,14 @@ import java.util.stream.Collectors;
  * @author brozen
  * @date 2021/1/14
  */
+@Slf4j
 public abstract class AbstractAuthorizationChecker<P extends AuthorizationCheckParam<T>, T> implements AuthorizationChecker<P, T> {
 
     @Setter
-    private PermissionService permissionService;
+    private PermissionDao permissionDao;
 
     @Setter
-    private PolicyService policyService;
+    private PolicyDao policyDao;
 
     @Setter
     private ClientMapper clientMapper;
@@ -98,71 +100,52 @@ public abstract class AbstractAuthorizationChecker<P extends AuthorizationCheckP
      * @return
      */
     @Override
-    public AuthorizationCheckResult<T> check() {
+    public AuthorizationCheckResult check() {
         try {
-            List<T> refused = Lists.newArrayList();
-            List<T> allowed = Lists.newArrayList();
-            List<T> resourceAssigner = checkParam.getResourceAssigner();
+            List<ResourceVO> result = new ArrayList<>();
 
+            // 找到待检测的启用资源
+            List<ResourceVO> findResources = assignCheckingResources(checkParam.getResourceAssigner());
             ASSIGNER_ITER:
-            for (T assigner : resourceAssigner) {
-                // 找到待检测的资源
-                List<Resource> findResources = assignCheckingResources(assigner);
-                findResources = findResources == null ? new ArrayList<>() : findResources;
-                // 过滤出开启的资源
-                List<Resource> resources = findResources.stream().filter(Resource::getIsEnabled).collect(Collectors.toList());
+            for (ResourceVO findResource : findResources) {
                 // 遍历资源依次拿到权限Permission
-                List<PermissionVO> permissions = Lists.newArrayList();
-                for (Resource resource : resources) {
-                    permissions.addAll(findResourcePermissions(resource));
-                }
+                List<PermissionVO> permissions = findResourcePermissions(findResource.getResourceId());
 
                 // 未授权的情况
                 if (CollectionUtils.isEmpty(permissions)) {
                     if (refuseWhenUnauthorized) {
-                        refused.add(assigner);
+                        continue;
                     } else {
-                        allowed.add(assigner);
+                        result.add(findResource);
                     }
-                    continue;
                 }
 
                 // 对Permission的Intention进行分组
-                Map<Intention, Set<PermissionVO>> intentGroupedPerms = permissions.stream()
-                        .collect(Collectors.groupingBy(
-                                permissionVO -> Intention.parse(permissionVO.getIntention()),
-                                Collectors.mapping(Function.identity(), Collectors.toSet())
-                        ));
-
+                Map<Intention, Set<PermissionVO>> intentGroupedPerms = permissions.stream().collect(Collectors.groupingBy(
+                        permissionVO -> Intention.parse(permissionVO.getIntention()),
+                        Collectors.mapping(Function.identity(), Collectors.toSet())
+                ));
                 // 先检测 REFUSE 的权限，如果存在一个 REFUSE 的权限校验通过，则此资源约束被看作拒绝
                 Set<PermissionVO> refusedPerms = intentGroupedPerms.getOrDefault(Intention.REFUSE, Sets.newHashSet());
                 for (PermissionVO permission : refusedPerms) {
-                    if (checkPermission(permission)) {
-                        refused.add(assigner);
+                    if (checkPermissionLogic(permission)) {
                         continue ASSIGNER_ITER;
                     }
                 }
-
                 // 再检测 ALLOW 的权限
                 Set<PermissionVO> allowedPerms = intentGroupedPerms.getOrDefault(Intention.ALLOW, Sets.newHashSet());
                 for (PermissionVO permission : allowedPerms) {
-                    if (checkPermission(permission)) {
-                        allowed.add(assigner);
+                    if (checkPermissionLogic(permission)) {
+                        result.add(findResource);
                         continue ASSIGNER_ITER;
                     }
                 }
-
-                // 未授权时，根据配置决定是 refuse 还是 allow
-                if (refuseWhenUnauthorized) {
-                    refused.add(assigner);
-                } else {
-                    allowed.add(assigner);
-                }
             }
 
-            return new AuthorizationCheckResult<>(refused, allowed);
+            return new AuthorizationCheckResult(result);
 
         } catch (Exception e) {
+            log.error("鉴权校验失败", e);
             throw new AuthorizationException(e.getMessage());
         }
     }
@@ -198,7 +181,7 @@ public abstract class AbstractAuthorizationChecker<P extends AuthorizationCheckP
      * @param resourcesAssigner 资源约束对象，可以是资源名称、资源URI、资源Tag
      * @return 返回资源列表
      */
-    protected abstract List<Resource> assignCheckingResources(T resourcesAssigner);
+    protected abstract List<ResourceVO> assignCheckingResources(List<T> resourcesAssigner);
 
 
     /**
@@ -206,16 +189,15 @@ public abstract class AbstractAuthorizationChecker<P extends AuthorizationCheckP
      *
      * @return 资源关联的权限列表
      */
-    protected List<PermissionVO> findResourcePermissions(Resource resource) {
+    protected List<PermissionVO> findResourcePermissions(Long resourceId) {
         List<PermissionResource> permissionResources = permissionResourceMapper.selectList(Wrappers.<PermissionResource>lambdaQuery()
-                .eq(PermissionResource::getResourceId, resource.getResourceId())
+                .eq(PermissionResource::getResourceId, resourceId)
         );
         if (CollectionUtils.isEmpty(permissionResources)) {
             return Lists.newArrayList();
         }
-        return permissionResources.stream()
-                .map(permRsrc -> permissionService.get(getClient().getRealmId(), getClient().getClientId(), permRsrc.getPermissionId()))
-                .collect(Collectors.toList());
+        List<Long> permissionIds = permissionResources.stream().map(PermissionResource::getPermissionId).collect(Collectors.toList());
+        return permissionDao.getVOSByPermissionIds(getClient().getRealmId(), getClient().getClientId(), permissionIds, true);
     }
 
 
@@ -225,29 +207,32 @@ public abstract class AbstractAuthorizationChecker<P extends AuthorizationCheckP
      * @param permission 待校验的授权信息
      * @return 返回Permission校验是否通过
      */
-    protected boolean checkPermission(PermissionVO permission) {
+    protected boolean checkPermissionLogic(PermissionVO permission) {
         // 检测权限是否禁用
         if (!permission.getIsEnabled()) {
             return false;
         }
 
-        List<PermissionPolicyVO> policies = permission.getPolicys();
-        if (CollectionUtils.isEmpty(policies)) {
-            return false;
-        }
-
-        int allowedCount = 0;
         Logic logic = Logic.parse(permission.getLogic());
         if (logic == null) {
             throw new IllegalArgumentException("无法解析权限的策略，permission=" + permission);
         }
 
-        // 逐个policy检查
-        for (PermissionPolicyVO permPolicy : policies) {
-            // 查找VO
-            PolicyVO policy = policyService.get(getClient().getRealmId(), getClient().getClientId(), permPolicy.getPolicyId());
-            Intention policyCheckIntention = policyCheckerFactory.newPolicyChecker(policy).check(checkParam);
+        List<PermissionPolicyVO> permissionPolicies = permission.getPolicies();
+        if (CollectionUtils.isEmpty(permissionPolicies)) {
+            return false;
+        }
 
+        // 逐个policy检查
+        List<Long> policyIds = permissionPolicies.stream().map(PermissionPolicyVO::getPolicyId).collect(Collectors.toList());
+        List<PolicyVO> policies = policyDao.getVOSByPolicyIds(getClient().getRealmId(), getClient().getClientId(), policyIds, true);
+        if (CollectionUtils.isEmpty(policies)) {
+            return false;
+        }
+
+        int allowedCount = 0;
+        for (PolicyVO policy : policies) {
+            Intention policyCheckIntention = policyCheckerFactory.newPolicyChecker(policy).check(checkParam);
             // 统计允许的policy个数
             if (Intention.ALLOW == policyCheckIntention) {
                 allowedCount++;

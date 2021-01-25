@@ -18,14 +18,13 @@ package org.limbo.doorkeeper.server.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.lang3.time.DateUtils;
 import org.limbo.doorkeeper.api.model.param.LoginParam;
 import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.server.dao.RealmMapper;
-import org.limbo.doorkeeper.server.dao.UserMapper;
-import org.limbo.doorkeeper.server.entity.Realm;
-import org.limbo.doorkeeper.server.entity.User;
+import org.limbo.doorkeeper.server.dal.mapper.RealmMapper;
+import org.limbo.doorkeeper.server.dal.mapper.UserMapper;
+import org.limbo.doorkeeper.server.dal.entity.Realm;
+import org.limbo.doorkeeper.server.dal.entity.User;
 import org.limbo.doorkeeper.server.support.session.exception.AuthenticationException;
 import org.limbo.doorkeeper.server.utils.JWTUtil;
 import org.limbo.doorkeeper.server.utils.MD5Utils;

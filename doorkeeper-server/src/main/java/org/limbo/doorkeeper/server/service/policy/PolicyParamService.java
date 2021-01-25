@@ -20,8 +20,9 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.model.param.policy.PolicyParamAddParam;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyParamVO;
-import org.limbo.doorkeeper.server.dao.policy.PolicyParamMapper;
-import org.limbo.doorkeeper.server.entity.policy.PolicyParam;
+import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.server.dal.mapper.policy.PolicyParamMapper;
+import org.limbo.doorkeeper.server.dal.entity.policy.PolicyParam;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.limbo.doorkeeper.server.utils.Verifies;
@@ -57,13 +58,7 @@ public class PolicyParamService {
         );
         // 新增
         if (CollectionUtils.isNotEmpty(params)) {
-            List<PolicyParam> list = new ArrayList<>();
-            for (PolicyParamAddParam param : params) {
-                PolicyParam po = EnhancedBeanUtils.createAndCopy(param, PolicyParam.class);
-                po.setPolicyId(policyId);
-                list.add(po);
-            }
-            MyBatisPlusUtils.batchSave(list, PolicyParam.class);
+            batchSave(policyId, params);
         }
     }
 
@@ -76,6 +71,7 @@ public class PolicyParamService {
             policyParam.setPolicyId(policyId);
             policyParam.setK(tag.getK());
             policyParam.setV(tag.getV());
+            policyParam.setKv(tag.getK() + DoorkeeperConstants.KV_DELIMITER + tag.getV());
             policyParams.add(policyParam);
         }
         MyBatisPlusUtils.batchSave(policyParams, PolicyParam.class);

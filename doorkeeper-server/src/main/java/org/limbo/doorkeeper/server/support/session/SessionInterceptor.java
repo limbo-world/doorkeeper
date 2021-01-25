@@ -19,7 +19,7 @@ package org.limbo.doorkeeper.server.support.session;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.HeaderConstants;
-import org.limbo.doorkeeper.server.entity.Realm;
+import org.limbo.doorkeeper.server.dal.entity.Realm;
 import org.limbo.doorkeeper.server.service.RealmService;
 import org.limbo.doorkeeper.server.support.session.exception.AuthenticationException;
 import org.limbo.doorkeeper.server.utils.JWTUtil;

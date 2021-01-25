@@ -24,16 +24,20 @@ import org.limbo.doorkeeper.api.model.param.permission.PermissionBatchUpdatePara
 import org.limbo.doorkeeper.api.model.param.permission.PermissionQueryParam;
 import org.limbo.doorkeeper.api.model.param.permission.PermissionUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
-import org.limbo.doorkeeper.server.dao.ClientMapper;
-import org.limbo.doorkeeper.server.dao.PermissionMapper;
-import org.limbo.doorkeeper.server.entity.Client;
-import org.limbo.doorkeeper.server.entity.Permission;
+import org.limbo.doorkeeper.server.dal.dao.PermissionDao;
+import org.limbo.doorkeeper.server.dal.mapper.ClientMapper;
+import org.limbo.doorkeeper.server.dal.mapper.PermissionMapper;
+import org.limbo.doorkeeper.server.dal.entity.Client;
+import org.limbo.doorkeeper.server.dal.entity.Permission;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Devil
@@ -44,6 +48,9 @@ public class PermissionService {
 
     @Autowired
     private PermissionMapper permissionMapper;
+
+    @Autowired
+    private PermissionDao permissionDao;
 
     @Autowired
     private ClientMapper clientMapper;
@@ -73,7 +80,7 @@ public class PermissionService {
 
         permissionResourceService.batchSave(permission.getPermissionId(), param.getResources());
 
-        permissionPolicyService.batchSave(permission.getPermissionId(), param.getPolicys());
+        permissionPolicyService.batchSave(permission.getPermissionId(), param.getPolicyies());
 
         return EnhancedBeanUtils.createAndCopy(permission, PermissionVO.class);
     }
@@ -112,13 +119,8 @@ public class PermissionService {
     }
 
     public PermissionVO get(Long realmId, Long clientId, Long permissionId) {
-        Permission permission = permissionMapper.getById(realmId, clientId, permissionId);
-        Verifies.notNull(permission, "权限不存在");
-        PermissionVO result = EnhancedBeanUtils.createAndCopy(permission, PermissionVO.class);
-
-        result.setResources(permissionResourceService.getByPermissionId(permissionId));
-        result.setPolicys(permissionPolicyService.getByPermissionId(permissionId));
-        return result;
+        List<PermissionVO> vos = permissionDao.getVOSByPermissionIds(realmId, clientId, Collections.singletonList(permissionId), null);
+        return vos == null || vos.size() <= 0 ? null : vos.get(0);
     }
 
     @Transactional
@@ -139,7 +141,7 @@ public class PermissionService {
 
         permissionResourceService.update(permissionId, param.getResources());
 
-        permissionPolicyService.update(permissionId, param.getPolicys());
+        permissionPolicyService.update(permissionId, param.getPolicies());
 
     }
 

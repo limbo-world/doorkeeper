@@ -31,6 +31,6 @@ public interface AuthorizationChecker<P extends AuthorizationCheckParam<T>, T> {
      * 进行权限校验，是否有资格访问
      * @return 校验结果，分为refused和allowed两类
      */
-    AuthorizationCheckResult<T> check();
+    AuthorizationCheckResult check();
 
 }

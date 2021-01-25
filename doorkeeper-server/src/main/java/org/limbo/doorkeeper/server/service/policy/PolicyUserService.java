@@ -20,10 +20,10 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.model.param.policy.PolicyUserAddParam;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyUserVO;
-import org.limbo.doorkeeper.server.dao.UserMapper;
-import org.limbo.doorkeeper.server.dao.policy.PolicyUserMapper;
-import org.limbo.doorkeeper.server.entity.User;
-import org.limbo.doorkeeper.server.entity.policy.PolicyUser;
+import org.limbo.doorkeeper.server.dal.mapper.UserMapper;
+import org.limbo.doorkeeper.server.dal.mapper.policy.PolicyUserMapper;
+import org.limbo.doorkeeper.server.dal.entity.User;
+import org.limbo.doorkeeper.server.dal.entity.policy.PolicyUser;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.limbo.doorkeeper.server.utils.Verifies;
@@ -72,13 +72,7 @@ public class PolicyUserService {
         );
         // 新增
         if (CollectionUtils.isNotEmpty(params)) {
-            List<PolicyUser> list = new ArrayList<>();
-            for (PolicyUserAddParam param : params) {
-                PolicyUser po = EnhancedBeanUtils.createAndCopy(param, PolicyUser.class);
-                po.setPolicyId(policyId);
-                list.add(po);
-            }
-            MyBatisPlusUtils.batchSave(list, PolicyUser.class);
+            batchSave(policyId, params);
         }
     }
 

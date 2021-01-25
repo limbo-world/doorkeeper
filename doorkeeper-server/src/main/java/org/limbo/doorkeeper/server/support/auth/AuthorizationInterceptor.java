@@ -22,8 +22,8 @@ import org.limbo.doorkeeper.api.constants.HeaderConstants;
 import org.limbo.doorkeeper.api.model.param.auth.AuthorizationUriCheckParam;
 import org.limbo.doorkeeper.api.model.vo.AuthorizationCheckResult;
 import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.server.dao.*;
-import org.limbo.doorkeeper.server.entity.*;
+import org.limbo.doorkeeper.server.dal.mapper.*;
+import org.limbo.doorkeeper.server.dal.entity.*;
 import org.limbo.doorkeeper.server.support.auth.checker.AuthorizationCheckerFactory;
 import org.limbo.doorkeeper.server.utils.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,9 +106,9 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         AuthorizationUriCheckParam checkParam = new AuthorizationUriCheckParam()
                 .setUserId(userId).setClientId(client.getClientId())
                 .setResourceAssigner(Collections.singletonList(request.getRequestURI()));
-        AuthorizationCheckResult<String> checkResult = authorizationCheckerFactory.newUriAuthorizationChecker(checkParam).check();
+        AuthorizationCheckResult checkResult = authorizationCheckerFactory.newUriAuthorizationChecker(checkParam).check();
 
-        if (checkResult.getAllowed().size() <= 0) {
+        if (checkResult.getResources().size() <= 0) {
             throw new AuthorizationException();
         }
 

@@ -16,7 +16,7 @@
   -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="org.limbo.doorkeeper.server.dao.GroupUserMapper" >
+<mapper namespace="org.limbo.doorkeeper.server.dal.mapper.GroupUserMapper" >
 
     <resultMap id="UserRoleVO" type="org.limbo.doorkeeper.api.model.vo.GroupUserVO">
         <result column="group_user_id" property="groupUserId" jdbcType="BIGINT" javaType="java.lang.Long" />
@@ -28,7 +28,7 @@
         <result column="description" property="description" jdbcType="VARCHAR" javaType="java.lang.String" />
     </resultMap>
 
-    <insert id="batchInsertIgnore" parameterType="org.limbo.doorkeeper.server.entity.GroupUser">
+    <insert id="batchInsertIgnore" parameterType="org.limbo.doorkeeper.server.dal.entity.GroupUser">
         INSERT ignore INTO group_user (
             group_id, user_id
         ) VALUES

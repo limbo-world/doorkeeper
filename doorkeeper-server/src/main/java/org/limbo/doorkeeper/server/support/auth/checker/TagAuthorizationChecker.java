@@ -16,28 +16,33 @@
 
 package org.limbo.doorkeeper.server.support.auth.checker;
 
-import org.limbo.doorkeeper.server.entity.Resource;
+import lombok.Setter;
 import org.limbo.doorkeeper.api.model.param.auth.AuthorizationCheckParam;
+import org.limbo.doorkeeper.api.model.vo.ResourceVO;
+import org.limbo.doorkeeper.server.dal.dao.ResourceDao;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 /**
  * TODO
+ *
  * @author brozen
  * @date 2021/1/18
  */
 public class TagAuthorizationChecker<P extends AuthorizationCheckParam<Map<String, String>>>
         extends AbstractAuthorizationChecker<P, Map<String, String>> {
 
+    @Setter
+    private ResourceDao resourceDao;
+
     public TagAuthorizationChecker(P checkParam) {
         super(checkParam);
     }
 
     @Override
-    protected List<Resource> assignCheckingResources(Map<String, String> resourcesAssigner) {
-        return new ArrayList<>();
+    protected List<ResourceVO> assignCheckingResources(List<Map<String, String>> resourcesAssigner) {
+        return resourceDao.getVOSByTagCombos(getClient().getRealmId(), getClient().getClientId(), resourcesAssigner, true);
     }
 
 }

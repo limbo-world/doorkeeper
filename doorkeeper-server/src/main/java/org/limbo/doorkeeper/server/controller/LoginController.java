@@ -21,12 +21,17 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.LoginParam;
+import org.limbo.doorkeeper.api.model.vo.ResourceVO;
+import org.limbo.doorkeeper.server.dal.dao.ResourceDao;
 import org.limbo.doorkeeper.server.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Devil
@@ -47,4 +52,15 @@ public class LoginController {
         return Response.success(loginService.login(param));
     }
 
+    @Autowired
+    private ResourceDao resourceDao;
+
+    @GetMapping("/test")
+    public Response<String> test() {
+        List<String> sss = new ArrayList<>();
+        sss.add("域角色");
+        sss.add("111");
+        List<ResourceVO> vosByNames = resourceDao.getVOSByNames(100000L, 100012L, sss, true);
+        return Response.success(null);
+    }
 }

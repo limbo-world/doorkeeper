@@ -19,6 +19,7 @@ package org.limbo.doorkeeper.api.model.vo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -49,10 +50,14 @@ public class PermissionVO {
     @Schema(title = "是否启用")
     private Boolean isEnabled;
 
+    private Date createTime;
+
+    private Date updateTime;
+
     @Schema(title = "资源列表")
     private List<PermissionResourceVO> resources;
 
     @Schema(title = "策略列表")
-    private List<PermissionPolicyVO>  policys;
+    private List<PermissionPolicyVO>  policies;
 
 }

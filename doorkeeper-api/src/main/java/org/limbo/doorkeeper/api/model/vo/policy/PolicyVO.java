@@ -19,6 +19,7 @@ package org.limbo.doorkeeper.api.model.vo.policy;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -43,7 +44,7 @@ public class PolicyVO {
     @Schema(title = "类型")
     private String type;
 
-    @Schema(title = "判断逻辑", description = "只有组合策略需要")
+    @Schema(title = "判断逻辑", description = "组合策略、角色策略需要")
     private String logic;
 
     @Schema(title = "执行逻辑")
@@ -51,6 +52,10 @@ public class PolicyVO {
 
     @Schema(title = "是否启用")
     private Boolean isEnabled;
+
+    private Date createTime;
+
+    private Date updateTime;
 
     @Schema(title = "操作策略")
     private List<PolicyParamVO> params;

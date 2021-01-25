@@ -35,7 +35,7 @@
                         </el-select>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="loadPolicys(1)" size="mini" icon="el-icon-search">查询
+                        <el-button type="primary" @click="loadPolicies(1)" size="mini" icon="el-icon-search">查询
                         </el-button>
                         <el-button type="primary" @click="() => {
                             $router.push({path: '/policy/policy-edit',query: {clientId: clientId}})
@@ -49,7 +49,7 @@
         </el-header>
 
         <el-main>
-            <el-table :data="policys" size="mini" @selection-change="handleSelectionChange">
+            <el-table :data="policies" size="mini" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="50"></el-table-column>
                 <el-table-column prop="policyId" label="ID"></el-table-column>
                 <el-table-column prop="name" label="名称"></el-table-column>
@@ -80,7 +80,7 @@
         <el-footer>
             <el-pagination background layout="prev, pager, next" :total="queryForm.total"
                            :current-page.sync="queryForm.current"
-                           :page-size="queryForm.size" @current-change="loadPolicys">
+                           :page-size="queryForm.size" @current-change="loadPolicies">
             </el-pagination>
         </el-footer>
 
@@ -107,8 +107,8 @@ export default {
                 size: 10,
                 total: -1,
             },
-            policys: [],
-            selectPolicys: [],
+            policies: [],
+            selectPolicies: [],
         };
     },
 
@@ -118,7 +118,7 @@ export default {
 
     created() {
         pages.policy = this;
-        this.loadPolicys();
+        this.loadPolicies();
     },
 
 
@@ -130,7 +130,7 @@ export default {
             this.queryForm.total = -1;
         },
 
-        loadPolicys(current) {
+        loadPolicies(current) {
             if (1 === current) {
                 this.resetPageForm();
             }
@@ -140,24 +140,24 @@ export default {
             }).then(response => {
                 const page = response.data;
                 this.queryForm.total = page.total >= 0 ? page.total : this.queryForm.total;
-                this.policys = page.data;
+                this.policies = page.data;
             }).finally(() => this.stopProgress());
         },
 
         handleSelectionChange(val) {
-            this.selectPolicys = val;
+            this.selectPolicies = val;
         },
 
         batchEnable(v) {
             let policyIds = [];
-            if (this.selectPolicys && this.selectPolicys.length > 0 ) {
-                this.selectPolicys.forEach(policy => policyIds.push(policy.policyId))
+            if (this.selectPolicies && this.selectPolicies.length > 0 ) {
+                this.selectPolicies.forEach(policy => policyIds.push(policy.policyId))
             }
             this.startProgress();
             return this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/policy/batch`, {
                 type: this.$constants.batchMethod.UPDATE, isEnabled: v, policyIds: policyIds
             }).then(response => {
-                this.loadPolicys();
+                this.loadPolicies();
             }).finally(() => this.stopProgress());
         }
 

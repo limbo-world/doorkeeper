@@ -20,11 +20,10 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.param.auth.AuthorizationCheckParam;
-import org.limbo.doorkeeper.api.model.vo.AuthorizationCheckResult;
-import org.limbo.doorkeeper.server.dao.ResourceMapper;
-import org.limbo.doorkeeper.server.dao.ResourceUriMapper;
-import org.limbo.doorkeeper.server.entity.Resource;
-import org.limbo.doorkeeper.server.entity.ResourceUri;
+import org.limbo.doorkeeper.api.model.vo.ResourceVO;
+import org.limbo.doorkeeper.server.dal.dao.ResourceDao;
+import org.limbo.doorkeeper.server.dal.entity.ResourceUri;
+import org.limbo.doorkeeper.server.dal.mapper.ResourceUriMapper;
 import org.limbo.doorkeeper.server.utils.EasyAntPathMatcher;
 
 import java.util.List;
@@ -39,7 +38,7 @@ public class UriAuthorizationChecker<P extends AuthorizationCheckParam<String>> 
     private static final ThreadLocal<EasyAntPathMatcher> PATH_MATCHER = ThreadLocal.withInitial(EasyAntPathMatcher::new);
 
     @Setter
-    private ResourceMapper resourceMapper;
+    private ResourceDao resourceDao;
 
     @Setter
     private ResourceUriMapper resourceUriMapper;
@@ -56,36 +55,31 @@ public class UriAuthorizationChecker<P extends AuthorizationCheckParam<String>> 
     /**
      * {@inheritDoc}<br/>
      *
-     * 会在开始检测之前先查询client的全部uri资源
+     * 根据URI来找到资源
      *
+     * @param uris 资源约束对象，资源URI
      * @return
      */
     @Override
-    public AuthorizationCheckResult<String> check() {
+    protected List<ResourceVO> assignCheckingResources(List<String> uris) {
         this.clientUris = resourceUriMapper.selectList(Wrappers.<ResourceUri>lambdaQuery()
                 .eq(ResourceUri::getRealmId, getClient().getRealmId())
                 .eq(ResourceUri::getClientId, getClient().getClientId())
         );
 
-        return super.check();
-    }
-
-    /**
-     * {@inheritDoc}<br/>
-     *
-     * 根据URI来找到资源
-     *
-     * @param uri 资源约束对象，资源URI
-     * @return
-     */
-    @Override
-    protected List<Resource> assignCheckingResources(String uri) {
         List<Long> resourceIds = this.clientUris.stream()
-                .filter(clientUri -> pathMatch(clientUri.getUri(), uri))
+                .filter(resourceUri -> {
+                    for (String uri : uris) {
+                        if (pathMatch(resourceUri.getUri(), uri)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                })
                 .map(ResourceUri::getResourceId)
                 .collect(Collectors.toList());
 
-        return resourceMapper.selectBatchIds(resourceIds);
+        return resourceDao.getVOSByResourceIds(getClient().getRealmId(), getClient().getClientId(), resourceIds, true);
     }
 
 

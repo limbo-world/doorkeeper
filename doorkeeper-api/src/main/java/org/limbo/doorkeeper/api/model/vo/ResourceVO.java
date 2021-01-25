@@ -19,6 +19,7 @@ package org.limbo.doorkeeper.api.model.vo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -42,6 +43,10 @@ public class ResourceVO {
 
     @Schema(title = "是否启用")
     private Boolean isEnabled;
+
+    private Date createTime;
+
+    private Date updateTime;
 
     @Schema(title = "资源uri")
     private List<ResourceUriVO> uris;

@@ -17,12 +17,12 @@
 package org.limbo.doorkeeper.server.support.auth.checker;
 
 import org.limbo.doorkeeper.api.model.param.auth.AuthorizationCheckParam;
-import org.limbo.doorkeeper.server.dao.ClientMapper;
-import org.limbo.doorkeeper.server.dao.PermissionResourceMapper;
-import org.limbo.doorkeeper.server.dao.ResourceMapper;
-import org.limbo.doorkeeper.server.dao.ResourceUriMapper;
-import org.limbo.doorkeeper.server.service.PermissionService;
-import org.limbo.doorkeeper.server.service.policy.PolicyService;
+import org.limbo.doorkeeper.server.dal.dao.PermissionDao;
+import org.limbo.doorkeeper.server.dal.dao.PolicyDao;
+import org.limbo.doorkeeper.server.dal.dao.ResourceDao;
+import org.limbo.doorkeeper.server.dal.mapper.ClientMapper;
+import org.limbo.doorkeeper.server.dal.mapper.PermissionResourceMapper;
+import org.limbo.doorkeeper.server.dal.mapper.ResourceUriMapper;
 import org.limbo.doorkeeper.server.support.auth.policies.PolicyCheckerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -37,16 +37,16 @@ import java.util.Map;
 public class AuthorizationCheckerFactory {
 
     @Autowired
-    private PermissionService permissionService;
+    private PermissionDao permissionDao;
 
     @Autowired
-    private PolicyService policyService;
+    private PolicyDao policyDao;
 
     @Autowired
     private ClientMapper clientMapper;
 
     @Autowired
-    private ResourceMapper resourceMapper;
+    private ResourceDao resourceDao;
 
     @Autowired
     private ResourceUriMapper resourceUriMapper;
@@ -65,7 +65,7 @@ public class AuthorizationCheckerFactory {
     public <P extends AuthorizationCheckParam<String>> AuthorizationChecker<P, String> newNameAuthorizationChecker(P checkParam) {
         NameAuthorizationChecker<P> checker = new NameAuthorizationChecker<>(checkParam);
         setSpringBeans(checker);
-        checker.setResourceMapper(resourceMapper);
+        checker.setResourceDao(resourceDao);
         return checker;
     }
 
@@ -77,7 +77,7 @@ public class AuthorizationCheckerFactory {
     public <P extends AuthorizationCheckParam<String>> AuthorizationChecker<P, String> newUriAuthorizationChecker(P checkParam) {
         UriAuthorizationChecker<P> checker = new UriAuthorizationChecker<>(checkParam);
         setSpringBeans(checker);
-        checker.setResourceMapper(resourceMapper);
+        checker.setResourceDao(resourceDao);
         checker.setResourceUriMapper(resourceUriMapper);
         return checker;
     }
@@ -97,8 +97,8 @@ public class AuthorizationCheckerFactory {
      * 设置{@link AbstractAuthorizationChecker}中需要的Spring Bean
      */
     private void setSpringBeans(AbstractAuthorizationChecker<?, ?> checker) {
-        checker.setPermissionService(permissionService);
-        checker.setPolicyService(policyService);
+        checker.setPermissionDao(permissionDao);
+        checker.setPolicyDao(policyDao);
         checker.setClientMapper(clientMapper);
         checker.setPermissionResourceMapper(permissionResourceMapper);
         checker.setPolicyCheckerFactory(policyCheckerFactory);

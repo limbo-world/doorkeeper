@@ -18,7 +18,7 @@ package org.limbo.doorkeeper.server.support.auth.policies;
 
 import org.limbo.doorkeeper.api.constants.PolicyType;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
-import org.limbo.doorkeeper.server.dao.*;
+import org.limbo.doorkeeper.server.dal.mapper.*;
 import org.limbo.doorkeeper.server.support.auth.AuthorizationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

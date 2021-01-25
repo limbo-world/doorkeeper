@@ -20,9 +20,8 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.model.param.policy.PolicyRoleAddParam;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyRoleVO;
-import org.limbo.doorkeeper.server.dao.policy.PolicyRoleMapper;
-import org.limbo.doorkeeper.server.entity.policy.PolicyRole;
-import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.dal.entity.policy.PolicyRole;
+import org.limbo.doorkeeper.server.dal.mapper.policy.PolicyRoleMapper;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,13 +53,7 @@ public class PolicyRoleService {
         );
         // 新增
         if (CollectionUtils.isNotEmpty(params)) {
-            List<PolicyRole> list = new ArrayList<>();
-            for (PolicyRoleAddParam param : params) {
-                PolicyRole po = EnhancedBeanUtils.createAndCopy(param, PolicyRole.class);
-                po.setPolicyId(policyId);
-                list.add(po);
-            }
-            MyBatisPlusUtils.batchSave(list, PolicyRole.class);
+            batchSave(policyId, params);
         }
     }
 

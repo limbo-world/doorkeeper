@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableTransactionManagement
-@MapperScan("org.limbo.doorkeeper.server.dao")
+@MapperScan("org.limbo.doorkeeper.server.dal.mapper")
 @Import({WebConfig.class})
 public class DoorkeeperApplication {
 

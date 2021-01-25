@@ -16,6 +16,7 @@
 
 package org.limbo.doorkeeper.api.model.vo;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,16 +32,9 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthorizationCheckResult<T> {
+public class AuthorizationCheckResult {
 
-    /**
-     * 拒绝访问的资源对象
-     */
-    private List<T> refused;
-
-    /**
-     * 允许访问的资源对象
-     */
-    private List<T> allowed;
+    @Schema(title = "允许访问的资源对象")
+    private List<ResourceVO> resources;
 
 }

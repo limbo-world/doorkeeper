@@ -24,14 +24,15 @@ import org.limbo.doorkeeper.api.model.param.resource.*;
 import org.limbo.doorkeeper.api.model.vo.ResourceTagVO;
 import org.limbo.doorkeeper.api.model.vo.ResourceUriVO;
 import org.limbo.doorkeeper.api.model.vo.ResourceVO;
-import org.limbo.doorkeeper.server.dao.ClientMapper;
-import org.limbo.doorkeeper.server.dao.ResourceMapper;
-import org.limbo.doorkeeper.server.dao.ResourceTagMapper;
-import org.limbo.doorkeeper.server.dao.ResourceUriMapper;
-import org.limbo.doorkeeper.server.entity.Client;
-import org.limbo.doorkeeper.server.entity.Resource;
-import org.limbo.doorkeeper.server.entity.ResourceTag;
-import org.limbo.doorkeeper.server.entity.ResourceUri;
+import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.server.dal.mapper.ClientMapper;
+import org.limbo.doorkeeper.server.dal.mapper.ResourceMapper;
+import org.limbo.doorkeeper.server.dal.mapper.ResourceTagMapper;
+import org.limbo.doorkeeper.server.dal.mapper.ResourceUriMapper;
+import org.limbo.doorkeeper.server.dal.entity.Client;
+import org.limbo.doorkeeper.server.dal.entity.Resource;
+import org.limbo.doorkeeper.server.dal.entity.ResourceTag;
+import org.limbo.doorkeeper.server.dal.entity.ResourceUri;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.limbo.doorkeeper.server.utils.Verifies;
@@ -155,11 +156,11 @@ public class ResourceService {
         if (CollectionUtils.isNotEmpty(params)) {
             List<ResourceUri> uris = new ArrayList<>();
             for (ResourceUriAddParam uriParam : params) {
-                ResourceUri uri = EnhancedBeanUtils.createAndCopy(uriParam, ResourceUri.class);
+                ResourceUri uri = new ResourceUri();
+                uri.setUri(uriParam.getUri());
                 uri.setResourceId(resourceId);
                 uri.setRealmId(realmId);
                 uri.setClientId(clientId);
-                // todo dim
                 uris.add(uri);
             }
             MyBatisPlusUtils.batchSave(uris, ResourceUri.class);
@@ -170,7 +171,10 @@ public class ResourceService {
         if (CollectionUtils.isNotEmpty(params)) {
             List<ResourceTag> tags = new ArrayList<>();
             for (ResourceTagAddParam tagParam : params) {
-                ResourceTag tag = EnhancedBeanUtils.createAndCopy(tagParam, ResourceTag.class);
+                ResourceTag tag = new ResourceTag();
+                tag.setK(tagParam.getK());
+                tag.setV(tagParam.getV());
+                tag.setKv(tagParam.getK() + DoorkeeperConstants.KV_DELIMITER + tagParam.getV());
                 tag.setResourceId(resourceId);
                 tag.setRealmId(realmId);
                 tag.setClientId(clientId);

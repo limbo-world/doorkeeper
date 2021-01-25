@@ -52,12 +52,12 @@
                                     <el-input v-model="policyQueryForm.dimName" placeholder="输入名称"></el-input>
                                 </el-form-item>
                                 <el-form-item>
-                                    <el-button type="primary" @click="loadPolicys" size="mini" icon="el-icon-search">查询</el-button>
+                                    <el-button type="primary" @click="loadPolicies" size="mini" icon="el-icon-search">查询</el-button>
                                 </el-form-item>
                             </el-form>
                         </el-header>
                         <el-main>
-                            <el-transfer v-model="selectPolicyIds" :data="policys" :titles="['未绑定', '未绑定']"
+                            <el-transfer v-model="selectPolicyIds" :data="policies" :titles="['未绑定', '未绑定']"
                                          @change="changePolicy"></el-transfer>
                         </el-main>
                     </el-container>
@@ -97,7 +97,7 @@
             return {
                 permission: {
                     resources: [],
-                    policys: []
+                    policies: []
                 },
 
                 resourceQueryForm: {
@@ -113,7 +113,7 @@
                 resources: [],
                 selectResourceIds: [],
 
-                policys: [],
+                policies: [],
                 selectPolicyIds: []
             };
         },
@@ -171,39 +171,39 @@
             },
 
             // ========== 策略相关  ==========
-            loadPolicys() {
+            loadPolicies() {
                 this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.permission.clientId}/policy`, {
                     params: this.policyQueryForm
                 }).then(response => {
-                    let policys = response.data.data;
+                    let policies = response.data.data;
                     let policyIds = [];
-                    for (let policy of policys) {
+                    for (let policy of policies) {
                         policy.key = policy.policyId;
                         policy.label = policy.name;
                         policyIds.push(policy.policyId);
                     }
-                    this.concatPolicys(policys, policyIds);
+                    this.concatPolicies(policies, policyIds);
                 });
             },
             changePolicy(policyIds, d, mvPolicyIds) {
                 if (d === 'right') {
                     // 主要用于去除重复
-                    this.permission.policys = this.permission.policys.filter(policy => mvPolicyIds.indexOf(policy.policyId) < 0)
+                    this.permission.policies = this.permission.policies.filter(policy => mvPolicyIds.indexOf(policy.policyId) < 0)
                     // 获取新增的
-                    let policys = this.policys.filter(policy => mvPolicyIds.indexOf(policy.policyId) >= 0)
-                    this.permission.policys = this.permission.policys.concat(policys)
+                    let policies = this.policies.filter(policy => mvPolicyIds.indexOf(policy.policyId) >= 0)
+                    this.permission.policies = this.permission.policies.concat(policies)
                 } else {
                     // 删除里面的
-                    this.permission.policys = this.permission.policys.filter(policy => mvPolicyIds.indexOf(policy.policyId) < 0)
+                    this.permission.policies = this.permission.policies.filter(policy => mvPolicyIds.indexOf(policy.policyId) < 0)
                 }
             },
-            concatPolicys(policys, policyIds) {
+            concatPolicies(policies, policyIds) {
                 // 把不存在的加入进来
-                let permissionPolicys = this.permission.policys.filter(policy => policyIds.indexOf(policy.policyId) < 0)
-                policys = policys.concat(permissionPolicys);
-                this.policys = policys;
+                let permissionPolicies = this.permission.policies.filter(policy => policyIds.indexOf(policy.policyId) < 0)
+                policies = policies.concat(permissionPolicies);
+                this.policies = policies;
                 // 每次查询完，需要把已有的加入
-                this.selectPolicyIds = this.permission.policys.map(policy => policy.policyId)
+                this.selectPolicyIds = this.permission.policies.map(policy => policy.policyId)
             },
 
             // ========== 权限相关 ==========
@@ -212,7 +212,7 @@
                 this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.permission.clientId}/permission/${this.permission.permissionId}`).then(response => {
                     this.permission = response.data;
                     this.loadResources();
-                    this.loadPolicys();
+                    this.loadPolicies();
                 }).finally(() => this.stopProgress());
             },
             addPermission() {

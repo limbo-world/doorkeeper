@@ -45,4 +45,6 @@ public interface DoorkeeperConstants {
     String USER_ID = "userId";
     String USERNAME = "username";
     String NICKNAME = "nickname";
+
+    String KV_DELIMITER = "=";
 }

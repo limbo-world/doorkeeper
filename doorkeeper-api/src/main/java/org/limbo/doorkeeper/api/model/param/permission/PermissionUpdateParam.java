@@ -49,6 +49,6 @@ public class PermissionUpdateParam {
     private List<PermissionResourceAddParam> resources;
 
     @Schema(title = "策略列表")
-    private List<PermissionPolicyAddParam>  policys;
+    private List<PermissionPolicyAddParam>  policies;
 
 }
