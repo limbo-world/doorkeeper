@@ -25,13 +25,10 @@ import lombok.Data;
 @Data
 public class PolicyGroupVO {
 
-    private Long policyUserId;
+    private Long policyGroupId;
 
     private Long policyId;
 
     private Long groupId;
 
-    private String name;
-
-    private Long parentId;
 }

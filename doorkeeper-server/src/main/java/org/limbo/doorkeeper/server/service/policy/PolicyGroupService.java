@@ -20,9 +20,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.model.param.policy.PolicyGroupAddParam;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyGroupVO;
-import org.limbo.doorkeeper.server.dal.entity.Group;
 import org.limbo.doorkeeper.server.dal.entity.policy.PolicyGroup;
-import org.limbo.doorkeeper.server.dal.mapper.GroupMapper;
 import org.limbo.doorkeeper.server.dal.mapper.policy.PolicyGroupMapper;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
@@ -31,8 +29,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Devil
@@ -44,24 +44,11 @@ public class PolicyGroupService {
     @Autowired
     private PolicyGroupMapper policyGroupMapper;
 
-    @Autowired
-    private GroupMapper groupMapper;
-
     public List<PolicyGroupVO> getByPolicy(Long policyId) {
         List<PolicyGroup> policyGroups = policyGroupMapper.selectList(Wrappers.<PolicyGroup>lambdaQuery()
                 .eq(PolicyGroup::getPolicyId, policyId)
         );
-        List<PolicyGroupVO> policyGroupVOS = EnhancedBeanUtils.createAndCopyList(policyGroups, PolicyGroupVO.class);
-        List<Group> groups = groupMapper.selectBatchIds(policyGroups.stream().map(PolicyGroup::getGroupId).collect(Collectors.toList()));
-        for (PolicyGroupVO policyGroupVO : policyGroupVOS) {
-            for (Group group : groups) {
-                if (policyGroupVO.getGroupId().equals(group.getGroupId())) {
-                    policyGroupVO.setName(group.getName());
-                    policyGroupVO.setParentId(group.getParentId());
-                }
-            }
-        }
-        return policyGroupVOS;
+        return EnhancedBeanUtils.createAndCopyList(policyGroups, PolicyGroupVO.class);
     }
 
     @Transactional

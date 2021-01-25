@@ -39,6 +39,7 @@
         <collection property="params" columnPrefix="param_" resultMap="PolicyParamVO" />
         <collection property="roles" columnPrefix="role_" resultMap="PolicyRoleVO" />
         <collection property="users" columnPrefix="user_" resultMap="PolicyUserVO" />
+        <collection property="groups" columnPrefix="group_" resultMap="PolicyUserVO" />
     </resultMap>
 
     <resultMap id="PolicyParamVO" type="org.limbo.doorkeeper.api.model.vo.policy.PolicyParamVO">
@@ -65,19 +66,27 @@
         <result column="username" property="username" jdbcType="VARCHAR" javaType="java.lang.String" />
     </resultMap>
 
+    <resultMap id="PolicyGroupVO" type="org.limbo.doorkeeper.api.model.vo.policy.PolicyGroupVO">
+        <result column="policy_group_id" property="policyGroupId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="policy_id" property="policyId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="group_id" property="groupId" jdbcType="BIGINT" javaType="java.lang.Long" />
+    </resultMap>
+
     <select id="getVOS" resultMap="PolicyVO">
         select p.*,
         pp.policy_param_id as param_policy_param_id, pp.k as param_k, pp.v as param_v,
         pr.policy_role_id as role_policy_role_id, pr.role_id as role_role_id,
         r.realm_id as role_realm_id, r.client_id as role_client_id, r.name as role_name, r.is_enabled as role_is_enabled,
         pu.policy_user_id as user_policy_user_id, pu.user_id as user_user_id,
-        u.username as user_username
+        u.username as user_username,
+        pg.policy_group_id as group_policy_group_id, pg.group_id as group_group_id
         from policy p
         left join policy_param pp on pp.policy_id = p.policy_id
         left join policy_role pr on pr.policy_id = p.policy_id
         left join `role` r on r.role_id = pr.role_id
         left join policy_user pu on pu.policy_id = p.policy_id
         left join `user` u on u.user_id = pu.user_id
+        left join policy_group pg on pg.policy_id = p.policy_id
         where p.realm_id = #{realmId} and p.client_id = #{clientId}
         <if test="policyIds != null and policyIds.size() > 0">
             and p.policy_id in (

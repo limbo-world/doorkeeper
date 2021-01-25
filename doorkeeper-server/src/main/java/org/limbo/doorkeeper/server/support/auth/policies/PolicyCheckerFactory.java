@@ -88,6 +88,15 @@ public class PolicyCheckerFactory {
     }
 
     /**
+     * 创建根据 用户组 检查的策略checker
+     */
+    public PolicyChecker newGroupPolicyChecker(PolicyVO policy) {
+        GroupPolicyChecker userPolicyChecker = new GroupPolicyChecker(policy);
+        userPolicyChecker.setGroupUserMapper(groupUserMapper);
+        return userPolicyChecker;
+    }
+
+    /**
      * 创建根据 请求参数 检查的策略checker
      */
     public PolicyChecker newParamPolicyChecker(PolicyVO policy) {
