@@ -57,6 +57,9 @@ public class PolicyService {
     private PolicyParamService policyParamService;
 
     @Autowired
+    private PolicyGroupService policyGroupService;
+
+    @Autowired
     private ClientMapper clientMapper;
 
     @Transactional
@@ -83,6 +86,9 @@ public class PolicyService {
                 break;
             case PARAM:
                 policyParamService.batchSave(policy.getPolicyId(), param.getParams());
+                break;
+            case GROUP:
+                policyGroupService.batchSave(policy.getPolicyId(), param.getGroups());
                 break;
         }
         return EnhancedBeanUtils.createAndCopy(policy, PolicyVO.class);
@@ -134,6 +140,9 @@ public class PolicyService {
             case PARAM:
                 result.setParams(policyParamService.getByPolicy(policyId));
                 break;
+            case GROUP:
+                result.setGroups(policyGroupService.getByPolicy(policyId));
+                break;
         }
 
         return result;
@@ -161,6 +170,9 @@ public class PolicyService {
                 break;
             case PARAM:
                 policyParamService.update(policyId, param.getParams());
+                break;
+            case GROUP:
+                policyGroupService.update(policyId, param.getGroups());
                 break;
         }
     }

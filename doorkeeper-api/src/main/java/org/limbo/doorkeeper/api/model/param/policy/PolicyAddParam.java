@@ -63,4 +63,7 @@ public class PolicyAddParam {
     @Schema(title = "用户策略")
     private List<PolicyUserAddParam>  users;
 
+    @Schema(title = "用户组策略")
+    private List<PolicyGroupAddParam>  groups;
+
 }

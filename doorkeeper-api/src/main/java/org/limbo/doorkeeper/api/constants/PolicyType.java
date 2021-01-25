@@ -45,6 +45,10 @@ public enum PolicyType implements IEnum<String> {
      * 基于参数
      */
     PARAM,
+    /**
+     * 基于用户组
+     */
+    GROUP,
     ;
 
     @Override

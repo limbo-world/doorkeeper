@@ -37,6 +37,9 @@
                     <policy-user-edit v-if="policy.type === $constants.policyTypes[1].value"
                                       @bind-policy-users="users => {policy.users = users}" :policy-users="policy.users"
                                       :policy-id="policy.policyId" :client-id="policy.clientId"></policy-user-edit>
+                    <policy-group-edit v-if="policy.type === $constants.policyTypes[3].value"
+                                      @bind-policy-groups="groups => {policy.groups = groups}" :policy-groups="policy.groups"
+                                      :policy-id="policy.policyId" :client-id="policy.clientId"></policy-group-edit>
                 </template>
                 <el-form-item label="判断逻辑" v-if="policy.type === $constants.policyTypes[0].value">
                     <el-select v-model="policy.logic">
@@ -67,11 +70,12 @@
 
     import PolicyRoleEdit from "@/views/policy/PolicyRoleEdit";
     import PolicyUserEdit from "@/views/policy/PolicyUserEdit";
+    import PolicyGroupEdit from "@/views/policy/PolicyGroupEdit";
     import { mapState, mapActions } from 'vuex';
 
     export default {
         components: {
-            PolicyRoleEdit, PolicyUserEdit
+            PolicyRoleEdit, PolicyUserEdit, PolicyGroupEdit
         },
         data() {
             return {

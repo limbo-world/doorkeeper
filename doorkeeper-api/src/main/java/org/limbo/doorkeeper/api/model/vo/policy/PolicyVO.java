@@ -65,4 +65,7 @@ public class PolicyVO {
 
     @Schema(title = "用户策略")
     private List<PolicyUserVO>  users;
+
+    @Schema(title = "用户组策略")
+    private List<PolicyGroupVO> groups;
 }

@@ -17,7 +17,8 @@
 const policyTypes = [
     {label: '角色', value: 'ROLE'},
     {label: '用户', value: 'USER'},
-    {label: '参数', value: 'PARAM'}
+    {label: '参数', value: 'PARAM'},
+    {label: '用户组', value: 'GROUP'},
 ];
 
 const intentions = [
