@@ -122,7 +122,7 @@
             )
         </if>
         <if test="kvs != null and kvs.size() > 0">
-            and r.kv in (
+            and rt.kv in (
             <foreach collection="kvs" separator="," item="kv">
                 #{kv}
             </foreach>

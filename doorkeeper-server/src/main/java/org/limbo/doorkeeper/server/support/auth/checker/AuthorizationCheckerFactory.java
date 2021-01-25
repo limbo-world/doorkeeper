@@ -90,6 +90,7 @@ public class AuthorizationCheckerFactory {
     public <P extends AuthorizationCheckParam<Map<String, String>>> AuthorizationChecker<P, Map<String, String>> newTagAuthorizationChecker(P checkParam) {
         TagAuthorizationChecker<P> checker = new TagAuthorizationChecker<>(checkParam);
         setSpringBeans(checker);
+        checker.setResourceDao(resourceDao);
         return checker;
     }
 
