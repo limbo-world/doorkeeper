@@ -76,6 +76,7 @@ public class PolicyGroupService {
             PolicyGroup policyGroup = new PolicyGroup();
             policyGroup.setPolicyId(policyId);
             policyGroup.setGroupId(value.getGroupId());
+            policyGroup.setIsExtend(value.getIsExtend());
             policyGroups.add(policyGroup);
         }
         MyBatisPlusUtils.batchSave(policyGroups, PolicyGroup.class);

@@ -27,6 +27,20 @@
                  @check-change="handleCheckChange"
         >
         </el-tree>
+        <el-table :data="policyGroups" size="mini">
+            <el-table-column prop="tag" label="名称"></el-table-column>
+            <el-table-column>
+                <template slot="header" slot-scope="scope">
+                    <span>是否延伸</span>
+                    <el-tooltip class="item" effect="dark" content="开启的情况下，会把角色传递给下级用户组的用户" placement="top-start">
+                        <i class="el-icon-question"/>
+                    </el-tooltip>
+                </template>
+                <template slot-scope="scope">
+                    <el-switch v-model="scope.row.isExtend" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+                </template>
+            </el-table-column>
+        </el-table>
     </el-form-item>
 </template>
 
@@ -77,65 +91,42 @@ export default {
     },
     methods: {
         loadGroup() {
-            return this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/group`).then(response => {
-                // 层级展示
-                let organizeGroup = this.organizeGroup([], response.data);
-                console.log(organizeGroup)
-                this.groups = organizeGroup;
+            return this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/group`, {params: {returnType: 'tree'}}).then(response => {
+                let groups = response.data;
+                this.organizeGroupTag('', groups)
+                this.groups = groups;
             })
         },
-        /**
-         * 组织树状数据结构
-         */
-        organizeGroup(nodes, groups) {
-            if (!nodes) {
-                nodes = [];
-            }
+        organizeGroupTag(parentTag, groups) {
             if (!groups || groups.length <= 0) {
-                return nodes;
+                return
             }
-            for (let group of groups) {
-                group.children = [];
-            }
-            let remain = [];
-            for (let group of groups) {
-                if (group.parentId === 0) { // 父节点放在根部
-                    group.tag = "/" + group.name;
-                    nodes.push(group);
-                } else {
-                    let node = this.findNode(group, nodes);
-                    if (node) {
-                        group.tag = node.tag + "/" + group.name;
-                        node.children.push(group);
-                    } else {
-                        remain.push(group)
-                    }
-                }
-            }
-            return this.organizeGroup(nodes, remain);
-        },
-        findNode(node, nodes) {
-            if (!nodes || nodes.length <= 0) {
-                return null;
-            }
-            for (let n of nodes) {
-                if (node.parentId === n.groupId) {
-                    return n;
-                } else {
-                    let findNode = this.findNode(node, n.children);
-                    if (findNode) {
-                        return findNode;
-                    }
-                }
-            }
-        },
 
+            for (let group of groups) {
+                group.tag = parentTag + "/" + group.name;
+                this.organizeGroupTag(group.tag, group.children)
+            }
+        },
 
         handleCheckChange(data, checked, indeterminate) {
             console.log(data, checked, indeterminate)
             if (checked) { // 选中 添加
                 let policyGroups = [];
-                policyGroups.push({groupId: data.groupId})
+                for (let policyGroup of this.policyGroups) {
+                    policyGroups.push({groupId: policyGroup.groupId, isExtend: policyGroup.isExtend, tag: policyGroup.tag})
+                }
+                // 如果已经有了，tag设置下
+                let has = false;
+                for (let policyGroup of policyGroups) {
+                    if (data.groupId === policyGroup.groupId) {
+                        has = true
+                        policyGroup.tag = data.tag;
+                        break
+                    }
+                }
+                if (!has) {
+                    policyGroups.push({groupId: data.groupId, isExtend: false, tag: data.tag})
+                }
                 this.policyGroups = policyGroups;
             } else { // 取消选中 删除
                 for (let i = 0; i < this.policyGroups.length; i++) {

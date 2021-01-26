@@ -39,7 +39,7 @@
                     </template>
                     <template slot-scope="scope">
                         <el-switch :value="scope.row.isExtend ? true : false"
-                                   @change="v => {updateRole(v, scope.row.groupRoleId)}"
+                                   @change="v => {updateRole(v, scope.row.roleId)}"
                                    active-color="#13ce66"
                                    inactive-color="#ff4949"></el-switch>
                     </template>
@@ -116,10 +116,10 @@ export default {
             }).finally(() => loading.close());
         },
 
-        updateRole(v, groupRoleId) {
+        updateRole(v, roleId) {
             const loading = this.$loading();
             this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/group/${this.groupId}/group-role/batch`, {
-                groupRoleIds: [groupRoleId], type: this.$constants.batchMethod.UPDATE, isExtend: v
+                roleIds: [roleId], type: this.$constants.batchMethod.UPDATE, isExtend: v
             }).then(response => {
                 this.loadRoles();
             }).finally(() => loading.close());

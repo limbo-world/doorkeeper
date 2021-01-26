@@ -16,6 +16,7 @@
 
 package org.limbo.doorkeeper.api.model.vo.policy;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -30,5 +31,8 @@ public class PolicyGroupVO {
     private Long policyId;
 
     private Long groupId;
+
+    @Schema(title = "是否向下延伸", description = "true的情况下，用户在子用户组也满足策略")
+    private Boolean isExtend;
 
 }

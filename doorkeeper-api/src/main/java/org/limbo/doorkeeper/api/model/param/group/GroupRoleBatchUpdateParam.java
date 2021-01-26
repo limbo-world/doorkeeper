@@ -35,11 +35,9 @@ public class GroupRoleBatchUpdateParam {
     @Schema(title = "操作类型", required = true)
     private BatchMethod type;
 
-    @Schema(title = "角色ID列表", description = "新增和删除的时候使用")
+    @NotEmpty(message = "角色ID列表不能为空")
+    @Schema(title = "角色ID列表", required = true)
     private List<Long> roleIds;
-
-    @Schema(title = "用户组角色ID",  description = "更新的时候使用")
-    private List<Long> groupRoleIds;
 
     @Schema(title = "是否向下延伸",  description = "更新的时候使用")
     private Boolean isExtend;

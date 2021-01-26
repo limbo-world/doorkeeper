@@ -53,4 +53,6 @@ public class GroupVO {
 
     private List<GroupRoleVO> roles;
 
+    private List<Long> groupIds;
+
 }

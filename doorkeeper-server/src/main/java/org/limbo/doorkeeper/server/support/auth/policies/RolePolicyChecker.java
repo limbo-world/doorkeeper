@@ -109,6 +109,9 @@ public class RolePolicyChecker extends AbstractPolicyChecker {
         return getPolicyLogic().isSatisfied(roleIds.size(), roles == null ? 0 : roles.size());
     }
 
+    /**
+     * 用户所在用户组的角色id
+     */
     private List<Long> userGroupRoleIds(Long userId) {
         List<Group> groups = groupMapper.selectList(Wrappers.<Group>lambdaQuery()
                 .eq(Group::getRealmId, policy.getRealmId())

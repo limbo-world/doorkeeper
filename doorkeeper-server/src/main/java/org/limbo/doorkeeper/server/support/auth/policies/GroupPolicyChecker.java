@@ -20,12 +20,20 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.model.param.auth.AuthorizationCheckParam;
+import org.limbo.doorkeeper.api.model.vo.GroupVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyGroupVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
+import org.limbo.doorkeeper.server.dal.entity.Group;
 import org.limbo.doorkeeper.server.dal.entity.GroupUser;
+import org.limbo.doorkeeper.server.dal.mapper.GroupMapper;
 import org.limbo.doorkeeper.server.dal.mapper.GroupUserMapper;
+import org.limbo.doorkeeper.server.support.GroupTool;
+import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author brozen
@@ -35,6 +43,9 @@ public class GroupPolicyChecker extends AbstractPolicyChecker {
 
     @Setter
     private GroupUserMapper groupUserMapper;
+
+    @Setter
+    private GroupMapper groupMapper;
 
     public GroupPolicyChecker(PolicyVO policy) {
         super(policy);
@@ -52,20 +63,75 @@ public class GroupPolicyChecker extends AbstractPolicyChecker {
      */
     @Override
     protected boolean doCheck(AuthorizationCheckParam<?> authorizationCheckParam) {
+        List<Group> groups = groupMapper.selectList(Wrappers.<Group>lambdaQuery()
+                .eq(Group::getRealmId, policy.getRealmId())
+        );
+        if (CollectionUtils.isEmpty(groups)) {
+            return false;
+        }
+        // 获取用户用户组关系
         List<GroupUser> groupUsers = groupUserMapper.selectList(Wrappers.<GroupUser>lambdaQuery()
                 .eq(GroupUser::getUserId, authorizationCheckParam.getUserId())
         );
         if (CollectionUtils.isEmpty(groupUsers)) {
             return false;
         }
-        for (PolicyGroupVO group : policy.getGroups()) {
-            for (GroupUser groupUser : groupUsers) {
-                if (group.getGroupId().equals(groupUser.getGroupId())) {
+
+        List<GroupVO> groupVOS = EnhancedBeanUtils.createAndCopyList(groups, GroupVO.class);
+        // 生成组织树
+        List<GroupVO> tree = GroupTool.organizeGroupTree(null, groupVOS);
+        // 传递组id
+        for (PolicyGroupVO policyGroup : policy.getGroups()) {
+            GroupVO group = GroupTool.findGroup(policyGroup.getGroupId(), tree);
+            if (group == null) {
+                continue;
+            }
+            if (group.getGroupIds() == null) {
+                group.setGroupIds(new ArrayList<>());
+            }
+            group.getGroupIds().add(policyGroup.getGroupId());
+
+            if (policyGroup.getIsExtend()) {
+                extendGroupId(policyGroup.getGroupId(), group.getChildren());
+            }
+        }
+        // 用户所在组织id
+        Set<Long> groupIds = new HashSet<>();
+        for (GroupUser groupUser : groupUsers) {
+            GroupVO group = GroupTool.findGroup(groupUser.getGroupId(), tree);
+            if (group == null) {
+                continue;
+            }
+            if (CollectionUtils.isNotEmpty(group.getGroupIds())) {
+                groupIds.addAll(group.getGroupIds());
+            }
+        }
+        // 判断用户的组id是否包含策略的组id
+        for (Long userGroupId : groupIds) {
+            for (PolicyGroupVO group : policy.getGroups()) {
+                if (group.getGroupId().equals(userGroupId)) {
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    /**
+     * 绑定用户组id
+     */
+    private void extendGroupId(Long groupId, List<GroupVO> children) {
+        if (CollectionUtils.isEmpty(children)) {
+            return;
+        }
+        for (GroupVO child : children) {
+            if (child.getGroupIds() == null) {
+                child.setGroupIds(new ArrayList<>());
+            }
+            child.getGroupIds().add(groupId);
+
+            extendGroupId(groupId, child.getChildren());
+        }
     }
 
 }

@@ -32,4 +32,7 @@ public class PolicyGroupAddParam {
     @Schema(title = "组", required = true)
     private Long groupId;
 
+    @Schema(title = "是否向下延伸", description = "true的情况下，用户在子用户组也满足策略")
+    private Boolean isExtend;
+
 }

@@ -99,6 +99,7 @@ public class PolicyCheckerFactory {
     public PolicyChecker newGroupPolicyChecker(PolicyVO policy) {
         GroupPolicyChecker userPolicyChecker = new GroupPolicyChecker(policy);
         userPolicyChecker.setGroupUserMapper(groupUserMapper);
+        userPolicyChecker.setGroupMapper(groupMapper);
         return userPolicyChecker;
     }
 

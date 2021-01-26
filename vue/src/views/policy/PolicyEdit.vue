@@ -110,13 +110,18 @@
             },
             addPolicy() {
                 this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.policy.clientId}/policy`, this.policy).then(response => {
-                    this.policy = response.data;
-                    this.loadPolicy();
+                    this.$message.success("更新成功")
+                    // todo 由于组策略 tag问题，先临时这样解决
+                    // this.policy = response.data;
+                    // this.loadPolicy();
                 })
             },
             updatePolicy() {
                 this.$ajax.put(`/admin/realm/${this.user.realm.realmId}/client/${this.policy.clientId}/policy/${this.policy.policyId}`, this.policy).then(response => {
-                    this.loadPolicy();
+                    this.$message.success("更新成功")
+                    window.location.reload();
+                    // todo 由于组策略 tag问题，先临时这样解决
+                    // this.loadPolicy();
                 })
             },
         }

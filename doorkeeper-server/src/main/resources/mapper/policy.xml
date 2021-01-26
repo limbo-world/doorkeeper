@@ -70,6 +70,7 @@
         <result column="policy_group_id" property="policyGroupId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="policy_id" property="policyId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="group_id" property="groupId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="is_extend" property="isExtend" jdbcType="BIT" javaType="java.lang.Boolean"/>
     </resultMap>
 
     <select id="getVOS" resultMap="PolicyVO">
@@ -79,7 +80,7 @@
         r.realm_id as role_realm_id, r.client_id as role_client_id, r.name as role_name, r.is_enabled as role_is_enabled,
         pu.policy_user_id as user_policy_user_id, pu.user_id as user_user_id,
         u.username as user_username,
-        pg.policy_group_id as group_policy_group_id, pg.group_id as group_group_id
+        pg.policy_group_id as group_policy_group_id, pg.group_id as group_group_id, pg.is_extend as group_is_extend
         from policy p
         left join policy_param pp on pp.policy_id = p.policy_id
         left join policy_role pr on pr.policy_id = p.policy_id
