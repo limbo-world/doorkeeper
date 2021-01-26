@@ -16,6 +16,7 @@
 
 package org.limbo.doorkeeper.server.service.policy;
 
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.exception.ParamException;
@@ -25,10 +26,11 @@ import org.limbo.doorkeeper.api.model.param.policy.PolicyBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.policy.PolicyQueryParam;
 import org.limbo.doorkeeper.api.model.param.policy.PolicyUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
+import org.limbo.doorkeeper.server.dal.entity.*;
+import org.limbo.doorkeeper.server.dal.entity.policy.*;
 import org.limbo.doorkeeper.server.dal.mapper.ClientMapper;
-import org.limbo.doorkeeper.server.dal.mapper.policy.PolicyMapper;
-import org.limbo.doorkeeper.server.dal.entity.Client;
-import org.limbo.doorkeeper.server.dal.entity.policy.Policy;
+import org.limbo.doorkeeper.server.dal.mapper.PermissionPolicyMapper;
+import org.limbo.doorkeeper.server.dal.mapper.policy.*;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.limbo.doorkeeper.server.utils.Verifies;
@@ -36,6 +38,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Devil
@@ -61,6 +66,21 @@ public class PolicyService {
 
     @Autowired
     private ClientMapper clientMapper;
+
+    @Autowired
+    private PermissionPolicyMapper permissionPolicyMapper;
+
+    @Autowired
+    private PolicyGroupMapper policyGroupMapper;
+
+    @Autowired
+    private PolicyUserMapper policyUserMapper;
+
+    @Autowired
+    private PolicyParamMapper policyParamMapper;
+
+    @Autowired
+    private PolicyRoleMapper policyRoleMapper;
 
     @Transactional
     public PolicyVO add(Long realmId, Long clientId, PolicyAddParam param) {
@@ -98,12 +118,46 @@ public class PolicyService {
     public void batchUpdate(Long realmId, Long clientId, PolicyBatchUpdateParam param) {
         switch (param.getType()) {
             case UPDATE:
+                if (CollectionUtils.isEmpty(param.getPolicyIds())) {
+                    return;
+                }
                 policyMapper.update(null, Wrappers.<Policy>lambdaUpdate()
                         .set(param.getIsEnabled() != null, Policy::getIsEnabled, param.getIsEnabled())
                         .in(Policy::getPolicyId, param.getPolicyIds())
                         .eq(Policy::getRealmId, realmId)
                         .eq(Policy::getClientId, clientId)
                 );
+            case DELETE:
+                if (CollectionUtils.isEmpty(param.getPolicyIds())) {
+                    return;
+                }
+                List<Policy> policies = policyMapper.selectList(Wrappers.<Policy>lambdaQuery()
+                        .select(Policy::getPolicyId)
+                        .eq(Policy::getRealmId, realmId)
+                        .eq(Policy::getClientId, clientId)
+                        .in(Policy::getPolicyId, param.getPolicyIds())
+                );
+                if (org.apache.commons.collections4.CollectionUtils.isEmpty(policies)) {
+                    return;
+                }
+                List<Long> policyIds = policies.stream().map(Policy::getPolicyId).collect(Collectors.toList());
+                policyMapper.deleteBatchIds(policyIds);
+                permissionPolicyMapper.delete(Wrappers.<PermissionPolicy>lambdaQuery()
+                        .in(PermissionPolicy::getPolicyId, policyIds)
+                );
+                policyGroupMapper.delete(Wrappers.<PolicyGroup>lambdaQuery()
+                        .in(PolicyGroup::getPolicyId, policyIds)
+                );
+                policyParamMapper.delete(Wrappers.<PolicyParam>lambdaQuery()
+                        .in(PolicyParam::getPolicyId, policyIds)
+                );
+                policyUserMapper.delete(Wrappers.<PolicyUser>lambdaQuery()
+                        .in(PolicyUser::getPolicyId, policyIds)
+                );
+                policyRoleMapper.delete(Wrappers.<PolicyRole>lambdaQuery()
+                        .in(PolicyRole::getPolicyId, policyIds)
+                );
+                break;
             default:
                 break;
         }

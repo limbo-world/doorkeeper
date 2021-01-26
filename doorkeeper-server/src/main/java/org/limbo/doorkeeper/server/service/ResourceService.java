@@ -146,6 +146,7 @@ public class ResourceService {
                 resourceUriMapper.delete(Wrappers.<ResourceUri>lambdaQuery()
                         .in(ResourceUri::getResourceId, resourceIds)
                 );
+                break;
             default:
                 break;
         }

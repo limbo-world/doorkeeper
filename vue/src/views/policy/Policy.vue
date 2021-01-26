@@ -71,6 +71,7 @@
                             <i class="el-icon-edit" @click="() => {
                                 $router.push({path: '/policy/policy-edit',query: {clientId: clientId, policyId: scope.row.policyId}})
                             }"></i>
+                            <i @click="()=>{deletePolicies([scope.row.policyId])}" class="el-icon-delete"></i>
                         </div>
                     </template>
                 </el-table-column>
@@ -159,7 +160,16 @@ export default {
             }).then(response => {
                 this.loadPolicies();
             }).finally(() => this.stopProgress());
-        }
+        },
+
+        deletePolicies(policyIds) {
+            this.dialogProcessing = true;
+            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/policy/batch`, {
+                type: this.$constants.batchMethod.DELETE, policyIds: policyIds
+            }).then(() => {
+                this.loadPolicies();
+            }).finally(() => this.dialogProcessing = false);
+        },
 
     }
 
