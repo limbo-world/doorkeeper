@@ -45,6 +45,7 @@ public class GroupPolicyChecker extends AbstractPolicyChecker {
      * {@inheritDoc}<br/>
      *
      * 检查授权校验参数中的用户是否在对应用户组
+     * 目前用户组有继承关系（后面考虑做成可配置的）
      *
      * @param authorizationCheckParam 授权校验参数
      * @return

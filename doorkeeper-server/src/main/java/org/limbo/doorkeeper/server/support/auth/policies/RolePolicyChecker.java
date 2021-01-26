@@ -19,18 +19,15 @@ package org.limbo.doorkeeper.server.support.auth.policies;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
+import org.limbo.doorkeeper.api.model.param.auth.AuthorizationCheckParam;
+import org.limbo.doorkeeper.api.model.vo.GroupRoleVO;
+import org.limbo.doorkeeper.api.model.vo.GroupVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyRoleVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
-import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.server.dal.mapper.GroupMapper;
-import org.limbo.doorkeeper.server.dal.mapper.GroupRoleMapper;
-import org.limbo.doorkeeper.server.dal.mapper.GroupUserMapper;
-import org.limbo.doorkeeper.server.dal.mapper.UserRoleMapper;
-import org.limbo.doorkeeper.server.dal.entity.Group;
-import org.limbo.doorkeeper.server.dal.entity.GroupRole;
-import org.limbo.doorkeeper.server.dal.entity.GroupUser;
-import org.limbo.doorkeeper.server.dal.entity.UserRole;
-import org.limbo.doorkeeper.api.model.param.auth.AuthorizationCheckParam;
+import org.limbo.doorkeeper.server.dal.entity.*;
+import org.limbo.doorkeeper.server.dal.mapper.*;
+import org.limbo.doorkeeper.server.support.GroupTool;
+import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,10 +52,18 @@ public class RolePolicyChecker extends AbstractPolicyChecker {
     @Setter
     private GroupMapper groupMapper;
 
+    @Setter
+    private RoleMapper roleMapper;
+
     public RolePolicyChecker(PolicyVO policy) {
         super(policy);
     }
 
+    /**
+     * 获取用户角色  以及用户所在用户组角色（目前用户组角色是继承的，后面可以做成可配置的方式）
+     * @param authorizationCheckParam 授权校验参数
+     * @return
+     */
     @Override
     protected boolean doCheck(AuthorizationCheckParam<?> authorizationCheckParam) {
         // 策略绑定的角色 去除未启用的
@@ -75,72 +80,103 @@ public class RolePolicyChecker extends AbstractPolicyChecker {
                 .eq(UserRole::getUserId, authorizationCheckParam.getUserId())
                 .in(UserRole::getRoleId, roleIds)
         );
+        if (CollectionUtils.isEmpty(userRoles)) {
+            userRoles = new ArrayList<>();
+        }
         Set<Long> userRoleIds = userRoles.stream()
                 .map(UserRole::getRoleId)
                 .collect(Collectors.toSet());
 
         // 用户所在用户组的角色
-        List<GroupUser> groupUsers = groupUserMapper.selectList(Wrappers.<GroupUser>lambdaQuery()
-                .eq(GroupUser::getUserId, authorizationCheckParam.getUserId())
-        );
-        if (CollectionUtils.isNotEmpty(groupUsers)) {
-            List<Long> groupIds = userGroupTreeIds(authorizationCheckParam.getUserId());
-            List<GroupRole> groupRoles = groupRoleMapper.selectList(Wrappers.<GroupRole>lambdaQuery()
-                    .select(GroupRole::getRoleId)
-                    .in(GroupRole::getGroupId, groupIds)
-                    .in(GroupRole::getRoleId, roleIds)
-            );
-            if (CollectionUtils.isNotEmpty(groupRoles)) {
-                userRoleIds.addAll(groupRoles.stream().map(GroupRole::getRoleId).collect(Collectors.toList()));
-            }
+        userRoleIds.addAll(userGroupRoleIds(authorizationCheckParam.getUserId()));
+
+        if (CollectionUtils.isEmpty(userRoleIds)) {
+            return false;
         }
 
+        // 获取策略角色
+        userRoleIds = userRoleIds.stream().filter(roleIds::contains).collect(Collectors.toSet());
+        if (CollectionUtils.isEmpty(userRoleIds)) {
+            return false;
+        }
+
+        List<Role> roles = roleMapper.selectList(Wrappers.<Role>lambdaQuery()
+                .eq(Role::getIsEnabled, true)
+                .in(Role::getRoleId, userRoleIds)
+        );
 
         // 解析策略逻辑，判断是否满足逻辑条件
-        return getPolicyLogic().isSatisfied(roleIds.size(), userRoleIds.size());
+        return getPolicyLogic().isSatisfied(roleIds.size(), roles == null ? 0 : roles.size());
     }
 
-    /**
-     * 用户组id 包含父级 比如 用户属于组 A11 获取 A -> A1 -> A11 3 个
-     */
-    private List<Long> userGroupTreeIds(Long userId) {
-        // 用户在哪些组
+    private List<Long> userGroupRoleIds(Long userId) {
+        List<Group> groups = groupMapper.selectList(Wrappers.<Group>lambdaQuery()
+                .eq(Group::getRealmId, policy.getRealmId())
+        );
+        if (CollectionUtils.isEmpty(groups)) {
+            return new ArrayList<>();
+        }
+        // 获取用户组角色
+        List<GroupRole> groupRoles = groupRoleMapper.selectList(Wrappers.<GroupRole>lambdaQuery()
+                .in(GroupRole::getGroupId, groups.stream().map(Group::getGroupId).collect(Collectors.toSet()))
+        );
+        if (CollectionUtils.isEmpty(groupRoles)) {
+            return new ArrayList<>();
+        }
+        // 获取用户用户组关系
         List<GroupUser> groupUsers = groupUserMapper.selectList(Wrappers.<GroupUser>lambdaQuery()
                 .eq(GroupUser::getUserId, userId)
         );
         if (CollectionUtils.isEmpty(groupUsers)) {
             return new ArrayList<>();
         }
-        List<Long> groupIds = groupUsers.stream().map(GroupUser::getGroupId).collect(Collectors.toList());
-        List<Group> groups = groupMapper.selectList(Wrappers.<Group>lambdaQuery()
-                .in(Group::getGroupId, groupIds)
-        );
-        if (CollectionUtils.isEmpty(groups)) {
-            return new ArrayList<>();
-        }
 
-        // 循环获取用户组织结构 比如 用户属于组 A11 获取 A -> A1 -> A11 3 个
-        List<Long> parentIds = groups.stream().map(Group::getParentId)
-                .filter(id -> !DoorkeeperConstants.DEFAULT_ID.equals(id)).collect(Collectors.toList());
-        int i = 0; // 防止死循环
-        while (i < 10) {
-            if (CollectionUtils.isEmpty(parentIds)) {
-                break;
-            }
-            List<Group> parents = groupMapper.selectList(Wrappers.<Group>lambdaQuery()
-                    .in(Group::getGroupId, parentIds)
-            );
-            if (CollectionUtils.isEmpty(parents)) {
-                break;
-            }
-            groups.addAll(parents);
+        List<GroupVO> groupVOS = EnhancedBeanUtils.createAndCopyList(groups, GroupVO.class);
+        List<GroupRoleVO> groupRoleVOS = EnhancedBeanUtils.createAndCopyList(groupRoles, GroupRoleVO.class);
 
-            // 如果父节点为 0 则已经是顶级节点 排除掉
-            parentIds = parents.stream().map(Group::getParentId)
-                    .filter(id -> !DoorkeeperConstants.DEFAULT_ID.equals(id)).collect(Collectors.toList());
-            i++;
+        // 生成组织树
+        List<GroupVO> tree = GroupTool.organizeGroupTree(null, groupVOS);
+        // 给树绑定角色
+        for (GroupRoleVO groupRoleVO : groupRoleVOS) {
+            GroupVO group = GroupTool.findGroup(groupRoleVO.getGroupId(), tree);
+            if (group == null) {
+                continue;
+            }
+            if (group.getRoles() == null) {
+                group.setRoles(new ArrayList<>());
+            }
+            group.getRoles().add(groupRoleVO);
+
+            if (groupRoleVO.getIsExtend()) {
+                extendGroupRole(groupRoleVO, group.getChildren());
+            }
         }
-        return groups.stream().map(Group::getGroupId).collect(Collectors.toList());
+        // 获取用户组织角色
+        List<Long> roleIds = new ArrayList<>();
+        for (GroupUser groupUser : groupUsers) {
+            GroupVO group = GroupTool.findGroup(groupUser.getGroupId(), tree);
+            if (group == null) {
+                continue;
+            }
+            if (CollectionUtils.isNotEmpty(group.getRoles())) {
+                roleIds.addAll(group.getRoles().stream().map(GroupRoleVO::getRoleId).collect(Collectors.toList()));
+            }
+        }
+        return roleIds;
+    }
+
+    private void extendGroupRole(GroupRoleVO groupRoleVO, List<GroupVO> children) {
+        if (CollectionUtils.isEmpty(children)) {
+            return;
+        }
+        for (GroupVO child : children) {
+            if (child.getRoles() == null) {
+                child.setRoles(new ArrayList<>());
+            }
+            child.getRoles().add(groupRoleVO);
+
+            extendGroupRole(groupRoleVO, child.getChildren());
+        }
     }
 
 }

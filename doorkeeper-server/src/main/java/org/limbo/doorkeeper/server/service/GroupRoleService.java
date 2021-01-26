@@ -64,6 +64,12 @@ public class GroupRoleService {
                         .in(GroupRole::getRoleId, param.getRoleIds())
                 );
                 break;
+            case UPDATE: // 更新
+                groupRoleMapper.update(null, Wrappers.<GroupRole>lambdaUpdate()
+                        .set(GroupRole::getIsExtend, param.getIsExtend())
+                        .in(GroupRole::getGroupRoleId, param.getGroupRoleIds())
+                );
+                break;
             default:
                 break;
         }

@@ -27,6 +27,7 @@
         <result column="name" property="name" jdbcType="VARCHAR" javaType="java.lang.String" />
         <result column="description" property="description" jdbcType="VARCHAR" javaType="java.lang.String" />
         <result column="is_default" property="isDefault" jdbcType="BIT" javaType="java.lang.Boolean" />
+        <result column="is_extend" property="isExtend" jdbcType="BIT" javaType="java.lang.Boolean" />
         <result column="is_combine" property="isCombine" jdbcType="BIT" javaType="java.lang.Boolean" />
         <result column="is_enabled" property="isEnabled" jdbcType="BIT" javaType="java.lang.Boolean" />
     </resultMap>
@@ -41,7 +42,7 @@
     </insert>
 
     <select id="listVOS" resultMap="GroupRoleVO">
-        select r.*, gr.group_role_id, gr.group_id
+        select r.*, gr.group_role_id, gr.group_id, gr.is_extend
         from `role` r
         left join group_role gr on gr.role_id = r.role_id and gr.group_id = #{groupId}
         <where>

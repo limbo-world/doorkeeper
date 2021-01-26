@@ -36,4 +36,11 @@ public class PolicyGroup {
     private Long policyId;
 
     private Long groupId;
+    /**
+     * 是否向下延伸
+     * true的情况下，会把角色传递给子用户组
+     * 策略判断时，用户在子用户组也表示满足策略
+     */
+    private Boolean isExtend;
+
 }

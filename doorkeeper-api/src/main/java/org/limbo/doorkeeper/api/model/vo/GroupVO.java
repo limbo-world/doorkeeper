@@ -20,6 +20,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Devil
@@ -47,5 +48,9 @@ public class GroupVO {
     private Date createTime;
 
     private Date updateTime;
+
+    private List<GroupVO> children;
+
+    private List<GroupRoleVO> roles;
 
 }

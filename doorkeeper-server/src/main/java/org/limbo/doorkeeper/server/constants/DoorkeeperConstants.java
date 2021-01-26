@@ -47,4 +47,6 @@ public interface DoorkeeperConstants {
     String NICKNAME = "nickname";
 
     String KV_DELIMITER = "=";
+
+    String TREE = "tree";
 }

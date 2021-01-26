@@ -115,55 +115,9 @@ export default {
             return data.name.indexOf(value) !== -1;
         },
         loadGroup() {
-            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/group`).then(response => {
-                // 层级展示
-                let organizeGroup = this.organizeGroup([], response.data);
-                console.log(organizeGroup)
-                this.groups = organizeGroup;
+            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/group`, {params: {returnType: 'tree'}}).then(response => {
+                this.groups = response.data;
             })
-        },
-        /**
-         * 组织树状数据结构
-         */
-        organizeGroup(nodes, groups) {
-            if (!nodes) {
-                nodes = [];
-            }
-            if (!groups || groups.length <= 0) {
-                return nodes;
-            }
-            for (let group of groups) {
-                group.children = [];
-            }
-            let remain = [];
-            for (let group of groups) {
-                if (group.parentId === 0) { // 父节点放在根部
-                    nodes.push(group);
-                } else {
-                    let node = this.findNode(group, nodes);
-                    if (node) {
-                        node.children.push(group);
-                    } else {
-                        remain.push(group)
-                    }
-                }
-            }
-            return this.organizeGroup(nodes, remain);
-        },
-        findNode(node, nodes) {
-            if (!nodes || nodes.length <= 0) {
-                return null;
-            }
-            for (let n of nodes) {
-                if (node.parentId === n.groupId) {
-                    return n;
-                } else {
-                    let findNode = this.findNode(node, n.children);
-                    if (findNode) {
-                        return findNode;
-                    }
-                }
-            }
         },
         /**
          * 移动节点

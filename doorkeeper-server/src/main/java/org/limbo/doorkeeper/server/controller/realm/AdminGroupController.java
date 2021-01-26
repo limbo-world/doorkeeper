@@ -25,10 +25,12 @@ import org.limbo.doorkeeper.api.model.param.group.*;
 import org.limbo.doorkeeper.api.model.vo.GroupRoleVO;
 import org.limbo.doorkeeper.api.model.vo.GroupUserVO;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
+import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.controller.BaseController;
 import org.limbo.doorkeeper.server.service.GroupRoleService;
 import org.limbo.doorkeeper.server.service.GroupService;
 import org.limbo.doorkeeper.server.service.GroupUserService;
+import org.limbo.doorkeeper.server.support.GroupTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -63,8 +65,12 @@ public class AdminGroupController extends BaseController {
 
     @Operation(summary = "返回所有用户组")
     @GetMapping
-    public Response<List<GroupVO>> list() {
-        return Response.success(groupService.list(getRealmId()));
+    public Response<List<GroupVO>> list(@RequestParam(value = "returnType", required = false) String returnType) {
+        List<GroupVO> groups = groupService.list(getRealmId());
+        if (DoorkeeperConstants.TREE.equals(returnType)) {
+            return Response.success(GroupTool.organizeGroupTree(null, groups));
+        }
+        return Response.success(groups);
     }
 
     @Operation(summary = "根据id查询用户组")

@@ -52,4 +52,8 @@ public class GroupRoleVO {
 
     @Schema(title = "是否默认添加")
     private Boolean isDefault;
+
+    @Schema(title = "是否向下延伸", description = "true的情况下，会把角色传递给子用户组的用户")
+    private Boolean isExtend;
+
 }

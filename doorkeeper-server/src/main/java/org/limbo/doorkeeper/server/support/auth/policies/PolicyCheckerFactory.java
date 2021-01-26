@@ -45,6 +45,9 @@ public class PolicyCheckerFactory {
     @Autowired
     private GroupMapper groupMapper;
 
+    @Autowired
+    private RoleMapper roleMapper;
+
     /**
      * 根据策略类型创建策略检查器
      *
@@ -115,6 +118,7 @@ public class PolicyCheckerFactory {
         rolePolicyChecker.setGroupUserMapper(groupUserMapper);
         rolePolicyChecker.setUserRoleMapper(userRoleMapper);
         rolePolicyChecker.setGroupMapper(groupMapper);
+        rolePolicyChecker.setRoleMapper(roleMapper);
         return rolePolicyChecker;
     }
 

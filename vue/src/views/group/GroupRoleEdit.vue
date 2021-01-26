@@ -30,6 +30,20 @@
                                    inactive-color="#ff4949"></el-switch>
                     </template>
                 </el-table-column>
+                <el-table-column>
+                    <template slot="header" slot-scope="scope">
+                        <span>是否延伸</span>
+                        <el-tooltip class="item" effect="dark" content="开启的情况下，会把角色传递给下级用户组的用户" placement="top-start">
+                            <i class="el-icon-question" />
+                        </el-tooltip>
+                    </template>
+                    <template slot-scope="scope">
+                        <el-switch :value="scope.row.isExtend ? true : false"
+                                   @change="v => {updateRole(v, scope.row.groupRoleId)}"
+                                   active-color="#13ce66"
+                                   inactive-color="#ff4949"></el-switch>
+                    </template>
+                </el-table-column>
             </el-table>
         </el-main>
 
@@ -100,7 +114,16 @@ export default {
             }).then(response => {
                 this.loadRoles();
             }).finally(() => loading.close());
-        }
+        },
+
+        updateRole(v, groupRoleId) {
+            const loading = this.$loading();
+            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/group/${this.groupId}/group-role/batch`, {
+                groupRoleIds: [groupRoleId], type: this.$constants.batchMethod.UPDATE, isExtend: v
+            }).then(response => {
+                this.loadRoles();
+            }).finally(() => loading.close());
+        },
 
     }
 
