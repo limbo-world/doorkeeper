@@ -69,6 +69,7 @@
                                 $router.push({path: '/resource/resource-edit',query: {
                                     clientId: clientId, resourceId: scope.row.resourceId}
                                 })}"></i>
+                            <i @click="()=>{deleteResources([scope.row.resourceId])}" class="el-icon-delete"></i>
                         </div>
                     </template>
                 </el-table-column>
@@ -88,7 +89,6 @@
 
 <script>
 
-import AppConstants from "@/utils/AppConstants";
 import {mapActions, mapState} from 'vuex';
 
 export default {
@@ -108,7 +108,6 @@ export default {
             },
             resources: [],
             selectResources: [],
-            batchMethod: AppConstants.batchMethod
         };
     },
 
@@ -155,11 +154,20 @@ export default {
             }
             this.startProgress();
             return this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/resource/batch`, {
-                type: this.batchMethod.UPDATE, isEnabled: v, resourceIds: resourceIds
+                type: this.$constants.batchMethod.UPDATE, isEnabled: v, resourceIds: resourceIds
             }).then(response => {
                 this.loadResources();
             }).finally(() => this.stopProgress());
-        }
+        },
+
+        deleteResources(resourceIds) {
+            this.dialogProcessing = true;
+            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/resource/batch`, {
+                type: this.$constants.batchMethod.DELETE, resourceIds: resourceIds
+            }).then(() => {
+                this.loadResources();
+            }).finally(() => this.dialogProcessing = false);
+        },
 
     }
 

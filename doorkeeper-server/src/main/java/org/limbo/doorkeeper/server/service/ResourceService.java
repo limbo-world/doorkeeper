@@ -25,14 +25,8 @@ import org.limbo.doorkeeper.api.model.vo.ResourceTagVO;
 import org.limbo.doorkeeper.api.model.vo.ResourceUriVO;
 import org.limbo.doorkeeper.api.model.vo.ResourceVO;
 import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.server.dal.mapper.ClientMapper;
-import org.limbo.doorkeeper.server.dal.mapper.ResourceMapper;
-import org.limbo.doorkeeper.server.dal.mapper.ResourceTagMapper;
-import org.limbo.doorkeeper.server.dal.mapper.ResourceUriMapper;
-import org.limbo.doorkeeper.server.dal.entity.Client;
-import org.limbo.doorkeeper.server.dal.entity.Resource;
-import org.limbo.doorkeeper.server.dal.entity.ResourceTag;
-import org.limbo.doorkeeper.server.dal.entity.ResourceUri;
+import org.limbo.doorkeeper.server.dal.entity.*;
+import org.limbo.doorkeeper.server.dal.mapper.*;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.limbo.doorkeeper.server.utils.Verifies;
@@ -43,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Devil
@@ -56,6 +51,9 @@ public class ResourceService {
 
     @Autowired
     private ClientMapper clientMapper;
+
+    @Autowired
+    private PermissionResourceMapper permissionResourceMapper;
 
     @Autowired
     private ResourceUriMapper resourceUriMapper;
@@ -115,11 +113,38 @@ public class ResourceService {
     public void batchUpdate(Long realmId, Long clientId, ResourceBatchUpdateParam param) {
         switch (param.getType()) {
             case UPDATE:
+                if (CollectionUtils.isEmpty(param.getResourceIds())) {
+                    return;
+                }
                 resourceMapper.update(null, Wrappers.<Resource>lambdaUpdate()
                         .set(param.getIsEnabled() != null, Resource::getIsEnabled, param.getIsEnabled())
                         .in(Resource::getResourceId, param.getResourceIds())
                         .eq(Resource::getRealmId, realmId)
                         .eq(Resource::getClientId, clientId)
+                );
+            case DELETE:
+                if (CollectionUtils.isEmpty(param.getResourceIds())) {
+                    return;
+                }
+                List<Resource> resources = resourceMapper.selectList(Wrappers.<Resource>lambdaQuery()
+                        .select(Resource::getResourceId)
+                        .eq(Resource::getRealmId, realmId)
+                        .eq(Resource::getClientId, clientId)
+                        .in(Resource::getResourceId, param.getResourceIds())
+                );
+                if (CollectionUtils.isEmpty(resources)) {
+                    return;
+                }
+                List<Long> resourceIds = resources.stream().map(Resource::getResourceId).collect(Collectors.toList());
+                resourceMapper.deleteBatchIds(resourceIds);
+                permissionResourceMapper.delete(Wrappers.<PermissionResource>lambdaQuery()
+                        .in(PermissionResource::getResourceId, resourceIds)
+                );
+                resourceTagMapper.delete(Wrappers.<ResourceTag>lambdaQuery()
+                        .in(ResourceTag::getResourceId, resourceIds)
+                );
+                resourceUriMapper.delete(Wrappers.<ResourceUri>lambdaQuery()
+                        .in(ResourceUri::getResourceId, resourceIds)
                 );
             default:
                 break;

@@ -19,7 +19,7 @@
         <el-main>
             <el-form :model="permission" label-width="120px" size="mini" class="edit-form" ref="editForm">
                 <el-form-item label="名称" prop="name">
-                    <el-input v-model="permission.name"></el-input>
+                    <el-input v-model="permission.name" :disabled="permission.permissionId"></el-input>
                 </el-form-item>
                 <el-form-item label="描述">
                     <el-input type="textarea" v-model="permission.description"></el-input>
