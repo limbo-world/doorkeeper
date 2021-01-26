@@ -161,12 +161,23 @@ export default {
         },
 
         deleteResources(resourceIds) {
-            this.dialogProcessing = true;
-            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/resource/batch`, {
-                type: this.$constants.batchMethod.DELETE, resourceIds: resourceIds
+            this.$confirm('确认删除, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
             }).then(() => {
-                this.loadResources();
-            }).finally(() => this.dialogProcessing = false);
+                this.dialogProcessing = true;
+                this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/resource/batch`, {
+                    type: this.$constants.batchMethod.DELETE, resourceIds: resourceIds
+                }).then(() => {
+                    this.loadResources();
+                }).finally(() => this.dialogProcessing = false);
+            }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '已取消删除'
+                });
+            });
         },
 
     }

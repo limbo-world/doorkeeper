@@ -151,12 +151,23 @@ export default {
         },
 
         deletePermissions(permissionIds) {
-            this.dialogProcessing = true;
-            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/permission/batch`, {
-                type: this.$constants.batchMethod.DELETE, permissionIds: permissionIds
+            this.$confirm('确认删除, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
             }).then(() => {
-                this.loadPermissions();
-            }).finally(() => this.dialogProcessing = false);
+                this.dialogProcessing = true;
+                this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/permission/batch`, {
+                    type: this.$constants.batchMethod.DELETE, permissionIds: permissionIds
+                }).then(() => {
+                    this.loadPermissions();
+                }).finally(() => this.dialogProcessing = false);
+            }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '已取消删除'
+                });
+            });
         },
 
     }
