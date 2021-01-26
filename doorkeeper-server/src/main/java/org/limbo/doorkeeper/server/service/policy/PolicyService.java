@@ -127,6 +127,7 @@ public class PolicyService {
                         .eq(Policy::getRealmId, realmId)
                         .eq(Policy::getClientId, clientId)
                 );
+                break;
             case DELETE:
                 if (CollectionUtils.isEmpty(param.getPolicyIds())) {
                     return;

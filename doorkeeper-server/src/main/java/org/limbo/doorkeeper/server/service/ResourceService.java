@@ -122,6 +122,7 @@ public class ResourceService {
                         .eq(Resource::getRealmId, realmId)
                         .eq(Resource::getClientId, clientId)
                 );
+                break;
             case DELETE:
                 if (CollectionUtils.isEmpty(param.getResourceIds())) {
                     return;

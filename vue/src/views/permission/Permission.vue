@@ -60,6 +60,7 @@
                                     clientId: clientId, permissionId: scope.row.permissionId}
                                 })
                             }"></i>
+                            <i @click="()=>{deletePermissions([scope.row.permissionId])}" class="el-icon-delete"></i>
                         </div>
                     </template>
                 </el-table-column>
@@ -147,7 +148,16 @@ export default {
             }).then(response => {
                 this.loadPermissions();
             }).finally(() => this.stopProgress());
-        }
+        },
+
+        deletePermissions(permissionIds) {
+            this.dialogProcessing = true;
+            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/permission/batch`, {
+                type: this.$constants.batchMethod.DELETE, permissionIds: permissionIds
+            }).then(() => {
+                this.loadPermissions();
+            }).finally(() => this.dialogProcessing = false);
+        },
 
     }
 

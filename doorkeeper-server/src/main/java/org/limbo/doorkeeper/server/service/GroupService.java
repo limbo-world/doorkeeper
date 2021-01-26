@@ -22,11 +22,18 @@ import org.limbo.doorkeeper.api.model.param.group.GroupAddParam;
 import org.limbo.doorkeeper.api.model.param.group.GroupUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
 import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.server.dal.mapper.GroupMapper;
-import org.limbo.doorkeeper.server.dal.mapper.RealmMapper;
 import org.limbo.doorkeeper.server.dal.entity.Group;
+import org.limbo.doorkeeper.server.dal.entity.GroupRole;
+import org.limbo.doorkeeper.server.dal.entity.GroupUser;
 import org.limbo.doorkeeper.server.dal.entity.Realm;
+import org.limbo.doorkeeper.server.dal.entity.policy.PolicyGroup;
+import org.limbo.doorkeeper.server.dal.mapper.GroupMapper;
+import org.limbo.doorkeeper.server.dal.mapper.GroupRoleMapper;
+import org.limbo.doorkeeper.server.dal.mapper.GroupUserMapper;
+import org.limbo.doorkeeper.server.dal.mapper.RealmMapper;
+import org.limbo.doorkeeper.server.dal.mapper.policy.PolicyGroupMapper;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -46,6 +53,15 @@ public class GroupService {
 
     @Autowired
     private RealmMapper realmMapper;
+
+    @Autowired
+    private GroupRoleMapper groupRoleMapper;
+
+    @Autowired
+    private GroupUserMapper groupUserMapper;
+
+    @Autowired
+    private PolicyGroupMapper policyGroupMapper;
 
     @Transactional
     public GroupVO add(Long realmId, GroupAddParam param) {
@@ -110,6 +126,34 @@ public class GroupService {
                 .set(param.getParentId() != null, Group::getParentId, param.getParentId())
                 .eq(Group::getGroupId, groupId)
                 .eq(Group::getRealmId, realmId)
+        );
+    }
+
+    @Transactional
+    public void delete(Long realmId, Long groupId) {
+        Integer num = groupMapper.selectCount(Wrappers.<Group>lambdaQuery()
+                .eq(Group::getGroupId, groupId)
+                .eq(Group::getRealmId, realmId)
+        );
+        if (num <= 0) {
+            return;
+        }
+        // 如果还有子节点，需要先删除子节点
+        num = groupMapper.selectCount(Wrappers.<Group>lambdaQuery()
+                .eq(Group::getParentId, groupId)
+                .eq(Group::getRealmId, realmId)
+        );
+        Verifies.verify(num <= 0, "用户组还有子节点，请先删除");
+
+        groupMapper.deleteById(groupId);
+        groupRoleMapper.delete(Wrappers.<GroupRole>lambdaQuery()
+                .eq(GroupRole::getGroupId, groupId)
+        );
+        groupUserMapper.delete(Wrappers.<GroupUser>lambdaQuery()
+                .eq(GroupUser::getGroupId, groupId)
+        );
+        policyGroupMapper.delete(Wrappers.<PolicyGroup>lambdaQuery()
+                .eq(PolicyGroup::getGroupId, groupId)
         );
     }
 }

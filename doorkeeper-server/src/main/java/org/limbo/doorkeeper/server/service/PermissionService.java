@@ -17,6 +17,7 @@
 package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.permission.PermissionAddParam;
@@ -25,10 +26,14 @@ import org.limbo.doorkeeper.api.model.param.permission.PermissionQueryParam;
 import org.limbo.doorkeeper.api.model.param.permission.PermissionUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.limbo.doorkeeper.server.dal.dao.PermissionDao;
-import org.limbo.doorkeeper.server.dal.mapper.ClientMapper;
-import org.limbo.doorkeeper.server.dal.mapper.PermissionMapper;
 import org.limbo.doorkeeper.server.dal.entity.Client;
 import org.limbo.doorkeeper.server.dal.entity.Permission;
+import org.limbo.doorkeeper.server.dal.entity.PermissionPolicy;
+import org.limbo.doorkeeper.server.dal.entity.PermissionResource;
+import org.limbo.doorkeeper.server.dal.mapper.ClientMapper;
+import org.limbo.doorkeeper.server.dal.mapper.PermissionMapper;
+import org.limbo.doorkeeper.server.dal.mapper.PermissionPolicyMapper;
+import org.limbo.doorkeeper.server.dal.mapper.PermissionResourceMapper;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.limbo.doorkeeper.server.utils.Verifies;
@@ -38,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Devil
@@ -60,6 +66,12 @@ public class PermissionService {
 
     @Autowired
     private PermissionResourceService permissionResourceService;
+
+    @Autowired
+    private PermissionPolicyMapper permissionPolicyMapper;
+
+    @Autowired
+    private PermissionResourceMapper permissionResourceMapper;
 
     @Transactional
     public PermissionVO add(Long realmId, Long clientId, PermissionAddParam param) {
@@ -89,12 +101,38 @@ public class PermissionService {
     public void batchUpdate(Long realmId, Long clientId, PermissionBatchUpdateParam param) {
         switch (param.getType()) {
             case UPDATE:
+                if (CollectionUtils.isEmpty(param.getPermissionIds())) {
+                    return;
+                }
                 permissionMapper.update(null, Wrappers.<Permission>lambdaUpdate()
                         .set(param.getIsEnabled() != null, Permission::getIsEnabled, param.getIsEnabled())
                         .in(Permission::getPermissionId, param.getPermissionIds())
                         .eq(Permission::getRealmId, realmId)
                         .eq(Permission::getClientId, clientId)
                 );
+                break;
+            case DELETE:
+                if (CollectionUtils.isEmpty(param.getPermissionIds())) {
+                    return;
+                }
+                List<Permission> permissions = permissionMapper.selectList(Wrappers.<Permission>lambdaQuery()
+                        .select(Permission::getPermissionId)
+                        .eq(Permission::getRealmId, realmId)
+                        .eq(Permission::getClientId, clientId)
+                        .in(Permission::getPermissionId, param.getPermissionIds())
+                );
+                if (CollectionUtils.isEmpty(permissions)) {
+                    return;
+                }
+                List<Long> permissionIds = permissions.stream().map(Permission::getPermissionId).collect(Collectors.toList());
+                permissionMapper.deleteBatchIds(permissionIds);
+                permissionResourceMapper.delete(Wrappers.<PermissionResource>lambdaQuery()
+                        .in(PermissionResource::getPermissionId, permissionIds)
+                );
+                permissionPolicyMapper.delete(Wrappers.<PermissionPolicy>lambdaQuery()
+                        .in(PermissionPolicy::getPermissionId, permissionIds)
+                );
+                break;
             default:
                 break;
         }

@@ -86,11 +86,18 @@ public class AdminGroupController extends BaseController {
         return Response.success(groupService.get(getRealmId(), parentId, name));
     }
 
-    @Operation(summary = "更新用户")
+    @Operation(summary = "更新用户组")
     @PutMapping("/{groupId}")
     public Response<Void> update(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId,
                                    @Validated @RequestBody GroupUpdateParam param) {
         groupService.update(getRealmId(), groupId, param);
+        return Response.success();
+    }
+
+    @Operation(summary = "删除用户组")
+    @DeleteMapping("/{groupId}")
+    public Response<Void> delete(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId) {
+        groupService.delete(getRealmId(), groupId);
         return Response.success();
     }
 

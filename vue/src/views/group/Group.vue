@@ -39,8 +39,7 @@
                         <el-button type="text"
                                    @click="() => {dialogOpened = true; group = {parentId: node.data.groupId}}">新增</el-button>
                         <el-button type="text" @click="toGroupEdit(node.data.groupId)">编辑</el-button>
-                        <!-- 还没做 -->
-                        <!--                        <el-button type="text" size="mini" @click="() => removeGroup(node.data.groupId)">删除</el-button>-->
+                        <el-button type="text" size="mini" @click="() => removeGroup(node.data.groupId)">删除</el-button>
                     </span>
                 </span>
                 </el-tree>
