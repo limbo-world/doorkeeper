@@ -16,14 +16,22 @@
 
 package org.limbo.doorkeeper.server.service;
 
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.limbo.doorkeeper.api.exception.ParamException;
 import org.limbo.doorkeeper.api.model.param.role.RoleAddParam;
+import org.limbo.doorkeeper.api.model.param.role.RoleBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.role.RoleQueryParam;
 import org.limbo.doorkeeper.api.model.param.role.RoleUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
-import org.limbo.doorkeeper.server.dal.mapper.RoleMapper;
+import org.limbo.doorkeeper.server.dal.entity.GroupRole;
 import org.limbo.doorkeeper.server.dal.entity.Role;
+import org.limbo.doorkeeper.server.dal.entity.UserRole;
+import org.limbo.doorkeeper.server.dal.entity.policy.PolicyRole;
+import org.limbo.doorkeeper.server.dal.mapper.GroupRoleMapper;
+import org.limbo.doorkeeper.server.dal.mapper.RoleMapper;
+import org.limbo.doorkeeper.server.dal.mapper.UserRoleMapper;
+import org.limbo.doorkeeper.server.dal.mapper.policy.PolicyRoleMapper;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +40,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Devil
@@ -42,6 +51,15 @@ public class RoleService {
 
     @Autowired
     private RoleMapper roleMapper;
+
+    @Autowired
+    private GroupRoleMapper groupRoleMapper;
+
+    @Autowired
+    private PolicyRoleMapper policyRoleMapper;
+
+    @Autowired
+    private UserRoleMapper userRoleMapper;
 
     @Transactional
     public RoleVO add(Long realmId, Long clientId, RoleAddParam param) {
@@ -78,6 +96,39 @@ public class RoleService {
                 .set(Role::getIsEnabled, param.getIsEnabled())
                 .eq(Role::getRoleId, roleId)
         );
+    }
+
+    @Transactional
+    public void batchUpdate(Long realmId, Long clientId, RoleBatchUpdateParam param) {
+        switch (param.getType()) {
+            case DELETE: // 删除
+                if (CollectionUtils.isEmpty(param.getRoleIds())) {
+                    return;
+                }
+                List<Role> roles = roleMapper.selectList(Wrappers.<Role>lambdaQuery()
+                        .select(Role::getRoleId)
+                        .eq(Role::getRealmId, realmId)
+                        .eq(Role::getClientId, clientId)
+                        .in(Role::getRoleId, param.getRoleIds())
+                );
+                if (CollectionUtils.isEmpty(roles)) {
+                    return;
+                }
+                List<Long> roleIds = roles.stream().map(Role::getRoleId).collect(Collectors.toList());
+                roleMapper.deleteBatchIds(roleIds);
+                groupRoleMapper.delete(Wrappers.<GroupRole>lambdaQuery()
+                        .in(GroupRole::getRoleId, roleIds)
+                );
+                policyRoleMapper.delete(Wrappers.<PolicyRole>lambdaQuery()
+                        .in(PolicyRole::getRoleId, roleIds)
+                );
+                userRoleMapper.delete(Wrappers.<UserRole>lambdaQuery()
+                        .in(UserRole::getRoleId, roleIds)
+                );
+                break;
+            default:
+                break;
+        }
     }
 
 }

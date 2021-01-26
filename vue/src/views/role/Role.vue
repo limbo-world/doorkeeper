@@ -46,6 +46,7 @@
                         <div class="operations">
                             <template>
                                 <i @click="()=>{toRoleEdit(scope.row.roleId)}" class="el-icon-edit"></i>
+                                <i @click="()=>{deleteRole(scope.row.roleId)}" class="el-icon-delete"></i>
                             </template>
                         </div>
                     </template>
@@ -151,6 +152,15 @@ export default {
                 path: '/role/role-edit',
                 query: {roleId: roleId, clientId: this.clientId}
             })
+        },
+
+        deleteRole(roleId) {
+            this.dialogProcessing = true;
+            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/role/batch`, {
+                type: this.$constants.batchMethod.DELETE, roleIds: [roleId]
+            }).then(() => {
+                this.loadRoles();
+            }).finally(() => this.dialogProcessing = false);
         },
 
     }

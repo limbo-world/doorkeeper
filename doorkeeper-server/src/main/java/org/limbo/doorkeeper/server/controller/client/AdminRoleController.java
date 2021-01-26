@@ -82,6 +82,13 @@ public class AdminRoleController extends BaseController {
         return Response.success();
     }
 
+    @Operation(summary = "批量更新角色")
+    @PostMapping("/batch")
+    public Response<Void> batch(@RequestBody @Validated RoleBatchUpdateParam param) {
+        roleService.batchUpdate(getRealmId(), getClientId(), param);
+        return Response.success();
+    }
+
     @Operation(summary = "查询角色组合列表")
     @GetMapping("/{roleId}/role-combine")
     public Response<List<RoleCombineVO>> list(@Validated @NotNull(message = "未提交角色ID") @PathVariable("roleId") Long roleId,
