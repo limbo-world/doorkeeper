@@ -25,8 +25,8 @@ import org.limbo.doorkeeper.api.model.param.user.UserAddParam;
 import org.limbo.doorkeeper.api.model.param.user.UserQueryParam;
 import org.limbo.doorkeeper.api.model.param.user.UserUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.UserVO;
-import org.limbo.doorkeeper.server.dal.mapper.UserMapper;
 import org.limbo.doorkeeper.server.dal.entity.User;
+import org.limbo.doorkeeper.server.dal.mapper.UserMapper;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MD5Utils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
@@ -63,9 +63,11 @@ public class UserService {
         com.baomidou.mybatisplus.extension.plugins.pagination.Page<User> mpage = MyBatisPlusUtils.pageOf(param);
         mpage = userMapper.selectPage(mpage, Wrappers.<User>lambdaQuery()
                 .eq(User::getRealmId, realmId)
-                .like(StringUtils.isNotBlank(param.getDimName()), User::getUsername, param.getDimName())
-                .like(StringUtils.isNotBlank(param.getDimName()), User::getNickname, param.getDimName())
-                .orderByDesc(User::getUserId)
+                .and(StringUtils.isNotBlank(param.getDimName()), wrapper -> wrapper
+                        .like(StringUtils.isNotBlank(param.getDimName()), User::getUsername, param.getDimName())
+                        .or()
+                        .like(StringUtils.isNotBlank(param.getDimName()), User::getNickname, param.getDimName())
+                ).orderByDesc(User::getUserId)
         );
 
         for (User user : mpage.getRecords()) {
