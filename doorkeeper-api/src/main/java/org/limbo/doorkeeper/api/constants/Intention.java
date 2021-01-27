@@ -19,7 +19,7 @@ package org.limbo.doorkeeper.api.constants;
 import com.baomidou.mybatisplus.core.enums.IEnum;
 
 /**
- * 意图
+ * 执行意图
  *
  * @author Devil
  * @date 2020/12/31 3:01 下午

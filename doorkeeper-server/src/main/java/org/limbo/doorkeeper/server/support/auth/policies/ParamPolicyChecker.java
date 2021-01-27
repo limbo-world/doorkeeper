@@ -20,6 +20,7 @@ import org.limbo.doorkeeper.api.constants.Logic;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyParamVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 import org.limbo.doorkeeper.api.model.param.auth.AuthorizationCheckParam;
+import org.limbo.doorkeeper.server.support.auth.checker.LogicChecker;
 
 import java.util.List;
 import java.util.Map;
@@ -61,6 +62,6 @@ public class ParamPolicyChecker extends AbstractPolicyChecker {
             }
         }
 
-        return getPolicyLogic().isSatisfied(policyParamMap.size(), satisfiedParamCount);
+        return LogicChecker.isSatisfied(getPolicyLogic(), policyParamMap.size(), satisfiedParamCount);
     }
 }

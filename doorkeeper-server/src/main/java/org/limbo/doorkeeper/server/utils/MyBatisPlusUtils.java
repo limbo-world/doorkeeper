@@ -19,7 +19,7 @@ package org.limbo.doorkeeper.server.utils;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.enums.SqlMethod;
-import com.baomidou.mybatisplus.core.metadata.OrderItem;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Assert;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -28,7 +28,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.ibatis.binding.MapperMethod;
 import org.apache.ibatis.executor.BatchResult;
 import org.apache.ibatis.session.SqlSession;
-import org.limbo.doorkeeper.api.constants.Sorts;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -55,27 +54,27 @@ public class MyBatisPlusUtils {
      * 因为自己的Page对象用于在dubbo调用时传参，进行序列化方便；
      * 而MyBatisPlus的Page中存在大量属性，而且很多属性没有Getter和Setter，不利于序列化，因此不用；
      */
-    public static <PO, VO> Page<PO> pageOf(org.limbo.doorkeeper.api.model.Page<VO> ipage) {
+    public static <PO, VO> IPage<PO> pageOf(org.limbo.doorkeeper.api.model.Page<VO> ipage) {
         Page<PO> page = new Page<>();
         page.setCurrent(ipage.getCurrent());
         page.setSize(ipage.getSize());
         page.setSearchCount(ipage.getTotal() < 0);
         page.setTotal(page.isSearchCount() ? 0 : ipage.getTotal());
 
-        // 排序
-        List<String> orderByList = ipage.getOrderBy();
-        List<String> sortList = ipage.getSort();
-        if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(orderByList)
-                && org.apache.commons.collections4.CollectionUtils.isNotEmpty(sortList)
-                && orderByList.size() == sortList.size()) {
-            for (int i = 0; i < orderByList.size(); i++) {
-                String orderBy = orderByList.get(i);
-                String sort = sortList.get(i);
-                page.addOrder(Sorts.ASC.is(sort)
-                        ? OrderItem.asc(orderBy)
-                        : OrderItem.desc(orderBy));
-            }
-        }
+        // todo 排序
+//        List<String> orderByList = ipage.getOrderBy();
+//        List<String> sortList = ipage.getSort();
+//        if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(orderByList)
+//                && org.apache.commons.collections4.CollectionUtils.isNotEmpty(sortList)
+//                && orderByList.size() == sortList.size()) {
+//            for (int i = 0; i < orderByList.size(); i++) {
+//                String orderBy = orderByList.get(i);
+//                String sort = sortList.get(i);
+//                page.addOrder(Sorts.ASC.is(sort)
+//                        ? OrderItem.asc(orderBy)
+//                        : OrderItem.desc(orderBy));
+//            }
+//        }
         return page;
     }
 

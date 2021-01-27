@@ -27,6 +27,7 @@ import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 import org.limbo.doorkeeper.server.dal.entity.*;
 import org.limbo.doorkeeper.server.dal.mapper.*;
 import org.limbo.doorkeeper.server.support.GroupTool;
+import org.limbo.doorkeeper.server.support.auth.checker.LogicChecker;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 
 import java.util.ArrayList;
@@ -61,6 +62,7 @@ public class RolePolicyChecker extends AbstractPolicyChecker {
 
     /**
      * 获取用户角色  以及用户所在用户组角色（目前用户组角色是继承的，后面可以做成可配置的方式）
+     *
      * @param authorizationCheckParam 授权校验参数
      * @return
      */
@@ -106,7 +108,7 @@ public class RolePolicyChecker extends AbstractPolicyChecker {
         );
 
         // 解析策略逻辑，判断是否满足逻辑条件
-        return getPolicyLogic().isSatisfied(roleIds.size(), roles == null ? 0 : roles.size());
+        return LogicChecker.isSatisfied(getPolicyLogic(), roleIds.size(), roles == null ? 0 : roles.size());
     }
 
     /**

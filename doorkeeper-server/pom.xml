@@ -63,11 +63,6 @@
             <artifactId>mybatis-plus-boot-starter</artifactId>
             <version>${mybatis.plus.verison}</version>
         </dependency>
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus</artifactId>
-            <version>${mybatis.plus.verison}</version>
-        </dependency>
 
         <!-- MySql -->
         <dependency>

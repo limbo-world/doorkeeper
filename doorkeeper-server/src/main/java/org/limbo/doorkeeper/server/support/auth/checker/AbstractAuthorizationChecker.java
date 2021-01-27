@@ -239,7 +239,7 @@ public abstract class AbstractAuthorizationChecker<P extends AuthorizationCheckP
             }
         }
 
-        return logic.isSatisfied(policies.size(), allowedCount);
+        return LogicChecker.isSatisfied(logic, policies.size(), allowedCount);
     }
 
 

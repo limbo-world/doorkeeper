@@ -16,6 +16,7 @@
 
 package org.limbo.doorkeeper.server.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -139,7 +140,7 @@ public class PermissionService {
     }
 
     public Page<PermissionVO> page(Long realmId, Long clientId, PermissionQueryParam param) {
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<Permission> mpage = MyBatisPlusUtils.pageOf(param);
+        IPage<Permission> mpage = MyBatisPlusUtils.pageOf(param);
         mpage = permissionMapper.selectPage(mpage, Wrappers.<Permission>lambdaQuery()
                 .eq(Permission::getRealmId, realmId)
                 .eq(Permission::getClientId, clientId)

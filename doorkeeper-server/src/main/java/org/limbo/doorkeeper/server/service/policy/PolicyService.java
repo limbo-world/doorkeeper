@@ -16,6 +16,7 @@
 
 package org.limbo.doorkeeper.server.service.policy;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +27,8 @@ import org.limbo.doorkeeper.api.model.param.policy.PolicyBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.policy.PolicyQueryParam;
 import org.limbo.doorkeeper.api.model.param.policy.PolicyUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
-import org.limbo.doorkeeper.server.dal.entity.*;
+import org.limbo.doorkeeper.server.dal.entity.Client;
+import org.limbo.doorkeeper.server.dal.entity.PermissionPolicy;
 import org.limbo.doorkeeper.server.dal.entity.policy.*;
 import org.limbo.doorkeeper.server.dal.mapper.ClientMapper;
 import org.limbo.doorkeeper.server.dal.mapper.PermissionPolicyMapper;
@@ -165,7 +167,7 @@ public class PolicyService {
     }
 
     public Page<PolicyVO> page(Long realmId, Long clientId, PolicyQueryParam param) {
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<Policy> mpage = MyBatisPlusUtils.pageOf(param);
+        IPage<Policy> mpage = MyBatisPlusUtils.pageOf(param);
         mpage = policyMapper.selectPage(mpage, Wrappers.<Policy>lambdaQuery()
                 .eq(Policy::getRealmId, realmId)
                 .eq(Policy::getClientId, clientId)

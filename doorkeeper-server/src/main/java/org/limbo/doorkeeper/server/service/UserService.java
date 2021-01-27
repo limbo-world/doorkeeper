@@ -17,6 +17,7 @@
 package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.exception.ParamException;
@@ -60,7 +61,7 @@ public class UserService {
     }
 
     public Page<UserVO> page(Long realmId, UserQueryParam param) {
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<User> mpage = MyBatisPlusUtils.pageOf(param);
+        IPage<User> mpage = MyBatisPlusUtils.pageOf(param);
         mpage = userMapper.selectPage(mpage, Wrappers.<User>lambdaQuery()
                 .eq(User::getRealmId, realmId)
                 .and(StringUtils.isNotBlank(param.getDimName()), wrapper -> wrapper
