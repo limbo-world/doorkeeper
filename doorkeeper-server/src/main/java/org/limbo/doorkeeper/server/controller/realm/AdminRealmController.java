@@ -17,6 +17,7 @@
 package org.limbo.doorkeeper.server.controller.realm;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.realm.RealmUpdateParam;
@@ -36,6 +37,7 @@ import java.util.List;
  * @author Devil
  * @date 2021/1/3 5:41 下午
  */
+@Tag(name = "域")
 @Slf4j
 @RestController
 @RequestMapping("/admin/realm")

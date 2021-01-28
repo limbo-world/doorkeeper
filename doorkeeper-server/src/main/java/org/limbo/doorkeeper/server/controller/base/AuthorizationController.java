@@ -28,6 +28,7 @@ import org.limbo.doorkeeper.server.controller.BaseController;
 import org.limbo.doorkeeper.server.support.auth.checker.AuthorizationCheckerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,21 +46,21 @@ public class AuthorizationController extends BaseController {
     @Autowired
     private AuthorizationCheckerFactory authorizationCheckerFactory;
 
-    @RequestMapping("/check-uri")
+    @PostMapping("/check-uri")
     @Operation(summary = "检查用户是否可以访问对应uri的资源")
     public Response<AuthorizationCheckResult> checkByUri(@RequestBody @Validated AuthorizationUriCheckParam param) {
         param.setUserId(getUser().getUserId());
         return Response.success(authorizationCheckerFactory.newUriAuthorizationChecker(param).check());
     }
 
-    @RequestMapping("/check-name")
+    @PostMapping("/check-name")
     @Operation(summary = "检查用户是否可以访问对应名称的资源")
     public Response<AuthorizationCheckResult> checkByName(@RequestBody @Validated AuthorizationNameCheckParam param) {
         param.setUserId(getUser().getUserId());
         return Response.success(authorizationCheckerFactory.newNameAuthorizationChecker(param).check());
     }
 
-    @RequestMapping("/check-tag")
+    @PostMapping("/check-tag")
     @Operation(summary = "检查用户是否可以访问对应标签的资源")
     public Response<AuthorizationCheckResult> checkByTag(@RequestBody @Validated AuthorizationTagCheckParam param) {
         param.setUserId(getUser().getUserId());
