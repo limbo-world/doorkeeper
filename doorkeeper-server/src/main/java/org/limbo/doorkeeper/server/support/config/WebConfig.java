@@ -89,7 +89,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
 
         registry.addInterceptor(sessionInterceptor())
-                .excludePathPatterns("/login/**")
+                .excludePathPatterns("/base/login/**")
                 .excludePathPatterns("/swagger-ui/**")
                 .excludePathPatterns("/api-docs/**")
                 .excludePathPatterns("/api-docs.html")
