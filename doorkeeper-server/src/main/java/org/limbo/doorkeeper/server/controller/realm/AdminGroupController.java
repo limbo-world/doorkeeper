@@ -19,17 +19,13 @@ package org.limbo.doorkeeper.server.controller.realm;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.group.*;
-import org.limbo.doorkeeper.api.model.vo.GroupRoleVO;
-import org.limbo.doorkeeper.api.model.vo.GroupUserVO;
+import org.limbo.doorkeeper.api.model.param.group.GroupAddParam;
+import org.limbo.doorkeeper.api.model.param.group.GroupUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
 import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.controller.BaseController;
-import org.limbo.doorkeeper.server.service.GroupRoleService;
 import org.limbo.doorkeeper.server.service.GroupService;
-import org.limbo.doorkeeper.server.service.GroupUserService;
 import org.limbo.doorkeeper.server.support.GroupTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -50,12 +46,6 @@ public class AdminGroupController extends BaseController {
 
     @Autowired
     private GroupService groupService;
-
-    @Autowired
-    private GroupUserService groupUserService;
-
-    @Autowired
-    private GroupRoleService groupRoleService;
 
     @Operation(summary = "新建用户组")
     @PostMapping
@@ -98,36 +88,6 @@ public class AdminGroupController extends BaseController {
     @DeleteMapping("/{groupId}")
     public Response<Void> delete(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId) {
         groupService.delete(getRealmId(), groupId);
-        return Response.success();
-    }
-
-    @Operation(summary = "查询用户组用户列表")
-    @GetMapping("/{groupId}/group-user")
-    public Response<Page<GroupUserVO>> listUser(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId,
-                                            @Validated GroupUserQueryParam param) {
-        return Response.success(groupUserService.page(getRealmId(), groupId, param));
-    }
-
-    @Operation(summary = "批量修改用户组用户")
-    @PostMapping("/{groupId}/group-user/batch")
-    public Response<Void> batchUser(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId,
-                                               @RequestBody @Validated GroupUserBatchUpdateParam param) {
-        groupUserService.batchUpdate(groupId, param);
-        return Response.success();
-    }
-
-    @Operation(summary = "查询用户组角色列表")
-    @GetMapping("/{groupId}/group-role")
-    public Response<List<GroupRoleVO>> listRole(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId,
-                                            @Validated GroupRoleQueryParam param) {
-        return Response.success(groupRoleService.list(getRealmId(), groupId, param));
-    }
-
-    @Operation(summary = "批量修改用户组角色")
-    @PostMapping("/{groupId}/group-role/batch")
-    public Response<Void> batchRole(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId,
-                                @RequestBody @Validated GroupRoleBatchUpdateParam param) {
-        groupRoleService.batchUpdate(getRealmId(), groupId, param);
         return Response.success();
     }
 

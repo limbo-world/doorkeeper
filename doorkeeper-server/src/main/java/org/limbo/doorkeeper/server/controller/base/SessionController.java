@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.controller;
+package org.limbo.doorkeeper.server.controller.base;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.vo.AccountGrantVO;
 import org.limbo.doorkeeper.api.model.vo.UserVO;
+import org.limbo.doorkeeper.server.controller.BaseController;
 import org.limbo.doorkeeper.server.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,7 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "会话")
 @Slf4j
 @RestController
-@RequestMapping("/session")
+@RequestMapping("/base/session")
 public class SessionController extends BaseController {
 
     @Autowired

@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.controller;
+package org.limbo.doorkeeper.server.controller.base;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "登录")
 @Slf4j
 @RestController
-@RequestMapping("/login")
+@RequestMapping("/base/login")
 public class LoginController {
 
     @Autowired

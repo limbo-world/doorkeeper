@@ -19,16 +19,14 @@ package org.limbo.doorkeeper.server.controller.client;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.role.*;
-import org.limbo.doorkeeper.api.model.vo.RoleCombineVO;
-import org.limbo.doorkeeper.api.model.vo.RoleUserVO;
+import org.limbo.doorkeeper.api.model.param.role.RoleAddParam;
+import org.limbo.doorkeeper.api.model.param.role.RoleBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.role.RoleQueryParam;
+import org.limbo.doorkeeper.api.model.param.role.RoleUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.server.controller.BaseController;
-import org.limbo.doorkeeper.server.service.RoleCombineService;
 import org.limbo.doorkeeper.server.service.RoleService;
-import org.limbo.doorkeeper.server.service.RoleUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -49,12 +47,6 @@ public class AdminRoleController extends BaseController {
 
     @Autowired
     private RoleService roleService;
-
-    @Autowired
-    private RoleCombineService roleCombineService;
-
-    @Autowired
-    private RoleUserService roleUserService;
 
     @Operation(summary = "新建角色")
     @PostMapping
@@ -86,36 +78,6 @@ public class AdminRoleController extends BaseController {
     @PostMapping("/batch")
     public Response<Void> batch(@RequestBody @Validated RoleBatchUpdateParam param) {
         roleService.batchUpdate(getRealmId(), getClientId(), param);
-        return Response.success();
-    }
-
-    @Operation(summary = "查询角色组合列表")
-    @GetMapping("/{roleId}/role-combine")
-    public Response<List<RoleCombineVO>> list(@Validated @NotNull(message = "未提交角色ID") @PathVariable("roleId") Long roleId,
-                                              @Validated RoleCombineQueryParam param) {
-        return Response.success(roleCombineService.list(getRealmId(), getClientId(), roleId, param));
-    }
-
-    @Operation(summary = "批量修改角色组合")
-    @PostMapping("/{roleId}/role-combine/batch")
-    public Response<Void> batch(@Validated @NotNull(message = "未提交角色ID") @PathVariable("roleId") Long roleId,
-                                               @RequestBody @Validated RoleCombineBatchUpdateParam param) {
-        roleCombineService.batchUpdate(getRealmId(), getClientId(), roleId, param);
-        return Response.success();
-    }
-
-    @Operation(summary = "查询角色用户列表")
-    @GetMapping("/{roleId}/role-user")
-    public Response<Page<RoleUserVO>> list(@Validated @NotNull(message = "未提交角色ID") @PathVariable("roleId") Long roleId,
-                                           @Validated RoleUserQueryParam param) {
-        return Response.success(roleUserService.page(getRealmId(), roleId, param));
-    }
-
-    @Operation(summary = "批量修改角色用户")
-    @PostMapping("/{roleId}/role-user/batch")
-    public Response<Void> batch(@Validated @NotNull(message = "未提交角色ID") @PathVariable("roleId") Long roleId,
-                                @RequestBody @Validated RoleUserBatchUpdateParam param) {
-        roleUserService.batchUpdate(getRealmId(), roleId, param);
         return Response.success();
     }
 

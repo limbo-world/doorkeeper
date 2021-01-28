@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.controller;
+package org.limbo.doorkeeper.server.controller.base;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,6 +24,7 @@ import org.limbo.doorkeeper.api.model.param.auth.AuthorizationNameCheckParam;
 import org.limbo.doorkeeper.api.model.param.auth.AuthorizationTagCheckParam;
 import org.limbo.doorkeeper.api.model.param.auth.AuthorizationUriCheckParam;
 import org.limbo.doorkeeper.api.model.vo.AuthorizationCheckResult;
+import org.limbo.doorkeeper.server.controller.BaseController;
 import org.limbo.doorkeeper.server.support.auth.checker.AuthorizationCheckerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -38,7 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "鉴权")
 @Slf4j
 @RestController
-@RequestMapping("/authorization")
+@RequestMapping("/base/authorization")
 public class AuthorizationController extends BaseController {
 
     @Autowired
