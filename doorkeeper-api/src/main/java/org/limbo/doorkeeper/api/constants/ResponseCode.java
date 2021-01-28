@@ -28,7 +28,7 @@ public enum ResponseCode {
     OK(200),
 
     PARAM_ERROR(400), // 参数异常 bad request
-    UNAUTHORIZED(401), // 请求要求用户的身份认证
+    UNAUTHENTICATED(401), // 请求要求用户的身份认证
     FORBIDDEN(403), // 权限不够
     NOT_FOUND(404),
 

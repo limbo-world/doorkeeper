@@ -18,7 +18,6 @@ package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
-import org.limbo.doorkeeper.api.exception.ParamException;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.resource.*;
 import org.limbo.doorkeeper.api.model.vo.ResourceTagVO;
@@ -27,6 +26,7 @@ import org.limbo.doorkeeper.api.model.vo.ResourceVO;
 import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.dal.entity.*;
 import org.limbo.doorkeeper.server.dal.mapper.*;
+import org.limbo.doorkeeper.server.support.ParamException;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.limbo.doorkeeper.server.utils.Verifies;

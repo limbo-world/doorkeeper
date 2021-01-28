@@ -18,13 +18,13 @@ package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.lang3.StringUtils;
-import org.limbo.doorkeeper.api.exception.ParamException;
 import org.limbo.doorkeeper.api.model.param.client.ClientAddParam;
 import org.limbo.doorkeeper.api.model.param.client.ClientQueryParam;
 import org.limbo.doorkeeper.api.model.param.client.ClientUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ClientVO;
-import org.limbo.doorkeeper.server.dal.mapper.ClientMapper;
 import org.limbo.doorkeeper.server.dal.entity.Client;
+import org.limbo.doorkeeper.server.dal.mapper.ClientMapper;
+import org.limbo.doorkeeper.server.support.ParamException;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -17,7 +17,6 @@
 package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import org.limbo.doorkeeper.api.exception.ParamException;
 import org.limbo.doorkeeper.api.model.param.group.GroupAddParam;
 import org.limbo.doorkeeper.api.model.param.group.GroupUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
@@ -32,6 +31,7 @@ import org.limbo.doorkeeper.server.dal.mapper.GroupRoleMapper;
 import org.limbo.doorkeeper.server.dal.mapper.GroupUserMapper;
 import org.limbo.doorkeeper.server.dal.mapper.RealmMapper;
 import org.limbo.doorkeeper.server.dal.mapper.policy.PolicyGroupMapper;
+import org.limbo.doorkeeper.server.support.ParamException;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;

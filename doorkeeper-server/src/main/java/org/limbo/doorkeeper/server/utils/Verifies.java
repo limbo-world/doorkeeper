@@ -18,7 +18,7 @@ package org.limbo.doorkeeper.server.utils;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.limbo.doorkeeper.api.exception.ParamException;
+import org.limbo.doorkeeper.server.support.ParamException;
 
 import java.util.Collection;
 import java.util.Objects;

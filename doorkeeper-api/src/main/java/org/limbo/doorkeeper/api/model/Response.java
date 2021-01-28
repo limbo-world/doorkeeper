@@ -93,7 +93,7 @@ public class Response<T> implements Serializable {
      * 未认证，未登录
      */
     public static <T> Response<T> unauthenticated(String msg) {
-        return new Response<>(ResponseCode.UNAUTHORIZED, msg);
+        return new Response<>(ResponseCode.UNAUTHENTICATED, msg);
     }
 
     /**

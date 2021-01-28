@@ -17,8 +17,8 @@
 package org.limbo.doorkeeper.server.support.config;
 
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.exception.ParamException;
 import org.limbo.doorkeeper.api.model.Response;
+import org.limbo.doorkeeper.server.support.ParamException;
 import org.limbo.doorkeeper.server.support.auth.AuthorizationException;
 import org.limbo.doorkeeper.server.support.session.exception.AuthenticationException;
 import org.springframework.validation.BindException;
