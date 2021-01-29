@@ -20,11 +20,16 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.auth.AuthorizationNameCheckParam;
-import org.limbo.doorkeeper.api.model.param.auth.AuthorizationTagCheckParam;
-import org.limbo.doorkeeper.api.model.param.auth.AuthorizationUriCheckParam;
-import org.limbo.doorkeeper.api.model.vo.AuthorizationCheckResult;
+import org.limbo.doorkeeper.api.model.param.check.*;
+import org.limbo.doorkeeper.api.model.vo.GroupVO;
+import org.limbo.doorkeeper.api.model.vo.RoleVO;
+import org.limbo.doorkeeper.api.model.vo.UserVO;
+import org.limbo.doorkeeper.api.model.vo.check.AuthorizationCheckResult;
+import org.limbo.doorkeeper.api.model.vo.check.GroupCheckResult;
+import org.limbo.doorkeeper.api.model.vo.check.RoleCheckResult;
 import org.limbo.doorkeeper.server.controller.BaseController;
+import org.limbo.doorkeeper.server.service.GroupUserService;
+import org.limbo.doorkeeper.server.service.UserRoleService;
 import org.limbo.doorkeeper.server.support.auth.checker.AuthorizationCheckerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -32,6 +37,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * @author Devil
@@ -46,25 +53,51 @@ public class AuthorizationController extends BaseController {
     @Autowired
     private AuthorizationCheckerFactory authorizationCheckerFactory;
 
-    @PostMapping("/check-uri")
+    @Autowired
+    private UserRoleService userRoleService;
+
+    @Autowired
+    private GroupUserService groupUserService;
+
+    @PostMapping("/resource/check-uri")
     @Operation(summary = "检查用户是否可以访问对应uri的资源")
-    public Response<AuthorizationCheckResult> checkByUri(@RequestBody @Validated AuthorizationUriCheckParam param) {
+    public Response<AuthorizationCheckResult> checkResourceByUri(@RequestBody @Validated AuthorizationUriCheckParam param) {
         param.setUserId(getUser().getUserId());
         return Response.success(authorizationCheckerFactory.newUriAuthorizationChecker(param).check());
     }
 
-    @PostMapping("/check-name")
+    @PostMapping("/resource/check-name")
     @Operation(summary = "检查用户是否可以访问对应名称的资源")
-    public Response<AuthorizationCheckResult> checkByName(@RequestBody @Validated AuthorizationNameCheckParam param) {
+    public Response<AuthorizationCheckResult> checkResourceByName(@RequestBody @Validated AuthorizationNameCheckParam param) {
         param.setUserId(getUser().getUserId());
         return Response.success(authorizationCheckerFactory.newNameAuthorizationChecker(param).check());
     }
 
-    @PostMapping("/check-tag")
+    @PostMapping("/resource/check-tag")
     @Operation(summary = "检查用户是否可以访问对应标签的资源")
-    public Response<AuthorizationCheckResult> checkByTag(@RequestBody @Validated AuthorizationTagCheckParam param) {
+    public Response<AuthorizationCheckResult> checkResourceByTag(@RequestBody @Validated AuthorizationTagCheckParam param) {
         param.setUserId(getUser().getUserId());
         return Response.success(authorizationCheckerFactory.newTagAuthorizationChecker(param).check());
+    }
+
+    @PostMapping("/role/check")
+    @Operation(summary = "检查用户拥有的角色资源")
+    public Response<RoleCheckResult> checkRole(@RequestBody @Validated RoleCheckParam param) {
+        UserVO user = getUser();
+        List<RoleVO> roles = userRoleService.checkRole(user.getUserId(), user.getRealmId(), param);
+        RoleCheckResult result = new RoleCheckResult();
+        result.setRoles(roles);
+        return Response.success(result);
+    }
+
+    @PostMapping("/group/check")
+    @Operation(summary = "检查用户所在的组")
+    public Response<GroupCheckResult> checkGroup(@RequestBody @Validated GroupCheckParam param) {
+        UserVO user = getUser();
+        List<GroupVO> groups = groupUserService.checkGroup(user.getUserId(), user.getRealmId(), param);
+        GroupCheckResult result = new GroupCheckResult();
+        result.setGroups(groups);
+        return Response.success(result);
     }
 
 }

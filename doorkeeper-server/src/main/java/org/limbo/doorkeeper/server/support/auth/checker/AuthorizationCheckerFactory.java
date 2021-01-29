@@ -16,7 +16,7 @@
 
 package org.limbo.doorkeeper.server.support.auth.checker;
 
-import org.limbo.doorkeeper.api.model.param.auth.AuthorizationCheckParam;
+import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
 import org.limbo.doorkeeper.server.dal.dao.PermissionDao;
 import org.limbo.doorkeeper.server.dal.dao.PolicyDao;
 import org.limbo.doorkeeper.server.dal.dao.ResourceDao;

@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param.auth;
+package org.limbo.doorkeeper.api.model.param.check;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -31,7 +31,7 @@ import java.util.Map;
  */
 @Data
 @Accessors(chain = true)
-public class AuthorizationUriCheckParam implements AuthorizationCheckParam<String> {
+public class AuthorizationTagCheckParam implements AuthorizationCheckParam<Map<String, String>> {
 
     private Long userId;
 
@@ -40,8 +40,8 @@ public class AuthorizationUriCheckParam implements AuthorizationCheckParam<Strin
     private Long clientId;
 
     @NotEmpty
-    @Schema(name = "uri列表", required = true)
-    private List<String> resourceAssigner;
+    @Schema(name = "tag列表", required = true)
+    private List<Map<String, String>> resourceAssigner;
 
     @Schema(name = "进行权限校验时附带的参数")
     private Map<String, String> params;

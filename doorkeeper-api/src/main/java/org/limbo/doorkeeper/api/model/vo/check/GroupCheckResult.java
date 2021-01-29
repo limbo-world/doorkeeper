@@ -14,35 +14,28 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param.auth;
+package org.limbo.doorkeeper.api.model.vo.check;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.experimental.Accessors;
+import lombok.NoArgsConstructor;
+import org.limbo.doorkeeper.api.model.vo.GroupVO;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.Map;
 
 /**
- * @author Devil
- * @date 2021/1/13 3:31 下午
+ * 授权校验结果
+ *
+ * @author brozen
+ * @date 2021/1/14
  */
 @Data
-@Accessors(chain = true)
-public class AuthorizationNameCheckParam implements AuthorizationCheckParam<String> {
+@NoArgsConstructor
+@AllArgsConstructor
+public class GroupCheckResult {
 
-    private Long userId;
+    @Schema(title = "用户组列表")
+    private List<GroupVO> groups;
 
-    @NotNull
-    @Schema(name = "进行权限校验时，资源所属委托方", required = true)
-    private Long clientId;
-
-    @NotEmpty
-    @Schema(name = "资源名称列表", required = true)
-    private List<String> resourceAssigner;
-
-    @Schema(name = "进行权限校验时附带的参数")
-    private Map<String, String> params;
 }

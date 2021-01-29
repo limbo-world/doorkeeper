@@ -17,7 +17,7 @@
 package org.limbo.doorkeeper.server.support.auth.policies;
 
 import org.limbo.doorkeeper.api.constants.Intention;
-import org.limbo.doorkeeper.api.model.param.auth.AuthorizationCheckParam;
+import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
 
 /**
  * 策略校验器

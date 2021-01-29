@@ -17,19 +17,26 @@
 package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.Page;
+import org.limbo.doorkeeper.api.model.param.check.GroupCheckParam;
 import org.limbo.doorkeeper.api.model.param.group.GroupUserBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.group.GroupUserQueryParam;
 import org.limbo.doorkeeper.api.model.vo.GroupUserVO;
-import org.limbo.doorkeeper.server.dal.mapper.GroupUserMapper;
-import org.limbo.doorkeeper.server.dal.mapper.RealmMapper;
+import org.limbo.doorkeeper.api.model.vo.GroupVO;
+import org.limbo.doorkeeper.server.dal.entity.Group;
 import org.limbo.doorkeeper.server.dal.entity.GroupUser;
+import org.limbo.doorkeeper.server.dal.mapper.GroupMapper;
+import org.limbo.doorkeeper.server.dal.mapper.GroupUserMapper;
+import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Devil
@@ -39,10 +46,10 @@ import java.util.List;
 public class GroupUserService {
 
     @Autowired
-    private RealmMapper realmMapper;
+    private GroupUserMapper groupUserMapper;
 
     @Autowired
-    private GroupUserMapper groupUserMapper;
+    private GroupMapper groupMapper;
 
     public Page<GroupUserVO> page(Long realmId, Long groupId, GroupUserQueryParam param) {
         param.setRealmId(realmId);
@@ -77,6 +84,32 @@ public class GroupUserService {
             default:
                 break;
         }
+    }
+
+    public List<GroupVO> checkGroup(Long userId, Long realmId, GroupCheckParam param) {
+        List<GroupUser> userGroups = groupUserMapper.selectList(Wrappers.<GroupUser>lambdaQuery()
+                .eq(GroupUser::getUserId, userId)
+                .in(CollectionUtils.isNotEmpty(param.getGroupIds()), GroupUser::getGroupId, param.getGroupIds())
+        );
+
+        if (CollectionUtils.isEmpty(userGroups)) {
+            return new ArrayList<>();
+        }
+
+        List<Long> groupIds = userGroups.stream().map(GroupUser::getGroupId).collect(Collectors.toList());
+        List<Group> groups = groupMapper.selectList(Wrappers.<Group>lambdaQuery()
+                .eq(Group::getRealmId, realmId)
+                .in(Group::getGroupId, groupIds)
+                .eq(StringUtils.isNotBlank(param.getName()), Group::getName, param.getName())
+                .like(StringUtils.isNotBlank(param.getDimName()), Group::getName, param.getDimName())
+                .in(CollectionUtils.isNotEmpty(param.getNames()), Group::getName, param.getNames())
+
+        );
+        if (CollectionUtils.isNotEmpty(groups)) {
+            return new ArrayList<>();
+        }
+
+        return EnhancedBeanUtils.createAndCopyList(groups, GroupVO.class);
     }
 
 }

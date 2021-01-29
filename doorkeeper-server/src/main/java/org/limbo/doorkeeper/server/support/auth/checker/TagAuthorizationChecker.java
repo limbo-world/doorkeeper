@@ -17,7 +17,7 @@
 package org.limbo.doorkeeper.server.support.auth.checker;
 
 import lombok.Setter;
-import org.limbo.doorkeeper.api.model.param.auth.AuthorizationCheckParam;
+import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
 import org.limbo.doorkeeper.api.model.vo.ResourceVO;
 import org.limbo.doorkeeper.server.dal.dao.ResourceDao;
 

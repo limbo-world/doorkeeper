@@ -19,7 +19,7 @@ package org.limbo.doorkeeper.server.support.auth.checker;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-import org.limbo.doorkeeper.api.model.param.auth.AuthorizationCheckParam;
+import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
 import org.limbo.doorkeeper.api.model.vo.ResourceVO;
 import org.limbo.doorkeeper.server.dal.dao.ResourceDao;
 import org.limbo.doorkeeper.server.dal.entity.ResourceUri;

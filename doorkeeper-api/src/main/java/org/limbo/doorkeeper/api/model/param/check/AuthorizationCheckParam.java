@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param.auth;
+package org.limbo.doorkeeper.api.model.param.check;
 
 import java.util.List;
 import java.util.Map;

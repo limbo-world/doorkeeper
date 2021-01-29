@@ -19,7 +19,7 @@ package org.limbo.doorkeeper.server.support.auth.policies;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
-import org.limbo.doorkeeper.api.model.param.auth.AuthorizationCheckParam;
+import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyGroupVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;

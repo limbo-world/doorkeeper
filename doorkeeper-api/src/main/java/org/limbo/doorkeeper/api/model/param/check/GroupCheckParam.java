@@ -14,36 +14,30 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param.auth;
+package org.limbo.doorkeeper.api.model.param.check;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.experimental.Accessors;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Devil
- * @date 2021/1/13 3:31 下午
+ * @date 2021/1/29 12:39 下午
  */
 @Data
-@Accessors(chain = true)
-public class AuthorizationTagCheckParam implements AuthorizationCheckParam<Map<String, String>> {
+public class GroupCheckParam {
 
-    private Long userId;
+    @Schema(title = "用户组ID列表")
+    private List<Long> groupIds;
 
-    @NotNull
-    @Schema(name = "进行权限校验时，资源所属委托方", required = true)
-    private Long clientId;
+    @Schema(title = "名称", description = "精确查询")
+    private String name;
 
-    @NotEmpty
-    @Schema(name = "tag列表", required = true)
-    private List<Map<String, String>> resourceAssigner;
+    @Schema(title = "名称", description = "模糊查询")
+    private String dimName;
 
-    @Schema(name = "进行权限校验时附带的参数")
-    private Map<String, String> params;
+    @Schema(title = "用户组名称列表", description = "精确查询")
+    private List<String> names;
 
 }

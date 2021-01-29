@@ -19,7 +19,7 @@ package org.limbo.doorkeeper.server.support.auth.policies;
 import org.limbo.doorkeeper.api.constants.Logic;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyParamVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
-import org.limbo.doorkeeper.api.model.param.auth.AuthorizationCheckParam;
+import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
 import org.limbo.doorkeeper.server.support.auth.checker.LogicChecker;
 
 import java.util.List;

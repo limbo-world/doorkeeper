@@ -14,23 +14,28 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.support.auth.checker;
+package org.limbo.doorkeeper.api.model.vo.check;
 
-import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
-import org.limbo.doorkeeper.api.model.vo.check.AuthorizationCheckResult;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.limbo.doorkeeper.api.model.vo.ResourceVO;
+
+import java.util.List;
 
 /**
- * 授权校验器
+ * 授权校验结果
  *
  * @author brozen
  * @date 2021/1/14
  */
-public interface AuthorizationChecker<P extends AuthorizationCheckParam<T>, T> {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class AuthorizationCheckResult {
 
-    /**
-     * 进行权限校验，是否有资格访问
-     * @return 校验结果，分为refused和allowed两类
-     */
-    AuthorizationCheckResult check();
+    @Schema(title = "允许访问的资源对象")
+    private List<ResourceVO> resources;
 
 }
