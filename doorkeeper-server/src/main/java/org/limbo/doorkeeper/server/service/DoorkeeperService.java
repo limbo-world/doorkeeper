@@ -141,7 +141,7 @@ public class DoorkeeperService {
      */
     private ResourceAddParam createRealmResource(Long realmId) {
         ResourceAddParam resourceAddParam = new ResourceAddParam();
-        resourceAddParam.setName("realm");
+        resourceAddParam.setName(DoorkeeperConstants.REALM);
         resourceAddParam.setIsEnabled(true);
 
         ResourceUriAddParam uriAddParam = new ResourceUriAddParam();
