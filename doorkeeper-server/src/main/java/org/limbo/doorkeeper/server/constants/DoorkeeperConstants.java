@@ -40,8 +40,6 @@ public interface DoorkeeperConstants {
 
     String TYPE = "type";
 
-    String PUBLIC_REALM_NAME = "public";
-
     String USER_ID = "userId";
     String USERNAME = "username";
     String NICKNAME = "nickname";

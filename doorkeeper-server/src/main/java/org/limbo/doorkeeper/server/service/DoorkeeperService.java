@@ -32,17 +32,23 @@ import org.limbo.doorkeeper.api.model.param.resource.ResourceAddParam;
 import org.limbo.doorkeeper.api.model.param.resource.ResourceTagAddParam;
 import org.limbo.doorkeeper.api.model.param.resource.ResourceUriAddParam;
 import org.limbo.doorkeeper.api.model.param.role.RoleAddParam;
+import org.limbo.doorkeeper.api.model.param.user.UserRoleBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
 import org.limbo.doorkeeper.api.model.vo.ResourceVO;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.server.dal.mapper.ClientMapper;
-import org.limbo.doorkeeper.server.dal.mapper.RealmMapper;
 import org.limbo.doorkeeper.server.dal.entity.Client;
 import org.limbo.doorkeeper.server.dal.entity.Realm;
+import org.limbo.doorkeeper.server.dal.entity.User;
+import org.limbo.doorkeeper.server.dal.mapper.ClientMapper;
+import org.limbo.doorkeeper.server.dal.mapper.RealmMapper;
+import org.limbo.doorkeeper.server.dal.mapper.UserMapper;
 import org.limbo.doorkeeper.server.service.policy.PolicyService;
+import org.limbo.doorkeeper.server.support.ParamException;
+import org.limbo.doorkeeper.server.utils.MD5Utils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -84,6 +90,48 @@ public class DoorkeeperService {
     @Autowired
     private GroupUserService groupUserService;
 
+    @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private UserRoleService userRoleService;
+
+    @Transactional
+    public void initDoorkeeper() {
+        Realm realm = new Realm();
+        realm.setName(DoorkeeperConstants.DOORKEEPER_REALM_NAME);
+        realm.setSecret(DoorkeeperConstants.DOORKEEPER_REALM_NAME);
+        try {
+            realmMapper.insert(realm);
+        } catch (DuplicateKeyException e) {
+            throw new ParamException("请勿重复操作");
+        }
+
+        // 创建管理员账户
+        User user = new User();
+        user.setRealmId(realm.getRealmId());
+        user.setUsername(DoorkeeperConstants.ADMIN);
+        user.setNickname(DoorkeeperConstants.ADMIN);
+        user.setPassword(MD5Utils.md5WithSalt(DoorkeeperConstants.ADMIN));
+        user.setIsEnabled(true);
+        userMapper.insert(user);
+        // 创建dk超管角色
+        RoleAddParam realmAdminRoleParam = createRole(DoorkeeperConstants.ADMIN, "");
+        RoleVO realmAdminRole = roleService.add(realm.getRealmId(), DoorkeeperConstants.DEFAULT_ID, realmAdminRoleParam);
+        // 绑定管理员和角色
+        UserRoleBatchUpdateParam userRoleBatchUpdateParam = new UserRoleBatchUpdateParam();
+        userRoleBatchUpdateParam.setType(BatchMethod.SAVE);
+        userRoleBatchUpdateParam.setRoleIds(Collections.singletonList(realmAdminRole.getRoleId()));
+        userRoleService.batchUpdate(user.getUserId(), userRoleBatchUpdateParam);
+        // 创建realm组
+        GroupAddParam groupAddParam = new GroupAddParam();
+        groupAddParam.setName(DoorkeeperConstants.REALM);
+        groupAddParam.setParentId(DoorkeeperConstants.DEFAULT_ID);
+        groupService.add(realm.getRealmId(), groupAddParam);
+        // 其他数据
+        createRealmData(user.getUserId(), realm.getRealmId(), realm.getName());
+    }
+
     /**
      * @param userId    创建者ID
      * @param realmId   新建的RealmId
@@ -114,12 +162,6 @@ public class DoorkeeperService {
         // 增加用户组
         // 找到名为realm的用户组
         GroupVO realmGroup = groupService.getRealmGroup();
-        if (realmGroup == null) {
-            GroupAddParam groupAddParam = new GroupAddParam();
-            groupAddParam.setName(realmName);
-            groupAddParam.setParentId(DoorkeeperConstants.DEFAULT_ID);
-            realmGroup = groupService.add(dkRealm.getRealmId(), groupAddParam);
-        }
         GroupAddParam groupAddParam = new GroupAddParam();
         groupAddParam.setName(realmName);
         groupAddParam.setParentId(realmGroup.getGroupId());

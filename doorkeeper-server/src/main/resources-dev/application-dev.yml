@@ -11,6 +11,6 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://10.219.192.172:3306/doorkeeper-test?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
+    url: jdbc:mysql://10.219.192.172:3306/doorkeeper?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
     username: ENC(KNg4F1am9e6SudjCk4gsLg==)
     password: ENC(KNg4F1am9e6SudjCk4gsLg==)
