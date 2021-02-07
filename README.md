@@ -3,8 +3,8 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [介绍](#%E4%BB%8B%E7%BB%8D)
-  - [项目架构](#%E9%A1%B9%E7%9B%AE%E6%9E%B6%E6%9E%84)
   - [技术选型](#%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B)
+  - [界面展示](#%E7%95%8C%E9%9D%A2%E5%B1%95%E7%A4%BA)
   - [概念](#%E6%A6%82%E5%BF%B5)
 - [使用说明](#%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E)
 - [安装教程](#%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B)
@@ -14,80 +14,70 @@
 
 # 介绍
 
-这是个脚手架项目，可以在此基础上快速接入权限管理，**不是认证授权框架**(Shiro\Spring Security)，但可以集成认证授权框架一起使用。
+![logo](https://github.com/LimboHome/limbo-authc/raw/master/doc/logo.jpg)
 
-这是一个独立的权限配置管理服务的脚手架，用于将登录认证、权限验证、权限管理从业务中抽离，便于业务系统快速接入权限功能。大致用法是：
-1. 首先在权限管理后台中配置业务系统的权限、菜单、角色；
-2. 在业务系统中web接口执行前，调用权限管理服务的接口判断用户是否有权限访问web接口；
-3. 业务系统获知用户是否有权访问之后，可自行决定是否允许访问。
-  
-## 项目架构  
+doorkeeper是一个可扩展的权限认证管理平台，可以在此平台上快速接入权限管理，**不是认证授权框架**(Shiro\Spring Security)，但可以集成认证授权框架一起使用。
 
-![项目架构图](https://github.com/LimboHome/limbo-authc/raw/master/doc/system.png)
-  
-- **Doorkeeper Server** : 项目、账户、角色、权限等服务操作；
-- **Mysql** : 授权服务使用的DB；
-- **Redis** : 权限服务的会话管理和数据缓存；
-- **App** : 其他的业务系统；
+这是一个独立的权限配置管理服务的脚手架，用于将登录认证、权限验证、权限管理从业务中抽离，便于业务系统快速接入权限功能。
 
 ## 技术选型
-- Vue、Vuex、Vue-router 前端框架；
-- ElementUI 前端组件库；
+- Vue、ElementUI 前端组件库；
 - SpringBoot Spring全家桶作为应用主框架；
-- Redis、Redisson 缓存与分布式会话实现；
-- Spring Cloud Eureka；
+- jwt 令牌认证；
 - MyBatis、MyBatisPlus DAO层；
 - MySQL 持久化关系数据库；
 
+## 界面展示
+
 ## 概念
-权限管理系统中常见的概念。
 
-- **权限** :   
-  项目下按权限名称唯一，一个带请求方式的API，如 get /account
-    
+- **域** :   
+  域表示独立的一块区域，域与域之间的所有数据是隔离的，如用户等。Doorkeeper属于特殊的域，用于数据管理操作。
+
+- **用户/用户组** :   
+  用户/用户组在域下唯一，一个用户可以加入多个用户组。用户/用户组都可以进行角色绑定。
+  
+- **委托方** :   
+  根据项目需求，委托方可以是一个模块，也可以是一个项目。比如，定义域为仓储项目，那么委托方可以是库位模块等。
+  
 - **角色** :   
-  项目下按角色名称唯一，角色是"权限"的集合，同时角色可以额外配置一些"权限策略"，在除了菜单拥有的权限之外，可以设置角色是否拥有或排除(根据策略)单独的某个(某些)权限；
+  可以给域或者委托方创建角色，主要用于绑定后的权限鉴定。
+  
+- **资源** :   
+  资源是一个最小的认证单位，可以通过URI，也可以通过名称或者标签进行定义，平台提供了相应的搜索功能。
+  比如定义一组资源为菜单，资源名称为菜单ID，用户可以通过搜索是否有对应ID的资源权限来达到菜单访问的能力。
+  
+- **策略** :   
+  策略是通过不同权限访问的规则定义。
     
-   > 拦截的优先级大于放行的，所以只要配置了一个拦截，当账户拥有多个角色的时候，对于此权限也是拦截的。
-
-- **账户** :   
-  全局唯一，通过登录认证获取会话信息；
-
-- **项目** :   
-  项目代表了全部在授权服务中管理权限配置的业务系统，必须在创建了项目之后，业务系统才能正确调用授权服务的接口；
-    
-- **项目账户** :   
-  可以将某个账户绑定到特定项目下面，这样就可以对他绑定这个项目的角色；
-
-- **管理员** :   
-  管理员拥有当前项目下权限系统的所有接口权限（非第三方自己项目）；
+   > 目前策略类型有： 1. 角色 2. 用户 3. 用户组 4. 参数
+     
+- **权限** :   
+  权限其实就是真正定义资源和访问策略的绑定关系的一个模型。
 
 # 使用说明
 
 初始账户 admin admin
 
- 1. 创建项目
+ 1. 域的创建和管理
 
 ![创建项目](https://github.com/LimboHome/limbo-authc/raw/master/doc/project.jpg)
 
- 2. 新建账户并加入项目并设置为管理员
+ 2. 委托方管理
 
 ![项目账户](https://github.com/LimboHome/limbo-authc/raw/master/doc/project-account.jpg)
 
- 3. 使用新建的项目管理员账户登陆权限管理后台，配置项目的权限、角色、账户角色
+ 3. 委托方数据管理，资源、角色、策略、权限
  
 ![项目账户](https://github.com/LimboHome/limbo-authc/raw/master/doc/permission.jpg)
 ![项目账户](https://github.com/LimboHome/limbo-authc/raw/master/doc/role.jpg)
 ![项目账户](https://github.com/LimboHome/limbo-authc/raw/master/doc/account.jpg) 
 
- 5. 业务系统自动为账户授权，或者登陆权限管理后台进行账户的授权
-
- 6. 第三方系统，只需要如下自定义拦截器，调用接口判断是否有权限访问接口(此处可接入授权认证框架Shiro等)
+ 4. 根据需要进行权限设置后，第三方系统，只需要如下自定义拦截器，调用接口判断是否有权限访问接口(此处可接入授权认证框架Shiro等)
 
 ```
-请求接口时，额外带上两个Header
-Doorkeeper-Project: projectId
-Doorkeeper-Token:   登录后获取到的token
+请求接口时，额外带上Header
+Authorization:   登录后获取到的token
 ```
 
  7. 接口文档
@@ -97,17 +87,23 @@ http://ip:host/api-docs.html
 
 # 安装教程
   
-1. 将 `init/doorkeeper.sql` 导入对应数据库
+1. 将 `init/init-table.sql` 导入对应数据库
 
 2. 修改配置文件
 
-3. 根目录下执行命令打包编译
+3. 根目录下执行命令打包编译，如开发环境
 
 ```
 mvn clean package -Dmaven.test.skip=true -P dev
 ```
 
-4. vue 目录下执行 npm install & npm run build
+4. 初始化数据，访问接口，初始管理员账户 admin 密码 admin
+
+```
+http://ip:host/init
+```
+
+4. vue 目录下执行 npm install & npm run build，本地调试可以使用 npm run serve
 
 5. nginx配置
 ```

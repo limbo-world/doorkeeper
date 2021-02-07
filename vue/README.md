@@ -1,3 +1,17 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [vue-admin](#vue-admin)
+  - [Project setup](#project-setup)
+    - [Compiles and hot-reloads for development](#compiles-and-hot-reloads-for-development)
+    - [Compiles and minifies for production](#compiles-and-minifies-for-production)
+    - [Lints and fixes files](#lints-and-fixes-files)
+    - [Customize configuration](#customize-configuration)
+    - [nginx](#nginx)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # vue-admin
 
 ## Project setup
