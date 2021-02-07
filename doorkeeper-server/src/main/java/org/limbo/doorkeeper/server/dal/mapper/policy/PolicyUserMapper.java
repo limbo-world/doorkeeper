@@ -17,11 +17,17 @@
 package org.limbo.doorkeeper.server.dal.mapper.policy;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 import org.limbo.doorkeeper.server.dal.entity.policy.PolicyUser;
+
+import java.util.List;
 
 /**
  * @author Devil
  * @date 2021/1/3 6:08 下午
  */
 public interface PolicyUserMapper extends BaseMapper<PolicyUser> {
+
+    void batchInsertIgnore(@Param("policyUsers") List<PolicyUser> policyUsers);
+
 }

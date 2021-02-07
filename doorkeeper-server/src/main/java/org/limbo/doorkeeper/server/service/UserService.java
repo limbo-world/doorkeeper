@@ -19,10 +19,13 @@ package org.limbo.doorkeeper.server.service;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.limbo.doorkeeper.api.constants.BatchMethod;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.user.UserAddParam;
 import org.limbo.doorkeeper.api.model.param.user.UserQueryParam;
+import org.limbo.doorkeeper.api.model.param.user.UserRoleBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.user.UserUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.UserVO;
 import org.limbo.doorkeeper.server.dal.entity.User;
@@ -46,6 +49,15 @@ public class UserService {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private UserGroupService userGroupService;
+
+    @Autowired
+    private UserRoleService userRoleService;
+
+    @Autowired
+    private UserPolicyService userPolicyService;
+
     @Transactional
     public UserVO add(Long realmId, UserAddParam param) {
         User user = EnhancedBeanUtils.createAndCopy(param, User.class);
@@ -57,6 +69,22 @@ public class UserService {
             throw new ParamException("用户已存在");
         }
         user.setPassword(null);
+
+        if (CollectionUtils.isNotEmpty(param.getGroupIds())) {
+            userGroupService.batchSave(user.getUserId(), param.getGroupIds());
+        }
+
+        if (CollectionUtils.isNotEmpty(param.getRoleIds())) {
+            UserRoleBatchUpdateParam batchUpdateParam = new UserRoleBatchUpdateParam();
+            batchUpdateParam.setType(BatchMethod.SAVE);
+            batchUpdateParam.setRoleIds(param.getRoleIds());
+            userRoleService.batchUpdate(user.getUserId(), batchUpdateParam);
+        }
+
+        if (CollectionUtils.isNotEmpty(param.getPolicyIds())) {
+            userPolicyService.batchSave(user.getUserId(), param.getPolicyIds());
+        }
+
         return EnhancedBeanUtils.createAndCopy(user, UserVO.class);
     }
 
