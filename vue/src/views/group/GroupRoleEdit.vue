@@ -110,7 +110,7 @@ export default {
         bindRole(v, roleId) {
             const loading = this.$loading();
             this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/group/${this.groupId}/group-role/batch`, {
-                roleIds: [roleId], type: v ? this.$constants.batchMethod.SAVE : this.$constants.batchMethod.DELETE
+                roles: [{roleId: roleId}], type: v ? this.$constants.batchMethod.SAVE : this.$constants.batchMethod.DELETE
             }).then(response => {
                 this.loadRoles();
             }).finally(() => loading.close());

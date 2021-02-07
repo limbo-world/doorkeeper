@@ -14,28 +14,24 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param;
+package org.limbo.doorkeeper.api.model.param.group;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Devil
- * @date 2020/12/31 5:29 下午
+ * @date 2021/2/7 2:34 下午
  */
 @Data
-public class LoginParam {
+public class GroupRoleAddParam {
 
-    @Schema(title = "域", description = "为空则默认登录DK域")
-    private Long realmId;
+    @NotNull(message = "角色不能为空")
+    @Schema(title = "角色", required = true)
+    private Long roleId;
 
-    @NotBlank(message = "用户名不能为空")
-    @Schema(title = "用户名", required = true)
-    private String username;
-
-    @NotBlank(message = "密码不能为空")
-    @Schema(title = "密码", required = true)
-    private String password;
+    @Schema(title = "是否向下延伸", description = "true的情况下，会把角色传递给子用户组的用户")
+    private Boolean isExtend;
 }

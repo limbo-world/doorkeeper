@@ -21,10 +21,10 @@ import com.auth0.jwt.algorithms.Algorithm;
 import org.apache.commons.lang3.time.DateUtils;
 import org.limbo.doorkeeper.api.model.param.LoginParam;
 import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.server.dal.mapper.RealmMapper;
-import org.limbo.doorkeeper.server.dal.mapper.UserMapper;
 import org.limbo.doorkeeper.server.dal.entity.Realm;
 import org.limbo.doorkeeper.server.dal.entity.User;
+import org.limbo.doorkeeper.server.dal.mapper.RealmMapper;
+import org.limbo.doorkeeper.server.dal.mapper.UserMapper;
 import org.limbo.doorkeeper.server.support.session.exception.AuthenticationException;
 import org.limbo.doorkeeper.server.utils.JWTUtil;
 import org.limbo.doorkeeper.server.utils.MD5Utils;
@@ -51,14 +51,25 @@ public class LoginService {
     private RealmService realmService;
 
     public String login(LoginParam param) {
-        User user = userMapper.getByUsername(param.getRealmId(), param.getUsername());
-        Verifies.notNull(user, "用户不存在");
-        Verifies.verify(user.getIsEnabled(), "用户未启用");
-        Verifies.verify(MD5Utils.verify(param.getPassword(), user.getPassword()), "密码错误");
+        User user;
+        Realm realm;
+        if (param.getRealmId() == null) {
+            realm = realmMapper.getDoorkeeperRealm();
+            Verifies.notNull(realm, "realm不存在");
 
-        Realm realm = realmMapper.selectById(user.getRealmId());
-        Verifies.notNull(realm, "realm不存在");
+            user = userMapper.getByUsername(realm.getRealmId(), param.getUsername());
+            Verifies.notNull(user, "用户不存在");
+            Verifies.verify(user.getIsEnabled(), "用户未启用");
+            Verifies.verify(MD5Utils.verify(param.getPassword(), user.getPassword()), "密码错误");
+        } else {
+            user = userMapper.getByUsername(param.getRealmId(), param.getUsername());
+            Verifies.notNull(user, "用户不存在");
+            Verifies.verify(user.getIsEnabled(), "用户未启用");
+            Verifies.verify(MD5Utils.verify(param.getPassword(), user.getPassword()), "密码错误");
 
+            realm = realmMapper.selectById(user.getRealmId());
+            Verifies.notNull(realm, "realm不存在");
+        }
         return token(user.getUserId(), realm.getRealmId(), user.getUsername(), user.getNickname(), realm.getSecret());
     }
 

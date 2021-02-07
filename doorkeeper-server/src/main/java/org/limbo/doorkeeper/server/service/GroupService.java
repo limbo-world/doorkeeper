@@ -17,8 +17,12 @@
 package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.apache.commons.collections4.CollectionUtils;
+import org.limbo.doorkeeper.api.constants.BatchMethod;
 import org.limbo.doorkeeper.api.model.param.group.GroupAddParam;
+import org.limbo.doorkeeper.api.model.param.group.GroupRoleBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.group.GroupUpdateParam;
+import org.limbo.doorkeeper.api.model.param.group.GroupUserBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
 import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.dal.entity.Group;
@@ -31,6 +35,7 @@ import org.limbo.doorkeeper.server.dal.mapper.GroupRoleMapper;
 import org.limbo.doorkeeper.server.dal.mapper.GroupUserMapper;
 import org.limbo.doorkeeper.server.dal.mapper.RealmMapper;
 import org.limbo.doorkeeper.server.dal.mapper.policy.PolicyGroupMapper;
+import org.limbo.doorkeeper.server.service.policy.PolicyGroupService;
 import org.limbo.doorkeeper.server.support.ParamException;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.Verifies;
@@ -63,6 +68,15 @@ public class GroupService {
     @Autowired
     private PolicyGroupMapper policyGroupMapper;
 
+    @Autowired
+    private GroupUserService groupUserService;
+
+    @Autowired
+    private GroupRoleService groupRoleService;
+
+    @Autowired
+    private PolicyGroupService policyGroupService;
+
     @Transactional
     public GroupVO add(Long realmId, GroupAddParam param) {
         if (param.getParentId() == null) {
@@ -75,6 +89,25 @@ public class GroupService {
         } catch (DuplicateKeyException e) {
             throw new ParamException("用户组已存在");
         }
+
+        if (CollectionUtils.isNotEmpty(param.getUserIds())) {
+            GroupUserBatchUpdateParam batchUpdateParam  = new GroupUserBatchUpdateParam();
+            batchUpdateParam.setType(BatchMethod.SAVE);
+            batchUpdateParam.setUserIds(param.getUserIds());
+            groupUserService.batchUpdate(group.getGroupId(), batchUpdateParam);
+        }
+
+        if (CollectionUtils.isNotEmpty(param.getPolicies())) {
+            policyGroupService.batchSave(param.getPolicies());
+        }
+
+        if (CollectionUtils.isNotEmpty(param.getRoles())) {
+            GroupRoleBatchUpdateParam batchUpdateParam  = new GroupRoleBatchUpdateParam();
+            batchUpdateParam.setType(BatchMethod.SAVE);
+            batchUpdateParam.setRoles(param.getRoles());
+            groupRoleService.batchUpdate(group.getGroupId(), batchUpdateParam);
+        }
+
         return EnhancedBeanUtils.createAndCopy(group, GroupVO.class);
     }
 

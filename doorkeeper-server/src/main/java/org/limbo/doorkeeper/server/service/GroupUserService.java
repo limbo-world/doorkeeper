@@ -86,6 +86,9 @@ public class GroupUserService {
         }
     }
 
+    /**
+     * 用户所在用户组
+     */
     public List<GroupVO> checkGroup(Long userId, Long realmId, GroupCheckParam param) {
         List<GroupUser> userGroups = groupUserMapper.selectList(Wrappers.<GroupUser>lambdaQuery()
                 .eq(GroupUser::getUserId, userId)

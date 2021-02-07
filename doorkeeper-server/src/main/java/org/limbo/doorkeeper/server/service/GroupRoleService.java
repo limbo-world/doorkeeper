@@ -17,11 +17,13 @@
 package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.apache.commons.collections4.CollectionUtils;
+import org.limbo.doorkeeper.api.model.param.group.GroupRoleAddParam;
 import org.limbo.doorkeeper.api.model.param.group.GroupRoleBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.group.GroupRoleQueryParam;
 import org.limbo.doorkeeper.api.model.vo.GroupRoleVO;
-import org.limbo.doorkeeper.server.dal.mapper.GroupRoleMapper;
 import org.limbo.doorkeeper.server.dal.entity.GroupRole;
+import org.limbo.doorkeeper.server.dal.mapper.GroupRoleMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,25 +48,35 @@ public class GroupRoleService {
     }
 
     @Transactional
-    public void batchUpdate(Long realmId, Long groupId, GroupRoleBatchUpdateParam param) {
+    public void batchUpdate(Long groupId, GroupRoleBatchUpdateParam param) {
         switch (param.getType()) {
             case SAVE: // 新增
+                if (CollectionUtils.isEmpty(param.getRoles())) {
+                    return;
+                }
                 List<GroupRole> groupRoles = new ArrayList<>();
-                for (Long roleId : param.getRoleIds()) {
+                for (GroupRoleAddParam role : param.getRoles()) {
                     GroupRole groupRole = new GroupRole();
                     groupRole.setGroupId(groupId);
-                    groupRole.setRoleId(roleId);
+                    groupRole.setRoleId(role.getRoleId());
+                    groupRole.setIsExtend(role.getIsExtend());
                     groupRoles.add(groupRole);
                 }
                 groupRoleMapper.batchInsertIgnore(groupRoles);
                 break;
             case DELETE: // 删除
+                if (CollectionUtils.isEmpty(param.getRoleIds())) {
+                    return;
+                }
                 groupRoleMapper.delete(Wrappers.<GroupRole>lambdaQuery()
                         .eq(GroupRole::getGroupId, groupId)
                         .in(GroupRole::getRoleId, param.getRoleIds())
                 );
                 break;
             case UPDATE: // 更新
+                if (CollectionUtils.isEmpty(param.getRoleIds())) {
+                    return;
+                }
                 groupRoleMapper.update(null, Wrappers.<GroupRole>lambdaUpdate()
                         .set(GroupRole::getIsExtend, param.getIsExtend())
                         .eq(GroupRole::getGroupId, groupId)

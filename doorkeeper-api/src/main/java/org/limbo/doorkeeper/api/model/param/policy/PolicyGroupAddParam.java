@@ -28,6 +28,8 @@ import javax.validation.constraints.NotNull;
 @Data
 public class PolicyGroupAddParam {
 
+    private Long policyId;
+
     @NotNull(message = "组不能为空")
     @Schema(title = "组", required = true)
     private Long groupId;

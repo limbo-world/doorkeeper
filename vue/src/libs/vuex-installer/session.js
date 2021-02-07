@@ -215,9 +215,10 @@ const organizeMenu = (evaluator) => {
 };
 
 const organizeSingleMenu = (menu, evaluator) => {
-    if (menu.dk) { // todo 放到 evaluator 里去
+    // todo 放到 evaluator 里去
+    if (menu.dk) {
         let user = getSessionUserCache();
-        if (AppConstants.doorkeeperRealmId != user.realm.realmId) { // AppConstants.doorkeeperRealmId是string
+        if (user.realmId !== user.realm.realmId) {
             return null
         }
     }

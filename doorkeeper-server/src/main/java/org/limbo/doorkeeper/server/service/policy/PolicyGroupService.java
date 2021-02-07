@@ -23,16 +23,13 @@ import org.limbo.doorkeeper.api.model.vo.policy.PolicyGroupVO;
 import org.limbo.doorkeeper.server.dal.entity.policy.PolicyGroup;
 import org.limbo.doorkeeper.server.dal.mapper.policy.PolicyGroupMapper;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
-import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Devil
@@ -59,26 +56,24 @@ public class PolicyGroupService {
         );
         // 新增
         if (CollectionUtils.isNotEmpty(params)) {
-            batchSave(policyId, params);
+            for (PolicyGroupAddParam param : params) {
+                param.setPolicyId(policyId);
+            }
+            batchSave(params);
         }
     }
 
     @Transactional
-    public void batchSave(Long policyId, List<PolicyGroupAddParam> params) {
+    public void batchSave(List<PolicyGroupAddParam> params) {
         Verifies.verify(CollectionUtils.isNotEmpty(params), "角色列表为空");
-        // 去重
-        Map<Long, PolicyGroupAddParam> map = new HashMap<>();
-        for (PolicyGroupAddParam param : params) {
-            map.put(param.getGroupId(), param);
-        }
         List<PolicyGroup> policyGroups = new ArrayList<>();
-        for (PolicyGroupAddParam value : map.values()) {
+        for (PolicyGroupAddParam param : params) {
             PolicyGroup policyGroup = new PolicyGroup();
-            policyGroup.setPolicyId(policyId);
-            policyGroup.setGroupId(value.getGroupId());
-            policyGroup.setIsExtend(value.getIsExtend());
+            policyGroup.setPolicyId(param.getPolicyId());
+            policyGroup.setGroupId(param.getGroupId());
+            policyGroup.setIsExtend(param.getIsExtend());
             policyGroups.add(policyGroup);
         }
-        MyBatisPlusUtils.batchSave(policyGroups, PolicyGroup.class);
+        policyGroupMapper.batchInsertIgnore(policyGroups);
     }
 }

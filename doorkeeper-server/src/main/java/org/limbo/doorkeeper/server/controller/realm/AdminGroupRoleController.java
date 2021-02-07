@@ -56,7 +56,7 @@ public class AdminGroupRoleController extends BaseController {
     @PostMapping("/{groupId}/group-role/batch")
     public Response<Void> batchRole(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId,
                                 @RequestBody @Validated GroupRoleBatchUpdateParam param) {
-        groupRoleService.batchUpdate(getRealmId(), groupId, param);
+        groupRoleService.batchUpdate(groupId, param);
         return Response.success();
     }
 

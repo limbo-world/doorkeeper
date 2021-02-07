@@ -17,14 +17,11 @@
 package org.limbo.doorkeeper.server.service.policy;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.Page;
-import org.limbo.doorkeeper.api.model.param.policy.PolicyAddParam;
-import org.limbo.doorkeeper.api.model.param.policy.PolicyBatchUpdateParam;
-import org.limbo.doorkeeper.api.model.param.policy.PolicyQueryParam;
-import org.limbo.doorkeeper.api.model.param.policy.PolicyUpdateParam;
+import org.limbo.doorkeeper.api.model.param.policy.*;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 import org.limbo.doorkeeper.server.dal.entity.Client;
 import org.limbo.doorkeeper.server.dal.entity.PermissionPolicy;
@@ -110,7 +107,12 @@ public class PolicyService {
                 policyParamService.batchSave(policy.getPolicyId(), param.getParams());
                 break;
             case GROUP:
-                policyGroupService.batchSave(policy.getPolicyId(), param.getGroups());
+                if (CollectionUtils.isNotEmpty(param.getGroups())) {
+                    for (PolicyGroupAddParam group : param.getGroups()) {
+                        group.setPolicyId(policy.getPolicyId());
+                    }
+                    policyGroupService.batchSave(param.getGroups());
+                }
                 break;
         }
         return EnhancedBeanUtils.createAndCopy(policy, PolicyVO.class);

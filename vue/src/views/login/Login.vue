@@ -42,7 +42,7 @@
         data() {
             return {
                 loginForm: {
-                    realmId: this.$constants.doorkeeperRealmId
+
                 },
                 loginFormRule: {
                     username: [

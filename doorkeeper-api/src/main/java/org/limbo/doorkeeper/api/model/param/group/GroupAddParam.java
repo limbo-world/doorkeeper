@@ -18,8 +18,10 @@ package org.limbo.doorkeeper.api.model.param.group;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.limbo.doorkeeper.api.model.param.policy.PolicyGroupAddParam;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * @author Devil
@@ -41,4 +43,12 @@ public class GroupAddParam {
     @Schema(title = "默认添加")
     private Boolean isDefault;
 
+    @Schema(title = "添加的用户", description = "将哪些用户加入用户组")
+    private List<Long> userIds;
+
+    @Schema(title = "添加的策略", description = "将用户组加入哪些策略")
+    private List<PolicyGroupAddParam> policies;
+
+    @Schema(title = "添加的角色", description = "将哪些角色加入用户组")
+    private List<GroupRoleAddParam> roles;
 }

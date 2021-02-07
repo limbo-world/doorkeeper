@@ -170,7 +170,7 @@ public class DoorkeeperService {
         GroupRoleBatchUpdateParam groupRoleBatchUpdateParam = new GroupRoleBatchUpdateParam();
         groupRoleBatchUpdateParam.setType(BatchMethod.SAVE);
         groupRoleBatchUpdateParam.setRoleIds(Collections.singletonList(realmAdminRole.getRoleId()));
-        groupRoleService.batchUpdate(dkRealm.getRealmId(), group.getGroupId(), groupRoleBatchUpdateParam);
+        groupRoleService.batchUpdate(group.getGroupId(), groupRoleBatchUpdateParam);
         // 用户加入用户组
         GroupUserBatchUpdateParam dkRealmUserGroupParam = new GroupUserBatchUpdateParam();
         dkRealmUserGroupParam.setType(BatchMethod.SAVE);

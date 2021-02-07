@@ -68,7 +68,7 @@ public class AdminRealmController extends BaseController {
     @PutMapping("/{realmId}")
     public Response<RoleVO> update(@Validated @NotNull(message = "未提交域ID") @PathVariable("realmId") Long realmId,
                                    @Validated @RequestBody RealmUpdateParam param) {
-        realmService.update(getRealmId(), param);
+        realmService.update(realmId, param);
         return Response.success();
     }
 
