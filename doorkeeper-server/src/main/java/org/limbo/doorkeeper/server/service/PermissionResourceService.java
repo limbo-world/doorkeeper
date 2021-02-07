@@ -20,14 +20,11 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.model.param.permission.PermissionResourceAddParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionResourceVO;
+import org.limbo.doorkeeper.server.dal.entity.PermissionResource;
 import org.limbo.doorkeeper.server.dal.mapper.PermissionMapper;
 import org.limbo.doorkeeper.server.dal.mapper.PermissionResourceMapper;
 import org.limbo.doorkeeper.server.dal.mapper.ResourceMapper;
-import org.limbo.doorkeeper.server.dal.entity.Permission;
-import org.limbo.doorkeeper.server.dal.entity.PermissionResource;
-import org.limbo.doorkeeper.server.dal.entity.Resource;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
-import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Devil
@@ -70,44 +66,23 @@ public class PermissionResourceService {
         if (CollectionUtils.isEmpty(params)) {
             return;
         }
-        List<PermissionResource> permissionResources = verifyResourceList(permissionId, params);
-        Verifies.verify(CollectionUtils.isNotEmpty(permissionResources), "资源列表为空");
-        MyBatisPlusUtils.batchSave(permissionResources, PermissionResource.class);
+        for (PermissionResourceAddParam param : params) {
+            param.setPermissionId(permissionId);
+        }
+        batchSave(params);
     }
 
     @Transactional
-    public void batchSave(Long permissionId, List<PermissionResourceAddParam> params) {
+    public void batchSave(List<PermissionResourceAddParam> params) {
+        Verifies.verify(CollectionUtils.isNotEmpty(params), "资源列表为空");
 
-        List<PermissionResource> permissionResources = verifyResourceList(permissionId, params);
-
-        Verifies.verify(CollectionUtils.isNotEmpty(permissionResources), "资源列表为空");
-
-        MyBatisPlusUtils.batchSave(permissionResources, PermissionResource.class);
-    }
-
-    private List<PermissionResource> verifyResourceList(Long permissionId, List<PermissionResourceAddParam> params) {
-        Permission permission = permissionMapper.selectById(permissionId);
-        Verifies.notNull(permission, "权限不存在");
-
-        List<PermissionResource> list = new ArrayList<>();
-
-        // 排除不是同个client的资源
-        List<Long> resourceIds = params.stream().map(PermissionResourceAddParam::getResourceId).collect(Collectors.toList());
-        List<Resource> resources = resourceMapper.selectList(Wrappers.<Resource>lambdaQuery()
-                .select(Resource::getResourceId)
-                .eq(Resource::getRealmId, permission.getRealmId())
-                .eq(Resource::getClientId, permission.getClientId())
-                .in(Resource::getResourceId, resourceIds)
-        );
-
-        for (Resource resource : resources) {
-            PermissionResource po = new PermissionResource();
-            po.setPermissionId(permissionId);
-            po.setResourceId(resource.getResourceId());
-            list.add(po);
+        List<PermissionResource> permissionResources = new ArrayList<>();
+        for (PermissionResourceAddParam param : params) {
+            PermissionResource permissionResource = new PermissionResource();
+            permissionResource.setPermissionId(param.getPermissionId());
+            permissionResource.setResourceId(param.getResourceId());
         }
-
-        return list;
+        permissionResourceMapper.batchInsertIgnore(permissionResources);
     }
 
 }

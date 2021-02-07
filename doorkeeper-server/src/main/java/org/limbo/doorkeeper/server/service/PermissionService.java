@@ -88,9 +88,15 @@ public class PermissionService {
 
         permissionMapper.insert(permission);
 
-        permissionResourceService.batchSave(permission.getPermissionId(), param.getResources());
+        for (PermissionResourceAddParam resource : param.getResources()) {
+            resource.setPermissionId(permission.getPermissionId());
+        }
+        permissionResourceService.batchSave(param.getResources());
 
-        permissionPolicyService.batchSave(permission.getPermissionId(), param.getPolicies());
+        for (PermissionPolicyAddParam policy : param.getPolicies()) {
+            policy.setPermissionId(permission.getPermissionId());
+        }
+        permissionPolicyService.batchSave(param.getPolicies());
 
         return EnhancedBeanUtils.createAndCopy(permission, PermissionVO.class);
     }

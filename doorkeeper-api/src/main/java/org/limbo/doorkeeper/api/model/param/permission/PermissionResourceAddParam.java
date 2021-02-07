@@ -31,6 +31,9 @@ public class PermissionResourceAddParam {
     @Schema(title = "ID", description = "如果存在，表示是一个已经存在的")
     private Long permissionResourceId;
 
+    @Schema(title = "权限ID")
+    private Long permissionId;
+
     @NotNull(message = "资源ID不能为空")
     @Schema(title = "资源ID", required = true)
     private Long resourceId;

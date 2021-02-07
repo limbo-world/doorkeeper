@@ -19,6 +19,7 @@ package org.limbo.doorkeeper.server.service;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.model.Page;
+import org.limbo.doorkeeper.api.model.param.permission.PermissionResourceAddParam;
 import org.limbo.doorkeeper.api.model.param.resource.*;
 import org.limbo.doorkeeper.api.model.vo.ResourceTagVO;
 import org.limbo.doorkeeper.api.model.vo.ResourceUriVO;
@@ -61,6 +62,9 @@ public class ResourceService {
     @Autowired
     private ResourceTagMapper resourceTagMapper;
 
+    @Autowired
+    private PermissionResourceService permissionResourceService;
+
     @Transactional
     public ResourceVO add(Long realmId, Long clientId, ResourceAddParam param) {
         Client client = clientMapper.getById(realmId, clientId);
@@ -79,7 +83,16 @@ public class ResourceService {
         batchSaveUri(resource.getResourceId(), resource.getRealmId(), resource.getClientId(), param.getUris());
         // 资源标签
         batchSaveTag(resource.getResourceId(), resource.getRealmId(), resource.getClientId(), param.getTags());
-
+        if (CollectionUtils.isNotEmpty(param.getPermissionIds())) {
+            List<PermissionResourceAddParam> params = new ArrayList<>();
+            for (Long permissionId : param.getPermissionIds()) {
+                PermissionResourceAddParam addParam = new PermissionResourceAddParam();
+                addParam.setPermissionId(permissionId);
+                addParam.setResourceId(resource.getResourceId());
+                params.add(addParam);
+            }
+            permissionResourceService.batchSave(params);
+        }
         return EnhancedBeanUtils.createAndCopy(resource, ResourceVO.class);
     }
 
