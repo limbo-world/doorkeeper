@@ -32,6 +32,7 @@ doorkeeper是一个可扩展的权限认证管理平台，可以在此平台上�
 
 - **域** :   
   域表示独立的一块区域，域与域之间的所有数据是隔离的，如用户等。Doorkeeper属于特殊的域，用于数据管理操作。
+  域secret是用于域用户登录时候进行认证处理使用的。
 
 - **用户/用户组** :   
   用户/用户组在域下唯一，一个用户可以加入多个用户组。用户/用户组都可以进行角色绑定。
@@ -60,19 +61,20 @@ doorkeeper是一个可扩展的权限认证管理平台，可以在此平台上�
 
  1. 域的创建和管理
 
-![创建项目](https://github.com/LimboHome/limbo-authc/raw/master/doc/project.jpg)
+![创建项目](https://github.com/LimboHome/limbo-authc/raw/master/doc/realm.jpg)
 
  2. 委托方管理
 
-![项目账户](https://github.com/LimboHome/limbo-authc/raw/master/doc/project-account.jpg)
+![项目账户](https://github.com/LimboHome/limbo-authc/raw/master/doc/client.jpg)
 
  3. 委托方数据管理，资源、角色、策略、权限
  
-![项目账户](https://github.com/LimboHome/limbo-authc/raw/master/doc/permission.jpg)
-![项目账户](https://github.com/LimboHome/limbo-authc/raw/master/doc/role.jpg)
-![项目账户](https://github.com/LimboHome/limbo-authc/raw/master/doc/account.jpg) 
+![项目账户](https://github.com/LimboHome/limbo-authc/raw/master/doc/client-edit.jpg)
 
- 4. 根据需要进行权限设置后，第三方系统，只需要如下自定义拦截器，调用接口判断是否有权限访问接口(此处可接入授权认证框架Shiro等)
+ 4. 管理端权限分配，目前管理端使用用户组的形式来分配管理端用户是否有某个域的权限。所以只需要将用户加入域名称对应的用户组即可。
+    更加详细的配置可以通过自定义扩展实现。 
+
+ 5. 根据需要进行权限设置后，第三方系统，只需要如下自定义拦截器，调用接口判断是否有权限访问接口(此处可接入授权认证框架Shiro等)
 
 ```
 请求接口时，额外带上Header
@@ -122,3 +124,10 @@ server {
   }
 }
 ```
+
+6. 管理端访问，进行登录
+
+```
+http://ip:host
+```
+
