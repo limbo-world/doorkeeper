@@ -14,7 +14,7 @@
 # 介绍
 
 <div align="center"><img src="https://github.com/LimboHome/limbo-authc/raw/master/doc/logo.jpg" width="30%" /></div>
-doorkeeper是一个可扩展的权限认证管理平台，可以在此平台上快速接入权限管理，**不是认证授权框架**(Shiro\Spring Security)，但可以集成认证授权框架一起使用。
+doorkeeper是一个可扩展的权限认证管理平台，可以在此平台上快速接入权限管理，(不是认证授权框架 Shiro\Spring Security)，但可以集成认证授权框架一起使用。
 
 这是一个独立的权限配置管理服务的脚手架，用于将登录认证、权限验证、权限管理从业务中抽离，便于业务系统快速接入权限功能。
 
