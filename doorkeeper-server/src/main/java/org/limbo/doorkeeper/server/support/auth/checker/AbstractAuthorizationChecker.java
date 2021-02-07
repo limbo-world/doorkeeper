@@ -17,18 +17,16 @@
 package org.limbo.doorkeeper.server.support.auth.checker;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.Logic;
 import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
-import org.limbo.doorkeeper.api.model.vo.check.AuthorizationCheckResult;
 import org.limbo.doorkeeper.api.model.vo.PermissionPolicyVO;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.limbo.doorkeeper.api.model.vo.ResourceVO;
+import org.limbo.doorkeeper.api.model.vo.check.AuthorizationCheckResult;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 import org.limbo.doorkeeper.server.dal.dao.PermissionDao;
 import org.limbo.doorkeeper.server.dal.dao.PolicyDao;
@@ -39,10 +37,7 @@ import org.limbo.doorkeeper.server.dal.mapper.PermissionResourceMapper;
 import org.limbo.doorkeeper.server.support.auth.AuthorizationException;
 import org.limbo.doorkeeper.server.support.auth.policies.PolicyCheckerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -126,14 +121,14 @@ public abstract class AbstractAuthorizationChecker<P extends AuthorizationCheckP
                         Collectors.mapping(Function.identity(), Collectors.toSet())
                 ));
                 // 先检测 REFUSE 的权限，如果存在一个 REFUSE 的权限校验通过，则此资源约束被看作拒绝
-                Set<PermissionVO> refusedPerms = intentGroupedPerms.getOrDefault(Intention.REFUSE, Sets.newHashSet());
+                Set<PermissionVO> refusedPerms = intentGroupedPerms.getOrDefault(Intention.REFUSE, new HashSet<>());
                 for (PermissionVO permission : refusedPerms) {
                     if (checkPermissionLogic(permission)) {
                         continue ASSIGNER_ITER;
                     }
                 }
                 // 再检测 ALLOW 的权限
-                Set<PermissionVO> allowedPerms = intentGroupedPerms.getOrDefault(Intention.ALLOW, Sets.newHashSet());
+                Set<PermissionVO> allowedPerms = intentGroupedPerms.getOrDefault(Intention.ALLOW, new HashSet<>());
                 for (PermissionVO permission : allowedPerms) {
                     if (checkPermissionLogic(permission)) {
                         result.add(findResource);
@@ -194,7 +189,7 @@ public abstract class AbstractAuthorizationChecker<P extends AuthorizationCheckP
                 .eq(PermissionResource::getResourceId, resourceId)
         );
         if (CollectionUtils.isEmpty(permissionResources)) {
-            return Lists.newArrayList();
+            return new ArrayList<>();
         }
         List<Long> permissionIds = permissionResources.stream().map(PermissionResource::getPermissionId).collect(Collectors.toList());
         return permissionDao.getVOSByPermissionIds(getClient().getRealmId(), getClient().getClientId(), permissionIds, true);

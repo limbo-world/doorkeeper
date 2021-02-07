@@ -18,7 +18,6 @@
 
 package org.limbo.doorkeeper.server.utils;
 
-import com.google.common.collect.Lists;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.ContextClassLoaderLocal;
@@ -58,7 +57,7 @@ public class EnhancedBeanUtils {
 
     public static <S, D> List<D> createAndCopyList(List<S> source, Class<D> clazz) {
         if (CollectionUtils.isEmpty(source)) {
-            return Lists.newArrayList();
+            return new ArrayList<>();
         }
 
         List<D> dest = new ArrayList<>(source.size());
