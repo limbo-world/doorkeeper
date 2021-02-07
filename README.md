@@ -84,47 +84,108 @@ http://ip:host/api-docs.html
 ```
 
 # 安装教程
+## 服务要求
+1. MySQL服务 * 1
+
+2. Java后端服务 * 1
+
+3. Node前端服务 * 1
+
+4. Nginx代理服务 * 1
   
-1. 将 `init/init-table.sql` 导入对应数据库
+## 安装步骤
+1. 初始化数据库
+   
+    执行脚本 `init/init-table.sql`，导入初始数据。
+
 
 2. 修改配置文件
 
-3. 根目录下执行命令打包编译，如开发环境
+    注意修改`spring.datasource`配置，修改数据库名与用户名、密码。
 
-```
-mvn clean package -Dmaven.test.skip=true -P dev
-```
 
-4. 初始化数据，访问接口，初始管理员账户 admin 密码 admin
+3. Java服务打包
+   
+    项目根目录下，执行如下命令打包编译，通过`-P`参数指定环境，如开发环境为`-P dev`
 
-```
-http://ip:host/init
-```
+    ```
+    mvn clean package -Dmaven.test.skip=true -P dev
+    ```
 
-4. vue 目录下执行 npm install & npm run build，本地调试可以使用 npm run serve
+    > 此步骤需要先安装maven
 
-5. nginx配置
-```
-server {
-  listen 80;
-  server_name doorkeeper.limbo.org;
-  location / {
-      root /path/of/dist;
-      autoindex on;
-      autoindex_exact_size on;
-      autoindex_localtime on;
-  }
-  
-  location /api {
-      # 后端接口
-      proxy_pass http://127.0.0.1:8890/;
-  }
-}
-```
 
-6. 管理端访问，进行登录
+4. 启动Java后端服务
 
-```
-http://ip:host
-```
+    通过命令行启动Java后端服务，命令类似`java -jar doorkeeper.jar`
+
+    > 此步骤需要JDK8及以上版本
+
+5. 调用Java服务初始化接口
+   
+    Doorkeeper域的数据通过代码进行初始化，需在启动Java服务后访问初始化接口。该接口在Doorkeeper部署后访问一次即可。
+
+    ```
+    http://ip:port/init
+    ```
+
+    假设Java服务所在机器(容器)IP地址为`127.0.0.1`，Http服务端口配置为`8088`，初始化接口为`http://127.0.0.1:8088/init`
+
+    初始管理员账户名`admin`密码`admin`。
+
+
+6. 启动Node前端服务 
+    
+    `vue`目录下执行 `npm install`安装依赖，然后通过`npm run build`编译前端资源，编译完成后的前端静态资源在`vue/dist`目录中。
+   
+    本地调试可以使用 `npm run serve` 启动前端服务，`vue/vue.config.js`中可以指定前端项目端口，默认为8082。
+
+    > 此步骤需要先安装NodeJs服务
+
+
+7. 配置Nginx代理服务器
+
+    假设Nginx与Java后端服务在同一机器上，后端服务启动与`8088`端口。
+
+    ```
+    server {
+        listen 80;
+            
+        # Doorkeeper服务域名可自行设置，或使用 doorkeeper.limbo.org
+        server_name doorkeeper.limbo.org;
+   
+        # A 前端静态资源代理，如果采用 npm run build 方式对前端资源进行编译，使用此方法代理前端
+        location / {
+            # 编译产生的
+            root /path/of/dist;
+            autoindex on;
+            autoindex_exact_size on;
+            autoindex_localtime on;
+        }
+        
+        # B 前端Node服务代理，如果采用 npm run serve 方式启动前端服务，使用此方法代理前端 
+        location / {
+            # 后端接口
+            proxy_pass http://127.0.0.1:8082/;
+        }
+          
+        # 后端Java服务代理
+        location /api {
+            # 后端接口
+            proxy_pass http://127.0.0.1:8088/;
+        }
+    }
+    ```
+   
+    > 1. 前端代理的方式 A B 选择一种即可。建议生产环境使用A方式，将Nginx作为前端服务器，利用Nginx的缓存、gzip等；开发环境使用B方式，可以实现修改前端代码后热更新，便于调试。
+    > 2. 后端服务代理的`X-forward-*`请求头需自行配置。
+   
+
+8. 管理端访问，进行登录
+    
+    访问 `http://doorkeeper.limbo.org`，以默认用户名`admin`密码`admin`登录Doorkeeper管理平台，进行配置。
+
+    假设Nginx服务所在服务器地址为`10.10.10.10`，需配置DNS解析，将`doorkeeper.limbo.org`(或自己的其他域名)映射到该IP。
+
+    如果没有DNS解析，可在需访问Doorkeeper管理平台的机器`hosts`文件中添加一行`10.10.10.10 doorkeeper.limbo.org`
 
