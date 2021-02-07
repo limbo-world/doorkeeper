@@ -31,6 +31,9 @@ public class PermissionPolicyAddParam {
     @Schema(title = "ID", description = "如果存在，表示是一个已经存在的")
     private Long permissionPolicyId;
 
+    @Schema(title = "权限ID")
+    private Long permissionId;
+
     @NotNull(message = "策略ID不能为空")
     @Schema(title = "策略ID", required = true)
     private Long policyId;

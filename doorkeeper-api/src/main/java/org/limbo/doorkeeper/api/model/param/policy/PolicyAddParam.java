@@ -66,4 +66,6 @@ public class PolicyAddParam {
     @Schema(title = "用户组策略")
     private List<PolicyGroupAddParam>  groups;
 
+    @Schema(title = "添加的权限", description = "新增的时候同时在权限加入此策略")
+    private List<Long> permissionIds;
 }

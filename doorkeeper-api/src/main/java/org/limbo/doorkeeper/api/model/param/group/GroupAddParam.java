@@ -43,12 +43,12 @@ public class GroupAddParam {
     @Schema(title = "默认添加")
     private Boolean isDefault;
 
-    @Schema(title = "添加的用户", description = "将哪些用户加入用户组")
+    @Schema(title = "添加的用户", description = "新增的时候同时在用户组加入用户")
     private List<Long> userIds;
 
-    @Schema(title = "添加的策略", description = "将用户组加入哪些策略")
+    @Schema(title = "添加的策略", description = "新增的时候同时在将用户组加入策略")
     private List<PolicyGroupAddParam> policies;
 
-    @Schema(title = "添加的角色", description = "将哪些角色加入用户组")
+    @Schema(title = "添加的角色", description = "新增的时候同时在用户组加入角色")
     private List<GroupRoleAddParam> roles;
 }

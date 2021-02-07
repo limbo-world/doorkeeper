@@ -20,14 +20,11 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.model.param.permission.PermissionPolicyAddParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionPolicyVO;
+import org.limbo.doorkeeper.server.dal.entity.PermissionPolicy;
 import org.limbo.doorkeeper.server.dal.mapper.PermissionMapper;
 import org.limbo.doorkeeper.server.dal.mapper.PermissionPolicyMapper;
 import org.limbo.doorkeeper.server.dal.mapper.policy.PolicyMapper;
-import org.limbo.doorkeeper.server.dal.entity.Permission;
-import org.limbo.doorkeeper.server.dal.entity.PermissionPolicy;
-import org.limbo.doorkeeper.server.dal.entity.policy.Policy;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
-import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Devil
@@ -70,43 +66,23 @@ public class PermissionPolicyService {
         if (CollectionUtils.isEmpty(params)) {
             return;
         }
-        List<PermissionPolicy> permissionPolicies = verifyPolicyList(permissionId, params);
-        Verifies.verify(CollectionUtils.isNotEmpty(permissionPolicies), "策略列表为空");
-        MyBatisPlusUtils.batchSave(permissionPolicies, PermissionPolicy.class);
+
+        for (PermissionPolicyAddParam param : params) {
+            param.setPermissionId(permissionId);
+        }
+        batchSave(params);
     }
 
     @Transactional
-    public void batchSave(Long permissionId, List<PermissionPolicyAddParam> params) {
+    public void batchSave(List<PermissionPolicyAddParam> params) {
+        Verifies.verify(CollectionUtils.isNotEmpty(params), "策略列表为空");
 
-        List<PermissionPolicy> permissionPolicies = verifyPolicyList(permissionId, params);
-
-        Verifies.verify(CollectionUtils.isNotEmpty(permissionPolicies), "策略列表为空");
-
-        MyBatisPlusUtils.batchSave(permissionPolicies, PermissionPolicy.class);
-    }
-
-    private List<PermissionPolicy> verifyPolicyList(Long permissionId, List<PermissionPolicyAddParam> params) {
-        Permission permission = permissionMapper.selectById(permissionId);
-        Verifies.notNull(permission, "权限不存在");
-
-        List<PermissionPolicy> list = new ArrayList<>();
-
-        // 排除不是同个client的
-        List<Long> policyIds = params.stream().map(PermissionPolicyAddParam::getPolicyId).collect(Collectors.toList());
-        List<Policy> policies = policyMapper.selectList(Wrappers.<Policy>lambdaQuery()
-                .select(Policy::getPolicyId)
-                .eq(Policy::getRealmId, permission.getRealmId())
-                .eq(Policy::getClientId, permission.getClientId())
-                .in(Policy::getPolicyId, policyIds)
-        );
-
-        for (Policy policy : policies) {
-            PermissionPolicy po = new PermissionPolicy();
-            po.setPermissionId(permissionId);
-            po.setPolicyId(policy.getPolicyId());
-            list.add(po);
+        List<PermissionPolicy> permissionPolicies = new ArrayList<>();
+        for (PermissionPolicyAddParam param : params) {
+            PermissionPolicy permissionPolicy = new PermissionPolicy();
+            permissionPolicy.setPermissionId(param.getPermissionId());
+            permissionPolicy.setPolicyId(param.getPolicyId());
         }
-
-        return list;
+        permissionPolicyMapper.batchInsertIgnore(permissionPolicies);
     }
 }

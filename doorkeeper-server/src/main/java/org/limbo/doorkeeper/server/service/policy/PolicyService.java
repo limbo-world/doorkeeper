@@ -21,6 +21,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.Page;
+import org.limbo.doorkeeper.api.model.param.permission.PermissionPolicyAddParam;
 import org.limbo.doorkeeper.api.model.param.policy.*;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 import org.limbo.doorkeeper.server.dal.entity.Client;
@@ -29,6 +30,7 @@ import org.limbo.doorkeeper.server.dal.entity.policy.*;
 import org.limbo.doorkeeper.server.dal.mapper.ClientMapper;
 import org.limbo.doorkeeper.server.dal.mapper.PermissionPolicyMapper;
 import org.limbo.doorkeeper.server.dal.mapper.policy.*;
+import org.limbo.doorkeeper.server.service.PermissionPolicyService;
 import org.limbo.doorkeeper.server.support.ParamException;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
@@ -38,6 +40,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,6 +84,9 @@ public class PolicyService {
     @Autowired
     private PolicyRoleMapper policyRoleMapper;
 
+    @Autowired
+    private PermissionPolicyService permissionPolicyService;
+
     @Transactional
     public PolicyVO add(Long realmId, Long clientId, PolicyAddParam param) {
         Verifies.notNull(param.getType(), "策略类型不存在");
@@ -114,6 +120,16 @@ public class PolicyService {
                     policyGroupService.batchSave(param.getGroups());
                 }
                 break;
+        }
+        if (CollectionUtils.isNotEmpty(param.getPermissionIds())) {
+            List<PermissionPolicyAddParam> params = new ArrayList<>();
+            for (Long permissionId : param.getPermissionIds()) {
+                PermissionPolicyAddParam addParam = new PermissionPolicyAddParam();
+                addParam.setPermissionId(permissionId);
+                addParam.setPolicyId(policy.getPolicyId());
+                params.add(addParam);
+            }
+            permissionPolicyService.batchSave(params);
         }
         return EnhancedBeanUtils.createAndCopy(policy, PolicyVO.class);
     }
