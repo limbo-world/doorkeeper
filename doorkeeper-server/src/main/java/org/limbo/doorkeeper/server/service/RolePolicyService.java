@@ -14,12 +14,9 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.service.policy;
+package org.limbo.doorkeeper.server.service;
 
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
-import org.limbo.doorkeeper.api.model.param.policy.PolicyRoleAddParam;
-import org.limbo.doorkeeper.api.model.vo.policy.PolicyRoleVO;
 import org.limbo.doorkeeper.server.dal.entity.policy.PolicyRole;
 import org.limbo.doorkeeper.server.dal.mapper.policy.PolicyRoleMapper;
 import org.limbo.doorkeeper.server.utils.Verifies;
@@ -35,35 +32,19 @@ import java.util.List;
  * @date 2021/1/6 7:35 下午
  */
 @Service
-public class PolicyRoleService {
+public class RolePolicyService {
 
     @Autowired
     private PolicyRoleMapper policyRoleMapper;
 
-    public List<PolicyRoleVO> getByPolicy(Long policyId) {
-        return policyRoleMapper.listVOSByPolicyId(policyId);
-    }
-
     @Transactional
-    public void update(Long policyId, List<PolicyRoleAddParam> params) {
-        // 删除
-        policyRoleMapper.delete(Wrappers.<PolicyRole>lambdaQuery()
-                .eq(PolicyRole::getPolicyId, policyId)
-        );
-        // 新增
-        if (CollectionUtils.isNotEmpty(params)) {
-            batchSave(policyId, params);
-        }
-    }
-
-    @Transactional
-    public void batchSave(Long policyId, List<PolicyRoleAddParam> params) {
-        Verifies.verify(CollectionUtils.isNotEmpty(params), "角色列表为空");
+    public void batchSave(Long roleId, List<Long> policyIds) {
+        Verifies.verify(CollectionUtils.isNotEmpty(policyIds), "策略列表为空");
         List<PolicyRole> policyRoles = new ArrayList<>();
-        for (PolicyRoleAddParam role : params) {
+        for (Long policyId : policyIds) {
             PolicyRole policyRole = new PolicyRole();
             policyRole.setPolicyId(policyId);
-            policyRole.setRoleId(role.getRoleId());
+            policyRole.setRoleId(roleId);
             policyRoles.add(policyRole);
         }
         policyRoleMapper.batchInsertIgnore(policyRoles);

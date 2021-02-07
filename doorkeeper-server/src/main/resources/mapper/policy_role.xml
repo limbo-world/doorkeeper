@@ -28,6 +28,15 @@
         <result column="is_enabled" property="isEnabled" jdbcType="BIT" javaType="java.lang.Boolean" />
     </resultMap>
 
+    <insert id="batchInsertIgnore" parameterType="org.limbo.doorkeeper.server.dal.entity.policy.PolicyRole">
+        INSERT ignore INTO policy_role (
+        policy_id, role_id
+        ) VALUES
+        <foreach collection="policyRoles" separator="," item="policyRole">
+            ( #{policyRole.policyId}, #{policyRole.roleId} )
+        </foreach>
+    </insert>
+
     <select id="listVOSByPolicyId" resultMap="PolicyRoleVO">
         select pr.*, r.realm_id, r.client_id, r.is_enabled
         from policy_role pr

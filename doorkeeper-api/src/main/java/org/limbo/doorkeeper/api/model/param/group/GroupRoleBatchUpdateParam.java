@@ -20,7 +20,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.limbo.doorkeeper.api.constants.BatchMethod;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -41,6 +40,6 @@ public class GroupRoleBatchUpdateParam {
     @Schema(title = "是否向下延伸",  description = "更新的时候使用")
     private Boolean isExtend;
 
-    @Schema(title = "角色列表", description = "新增的时候使用")
     private List<GroupRoleAddParam> roles;
+
 }

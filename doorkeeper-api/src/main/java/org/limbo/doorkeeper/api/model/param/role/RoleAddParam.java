@@ -20,6 +20,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 /**
  * @author Devil
@@ -40,4 +41,13 @@ public class RoleAddParam {
 
     @Schema(title = "是否默认添加")
     private Boolean isDefault;
+
+    @Schema(title = "添加的用户组", description = "新增的时候同时将角色加入此用户组")
+    private List<RoleGroupAddParam> groups;
+
+    @Schema(title = "用户列表", description = "新增的时候同时将用户加入此角色")
+    private List<Long> userIds;
+
+    @Schema(title = "策略列表", description = "新增的时候同时将角色加入此策略")
+    private List<Long> policyIds;
 }

@@ -16,12 +16,10 @@
 
 package org.limbo.doorkeeper.server.service;
 
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import org.limbo.doorkeeper.api.model.param.role.RoleAddParam;
-import org.limbo.doorkeeper.api.model.param.role.RoleBatchUpdateParam;
-import org.limbo.doorkeeper.api.model.param.role.RoleQueryParam;
-import org.limbo.doorkeeper.api.model.param.role.RoleUpdateParam;
+import org.apache.commons.collections4.CollectionUtils;
+import org.limbo.doorkeeper.api.constants.BatchMethod;
+import org.limbo.doorkeeper.api.model.param.role.*;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.server.dal.entity.GroupRole;
 import org.limbo.doorkeeper.server.dal.entity.Role;
@@ -61,6 +59,15 @@ public class RoleService {
     @Autowired
     private UserRoleMapper userRoleMapper;
 
+    @Autowired
+    private RoleGroupService roleGroupService;
+
+    @Autowired
+    private RoleUserService roleUserService;
+
+    @Autowired
+    private RolePolicyService rolePolicyService;
+
     @Transactional
     public RoleVO add(Long realmId, Long clientId, RoleAddParam param) {
         Role role = EnhancedBeanUtils.createAndCopy(param, Role.class);
@@ -71,6 +78,22 @@ public class RoleService {
         } catch (DuplicateKeyException e) {
             throw new ParamException("角色已存在");
         }
+
+        if (CollectionUtils.isNotEmpty(param.getGroups())) {
+            roleGroupService.batchSave(role.getRoleId(), param.getGroups());
+        }
+
+        if (CollectionUtils.isNotEmpty(param.getUserIds())) {
+            RoleUserBatchUpdateParam batchUpdateParam = new RoleUserBatchUpdateParam();
+            batchUpdateParam.setType(BatchMethod.SAVE);
+            batchUpdateParam.setUserIds(param.getUserIds());
+            roleUserService.batchUpdate(role.getRoleId(), batchUpdateParam);
+        }
+
+        if (CollectionUtils.isNotEmpty(param.getPolicyIds())) {
+            rolePolicyService.batchSave(role.getRoleId(), param.getPolicyIds());
+        }
+
         return EnhancedBeanUtils.createAndCopy(role, RoleVO.class);
     }
 

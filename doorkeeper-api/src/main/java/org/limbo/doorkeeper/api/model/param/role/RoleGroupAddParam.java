@@ -14,23 +14,24 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.dal.mapper.policy;
+package org.limbo.doorkeeper.api.model.param.role;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Param;
-import org.limbo.doorkeeper.api.model.vo.policy.PolicyRoleVO;
-import org.limbo.doorkeeper.server.dal.entity.policy.PolicyRole;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
 
-import java.util.List;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Devil
- * @date 2021/1/3 6:08 下午
+ * @date 2021/2/7 2:34 下午
  */
-public interface PolicyRoleMapper extends BaseMapper<PolicyRole> {
+@Data
+public class RoleGroupAddParam {
 
-    void batchInsertIgnore(@Param("policyRoles") List<PolicyRole> policyRoles);
+    @NotNull(message = "用户组不能为空")
+    @Schema(title = "用户组", required = true)
+    private Long groupId;
 
-    List<PolicyRoleVO> listVOSByPolicyId(@Param("policyId") Long policyId);
-
+    @Schema(title = "是否向下延伸", description = "true的情况下，会把角色传递给子用户组的用户")
+    private Boolean isExtend;
 }
