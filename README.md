@@ -117,7 +117,9 @@ http://ip:host/api-docs.html
 
 4. 启动Java后端服务
 
-    通过命令行启动Java后端服务，命令类似`java -jar doorkeeper.jar`
+    通过命令行启动Java后端服务，命令类似`java -jar doorkeeper.jar` 。
+
+    `doorkeeper.jar` 位于 `doorkeeper-server/target` 目录下。 
 
     > 此步骤需要JDK8及以上版本
 
@@ -129,9 +131,7 @@ http://ip:host/api-docs.html
     http://ip:port/init
     ```
 
-    假设Java服务所在机器(容器)IP地址为`127.0.0.1`，Http服务端口配置为`8088`，初始化接口为`http://127.0.0.1:8088/init`
-
-    初始管理员账户名`admin`密码`admin`。
+    假设Java服务所在机器(容器)IP地址为`127.0.0.1`，Http服务端口配置为`8088`，初始化接口为`http://127.0.0.1:8088/init` 。
 
 
 6. 启动Node前端服务 
@@ -156,7 +156,7 @@ http://ip:host/api-docs.html
    
         # A 前端静态资源代理，如果采用 npm run build 方式对前端资源进行编译，使用此方法代理前端
         location / {
-            # 编译产生的
+            # 编译产生的静态资源目录 vue/dist
             root /path/of/dist;
             autoindex on;
             autoindex_exact_size on;
@@ -165,7 +165,6 @@ http://ip:host/api-docs.html
         
         # B 前端Node服务代理，如果采用 npm run serve 方式启动前端服务，使用此方法代理前端 
         location / {
-            # 后端接口
             proxy_pass http://127.0.0.1:8082/;
         }
           
@@ -178,7 +177,7 @@ http://ip:host/api-docs.html
     ```
    
     > 1. 前端代理的方式 A B 选择一种即可。建议生产环境使用A方式，将Nginx作为前端服务器，利用Nginx的缓存、gzip等；开发环境使用B方式，可以实现修改前端代码后热更新，便于调试。
-    > 2. 后端服务代理的`X-forward-*`请求头需自行配置。
+    > 2. 后端服务代理的`x-forward-*`请求头需自行配置。
    
 
 8. 管理端访问，进行登录
@@ -189,3 +188,23 @@ http://ip:host/api-docs.html
 
     如果没有DNS解析，可在需访问Doorkeeper管理平台的机器`hosts`文件中添加一行`10.10.10.10 doorkeeper.limbo.org`
 
+# QA
+
+- 如何修改默认用户名密码？
+  
+  默认用户名密码在 `DoorkeeperService.initDoorkeeper` 中设置，可以自行修改。需在第一次启动Java服务前修改，修改完后编译、运行Java服务。
+
+  ```java
+    // 创建管理员账户
+    User user = new User();
+    user.setRealmId(realm.getRealmId());
+    // 设置默认用户名 admin
+    user.setUsername(DoorkeeperConstants.ADMIN);
+    user.setNickname(DoorkeeperConstants.ADMIN);
+    // 设置默认密码 admin
+    user.setPassword(MD5Utils.md5WithSalt(DoorkeeperConstants.ADMIN));
+    user.setIsEnabled(true);
+    userMapper.insert(user);
+  ```
+ 
+  如已完成初始化，此时建议只修改密码，可登陆管理平台后进行修改。
