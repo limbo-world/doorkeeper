@@ -7,6 +7,7 @@
   - [概念](#%E6%A6%82%E5%BF%B5)
 - [使用说明](#%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E)
 - [安装教程](#%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B)
+- [QA](#qa)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -84,16 +85,7 @@ http://ip:host/api-docs.html
 ```
 
 # 安装教程
-## 服务要求
-1. MySQL服务 * 1
 
-2. Java后端服务 * 1
-
-3. Node前端服务 * 1
-
-4. Nginx代理服务 * 1
-  
-## 安装步骤
 1. 初始化数据库
    
     执行脚本 `init/init-table.sql`，导入初始数据。
