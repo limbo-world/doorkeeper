@@ -41,7 +41,7 @@ import javax.validation.constraints.NotNull;
 @Tag(name = "资源")
 @Slf4j
 @RestController
-@RequestMapping("/admin/realm/{realmId}/client/{clientId}/resource")
+@RequestMapping("/api/admin/realm/{realmId}/client/{clientId}/resource")
 public class AdminResourceController extends BaseController {
 
     @Autowired

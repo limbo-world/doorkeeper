@@ -140,6 +140,7 @@ http://host:port/api-docs.html
     假设Nginx与Java后端服务在同一机器上，后端服务启动与`8088`端口。
 
     ```
+    # 方式 1 静态资源在jar外部
     server {
         listen 80;
             
@@ -161,10 +162,22 @@ http://host:port/api-docs.html
         }
           
         # 后端Java服务代理
-        location /api {
+        location /api/ {
             # 后端接口
-            proxy_pass http://127.0.0.1:8088/;
+            proxy_pass http://127.0.0.1:8088;
         }
+    }
+   
+    # 方式 2 静态资源放入jar内
+    # 拷贝 npm run build 后 dist 目录下的文件到 resources/static 目录下
+    
+    server {
+       listen 80;
+       server_name doorkeeper.limbo.org;
+
+       location / {
+           proxy_pass http://127.0.0.1:8088;
+       }
     }
     ```
    

@@ -89,15 +89,12 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
 
         registry.addInterceptor(sessionInterceptor())
-                .excludePathPatterns("/init/**")
-                .excludePathPatterns("/base/login/**")
-                .excludePathPatterns("/swagger-ui/**")
-                .excludePathPatterns("/api-docs/**")
-                .excludePathPatterns("/api-docs.html")
-                .excludePathPatterns("/error");
+                .addPathPatterns("/api/**")
+                .excludePathPatterns("/api/init/**")
+                .excludePathPatterns("/api/base/login/**");
 
         registry.addInterceptor(authenticationInterceptor())
-                .addPathPatterns("/admin/realm/*/**");
+                .addPathPatterns("/api/admin/realm/*/**");
     }
 
 }

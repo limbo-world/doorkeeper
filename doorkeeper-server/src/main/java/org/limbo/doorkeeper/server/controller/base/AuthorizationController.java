@@ -47,7 +47,7 @@ import java.util.List;
 @Tag(name = "鉴权")
 @Slf4j
 @RestController
-@RequestMapping("/base/authorization")
+@RequestMapping("/api/base/authorization")
 public class AuthorizationController extends BaseController {
 
     @Autowired

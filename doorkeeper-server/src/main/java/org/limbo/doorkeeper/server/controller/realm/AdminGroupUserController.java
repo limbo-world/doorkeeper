@@ -39,7 +39,7 @@ import javax.validation.constraints.NotNull;
 @Tag(name = "用户组用户")
 @Slf4j
 @RestController
-@RequestMapping("/admin/realm/{realmId}/group")
+@RequestMapping("/api/admin/realm/{realmId}/group")
 public class AdminGroupUserController extends BaseController {
 
     @Autowired

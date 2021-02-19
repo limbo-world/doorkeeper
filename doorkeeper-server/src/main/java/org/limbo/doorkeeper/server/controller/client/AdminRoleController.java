@@ -42,7 +42,7 @@ import java.util.List;
 @Tag(name = "角色")
 @Slf4j
 @RestController
-@RequestMapping("/admin/realm/{realmId}/client/{clientId}/role")
+@RequestMapping("/api/admin/realm/{realmId}/client/{clientId}/role")
 public class AdminRoleController extends BaseController {
 
     @Autowired

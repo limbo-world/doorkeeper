@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "会话")
 @Slf4j
 @RestController
-@RequestMapping("/base/session")
+@RequestMapping("/api/base/session")
 public class SessionController extends BaseController {
 
     @Autowired

@@ -39,7 +39,7 @@ import java.util.List;
 @Tag(name = "用户角色")
 @Slf4j
 @RestController
-@RequestMapping("/admin/realm/{realmId}/user")
+@RequestMapping("/api/admin/realm/{realmId}/user")
 public class AdminUserRoleController extends BaseController {
 
     @Autowired

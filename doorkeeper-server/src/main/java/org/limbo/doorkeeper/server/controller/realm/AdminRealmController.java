@@ -40,7 +40,7 @@ import java.util.List;
 @Tag(name = "域")
 @Slf4j
 @RestController
-@RequestMapping("/admin/realm")
+@RequestMapping("/api/admin/realm")
 public class AdminRealmController extends BaseController {
 
     @Autowired

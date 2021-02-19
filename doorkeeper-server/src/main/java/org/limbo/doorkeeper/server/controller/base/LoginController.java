@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "登录")
 @Slf4j
 @RestController
-@RequestMapping("/base/login")
+@RequestMapping("/api/base/login")
 public class LoginController {
 
     @Autowired

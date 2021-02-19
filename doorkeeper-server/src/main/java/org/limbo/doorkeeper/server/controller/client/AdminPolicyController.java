@@ -41,7 +41,7 @@ import javax.validation.constraints.NotNull;
 @Tag(name = "策略")
 @Slf4j
 @RestController
-@RequestMapping("/admin/realm/{realmId}/client/{clientId}/policy")
+@RequestMapping("/api/admin/realm/{realmId}/client/{clientId}/policy")
 public class AdminPolicyController extends BaseController {
 
     @Autowired

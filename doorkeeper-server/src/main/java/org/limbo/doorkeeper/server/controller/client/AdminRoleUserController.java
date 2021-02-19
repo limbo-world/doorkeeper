@@ -40,7 +40,7 @@ import javax.validation.constraints.NotNull;
 @Tag(name = "角色用户")
 @Slf4j
 @RestController
-@RequestMapping("/admin/realm/{realmId}/client/{clientId}/role")
+@RequestMapping("/api/admin/realm/{realmId}/client/{clientId}/role")
 public class AdminRoleUserController extends BaseController {
 
     @Autowired

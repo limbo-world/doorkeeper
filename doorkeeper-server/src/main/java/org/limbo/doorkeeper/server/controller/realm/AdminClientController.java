@@ -41,7 +41,7 @@ import java.util.List;
 @Tag(name = "委托方")
 @Slf4j
 @RestController
-@RequestMapping("/admin/realm/{realmId}/client")
+@RequestMapping("/api/admin/realm/{realmId}/client")
 public class AdminClientController extends BaseController {
 
     @Autowired

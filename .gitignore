@@ -115,6 +115,7 @@ node_modules/
 node_modules
 package-lock.json
 app/public/.sass-cache/*
+**/resources/static
 ~
 ~
 *.log

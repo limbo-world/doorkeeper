@@ -41,7 +41,7 @@ import javax.validation.constraints.NotNull;
 @Tag(name = "权限")
 @Slf4j
 @RestController
-@RequestMapping("/admin/realm/{realmId}/client/{clientId}/permission")
+@RequestMapping("/api/admin/realm/{realmId}/client/{clientId}/permission")
 public class AdminPermissionController extends BaseController {
 
     @Autowired
