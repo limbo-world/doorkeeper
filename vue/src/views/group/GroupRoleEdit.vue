@@ -34,7 +34,7 @@
                     <template slot="header" slot-scope="scope">
                         <span>是否延伸</span>
                         <el-tooltip class="item" effect="dark" content="开启的情况下，会把角色传递给下级用户组的用户" placement="top-start">
-                            <i class="el-icon-question" />
+                            <i class="el-icon-question"/>
                         </el-tooltip>
                     </template>
                     <template slot-scope="scope">
@@ -109,17 +109,25 @@ export default {
 
         bindRole(v, roleId) {
             const loading = this.$loading();
-            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/group/${this.groupId}/group-role/batch`, {
-                roles: [{roleId: roleId}], type: v ? this.$constants.batchMethod.SAVE : this.$constants.batchMethod.DELETE
-            }).then(response => {
-                this.loadRoles();
-            }).finally(() => loading.close());
+            if (v) { // 新增
+                this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/group/${this.groupId}/group-role/batch`, {
+                    roles: [{roleId: roleId}], type: this.$constants.batchMethod.SAVE
+                }).then(response => {
+                    this.loadRoles();
+                }).finally(() => loading.close());
+            } else { // 删除
+                this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/group/${this.groupId}/group-role/batch`, {
+                    roleIds: [roleId], type: this.$constants.batchMethod.DELETE
+                }).then(response => {
+                    this.loadRoles();
+                }).finally(() => loading.close());
+            }
         },
 
         updateRole(v, roleId) {
             const loading = this.$loading();
             this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/group/${this.groupId}/group-role/batch`, {
-                roleIds: [roleId], type: this.$constants.batchMethod.UPDATE, isExtend: v
+                roles: [{roleId: roleId, isExtend: v}], type: this.$constants.batchMethod.UPDATE
             }).then(response => {
                 this.loadRoles();
             }).finally(() => loading.close());

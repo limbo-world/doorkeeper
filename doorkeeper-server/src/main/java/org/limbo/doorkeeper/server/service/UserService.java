@@ -28,6 +28,10 @@ import org.limbo.doorkeeper.api.model.param.user.UserQueryParam;
 import org.limbo.doorkeeper.api.model.param.user.UserRoleBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.user.UserUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.UserVO;
+import org.limbo.doorkeeper.server.dal.dao.GroupDao;
+import org.limbo.doorkeeper.server.dal.dao.RoleDao;
+import org.limbo.doorkeeper.server.dal.entity.Group;
+import org.limbo.doorkeeper.server.dal.entity.Role;
 import org.limbo.doorkeeper.server.dal.entity.User;
 import org.limbo.doorkeeper.server.dal.mapper.UserMapper;
 import org.limbo.doorkeeper.server.support.ParamException;
@@ -38,6 +42,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Devil
@@ -58,6 +65,12 @@ public class UserService {
     @Autowired
     private UserPolicyService userPolicyService;
 
+    @Autowired
+    private GroupDao groupDao;
+
+    @Autowired
+    private RoleDao roleDao;
+
     @Transactional
     public UserVO add(Long realmId, UserAddParam param) {
         User user = EnhancedBeanUtils.createAndCopy(param, User.class);
@@ -70,17 +83,30 @@ public class UserService {
         }
         user.setPassword(null);
 
+        // 用户组 参数添加 默认添加
+        List<Group> defaultGroup = groupDao.getDefaultGroup(realmId);
+        List<Long> groupIds = defaultGroup.stream().map(Group::getGroupId).collect(Collectors.toList());
         if (CollectionUtils.isNotEmpty(param.getGroupIds())) {
-            userGroupService.batchSave(user.getUserId(), param.getGroupIds());
+            groupIds.addAll(param.getGroupIds());
+        }
+        if (CollectionUtils.isNotEmpty(groupIds)) {
+            userGroupService.batchSave(user.getUserId(), groupIds);
         }
 
+        // 用户角色 参数添加 默认添加
+        List<Role> defaultRole = roleDao.getDefaultRole(realmId, null);
+        List<Long> roleIds = defaultRole.stream().map(Role::getRoleId).collect(Collectors.toList());
         if (CollectionUtils.isNotEmpty(param.getRoleIds())) {
+            roleIds.addAll(param.getRoleIds());
+        }
+        if (CollectionUtils.isNotEmpty(roleIds)) {
             UserRoleBatchUpdateParam batchUpdateParam = new UserRoleBatchUpdateParam();
             batchUpdateParam.setType(BatchMethod.SAVE);
-            batchUpdateParam.setRoleIds(param.getRoleIds());
+            batchUpdateParam.setRoleIds(roleIds);
             userRoleService.batchUpdate(user.getUserId(), batchUpdateParam);
         }
 
+        // 用户策略
         if (CollectionUtils.isNotEmpty(param.getPolicyIds())) {
             userPolicyService.batchSave(user.getUserId(), param.getPolicyIds());
         }

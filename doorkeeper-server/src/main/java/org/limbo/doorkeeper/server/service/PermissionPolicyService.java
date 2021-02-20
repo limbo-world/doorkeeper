@@ -82,6 +82,7 @@ public class PermissionPolicyService {
             PermissionPolicy permissionPolicy = new PermissionPolicy();
             permissionPolicy.setPermissionId(param.getPermissionId());
             permissionPolicy.setPolicyId(param.getPolicyId());
+            permissionPolicies.add(permissionPolicy);
         }
         permissionPolicyMapper.batchInsertIgnore(permissionPolicies);
     }

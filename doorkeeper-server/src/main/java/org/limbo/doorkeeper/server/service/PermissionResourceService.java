@@ -81,6 +81,7 @@ public class PermissionResourceService {
             PermissionResource permissionResource = new PermissionResource();
             permissionResource.setPermissionId(param.getPermissionId());
             permissionResource.setResourceId(param.getResourceId());
+            permissionResources.add(permissionResource);
         }
         permissionResourceMapper.batchInsertIgnore(permissionResources);
     }

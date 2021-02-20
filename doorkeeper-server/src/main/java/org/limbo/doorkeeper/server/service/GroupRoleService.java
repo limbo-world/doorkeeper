@@ -16,6 +16,7 @@
 
 package org.limbo.doorkeeper.server.service;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.model.param.group.GroupRoleAddParam;
@@ -24,6 +25,7 @@ import org.limbo.doorkeeper.api.model.param.group.GroupRoleQueryParam;
 import org.limbo.doorkeeper.api.model.vo.GroupRoleVO;
 import org.limbo.doorkeeper.server.dal.entity.GroupRole;
 import org.limbo.doorkeeper.server.dal.mapper.GroupRoleMapper;
+import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,15 +56,15 @@ public class GroupRoleService {
                 if (CollectionUtils.isEmpty(param.getRoles())) {
                     return;
                 }
-                List<GroupRole> groupRoles = new ArrayList<>();
+                List<GroupRole> addGroupRoles = new ArrayList<>();
                 for (GroupRoleAddParam role : param.getRoles()) {
                     GroupRole groupRole = new GroupRole();
                     groupRole.setGroupId(groupId);
                     groupRole.setRoleId(role.getRoleId());
                     groupRole.setIsExtend(role.getIsExtend());
-                    groupRoles.add(groupRole);
+                    addGroupRoles.add(groupRole);
                 }
-                groupRoleMapper.batchInsertIgnore(groupRoles);
+                groupRoleMapper.batchInsertIgnore(addGroupRoles);
                 break;
             case DELETE: // 删除
                 if (CollectionUtils.isEmpty(param.getRoleIds())) {
@@ -74,14 +76,18 @@ public class GroupRoleService {
                 );
                 break;
             case UPDATE: // 更新
-                if (CollectionUtils.isEmpty(param.getRoleIds())) {
+                if (CollectionUtils.isEmpty(param.getRoles())) {
                     return;
                 }
-                groupRoleMapper.update(null, Wrappers.<GroupRole>lambdaUpdate()
-                        .set(GroupRole::getIsExtend, param.getIsExtend())
-                        .eq(GroupRole::getGroupId, groupId)
-                        .in(GroupRole::getRoleId, param.getRoleIds())
-                );
+                List<Wrapper<GroupRole>> updateWrappers = new ArrayList<>();
+                for (GroupRoleAddParam role : param.getRoles()) {
+                    updateWrappers.add(Wrappers.<GroupRole>lambdaUpdate()
+                            .set(GroupRole::getIsExtend, role.getIsExtend())
+                            .eq(GroupRole::getGroupId, groupId)
+                            .eq(GroupRole::getRoleId, role.getRoleId())
+                    );
+                }
+                MyBatisPlusUtils.batchUpdate(updateWrappers, GroupRole.class);
                 break;
             default:
                 break;

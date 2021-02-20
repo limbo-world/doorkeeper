@@ -14,30 +14,30 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param.group;
+package org.limbo.doorkeeper.server.dal.dao;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-import org.limbo.doorkeeper.api.constants.BatchMethod;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.limbo.doorkeeper.server.dal.entity.Group;
+import org.limbo.doorkeeper.server.dal.mapper.GroupMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
  * @author Devil
- * @date 2021/1/5 11:16 上午
+ * @date 2021/2/20 4:58 下午
  */
-@Data
-public class GroupRoleBatchUpdateParam {
+@Component
+public class GroupDao {
 
-    @NotNull(message = "操作类型不能为空")
-    @Schema(title = "操作类型", required = true)
-    private BatchMethod type;
+    @Autowired
+    private GroupMapper groupMapper;
 
-    @Schema(title = "角色ID列表", description = "删除操作的时候使用")
-    private List<Long> roleIds;
-
-    @Schema(title = "角色列表", description = "新增、更新操作的时候使用")
-    private List<GroupRoleAddParam> roles;
+    public List<Group> getDefaultGroup(Long realmId) {
+        return groupMapper.selectList(Wrappers.<Group>lambdaQuery()
+                .eq(Group::getRealmId, realmId)
+        );
+    }
 
 }
