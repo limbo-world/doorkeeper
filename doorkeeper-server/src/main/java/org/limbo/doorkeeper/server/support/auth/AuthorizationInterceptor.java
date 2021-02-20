@@ -16,15 +16,23 @@
 
 package org.limbo.doorkeeper.server.support.auth;
 
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.constants.HeaderConstants;
+import org.limbo.doorkeeper.api.constants.Intention;
+import org.limbo.doorkeeper.api.constants.Logic;
+import org.limbo.doorkeeper.api.constants.PolicyType;
 import org.limbo.doorkeeper.api.model.param.check.AuthorizationUriCheckParam;
 import org.limbo.doorkeeper.api.model.vo.check.AuthorizationCheckResult;
+import org.limbo.doorkeeper.api.model.vo.policy.PolicyRoleVO;
+import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.server.dal.entity.Client;
+import org.limbo.doorkeeper.server.dal.entity.Realm;
+import org.limbo.doorkeeper.server.dal.entity.Role;
+import org.limbo.doorkeeper.server.dal.entity.User;
 import org.limbo.doorkeeper.server.dal.mapper.*;
-import org.limbo.doorkeeper.server.dal.entity.*;
 import org.limbo.doorkeeper.server.support.auth.checker.AuthorizationCheckerFactory;
+import org.limbo.doorkeeper.server.support.auth.policies.PolicyCheckerFactory;
 import org.limbo.doorkeeper.server.utils.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -55,13 +63,13 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     private RoleMapper roleMapper;
 
     @Autowired
-    private UserRoleMapper userRoleMapper;
-
-    @Autowired
     private ClientMapper clientMapper;
 
     @Autowired
     private AuthorizationCheckerFactory authorizationCheckerFactory;
+
+    @Autowired
+    private PolicyCheckerFactory policyCheckerFactory;
 
     /**
      * 校验管理端权限 匹配 /admin/realm/**
@@ -80,16 +88,22 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
             throw new AuthorizationException();
         }
 
-        // 判断是不是DK的REALM admin
+        // 超级管理员认证
         Role dkAdmin = roleMapper.getByName(dkRealm.getRealmId(), DoorkeeperConstants.DEFAULT_ID, DoorkeeperConstants.ADMIN);
-        if (dkAdmin != null) {
-            UserRole userRole = userRoleMapper.selectOne(Wrappers.<UserRole>lambdaQuery()
-                    .eq(UserRole::getUserId, user.getUserId())
-                    .eq(UserRole::getRoleId, dkAdmin.getRoleId())
-            );
-            if (userRole != null) {
-                return true;
-            }
+        PolicyRoleVO policyRoleVO = new PolicyRoleVO();
+        policyRoleVO.setRoleId(dkAdmin.getRoleId());
+        policyRoleVO.setIsEnabled(dkAdmin.getIsEnabled());
+        PolicyVO adminPolicy = new PolicyVO();
+        adminPolicy.setRealmId(dkRealm.getRealmId());
+        adminPolicy.setLogic(Logic.ALL.getValue());
+        adminPolicy.setType(PolicyType.ROLE.getValue());
+        adminPolicy.setIntention(Intention.ALLOW.getValue());
+        adminPolicy.setRoles(Collections.singletonList(policyRoleVO));
+        AuthorizationUriCheckParam adminCheckParam = new AuthorizationUriCheckParam();
+        adminCheckParam.setUserId(user.getUserId());
+        Intention policyCheckIntention = policyCheckerFactory.newPolicyChecker(adminPolicy).check(adminCheckParam);
+        if (Intention.ALLOW == policyCheckIntention) {
+            return true;
         }
 
         // 判断uri权限

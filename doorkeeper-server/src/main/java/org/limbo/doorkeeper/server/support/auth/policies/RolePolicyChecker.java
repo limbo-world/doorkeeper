@@ -90,7 +90,8 @@ public class RolePolicyChecker extends AbstractPolicyChecker {
                 .collect(Collectors.toSet());
 
         // 用户所在用户组的角色
-        userRoleIds.addAll(userGroupRoleIds(authorizationCheckParam.getUserId()));
+        List<Long> userGroupRoleIds = getUserGroupRoleIds(authorizationCheckParam.getUserId());
+        userRoleIds.addAll(userGroupRoleIds);
 
         if (CollectionUtils.isEmpty(userRoleIds)) {
             return false;
@@ -114,7 +115,7 @@ public class RolePolicyChecker extends AbstractPolicyChecker {
     /**
      * 用户所在用户组的角色id
      */
-    private List<Long> userGroupRoleIds(Long userId) {
+    private List<Long> getUserGroupRoleIds(Long userId) {
         List<Group> groups = groupMapper.selectList(Wrappers.<Group>lambdaQuery()
                 .eq(Group::getRealmId, policy.getRealmId())
         );
