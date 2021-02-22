@@ -14,29 +14,24 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.support.session.exception;
+package org.limbo.doorkeeper.server.utils;
 
-/**
- * @author Devil
- * @date 2020/11/23 8:18 PM
- */
-public class AuthenticationException extends RuntimeException {
+import lombok.extern.slf4j.Slf4j;
 
-    public static final String msg = "认证失败";
+import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
 
-    public AuthenticationException() {
-        super(msg);
+@Slf4j
+public class WebUtil {
+
+    public static void writeToResponse(HttpServletResponse resp, String msg) {
+        resp.setContentType("application/json;charset=UTF-8"); // 放到getWriter之前 设置PrintWriter编码方式
+        try (PrintWriter pw = resp.getWriter()) {
+            pw.write(msg);
+            pw.flush();
+        } catch (Exception e) {
+            log.error("write to response exception: ", e);
+        }
     }
 
-    public AuthenticationException(String msg) {
-        super(msg);
-    }
-
-    public AuthenticationException(Throwable cause) {
-        super(msg, cause);
-    }
-
-    public AuthenticationException(String msg, Throwable cause) {
-        super(msg, cause);
-    }
 }

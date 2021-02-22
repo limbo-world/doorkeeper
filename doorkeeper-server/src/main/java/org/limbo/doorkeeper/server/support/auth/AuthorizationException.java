@@ -22,7 +22,7 @@ package org.limbo.doorkeeper.server.support.auth;
  */
 public class AuthorizationException extends RuntimeException {
 
-    private static String msg = "无权访问";
+    public static final String msg = "无权访问";
 
     public AuthorizationException() {
         super(msg);

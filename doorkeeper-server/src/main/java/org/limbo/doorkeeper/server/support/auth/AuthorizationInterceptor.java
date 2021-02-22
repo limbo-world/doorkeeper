@@ -21,6 +21,7 @@ import org.limbo.doorkeeper.api.constants.HeaderConstants;
 import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.Logic;
 import org.limbo.doorkeeper.api.constants.PolicyType;
+import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.check.AuthorizationUriCheckParam;
 import org.limbo.doorkeeper.api.model.vo.check.AuthorizationCheckResult;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyRoleVO;
@@ -30,10 +31,15 @@ import org.limbo.doorkeeper.server.dal.entity.Client;
 import org.limbo.doorkeeper.server.dal.entity.Realm;
 import org.limbo.doorkeeper.server.dal.entity.Role;
 import org.limbo.doorkeeper.server.dal.entity.User;
-import org.limbo.doorkeeper.server.dal.mapper.*;
+import org.limbo.doorkeeper.server.dal.mapper.ClientMapper;
+import org.limbo.doorkeeper.server.dal.mapper.RealmMapper;
+import org.limbo.doorkeeper.server.dal.mapper.RoleMapper;
+import org.limbo.doorkeeper.server.dal.mapper.UserMapper;
 import org.limbo.doorkeeper.server.support.auth.checker.AuthorizationCheckerFactory;
 import org.limbo.doorkeeper.server.support.auth.policies.PolicyCheckerFactory;
 import org.limbo.doorkeeper.server.utils.JWTUtil;
+import org.limbo.doorkeeper.server.utils.JacksonUtil;
+import org.limbo.doorkeeper.server.utils.WebUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestAttributes;
@@ -85,7 +91,8 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
         // 判断用户是否属于dk域或公有域
         if (!dkRealm.getRealmId().equals(user.getRealmId())) {
-            throw new AuthorizationException();
+            WebUtil.writeToResponse(response, JacksonUtil.toJSONString(Response.unauthorized(AuthorizationException.msg)));
+            return false;
         }
 
         // 超级管理员认证
@@ -123,7 +130,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         AuthorizationCheckResult checkResult = authorizationCheckerFactory.newUriAuthorizationChecker(checkParam).check();
 
         if (checkResult.getResources().size() <= 0) {
-            throw new AuthorizationException();
+            WebUtil.writeToResponse(response, JacksonUtil.toJSONString(Response.unauthorized(AuthorizationException.msg)));
         }
 
         return true;

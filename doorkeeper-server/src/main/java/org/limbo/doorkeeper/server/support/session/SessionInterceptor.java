@@ -19,10 +19,13 @@ package org.limbo.doorkeeper.server.support.session;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.HeaderConstants;
+import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.server.dal.entity.Realm;
 import org.limbo.doorkeeper.server.service.RealmService;
 import org.limbo.doorkeeper.server.support.session.exception.AuthenticationException;
 import org.limbo.doorkeeper.server.utils.JWTUtil;
+import org.limbo.doorkeeper.server.utils.JacksonUtil;
+import org.limbo.doorkeeper.server.utils.WebUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -44,13 +47,15 @@ public class SessionInterceptor implements HandlerInterceptor {
         // 验证会话存在
         String token = request.getHeader(HeaderConstants.TOKEN_HEADER);
         if (StringUtils.isBlank(token)) {
-            throw new AuthenticationException("无认证请求");
+            WebUtil.writeToResponse(response, JacksonUtil.toJSONString(Response.unauthenticated("无认证请求")));
+            return false;
         }
         try {
             Realm realm = realmService.getRealmByToken(token);
             JWTUtil.verifyToken(token, realm.getSecret());
         } catch (Exception e) {
-            throw new AuthenticationException();
+            WebUtil.writeToResponse(response, JacksonUtil.toJSONString(Response.unauthenticated(AuthenticationException.msg)));
+            return false;
         }
 
         return true;

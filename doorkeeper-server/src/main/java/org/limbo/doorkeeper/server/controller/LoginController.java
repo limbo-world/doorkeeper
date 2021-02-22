@@ -14,51 +14,37 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.controller.base;
+package org.limbo.doorkeeper.server.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.vo.AccountGrantVO;
-import org.limbo.doorkeeper.api.model.vo.UserVO;
-import org.limbo.doorkeeper.server.controller.BaseController;
+import org.limbo.doorkeeper.api.model.param.LoginParam;
 import org.limbo.doorkeeper.server.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author Devil
- * @date 2021/1/4 10:45 上午
+ * @date 2020/12/31 5:26 下午
  */
-@Tag(name = "会话")
+@Tag(name = "登录")
 @Slf4j
 @RestController
-@RequestMapping("/api/base/session")
-public class SessionController extends BaseController {
+@RequestMapping("/api/login")
+public class LoginController {
 
     @Autowired
     private LoginService loginService;
 
-    @Operation(summary = "获取用户信息")
-    @GetMapping("/user-info")
-    public Response<UserVO> userInfo() {
-        return Response.success(getUser());
-    }
-
-    @Operation(summary = "刷新token过期时间")
-    @GetMapping("/refresh")
-    public Response<String> refresh() {
-        return Response.success(loginService.refreshToken(getToken()));
-    }
-
-    @Operation(summary = "获取当前项目页面权限信息")
-    @GetMapping("/grant-info")
-    public Response<AccountGrantVO> getGrantInfo() {
-        // 拿到用户管理端权限
-        return Response.success();
+    @GetMapping
+    @Operation(summary = "登录")
+    public Response<String> login(@Validated LoginParam param) {
+        return Response.success(loginService.login(param));
     }
 
 }

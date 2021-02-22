@@ -91,7 +91,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(sessionInterceptor())
                 .addPathPatterns("/api/**")
                 .excludePathPatterns("/api/init/**")
-                .excludePathPatterns("/api/base/login/**");
+                .excludePathPatterns("/api/login/**");
 
         registry.addInterceptor(authenticationInterceptor())
                 .addPathPatterns("/api/admin/realm/*/**");

@@ -14,37 +14,32 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.controller.base;
+package org.limbo.doorkeeper.server.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.LoginParam;
-import org.limbo.doorkeeper.server.service.LoginService;
+import org.limbo.doorkeeper.server.service.DoorkeeperService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author Devil
- * @date 2020/12/31 5:26 下午
+ * @date 2021/2/1 5:04 下午
  */
-@Tag(name = "登录")
 @Slf4j
 @RestController
-@RequestMapping("/api/base/login")
-public class LoginController {
+@RequestMapping("/api/init")
+public class InitController {
 
     @Autowired
-    private LoginService loginService;
+    private DoorkeeperService doorkeeperService;
 
     @GetMapping
-    @Operation(summary = "登录")
-    public Response<String> login(@Validated LoginParam param) {
-        return Response.success(loginService.login(param));
+    public Response<String> init() {
+        doorkeeperService.initDoorkeeper();
+        return Response.success();
     }
 
 }

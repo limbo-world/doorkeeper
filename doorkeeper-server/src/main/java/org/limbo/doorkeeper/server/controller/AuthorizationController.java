@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.controller.base;
+package org.limbo.doorkeeper.server.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,7 +27,6 @@ import org.limbo.doorkeeper.api.model.vo.UserVO;
 import org.limbo.doorkeeper.api.model.vo.check.AuthorizationCheckResult;
 import org.limbo.doorkeeper.api.model.vo.check.GroupCheckResult;
 import org.limbo.doorkeeper.api.model.vo.check.RoleCheckResult;
-import org.limbo.doorkeeper.server.controller.BaseController;
 import org.limbo.doorkeeper.server.service.GroupUserService;
 import org.limbo.doorkeeper.server.service.UserRoleService;
 import org.limbo.doorkeeper.server.support.auth.checker.AuthorizationCheckerFactory;
@@ -47,7 +46,7 @@ import java.util.List;
 @Tag(name = "鉴权")
 @Slf4j
 @RestController
-@RequestMapping("/api/base/authorization")
+@RequestMapping("/api/authorization")
 public class AuthorizationController extends BaseController {
 
     @Autowired
