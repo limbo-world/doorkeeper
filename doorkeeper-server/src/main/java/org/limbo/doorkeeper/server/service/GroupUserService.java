@@ -108,7 +108,7 @@ public class GroupUserService {
                 .in(CollectionUtils.isNotEmpty(param.getNames()), Group::getName, param.getNames())
 
         );
-        if (CollectionUtils.isNotEmpty(groups)) {
+        if (CollectionUtils.isEmpty(groups)) {
             return new ArrayList<>();
         }
 

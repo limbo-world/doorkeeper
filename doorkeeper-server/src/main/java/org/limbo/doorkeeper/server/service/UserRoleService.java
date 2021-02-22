@@ -102,7 +102,7 @@ public class UserRoleService {
                 .eq(Role::getIsEnabled, true)
 
         );
-        if (CollectionUtils.isNotEmpty(roles)) {
+        if (CollectionUtils.isEmpty(roles)) {
             return new ArrayList<>();
         }
 
