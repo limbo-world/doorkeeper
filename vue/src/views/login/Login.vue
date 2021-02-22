@@ -62,7 +62,7 @@
          * 比较好的方法是通过session module的getter获取user，判断user存不存在
          */
         beforeRouteEnter(to, from, next) {
-            window.$ajax.get('/base/session/user-info',  {
+            window.$ajax.get('/session/user-info',  {
                 ignoreException: { 401: true }
             }).then(response => {
                 next('/home');

@@ -72,7 +72,7 @@ export default {
          * 登录，登录成功后会返回授权信息，授权信息将设置到state和sessionCache
          */
         login({commit}, param) {
-            return http.get('/base/login', {params: param}).then(response => {
+            return http.get('/login', {params: param}).then(response => {
                 if (response.code !== 200) {
                     MessageBox({
                         message: response.msg,
@@ -103,7 +103,7 @@ export default {
          * 从后台读取会话信息，如果成功读取到会话，会更新到state和sessionCache
          */
         loadSession({state, commit}) {
-            return http.get('/base/session/user-info', {
+            return http.get('/session/user-info', {
                 ignoreException: {401: true}
             }).then(response => {
                 // 有会话 设置到state中，并更新sessionCache
@@ -123,7 +123,7 @@ export default {
                 setSessionUserCache(user)
 
                 // 刷新会话信息
-                http.get('/base/session/refresh', {
+                http.get('/session/refresh', {
                     ignoreException: {401: true}
                 }).then(response => {
                     const token = response.data;
@@ -151,7 +151,7 @@ export default {
             }
 
             // 从后台异步获取权限
-            return http.get('/base/session/grant-info').then(response => {
+            return http.get('/session/grant-info').then(response => {
                 // 根据后台返回的授权信息，生成计算器
                 const grantInfo = response.data;
                 let roleIds = [];
