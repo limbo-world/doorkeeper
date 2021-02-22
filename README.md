@@ -120,7 +120,7 @@ http://host:port/api-docs.html
     Doorkeeper域的数据通过代码进行初始化，需在启动Java服务后访问初始化接口。该接口在Doorkeeper部署后访问一次即可。
 
     ```
-    http://host:port/init
+    http://host:port/api/init
     ```
 
     假设Java服务所在机器(容器)IP地址为`127.0.0.1`，Http服务端口配置为`8088`，初始化接口为`http://127.0.0.1:8088/init` 。

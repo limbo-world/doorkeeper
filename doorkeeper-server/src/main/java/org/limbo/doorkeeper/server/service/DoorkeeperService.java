@@ -48,6 +48,7 @@ import org.limbo.doorkeeper.server.dal.mapper.UserMapper;
 import org.limbo.doorkeeper.server.service.policy.PolicyService;
 import org.limbo.doorkeeper.server.support.ParamException;
 import org.limbo.doorkeeper.server.utils.MD5Utils;
+import org.limbo.doorkeeper.server.utils.UUIDUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -101,7 +102,7 @@ public class DoorkeeperService {
     public void initDoorkeeper() {
         Realm realm = new Realm();
         realm.setName(DoorkeeperConstants.DOORKEEPER_REALM_NAME);
-        realm.setSecret(DoorkeeperConstants.DOORKEEPER_REALM_NAME);
+        realm.setSecret(UUIDUtils.get());
         try {
             realmMapper.insert(realm);
         } catch (DuplicateKeyException e) {
