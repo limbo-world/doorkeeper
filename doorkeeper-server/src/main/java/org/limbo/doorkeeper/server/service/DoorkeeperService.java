@@ -21,6 +21,7 @@ import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.Logic;
 import org.limbo.doorkeeper.api.constants.PolicyType;
 import org.limbo.doorkeeper.api.model.param.group.GroupAddParam;
+import org.limbo.doorkeeper.api.model.param.group.GroupRoleAddParam;
 import org.limbo.doorkeeper.api.model.param.group.GroupRoleBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.group.GroupUserBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.permission.PermissionAddParam;
@@ -133,6 +134,7 @@ public class DoorkeeperService {
     }
 
     /**
+     * 新建域 需要创建对应的资源
      * @param userId    创建者ID
      * @param realmId   新建的RealmId
      * @param realmName 新建的realm名称
@@ -159,9 +161,8 @@ public class DoorkeeperService {
         // 域管理员权限
         PermissionAddParam realmAdminPermissionParam = createPermission(DoorkeeperConstants.ADMIN, realmResource.getResourceId(), realmAdminPolicy.getPolicyId());
         permissionService.add(client.getRealmId(), client.getClientId(), realmAdminPermissionParam);
-        // 增加用户组
-        // 找到名为realm的用户组
-        GroupVO realmGroup = groupService.getRealmGroup();
+        // 找到名为realm的用户组 在下面添加新增域 名称的用户组
+        GroupVO realmGroup = groupService.getDKRealmGroup();
         GroupAddParam groupAddParam = new GroupAddParam();
         groupAddParam.setName(realmName);
         groupAddParam.setParentId(realmGroup.getGroupId());
@@ -169,7 +170,9 @@ public class DoorkeeperService {
         // 用户组绑定域管理员角色
         GroupRoleBatchUpdateParam groupRoleBatchUpdateParam = new GroupRoleBatchUpdateParam();
         groupRoleBatchUpdateParam.setType(BatchMethod.SAVE);
-        groupRoleBatchUpdateParam.setRoleIds(Collections.singletonList(realmAdminRole.getRoleId()));
+        GroupRoleAddParam groupRoleAddParam = new GroupRoleAddParam();
+        groupRoleAddParam.setRoleId(realmAdminRole.getRoleId());
+        groupRoleBatchUpdateParam.setRoles(Collections.singletonList(groupRoleAddParam));
         groupRoleService.batchUpdate(group.getGroupId(), groupRoleBatchUpdateParam);
         // 用户加入用户组
         GroupUserBatchUpdateParam dkRealmUserGroupParam = new GroupUserBatchUpdateParam();

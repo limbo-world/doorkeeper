@@ -135,10 +135,11 @@ public class GroupService {
         return EnhancedBeanUtils.createAndCopy(group, GroupVO.class);
     }
 
-    public GroupVO getRealmGroup() {
-        Realm dkRealm = realmMapper.selectOne(Wrappers.<Realm>lambdaQuery()
-                .eq(Realm::getName, DoorkeeperConstants.DOORKEEPER_REALM_NAME)
-        );
+    /**
+     * 获取dk下名为realm的用户组
+     */
+    public GroupVO getDKRealmGroup() {
+        Realm dkRealm = realmMapper.getDoorkeeperRealm();
 
         Group group = groupMapper.selectOne(Wrappers.<Group>lambdaQuery()
                 .eq(Group::getRealmId, dkRealm.getRealmId())

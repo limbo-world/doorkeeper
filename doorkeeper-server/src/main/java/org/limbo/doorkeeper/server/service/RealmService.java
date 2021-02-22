@@ -112,7 +112,7 @@ public class RealmService {
         }
 
         // 用户加入哪些组了 就显示哪些realm
-        GroupVO realmGroup = groupService.getRealmGroup();
+        GroupVO realmGroup = groupService.getDKRealmGroup();
 
         List<Group> groups = groupMapper.selectList(Wrappers.<Group>lambdaQuery()
                 .eq(Group::getRealmId, dkRealm.getRealmId())
