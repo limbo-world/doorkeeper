@@ -38,6 +38,7 @@ public class RoleDao {
         return roleMapper.selectList(Wrappers.<Role>lambdaQuery()
                 .eq(Role::getRealmId, realmId)
                 .eq(clientId != null, Role::getClientId, clientId)
+                .eq(Role::getIsDefault, true)
         );
     }
 

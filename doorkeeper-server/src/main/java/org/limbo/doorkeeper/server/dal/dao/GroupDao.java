@@ -37,6 +37,7 @@ public class GroupDao {
     public List<Group> getDefaultGroup(Long realmId) {
         return groupMapper.selectList(Wrappers.<Group>lambdaQuery()
                 .eq(Group::getRealmId, realmId)
+                .eq(Group::getIsDefault, true)
         );
     }
 
