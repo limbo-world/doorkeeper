@@ -36,14 +36,14 @@ public class AuthorizationTagCheckParam implements AuthorizationCheckParam<Map<S
     private Long userId;
 
     @NotNull
-    @Schema(name = "进行权限校验时，资源所属委托方", required = true)
+    @Schema(title = "进行权限校验时，资源所属委托方", required = true)
     private Long clientId;
 
     @NotEmpty
-    @Schema(name = "tag列表", required = true)
+    @Schema(title = "tag列表", required = true)
     private List<Map<String, String>> resourceAssigner;
 
-    @Schema(name = "进行权限校验时附带的参数")
+    @Schema(title = "进行权限校验时附带的参数")
     private Map<String, String> params;
 
 }

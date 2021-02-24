@@ -36,14 +36,14 @@ public class AuthorizationUriCheckParam implements AuthorizationCheckParam<Strin
     private Long userId;
 
     @NotNull
-    @Schema(name = "进行权限校验时，资源所属委托方", required = true)
+    @Schema(title = "进行权限校验时，资源所属委托方", required = true)
     private Long clientId;
 
     @NotEmpty
-    @Schema(name = "uri列表", required = true)
+    @Schema(title = "uri列表", required = true)
     private List<String> resourceAssigner;
 
-    @Schema(name = "进行权限校验时附带的参数")
+    @Schema(title = "进行权限校验时附带的参数")
     private Map<String, String> params;
 
 }
