@@ -21,6 +21,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.group.GroupAddParam;
+import org.limbo.doorkeeper.api.model.param.group.GroupQueryParam;
 import org.limbo.doorkeeper.api.model.param.group.GroupUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
 import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
@@ -55,9 +56,9 @@ public class AdminGroupController extends BaseController {
 
     @Operation(summary = "返回所有用户组")
     @GetMapping
-    public Response<List<GroupVO>> list(@RequestParam(value = "returnType", required = false) String returnType) {
+    public Response<List<GroupVO>> list(GroupQueryParam param) {
         List<GroupVO> groups = groupService.list(getRealmId());
-        if (DoorkeeperConstants.TREE.equals(returnType)) {
+        if (DoorkeeperConstants.TREE.equals(param.getReturnType())) {
             return Response.success(GroupTool.organizeGroupTree(null, groups));
         }
         return Response.success(groups);
@@ -67,13 +68,6 @@ public class AdminGroupController extends BaseController {
     @GetMapping("/{groupId}")
     public Response<GroupVO> getById(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId) {
         return Response.success(groupService.getById(getRealmId(), groupId));
-    }
-
-    @Operation(summary = "查询单个用户组")
-    @GetMapping("/get")
-    public Response<GroupVO> get(@RequestParam(value = "parentId", required = false) Long parentId,
-                                 @RequestParam("name") String name) {
-        return Response.success(groupService.get(getRealmId(), parentId, name));
     }
 
     @Operation(summary = "更新用户组")

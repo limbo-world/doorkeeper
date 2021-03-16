@@ -30,26 +30,4 @@
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" javaType="java.util.Date" />
     </resultMap>
 
-    <select id="listVOS" resultType="org.limbo.doorkeeper.api.model.vo.RoleVO">
-        select r.*
-        from role r
-        <where>
-            and r.realm_id = #{realmId}
-            and r.client_id = #{clientId}
-            <if test="isEnabled != null">
-                and r.is_enabled = #{isEnabled}
-            </if>
-            <if test="isDefault != null">
-                and r.is_default = #{isDefault}
-            </if>
-            <if test="name != null and name != ''">
-                and r.name = #{name}
-            </if>
-            <if test="dimName != null and dimName != ''">
-                <bind name="dimName" value="'%' + dimName + '%'"/>
-                and r.name like #{dimName}
-            </if>
-        </where>
-    </select>
-
 </mapper>

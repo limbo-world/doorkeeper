@@ -14,33 +14,18 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param.role;
+package org.limbo.doorkeeper.api.model.param.group;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import org.limbo.doorkeeper.api.model.Page;
-import org.limbo.doorkeeper.api.model.vo.RoleVO;
 
 /**
  * @author Devil
- * @date 2021/1/4 5:44 下午
+ * @date 2021/3/16 10:58 上午
  */
 @Data
-public class RoleQueryParam extends Page<RoleVO> {
+public class GroupQueryParam {
 
-    private Long realmId;
-
-    private Long clientId;
-
-    @Schema(title = "名称", description = "精确查询")
-    private String name;
-
-    @Schema(title = "名称", description = "模糊查询")
-    private String dimName;
-
-    @Schema(title = "是否启用")
-    private Boolean isEnabled;
-
-    @Schema(title = "默认添加")
-    private Boolean isDefault;
+    @Schema(title = "返回格式", description = "默认列表形式，tree为树形")
+    private String returnType;
 }

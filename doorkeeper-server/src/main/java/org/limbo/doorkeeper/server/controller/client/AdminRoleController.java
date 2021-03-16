@@ -19,6 +19,7 @@ package org.limbo.doorkeeper.server.controller.client;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.role.RoleAddParam;
 import org.limbo.doorkeeper.api.model.param.role.RoleBatchUpdateParam;
@@ -32,7 +33,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 /**
  * 如果是域角色 clientId 为 0
@@ -56,8 +56,8 @@ public class AdminRoleController extends BaseController {
 
     @Operation(summary = "查询角色列表")
     @GetMapping
-    public Response<List<RoleVO>> list(@Validated RoleQueryParam param) {
-        return Response.success(roleService.list(getRealmId(), getClientId(), param));
+    public Response<Page<RoleVO>> page(@Validated RoleQueryParam param) {
+        return Response.success(roleService.page(getRealmId(), getClientId(), param));
     }
 
     @Operation(summary = "查询角色")

@@ -16,9 +16,12 @@
 
 package org.limbo.doorkeeper.server.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.BatchMethod;
+import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.role.*;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.server.dal.entity.GroupRole;
@@ -31,6 +34,7 @@ import org.limbo.doorkeeper.server.dal.mapper.UserRoleMapper;
 import org.limbo.doorkeeper.server.dal.mapper.policy.PolicyRoleMapper;
 import org.limbo.doorkeeper.server.support.ParamException;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -97,10 +101,20 @@ public class RoleService {
         return EnhancedBeanUtils.createAndCopy(role, RoleVO.class);
     }
 
-    public List<RoleVO> list(Long realmId, Long clientId, RoleQueryParam param) {
-        param.setRealmId(realmId);
-        param.setClientId(clientId);
-        return roleMapper.listVOS(param);
+    public Page<RoleVO> page(Long realmId, Long clientId, RoleQueryParam param) {
+        IPage<Role> mpage = MyBatisPlusUtils.pageOf(param);
+        mpage = roleMapper.selectPage(mpage, Wrappers.<Role>lambdaQuery()
+                .eq(Role::getRealmId, realmId)
+                .eq(Role::getClientId, clientId)
+                .eq(param.getIsEnabled() != null, Role::getIsEnabled, param.getIsEnabled())
+                .eq(param.getIsDefault() != null, Role::getIsDefault, param.getIsDefault())
+                .eq(StringUtils.isNotBlank(param.getName()), Role::getName, param.getName())
+                .like(StringUtils.isNotBlank(param.getDimName()), Role::getName, param.getDimName())
+        );
+
+        param.setTotal(mpage.getTotal());
+        param.setData(EnhancedBeanUtils.createAndCopyList(mpage.getRecords(), RoleVO.class));
+        return param;
     }
 
     public RoleVO get(Long realmId, Long clientId, Long roleId) {

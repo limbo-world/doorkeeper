@@ -67,7 +67,7 @@ public class ClientService {
      * user拥有哪些client
      */
     public List<ClientVO> userClients(Long realmId, Long userId, ClientQueryParam param) {
-        // todo
+        // todo 目前没有做用户和client的相关权限
 //        Set<Long> clientIds = userClients.stream().map(UserClient::getClientId).collect(Collectors.toSet());
         List<Client> clients = clientMapper.selectList(Wrappers.<Client>lambdaQuery()
                 .eq(Client::getRealmId, realmId)

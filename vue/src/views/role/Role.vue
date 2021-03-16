@@ -97,7 +97,8 @@ export default {
     data() {
         return {
             queryForm: {
-                name: ''
+                name: '',
+                size: 1000,
             },
 
             roles: [],
@@ -126,7 +127,7 @@ export default {
             this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/role`, {
                 params: this.queryForm
             }).then(response => {
-                this.roles = response.data;
+                this.roles = response.data.data;
             }).finally(() => this.stopProgress());
         },
 

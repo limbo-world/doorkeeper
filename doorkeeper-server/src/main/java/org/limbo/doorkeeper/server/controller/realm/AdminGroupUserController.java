@@ -45,9 +45,9 @@ public class AdminGroupUserController extends BaseController {
     @Autowired
     private GroupUserService groupUserService;
 
-    @Operation(summary = "查询用户组用户列表")
+    @Operation(summary = "分页查询用户组用户列表")
     @GetMapping("/{groupId}/group-user")
-    public Response<Page<GroupUserVO>> listUser(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId,
+    public Response<Page<GroupUserVO>> page(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId,
                                             @Validated GroupUserQueryParam param) {
         return Response.success(groupUserService.page(getRealmId(), groupId, param));
     }

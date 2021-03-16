@@ -64,8 +64,10 @@ export default {
 
     methods: {
         loadRealmRoles() {
-            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/0/role`).then(response => {
-                let roles = response.data;
+            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/0/role`, {
+                params: {size: 1000}
+            }).then(response => {
+                let roles = response.data.data;
                 let roleIds = [];
                 for (let role of roles) {
                     role.key = role.roleId;
@@ -85,8 +87,10 @@ export default {
             });
         },
         loadClientRoles() {
-            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/role`).then(response => {
-                let roles = response.data;
+            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/role`, {
+                params: {size: 1000}
+            }).then(response => {
+                let roles = response.data.data;
                 let roleIds = [];
                 for (let role of roles) {
                     role.key = role.roleId;

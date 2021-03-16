@@ -42,7 +42,7 @@ public class Page<T> {
      * 每页条数
      */
     @Positive(message = "条数不可为负数")
-    @Max(value = 100, message = "每页最多100条数据")
+    @Max(value = 1000, message = "每页最多1000条数据")
     private int size = 20;
 
     /**
