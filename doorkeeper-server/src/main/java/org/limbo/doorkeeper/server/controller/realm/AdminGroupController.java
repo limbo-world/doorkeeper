@@ -57,7 +57,7 @@ public class AdminGroupController extends BaseController {
     @Operation(summary = "返回所有用户组")
     @GetMapping
     public Response<List<GroupVO>> list(GroupQueryParam param) {
-        List<GroupVO> groups = groupService.list(getRealmId());
+        List<GroupVO> groups = groupService.list(getRealmId(), param);
         if (DoorkeeperConstants.TREE.equals(param.getReturnType())) {
             return Response.success(GroupTool.organizeGroupTree(null, groups));
         }
