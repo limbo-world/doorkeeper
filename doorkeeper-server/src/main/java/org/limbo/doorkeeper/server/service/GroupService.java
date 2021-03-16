@@ -18,6 +18,7 @@ package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.BatchMethod;
 import org.limbo.doorkeeper.api.model.param.group.*;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
@@ -108,9 +109,11 @@ public class GroupService {
         return EnhancedBeanUtils.createAndCopy(group, GroupVO.class);
     }
 
-    public List<GroupVO> list(Long realmId) {
+    public List<GroupVO> list(Long realmId, GroupQueryParam param) {
         List<Group> groups = groupMapper.selectList(Wrappers.<Group>lambdaQuery()
                 .eq(Group::getRealmId, realmId)
+                .eq(param.getParentId() != null, Group::getParentId, param.getParentId())
+                .eq(StringUtils.isNotBlank(param.getName()), Group::getName, param.getName())
         );
         return EnhancedBeanUtils.createAndCopyList(groups, GroupVO.class);
     }

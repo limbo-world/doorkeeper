@@ -28,4 +28,11 @@ public class GroupQueryParam {
 
     @Schema(title = "返回格式", description = "默认列表形式，tree为树形")
     private String returnType;
+
+    @Schema(title = "父节点ID")
+    private Long parentId;
+
+    @Schema(title = "名称")
+    private String name;
+
 }
