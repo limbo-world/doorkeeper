@@ -2,9 +2,9 @@
     <el-container>
         <el-main>
             <el-form :model="account" label-width="120px" size="mini" class="edit-form" :rules="rules" ref="editForm">
-                <!--                <el-form-item label="当前密码" prop="originalPassword">-->
-                <!--                    <el-input v-model="account.originalPassword" type="password"></el-input>-->
-                <!--                </el-form-item>-->
+                <el-form-item label="旧密码" prop="oldPassword">
+                    <el-input v-model="account.oldPassword" type="password"></el-input>
+                </el-form-item>
                 <el-form-item label="新密码" prop="newPassword">
                     <el-input v-model="account.newPassword" type="password"></el-input>
                 </el-form-item>
@@ -33,7 +33,7 @@ export default {
 
         return {
             rules: {
-                // originalPassword: [Rules.required('旧密码')],
+                originalPassword: [Rules.required('旧密码')],
                 newPassword: [Rules.required('新密码')],
                 confirmPassword: [
                     Rules.required('确认密码'),
@@ -65,7 +65,8 @@ export default {
                     }
 
                     this.$ajax.put(`/admin/realm/${this.user.realmId}/user/${this.user.userId}`, {
-                        password: this.account.newPassword
+                        oldPassword: this.account.oldPassword,
+                        newPassword: this.account.newPassword
                     }).then((response) => {
                         resolve(response);
                     }).catch(reject);

@@ -117,7 +117,7 @@ public class DoorkeeperService {
         user.setPassword(MD5Utils.md5WithSalt(DoorkeeperConstants.ADMIN));
         user.setIsEnabled(true);
         userMapper.insert(user);
-        // 创建dk超管角色
+        // 创建doorkeeper超管角色
         RoleAddParam realmAdminRoleParam = createRole(DoorkeeperConstants.ADMIN, "");
         RoleVO realmAdminRole = roleService.add(realm.getRealmId(), DoorkeeperConstants.DEFAULT_ID, realmAdminRoleParam);
         // 绑定管理员和角色
@@ -142,10 +142,10 @@ public class DoorkeeperService {
      */
     @Transactional
     public void createRealmData(Long userId, Long realmId, String realmName) {
-        Realm dkRealm = realmMapper.getDoorkeeperRealm();
+        Realm doorkeeperRealm = realmMapper.getDoorkeeperRealm();
 
         Client client = new Client();
-        client.setRealmId(dkRealm.getRealmId());
+        client.setRealmId(doorkeeperRealm.getRealmId());
         client.setName(realmName);
         client.setIsEnabled(true);
         clientMapper.insert(client);
@@ -163,11 +163,11 @@ public class DoorkeeperService {
         PermissionAddParam realmAdminPermissionParam = createPermission(DoorkeeperConstants.ADMIN, realmResource.getResourceId(), realmAdminPolicy.getPolicyId());
         permissionService.add(client.getRealmId(), client.getClientId(), realmAdminPermissionParam);
         // 找到名为realm的用户组 在下面添加新增域 名称的用户组
-        GroupVO realmGroup = groupService.getDKRealmGroup();
+        GroupVO realmGroup = groupService.getDoorkeeperRealmGroup();
         GroupAddParam groupAddParam = new GroupAddParam();
         groupAddParam.setName(realmName);
         groupAddParam.setParentId(realmGroup.getGroupId());
-        GroupVO group = groupService.add(dkRealm.getRealmId(), groupAddParam);
+        GroupVO group = groupService.add(doorkeeperRealm.getRealmId(), groupAddParam);
         // 用户组绑定域管理员角色
         GroupRoleBatchUpdateParam groupRoleBatchUpdateParam = new GroupRoleBatchUpdateParam();
         groupRoleBatchUpdateParam.setType(BatchMethod.SAVE);
@@ -176,10 +176,10 @@ public class DoorkeeperService {
         groupRoleBatchUpdateParam.setRoles(Collections.singletonList(groupRoleAddParam));
         groupRoleService.batchUpdate(group.getGroupId(), groupRoleBatchUpdateParam);
         // 用户加入用户组
-        GroupUserBatchUpdateParam dkRealmUserGroupParam = new GroupUserBatchUpdateParam();
-        dkRealmUserGroupParam.setType(BatchMethod.SAVE);
-        dkRealmUserGroupParam.setUserIds(Collections.singletonList(userId));
-        groupUserService.batchUpdate(group.getGroupId(), dkRealmUserGroupParam);
+        GroupUserBatchUpdateParam doorkeeperRealmUserGroupParam = new GroupUserBatchUpdateParam();
+        doorkeeperRealmUserGroupParam.setType(BatchMethod.SAVE);
+        doorkeeperRealmUserGroupParam.setUserIds(Collections.singletonList(userId));
+        groupUserService.batchUpdate(group.getGroupId(), doorkeeperRealmUserGroupParam);
     }
 
     /**

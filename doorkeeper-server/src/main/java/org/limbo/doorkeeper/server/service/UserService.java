@@ -38,6 +38,7 @@ import org.limbo.doorkeeper.server.support.ParamException;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MD5Utils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
+import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -163,7 +164,14 @@ public class UserService {
                 .set(param.getIsEnabled() != null, User::getIsEnabled, param.getIsEnabled())
                 .eq(User::getUserId, userId)
                 .eq(User::getRealmId, realmId);
-        updateWrapper.set(StringUtils.isNotEmpty(param.getPassword()), User::getPassword, param.getPassword());
+
+        // 判断是否需要更新密码
+        if (StringUtils.isNotBlank(param.getNewPassword())) {
+            User user = userMapper.getById(realmId, userId);
+            Verifies.notNull(user, "用户不存在");
+            Verifies.verify(MD5Utils.verify(param.getOldPassword(), user.getPassword()), "密码错误");
+            updateWrapper.set(User::getPassword, MD5Utils.md5WithSalt(param.getNewPassword()));
+        }
         userMapper.update(null, updateWrapper);
     }
 

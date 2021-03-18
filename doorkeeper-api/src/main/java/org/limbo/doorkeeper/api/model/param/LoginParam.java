@@ -28,7 +28,7 @@ import javax.validation.constraints.NotBlank;
 @Data
 public class LoginParam {
 
-    @Schema(title = "域", description = "为空则默认登录DK域")
+    @Schema(title = "域", description = "为空则默认登录doorkeeper域")
     private Long realmId;
 
     @NotBlank(message = "用户名不能为空")

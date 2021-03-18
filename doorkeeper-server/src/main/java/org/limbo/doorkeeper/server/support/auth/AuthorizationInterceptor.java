@@ -87,21 +87,21 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         Long userId = JWTUtil.getUserId(token);
         User user = userMapper.selectById(userId);
 
-        Realm dkRealm = realmMapper.getDoorkeeperRealm();
+        Realm doorkeeperRealm = realmMapper.getDoorkeeperRealm();
 
-        // 判断用户是否属于dk域或公有域
-        if (!dkRealm.getRealmId().equals(user.getRealmId())) {
+        // 判断用户是否属于doorkeeper域或公有域
+        if (!doorkeeperRealm.getRealmId().equals(user.getRealmId())) {
             WebUtil.writeToResponse(response, JacksonUtil.toJSONString(Response.unauthorized(AuthorizationException.msg)));
             return false;
         }
 
         // 超级管理员认证
-        Role dkAdmin = roleMapper.getByName(dkRealm.getRealmId(), DoorkeeperConstants.DEFAULT_ID, DoorkeeperConstants.ADMIN);
+        Role doorkeeperAdmin = roleMapper.getByName(doorkeeperRealm.getRealmId(), DoorkeeperConstants.DEFAULT_ID, DoorkeeperConstants.ADMIN);
         PolicyRoleVO policyRoleVO = new PolicyRoleVO();
-        policyRoleVO.setRoleId(dkAdmin.getRoleId());
-        policyRoleVO.setIsEnabled(dkAdmin.getIsEnabled());
+        policyRoleVO.setRoleId(doorkeeperAdmin.getRoleId());
+        policyRoleVO.setIsEnabled(doorkeeperAdmin.getIsEnabled());
         PolicyVO adminPolicy = new PolicyVO();
-        adminPolicy.setRealmId(dkRealm.getRealmId());
+        adminPolicy.setRealmId(doorkeeperRealm.getRealmId());
         adminPolicy.setLogic(Logic.ALL.getValue());
         adminPolicy.setType(PolicyType.ROLE.getValue());
         adminPolicy.setIntention(Intention.ALLOW.getValue());
@@ -121,7 +121,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         Realm realm = realmMapper.selectById(Long.valueOf(realmIdStr));
 
         // 获取对应的client
-        Client client = clientMapper.getByName(dkRealm.getRealmId(), realm.getName());
+        Client client = clientMapper.getByName(doorkeeperRealm.getRealmId(), realm.getName());
 
 
         AuthorizationUriCheckParam checkParam = new AuthorizationUriCheckParam()

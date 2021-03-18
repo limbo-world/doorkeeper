@@ -139,13 +139,13 @@ public class GroupService {
     }
 
     /**
-     * 获取dk下名为realm的用户组
+     * 获取doorkeeper下名为realm的用户组
      */
-    public GroupVO getDKRealmGroup() {
-        Realm dkRealm = realmMapper.getDoorkeeperRealm();
+    public GroupVO getDoorkeeperRealmGroup() {
+        Realm doorkeeperRealm = realmMapper.getDoorkeeperRealm();
 
         Group group = groupMapper.selectOne(Wrappers.<Group>lambdaQuery()
-                .eq(Group::getRealmId, dkRealm.getRealmId())
+                .eq(Group::getRealmId, doorkeeperRealm.getRealmId())
                 .eq(Group::getParentId, DoorkeeperConstants.DEFAULT_ID)
                 .eq(Group::getName, DoorkeeperConstants.REALM)
         );

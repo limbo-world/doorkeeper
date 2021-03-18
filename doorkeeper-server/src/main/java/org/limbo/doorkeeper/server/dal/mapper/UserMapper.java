@@ -29,4 +29,7 @@ public interface UserMapper extends BaseMapper<User> {
 
     @Select("select * from `user` where realm_id = #{realmId} and username = #{username}")
     User getByUsername(@Param("realmId") Long realmId, @Param("username") String username);
+
+    @Select("select * from `user` where realm_id = #{realmId} and user_id = #{userId}")
+    User getById(@Param("realmId") Long realmId, @Param("userId") Long userId);
 }

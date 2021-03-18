@@ -53,6 +53,7 @@ public class LoginService {
     public String login(LoginParam param) {
         User user;
         Realm realm;
+        // 不填realm 默认登录 doorkeeper
         if (param.getRealmId() == null) {
             realm = realmMapper.getDoorkeeperRealm();
             Verifies.notNull(realm, "realm不存在");

@@ -216,7 +216,7 @@ const organizeMenu = (evaluator) => {
 
 const organizeSingleMenu = (menu, evaluator) => {
     // todo 放到 evaluator 里去
-    if (menu.dk) {
+    if (menu.doorkeeper) {
         let user = getSessionUserCache();
         if (user.realmId !== user.realm.realmId) {
             return null

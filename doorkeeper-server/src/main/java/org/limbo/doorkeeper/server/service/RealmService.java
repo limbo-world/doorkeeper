@@ -96,14 +96,14 @@ public class RealmService {
     public List<RealmVO> userRealms(Long userId) {
         LambdaQueryWrapper<Realm> realmSelect = Wrappers.<Realm>lambdaQuery().select(Realm::getRealmId, Realm::getName);
 
-        Realm dkRealm = realmMapper.getDoorkeeperRealm();
+        Realm doorkeeperRealm = realmMapper.getDoorkeeperRealm();
 
-        // 判断是不是DK的REALM admin
-        Role dkAdmin = roleMapper.getByName(dkRealm.getRealmId(), DoorkeeperConstants.DEFAULT_ID, DoorkeeperConstants.ADMIN);
-        if (dkAdmin != null) {
+        // 判断是不是doorkeeper的REALM admin
+        Role doorkeeperAdmin = roleMapper.getByName(doorkeeperRealm.getRealmId(), DoorkeeperConstants.DEFAULT_ID, DoorkeeperConstants.ADMIN);
+        if (doorkeeperAdmin != null) {
             UserRole userRole = userRoleMapper.selectOne(Wrappers.<UserRole>lambdaQuery()
                     .eq(UserRole::getUserId, userId)
-                    .eq(UserRole::getRoleId, dkAdmin.getRoleId())
+                    .eq(UserRole::getRoleId, doorkeeperAdmin.getRoleId())
             );
             if (userRole != null) {
                 List<Realm> realms = realmMapper.selectList(realmSelect);
@@ -112,10 +112,10 @@ public class RealmService {
         }
 
         // 用户加入哪些组了 就显示哪些realm
-        GroupVO realmGroup = groupService.getDKRealmGroup();
+        GroupVO realmGroup = groupService.getDoorkeeperRealmGroup();
 
         List<Group> groups = groupMapper.selectList(Wrappers.<Group>lambdaQuery()
-                .eq(Group::getRealmId, dkRealm.getRealmId())
+                .eq(Group::getRealmId, doorkeeperRealm.getRealmId())
                 .eq(Group::getParentId, realmGroup.getGroupId())
         );
 
