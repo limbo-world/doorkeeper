@@ -167,12 +167,24 @@ public class UserService {
 
         // 判断是否需要更新密码
         if (StringUtils.isNotBlank(param.getNewPassword())) {
-            User user = userMapper.getById(realmId, userId);
-            Verifies.notNull(user, "用户不存在");
-            Verifies.verify(MD5Utils.verify(param.getOldPassword(), user.getPassword()), "密码错误");
             updateWrapper.set(User::getPassword, MD5Utils.md5WithSalt(param.getNewPassword()));
         }
         userMapper.update(null, updateWrapper);
+    }
+
+    @Transactional
+    public void changePassword(Long realmId, Long userId, UserUpdateParam param) {
+        if (StringUtils.isNotBlank(param.getNewPassword())) {
+            return;
+        }
+        User user = userMapper.getById(realmId, userId);
+        Verifies.notNull(user, "用户不存在");
+        Verifies.verify(MD5Utils.verify(param.getOldPassword(), user.getPassword()), "密码错误");
+        userMapper.update(null, Wrappers.<User>lambdaUpdate()
+                .set(User::getPassword, MD5Utils.md5WithSalt(param.getNewPassword()))
+                .eq(User::getUserId, userId)
+                .eq(User::getRealmId, realmId)
+        );
     }
 
 }

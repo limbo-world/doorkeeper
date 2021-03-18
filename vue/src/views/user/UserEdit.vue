@@ -25,7 +25,7 @@
                     <el-input v-model="user.nickname"></el-input>
                 </el-form-item>
                 <el-form-item label="密码">
-                    <el-input type="password" v-model="user.password"></el-input>
+                    <el-input type="password" v-model="user.newPassword"></el-input>
                 </el-form-item>
                 <el-form-item label="确认密码" prop="confirmPassword">
                     <el-input type="password" v-model="user.confirmPassword"></el-input>
@@ -52,7 +52,7 @@ import {mapState, mapActions} from 'vuex';
 export default {
     data() {
         const confirmPassword = (rule, value, cb) => {
-            if (this.user.password !== value) {
+            if (this.user.newPassword !== value) {
                 cb(new Error('两次输入密码不一致'));
             } else {
                 cb();
@@ -69,7 +69,7 @@ export default {
                 ],
             },
             user: {
-                password: '',
+                newPassword: '',
                 confirmPassword: ''
             },
         };

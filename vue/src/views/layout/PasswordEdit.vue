@@ -64,7 +64,7 @@ export default {
                         return;
                     }
 
-                    this.$ajax.put(`/admin/realm/${this.user.realmId}/user/${this.user.userId}`, {
+                    this.$ajax.put(`/api/session/change-password`, {
                         oldPassword: this.account.oldPassword,
                         newPassword: this.account.newPassword
                     }).then((response) => {
