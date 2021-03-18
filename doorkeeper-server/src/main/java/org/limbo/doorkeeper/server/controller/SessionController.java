@@ -26,10 +26,7 @@ import org.limbo.doorkeeper.api.model.vo.UserVO;
 import org.limbo.doorkeeper.server.service.LoginService;
 import org.limbo.doorkeeper.server.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author Devil
@@ -61,10 +58,10 @@ public class SessionController extends BaseController {
 
     @Operation(summary = "修改密码")
     @PutMapping("/change-password")
-    public Response<String> changePassword(UserUpdateParam param) {
+    public Response<String> changePassword(@RequestBody UserUpdateParam param) {
         UserVO user = getUser();
         userService.changePassword(user.getRealmId(), user.getUserId(), param);
-        return Response.success(loginService.refreshToken(getToken()));
+        return Response.success();
     }
 
     @Operation(summary = "获取当前项目页面权限信息")

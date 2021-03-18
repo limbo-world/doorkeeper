@@ -174,7 +174,7 @@ public class UserService {
 
     @Transactional
     public void changePassword(Long realmId, Long userId, UserUpdateParam param) {
-        if (StringUtils.isNotBlank(param.getNewPassword())) {
+        if (StringUtils.isBlank(param.getNewPassword())) {
             return;
         }
         User user = userMapper.getById(realmId, userId);
