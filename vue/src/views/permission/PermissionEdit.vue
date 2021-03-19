@@ -38,7 +38,7 @@
                             </el-form>
                         </el-header>
                         <el-main>
-                            <el-transfer v-model="selectResourceIds" :data="resources" :titles="['未绑定', '未绑定']"
+                            <el-transfer v-model="selectResourceIds" :data="resources" :titles="['未绑定', '已绑定']"
                                          @change="changeResource"></el-transfer>
                         </el-main>
                     </el-container>
@@ -57,7 +57,7 @@
                             </el-form>
                         </el-header>
                         <el-main>
-                            <el-transfer v-model="selectPolicyIds" :data="policies" :titles="['未绑定', '未绑定']"
+                            <el-transfer v-model="selectPolicyIds" :data="policies" :titles="['未绑定', '已绑定']"
                                          @change="changePolicy"></el-transfer>
                         </el-main>
                     </el-container>
