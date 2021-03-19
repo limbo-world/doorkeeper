@@ -38,8 +38,9 @@
                                       @bind-policy-users="users => {policy.users = users}" :policy-users="policy.users"
                                       :policy-id="policy.policyId" :client-id="policy.clientId"></policy-user-edit>
                     <policy-group-edit v-if="policy.type === $constants.policyTypes[3].value"
-                                      @bind-policy-groups="groups => {policy.groups = groups}" :policy-groups="policy.groups"
-                                      :policy-id="policy.policyId" :client-id="policy.clientId"></policy-group-edit>
+                                       @bind-policy-groups="groups => {policy.groups = groups}"
+                                       :policy-groups="policy.groups"
+                                       :policy-id="policy.policyId" :client-id="policy.clientId"></policy-group-edit>
                 </template>
                 <el-form-item label="判断逻辑" v-if="policy.type === $constants.policyTypes[0].value">
                     <el-select v-model="policy.logic">
@@ -68,62 +69,62 @@
 
 <script>
 
-    import PolicyRoleEdit from "@/views/policy/PolicyRoleEdit";
-    import PolicyUserEdit from "@/views/policy/PolicyUserEdit";
-    import PolicyGroupEdit from "@/views/policy/PolicyGroupEdit";
-    import { mapState, mapActions } from 'vuex';
+import PolicyRoleEdit from "@/views/policy/PolicyRoleEdit";
+import PolicyUserEdit from "@/views/policy/PolicyUserEdit";
+import PolicyGroupEdit from "@/views/policy/PolicyGroupEdit";
+import {mapState, mapActions} from 'vuex';
 
-    export default {
-        components: {
-            PolicyRoleEdit, PolicyUserEdit, PolicyGroupEdit
-        },
-        data() {
-            return {
-                policy: {
-                    roles: []
-                },
-            };
-        },
-
-        computed: {
-            ...mapState('session', ['user']),
-        },
-
-        created() {
-            pages.policyEdit = this;
-            this.policy.clientId = this.$route.query.clientId;
-            if (this.$route.query.policyId) {
-                this.policy.policyId = this.$route.query.policyId;
-                this.loadPolicy();
-            }
-        },
-
-        methods: {
-            ...mapActions('ui', ['startProgress', 'stopProgress']),
-
-            // ========== 资源相关 ==========
-            loadPolicy() {
-                this.startProgress({ speed: 'fast' });
-                this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.policy.clientId}/policy/${this.policy.policyId}`).then(response => {
-                    this.policy = response.data;
-                }).finally(() => this.stopProgress());
+export default {
+    components: {
+        PolicyRoleEdit, PolicyUserEdit, PolicyGroupEdit
+    },
+    data() {
+        return {
+            policy: {
+                roles: []
             },
-            addPolicy() {
-                this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.policy.clientId}/policy`, this.policy).then(response => {
-                    this.$message.success("更新成功")
-                    // todo 由于组策略 tag问题，先临时这样解决
-                    // this.policy = response.data;
-                    // this.loadPolicy();
-                })
-            },
-            updatePolicy() {
-                this.$ajax.put(`/admin/realm/${this.user.realm.realmId}/client/${this.policy.clientId}/policy/${this.policy.policyId}`, this.policy).then(response => {
-                    this.$message.success("更新成功")
-                    window.location.reload();
-                    // todo 由于组策略 tag问题，先临时这样解决
-                    // this.loadPolicy();
-                })
-            },
+        };
+    },
+
+    computed: {
+        ...mapState('session', ['user']),
+    },
+
+    created() {
+        pages.policyEdit = this;
+        this.policy.clientId = this.$route.query.clientId;
+        if (this.$route.query.policyId) {
+            this.policy.policyId = this.$route.query.policyId;
+            this.loadPolicy();
         }
+    },
+
+    methods: {
+        ...mapActions('ui', ['startProgress', 'stopProgress']),
+
+        // ========== 资源相关 ==========
+        loadPolicy() {
+            this.startProgress({speed: 'fast'});
+            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.policy.clientId}/policy/${this.policy.policyId}`).then(response => {
+                this.policy = response.data;
+            }).finally(() => this.stopProgress());
+        },
+        addPolicy() {
+            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.policy.clientId}/policy`, this.policy).then(response => {
+                this.$message.success("更新成功")
+                // todo 由于组策略 tag问题，先临时这样解决
+                // this.policy = response.data;
+                // this.loadPolicy();
+            })
+        },
+        updatePolicy() {
+            this.$ajax.put(`/admin/realm/${this.user.realm.realmId}/client/${this.policy.clientId}/policy/${this.policy.policyId}`, this.policy).then(response => {
+                this.$message.success("更新成功")
+                window.location.reload();
+                // todo 由于组策略 tag问题，先临时这样解决
+                // this.loadPolicy();
+            })
+        },
     }
+}
 </script>

@@ -52,6 +52,9 @@ public class PolicyUserService {
         List<PolicyUser> policyUsers = policyUserMapper.selectList(Wrappers.<PolicyUser>lambdaQuery()
                 .eq(PolicyUser::getPolicyId, policyId)
         );
+        if (CollectionUtils.isEmpty(policyUsers)) {
+            return new ArrayList<>();
+        }
         List<PolicyUserVO> policyUserVOS = EnhancedBeanUtils.createAndCopyList(policyUsers, PolicyUserVO.class);
         List<User> users = userMapper.selectBatchIds(policyUsers.stream().map(PolicyUser::getUserId).collect(Collectors.toList()));
         for (PolicyUserVO policyUserVO : policyUserVOS) {
