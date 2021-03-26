@@ -46,7 +46,7 @@ public class SessionController extends BaseController {
 
     @Operation(summary = "用于校验会话是否过期")
     @GetMapping("/check")
-    public Response<UserVO> check() {
+    public Response<Void> check() {
         return Response.success();
     }
 
