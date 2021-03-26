@@ -44,6 +44,12 @@ public class SessionController extends BaseController {
     @Autowired
     private UserService userService;
 
+    @Operation(summary = "用于校验会话是否过期")
+    @GetMapping("/check")
+    public Response<UserVO> check() {
+        return Response.success();
+    }
+
     @Operation(summary = "获取用户信息")
     @GetMapping("/user-info")
     public Response<UserVO> userInfo() {
