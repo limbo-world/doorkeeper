@@ -43,11 +43,6 @@ public class UriAuthorizationChecker<P extends AuthorizationCheckParam<String>> 
     @Setter
     private ResourceUriMapper resourceUriMapper;
 
-    /**
-     * client拥有的全部uri资源
-     */
-    private List<ResourceUri> clientUris;
-
     public UriAuthorizationChecker(P checkParam) {
         super(checkParam);
     }
@@ -62,12 +57,13 @@ public class UriAuthorizationChecker<P extends AuthorizationCheckParam<String>> 
      */
     @Override
     protected List<ResourceVO> assignCheckingResources(List<String> uris) {
-        this.clientUris = resourceUriMapper.selectList(Wrappers.<ResourceUri>lambdaQuery()
+        // client拥有的全部uri资源
+        List<ResourceUri> clientUris = resourceUriMapper.selectList(Wrappers.<ResourceUri>lambdaQuery()
                 .eq(ResourceUri::getRealmId, getClient().getRealmId())
                 .eq(ResourceUri::getClientId, getClient().getClientId())
         );
 
-        List<Long> resourceIds = this.clientUris.stream()
+        List<Long> resourceIds = clientUris.stream()
                 .filter(resourceUri -> {
                     for (String uri : uris) {
                         if (pathMatch(resourceUri.getUri(), uri)) {

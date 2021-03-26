@@ -47,6 +47,12 @@ public class ResourceDao {
         return resourceMapper.getVOS(realmId, clientId, null, names, null, isEnabled);
     }
 
+    public List<ResourceVO> getAllVOS(Long realmId, Long clientId, Boolean isEnabled) {
+        Verifies.notNull(realmId, "域不能为空");
+        Verifies.notNull(clientId, "委托方不能为空");
+        return resourceMapper.getVOS(realmId, clientId, null, null, null, isEnabled);
+    }
+
     public List<ResourceVO> getVOSByResourceIds(Long realmId, Long clientId,
                                                 List<Long> resourceIds, Boolean isEnabled) {
         Verifies.notNull(realmId, "域不能为空");

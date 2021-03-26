@@ -95,6 +95,18 @@ public class AuthorizationCheckerFactory {
     }
 
     /**
+     * 创建一个对所有资源进行授权校验的checker
+     * @param checkParam
+     * @param <P> Map<String, String>
+     */
+    public <P extends AuthorizationCheckParam<Void>> AuthorizationChecker<P, Void> newAllAuthorizationChecker(P checkParam) {
+        AllAuthorizationChecker<P> checker = new AllAuthorizationChecker<>(checkParam);
+        setSpringBeans(checker);
+        checker.setResourceDao(resourceDao);
+        return checker;
+    }
+
+    /**
      * 设置{@link AbstractAuthorizationChecker}中需要的Spring Bean
      */
     private void setSpringBeans(AbstractAuthorizationChecker<?, ?> checker) {

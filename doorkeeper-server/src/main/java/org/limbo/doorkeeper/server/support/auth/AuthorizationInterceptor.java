@@ -123,7 +123,6 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         // 获取对应的client
         Client client = clientMapper.getByName(doorkeeperRealm.getRealmId(), realm.getName());
 
-
         AuthorizationUriCheckParam checkParam = new AuthorizationUriCheckParam()
                 .setUserId(userId).setClientId(client.getClientId())
                 .setResourceAssigner(Collections.singletonList(request.getRequestURI()));

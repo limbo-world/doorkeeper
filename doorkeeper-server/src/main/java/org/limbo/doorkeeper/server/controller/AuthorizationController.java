@@ -79,6 +79,13 @@ public class AuthorizationController extends BaseController {
         return Response.success(authorizationCheckerFactory.newTagAuthorizationChecker(param).check());
     }
 
+    @PostMapping("/resource/check-all")
+    @Operation(summary = "检查并返回用户可以的所有资源")
+    public Response<AuthorizationCheckResult> checkAllResource(@RequestBody @Validated AuthorizationAllCheckParam param) {
+        param.setUserId(getUser().getUserId());
+        return Response.success(authorizationCheckerFactory.newAllAuthorizationChecker(param).check());
+    }
+
     @PostMapping("/role/check")
     @Operation(summary = "检查用户拥有的角色资源")
     public Response<RoleCheckResult> checkRole(@RequestBody @Validated RoleCheckParam param) {
