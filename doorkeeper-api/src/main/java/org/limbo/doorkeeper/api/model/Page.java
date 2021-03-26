@@ -69,7 +69,7 @@ public class Page<T> {
      * 是否还有下一页
      */
     public Boolean getHasNext() {
-        return total > current * 20;
+        return total > current * size;
     }
 
     /**
