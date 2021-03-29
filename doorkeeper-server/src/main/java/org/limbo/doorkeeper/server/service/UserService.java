@@ -159,9 +159,11 @@ public class UserService {
     public void update(Long realmId, Long userId, UserUpdateParam param) {
         LambdaUpdateWrapper<User> updateWrapper = Wrappers.<User>lambdaUpdate()
                 .set(StringUtils.isNotBlank(param.getNickname()), User::getNickname, param.getNickname())
-                .set(StringUtils.isNotBlank(param.getNickname()), User::getNickname, param.getNickname())
                 .set(param.getDescription() != null, User::getDescription, param.getDescription())
                 .set(param.getIsEnabled() != null, User::getIsEnabled, param.getIsEnabled())
+                .set(param.getEmail() != null, User::getEmail, param.getEmail())
+                .set(param.getPhone() != null, User::getPhone, param.getPhone())
+                .set(param.getExtend() != null, User::getExtend, param.getExtend())
                 .eq(User::getUserId, userId)
                 .eq(User::getRealmId, realmId);
 

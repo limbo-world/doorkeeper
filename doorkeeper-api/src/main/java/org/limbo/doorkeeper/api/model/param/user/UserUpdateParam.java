@@ -41,4 +41,13 @@ public class UserUpdateParam {
     @Schema(title = "新密码")
     private String newPassword;
 
+    @Schema(title = "邮箱")
+    private String email;
+
+    @Schema(title = "电话")
+    private String phone;
+
+    @Schema(title = "扩展信息")
+    private String extend;
+
 }

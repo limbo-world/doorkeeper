@@ -41,6 +41,15 @@ public class UserAddParam {
     @Schema(title = "密码", required = true)
     private String password;
 
+    @Schema(title = "邮箱")
+    private String email;
+
+    @Schema(title = "电话")
+    private String phone;
+
+    @Schema(title = "扩展信息")
+    private String extend;
+
     @Schema(title = "是否启用")
     private Boolean isEnabled;
 
