@@ -151,7 +151,9 @@ public class UserService {
                     .eq(User::getRealmId, realmId)
             );
         }
-        user.setPassword(null);
+        if (user != null) {
+            user.setPassword(null);
+        }
         return EnhancedBeanUtils.createAndCopy(user, UserVO.class);
     }
 
