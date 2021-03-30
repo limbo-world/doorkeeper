@@ -38,7 +38,7 @@ import org.limbo.doorkeeper.api.model.vo.GroupVO;
 import org.limbo.doorkeeper.api.model.vo.ResourceVO;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
-import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.dal.entity.Client;
 import org.limbo.doorkeeper.server.dal.entity.Realm;
 import org.limbo.doorkeeper.server.dal.entity.User;
@@ -119,7 +119,7 @@ public class DoorkeeperService {
         userMapper.insert(user);
         // 创建doorkeeper超管角色
         RoleAddParam realmAdminRoleParam = createRole(DoorkeeperConstants.ADMIN, "");
-        RoleVO realmAdminRole = roleService.add(realm.getRealmId(), DoorkeeperConstants.DEFAULT_ID, realmAdminRoleParam);
+        RoleVO realmAdminRole = roleService.add(realm.getRealmId(), DoorkeeperConstants.REALM_CLIENT_ID, realmAdminRoleParam);
         // 绑定管理员和角色
         UserRoleBatchUpdateParam userRoleBatchUpdateParam = new UserRoleBatchUpdateParam();
         userRoleBatchUpdateParam.setType(BatchMethod.SAVE);

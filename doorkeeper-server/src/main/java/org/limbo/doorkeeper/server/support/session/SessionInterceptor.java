@@ -18,7 +18,7 @@ package org.limbo.doorkeeper.server.support.session;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.limbo.doorkeeper.api.constants.HeaderConstants;
+import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.server.dal.entity.Realm;
 import org.limbo.doorkeeper.server.service.RealmService;
@@ -45,7 +45,7 @@ public class SessionInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         // 验证会话存在
-        String token = request.getHeader(HeaderConstants.TOKEN_HEADER);
+        String token = request.getHeader(DoorkeeperConstants.TOKEN_HEADER);
         if (StringUtils.isBlank(token)) {
             WebUtil.writeToResponse(response, JacksonUtil.toJSONString(Response.unauthenticated("无认证请求")));
             return false;

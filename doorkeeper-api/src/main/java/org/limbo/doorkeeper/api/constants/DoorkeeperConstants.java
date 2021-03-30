@@ -14,13 +14,17 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.constants;
+package org.limbo.doorkeeper.api.constants;
 
 /**
  * @author Devil
  * @date 2021/1/10 10:40 上午
  */
 public interface DoorkeeperConstants {
+    /**
+     * token
+     */
+    String TOKEN_HEADER = "Authorization";
 
     String DOORKEEPER_REALM_NAME = "doorkeeper";
 
@@ -35,6 +39,10 @@ public interface DoorkeeperConstants {
     String CLIENT_ID = "clientId";
 
     Long DEFAULT_ID = 0L;
+    /**
+     * 查询域角色时候使用
+     */
+    Long REALM_CLIENT_ID = 0L;
 
     String ADMIN = "admin";
 

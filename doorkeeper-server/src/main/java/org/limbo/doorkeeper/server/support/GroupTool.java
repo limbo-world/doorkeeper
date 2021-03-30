@@ -18,7 +18,7 @@ package org.limbo.doorkeeper.server.support;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
-import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 
 import java.util.ArrayList;
 import java.util.List;

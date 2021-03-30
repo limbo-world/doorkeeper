@@ -20,7 +20,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.model.param.policy.PolicyParamAddParam;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyParamVO;
-import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.dal.mapper.policy.PolicyParamMapper;
 import org.limbo.doorkeeper.server.dal.entity.policy.PolicyParam;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;

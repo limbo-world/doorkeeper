@@ -17,7 +17,6 @@
 package org.limbo.doorkeeper.server.support.auth;
 
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.constants.HeaderConstants;
 import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.Logic;
 import org.limbo.doorkeeper.api.constants.PolicyType;
@@ -26,7 +25,7 @@ import org.limbo.doorkeeper.api.model.param.check.AuthorizationUriCheckParam;
 import org.limbo.doorkeeper.api.model.vo.check.AuthorizationCheckResult;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyRoleVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
-import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.dal.entity.Client;
 import org.limbo.doorkeeper.server.dal.entity.Realm;
 import org.limbo.doorkeeper.server.dal.entity.Role;
@@ -83,7 +82,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         // 判断 url 是否有对应权限
-        String token = request.getHeader(HeaderConstants.TOKEN_HEADER);
+        String token = request.getHeader(DoorkeeperConstants.TOKEN_HEADER);
         Long userId = JWTUtil.getUserId(token);
         User user = userMapper.selectById(userId);
 
@@ -96,7 +95,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         }
 
         // 超级管理员认证
-        Role doorkeeperAdmin = roleMapper.getByName(doorkeeperRealm.getRealmId(), DoorkeeperConstants.DEFAULT_ID, DoorkeeperConstants.ADMIN);
+        Role doorkeeperAdmin = roleMapper.getByName(doorkeeperRealm.getRealmId(), DoorkeeperConstants.REALM_CLIENT_ID, DoorkeeperConstants.ADMIN);
         PolicyRoleVO policyRoleVO = new PolicyRoleVO();
         policyRoleVO.setRoleId(doorkeeperAdmin.getRoleId());
         policyRoleVO.setIsEnabled(doorkeeperAdmin.getIsEnabled());

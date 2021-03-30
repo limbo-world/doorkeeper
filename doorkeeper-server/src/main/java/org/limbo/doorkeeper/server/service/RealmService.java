@@ -24,7 +24,7 @@ import org.limbo.doorkeeper.api.model.param.realm.RealmUpdateParam;
 import org.limbo.doorkeeper.api.model.param.resource.RealmAddParam;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
 import org.limbo.doorkeeper.api.model.vo.RealmVO;
-import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.dal.entity.*;
 import org.limbo.doorkeeper.server.dal.mapper.*;
 import org.limbo.doorkeeper.server.support.ParamException;
@@ -99,7 +99,7 @@ public class RealmService {
         Realm doorkeeperRealm = realmMapper.getDoorkeeperRealm();
 
         // 判断是不是doorkeeper的REALM admin
-        Role doorkeeperAdmin = roleMapper.getByName(doorkeeperRealm.getRealmId(), DoorkeeperConstants.DEFAULT_ID, DoorkeeperConstants.ADMIN);
+        Role doorkeeperAdmin = roleMapper.getByName(doorkeeperRealm.getRealmId(), DoorkeeperConstants.REALM_CLIENT_ID, DoorkeeperConstants.ADMIN);
         if (doorkeeperAdmin != null) {
             UserRole userRole = userRoleMapper.selectOne(Wrappers.<UserRole>lambdaQuery()
                     .eq(UserRole::getUserId, userId)

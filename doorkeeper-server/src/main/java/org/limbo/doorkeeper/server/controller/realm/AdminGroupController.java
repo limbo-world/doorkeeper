@@ -24,7 +24,7 @@ import org.limbo.doorkeeper.api.model.param.group.GroupAddParam;
 import org.limbo.doorkeeper.api.model.param.group.GroupQueryParam;
 import org.limbo.doorkeeper.api.model.param.group.GroupUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
-import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.controller.BaseController;
 import org.limbo.doorkeeper.server.service.GroupService;
 import org.limbo.doorkeeper.server.support.GroupTool;

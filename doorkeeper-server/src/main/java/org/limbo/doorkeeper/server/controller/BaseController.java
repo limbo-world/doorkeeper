@@ -17,9 +17,8 @@
 package org.limbo.doorkeeper.server.controller;
 
 import org.apache.commons.lang3.StringUtils;
-import org.limbo.doorkeeper.api.constants.HeaderConstants;
 import org.limbo.doorkeeper.api.model.vo.UserVO;
-import org.limbo.doorkeeper.server.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.dal.mapper.RealmMapper;
 import org.limbo.doorkeeper.server.dal.mapper.UserMapper;
 import org.limbo.doorkeeper.server.dal.entity.Realm;
@@ -59,7 +58,7 @@ public class BaseController {
     private RealmService realmService;
 
     protected String getToken() {
-        String token = request.getHeader(HeaderConstants.TOKEN_HEADER);
+        String token = request.getHeader(DoorkeeperConstants.TOKEN_HEADER);
         if (StringUtils.isBlank(token)) {
             throw new AuthenticationException("无认证请求");
         }
