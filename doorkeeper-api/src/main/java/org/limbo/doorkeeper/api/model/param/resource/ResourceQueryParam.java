@@ -22,7 +22,7 @@ import lombok.EqualsAndHashCode;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.vo.ResourceVO;
 
-import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * @author Devil
@@ -35,6 +35,9 @@ public class ResourceQueryParam extends Page<ResourceVO> {
     private Long realmId;
 
     private Long clientId;
+
+    @Schema(title = "资源ID")
+    private List<Long> resourceIds;
 
     @Schema(title = "名称", description = "精确查询")
     private String name;

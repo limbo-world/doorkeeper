@@ -49,6 +49,13 @@
 
     <sql id="queryCondition">
         and r.realm_id = #{realmId} and r.client_id = #{clientId}
+        <if test="resourceIds != null and resourceIds.size() > 0">
+            and r.resource_id in (
+            <foreach collection="resourceIds" separator="," item="resourceId">
+                #{resourceId}
+            </foreach>
+            )
+        </if>
         <if test="name != null and name != ''">
             and r.name = #{name}
         </if>

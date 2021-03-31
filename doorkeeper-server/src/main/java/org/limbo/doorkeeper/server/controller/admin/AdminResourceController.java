@@ -53,7 +53,7 @@ public class AdminResourceController extends BaseController {
         return Response.success(resourceService.add(getRealmId(), getClientId(), param));
     }
 
-    @Operation(summary = "批量修改资源")
+    @Operation(summary = "批量操作资源")
     @PostMapping("/batch")
     public Response<Void> batch(@RequestBody @Validated ResourceBatchUpdateParam param) {
         resourceService.batchUpdate(getRealmId(), getClientId(), param);
