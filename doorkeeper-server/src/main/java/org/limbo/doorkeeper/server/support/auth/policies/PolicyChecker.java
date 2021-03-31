@@ -32,6 +32,6 @@ public interface PolicyChecker {
      * @param authorizationCheckParam 授权校验参数
      * @return 返回策略是否通过
      */
-    Intention check(AuthorizationCheckParam<?> authorizationCheckParam);
+    Intention check(AuthorizationCheckParam authorizationCheckParam);
 
 }

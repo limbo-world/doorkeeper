@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.support.auth.checker;
+package org.limbo.doorkeeper.server.support.auth;
 
 import org.limbo.doorkeeper.api.constants.Logic;
 

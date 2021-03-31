@@ -62,7 +62,7 @@ public class GroupPolicyChecker extends AbstractPolicyChecker {
      * @return
      */
     @Override
-    protected boolean doCheck(AuthorizationCheckParam<?> authorizationCheckParam) {
+    protected boolean doCheck(AuthorizationCheckParam authorizationCheckParam) {
         List<Group> groups = groupMapper.selectList(Wrappers.<Group>lambdaQuery()
                 .eq(Group::getRealmId, policy.getRealmId())
         );

@@ -106,7 +106,10 @@
         from resource r
         left join resource_tag rt on rt.resource_id = r.resource_id
         left join resource_uri ru on ru.resource_id = r.resource_id
-        where r.realm_id = #{realmId} and r.client_id = #{clientId}
+        where r.realm_id = #{realmId}
+        <if test="clientId != null">
+            and r.client_id = #{clientId}
+        </if>
         <if test="resourceIds != null and resourceIds.size() > 0">
             and r.resource_id in (
             <foreach collection="resourceIds" separator="," item="resourceId">

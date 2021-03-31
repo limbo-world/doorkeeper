@@ -14,12 +14,15 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.support.auth.checker;
+package org.limbo.doorkeeper.server.support.auth;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.Logic;
 import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
@@ -32,35 +35,53 @@ import org.limbo.doorkeeper.server.dal.dao.PermissionDao;
 import org.limbo.doorkeeper.server.dal.dao.PolicyDao;
 import org.limbo.doorkeeper.server.dal.entity.Client;
 import org.limbo.doorkeeper.server.dal.entity.PermissionResource;
+import org.limbo.doorkeeper.server.dal.entity.ResourceUri;
 import org.limbo.doorkeeper.server.dal.mapper.ClientMapper;
 import org.limbo.doorkeeper.server.dal.mapper.PermissionResourceMapper;
-import org.limbo.doorkeeper.server.support.auth.AuthorizationException;
+import org.limbo.doorkeeper.server.dal.mapper.ResourceMapper;
+import org.limbo.doorkeeper.server.dal.mapper.ResourceUriMapper;
 import org.limbo.doorkeeper.server.support.auth.policies.PolicyCheckerFactory;
+import org.limbo.doorkeeper.server.utils.EasyAntPathMatcher;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * 目前非线程安全，每次校验需要生成一个新的
+ * 授权校验器
  *
- * @author brozen
- * @date 2021/1/14
+ * @author Devil
+ * @date 2021/3/31 2:04 下午
  */
 @Slf4j
-public abstract class AbstractAuthorizationChecker<P extends AuthorizationCheckParam<T>, T> implements AuthorizationChecker<P, T> {
+@Component
+public class AuthorizationChecker {
 
-    @Setter
+    @Autowired
     private PermissionDao permissionDao;
 
-    @Setter
+    @Autowired
     private PolicyDao policyDao;
 
-    @Setter
+    @Autowired
     private ClientMapper clientMapper;
 
-    @Setter
+    @Autowired
     private PermissionResourceMapper permissionResourceMapper;
+
+    @Autowired
+    private ResourceMapper resourceMapper;
+
+    @Autowired
+    private ResourceUriMapper resourceUriMapper;
+
+    /**
+     * 策略检查器工厂
+     */
+    @Autowired
+    private PolicyCheckerFactory policyCheckerFactory;
 
     /**
      * 未授权情况下是否拒绝，默认ture。
@@ -69,38 +90,30 @@ public abstract class AbstractAuthorizationChecker<P extends AuthorizationCheckP
     @Setter
     private boolean refuseWhenUnauthorized = true;
 
-    /**
-     * 策略检查器工厂
-     */
-    @Setter
-    private PolicyCheckerFactory policyCheckerFactory;
+    private static final ThreadLocal<EasyAntPathMatcher> PATH_MATCHER = ThreadLocal.withInitial(EasyAntPathMatcher::new);
 
     /**
      * 校验参数
      */
-    protected final P checkParam;
+    protected AuthorizationCheckParam checkParam;
 
     /**
      * 校验参数中clientId对应的client
      */
     protected Client client;
 
-    public AbstractAuthorizationChecker(P checkParam) {
-        this.checkParam = checkParam;
-    }
-
     /**
-     * {@inheritDoc}
+     * 进行权限校验，是否有资格访问
      *
-     * @return
+     * @return 校验结果，分为refused和allowed两类
      */
-    @Override
-    public AuthorizationCheckResult check() {
+    public AuthorizationCheckResult check(AuthorizationCheckParam checkParam) {
+        this.checkParam = checkParam;
         try {
             List<ResourceVO> result = new ArrayList<>();
 
             // 找到待检测的启用资源
-            List<ResourceVO> findResources = assignCheckingResources(checkParam.getResourceAssigner());
+            List<ResourceVO> findResources = assignCheckingResources();
             ASSIGNER_ITER:
             for (ResourceVO findResource : findResources) {
                 // 遍历资源依次拿到权限Permission
@@ -173,10 +186,38 @@ public abstract class AbstractAuthorizationChecker<P extends AuthorizationCheckP
     /**
      * 决定资源约束对应着哪些资源。
      *
-     * @param resourcesAssigner 资源约束对象，可以是资源名称、资源URI、资源Tag
      * @return 返回资源列表
      */
-    protected abstract List<ResourceVO> assignCheckingResources(List<T> resourcesAssigner);
+    protected List<ResourceVO> assignCheckingResources() {
+        List<String> kvs = null;
+        if (MapUtils.isNotEmpty(checkParam.getTags())) {
+            kvs = new ArrayList<>();
+            for (Map.Entry<String, String> entry : checkParam.getTags().entrySet()) {
+                kvs.add(entry.getKey() + DoorkeeperConstants.KV_DELIMITER + entry.getValue());
+            }
+        }
+        List<Long> resourceIds = null;
+        if (CollectionUtils.isNotEmpty(checkParam.getUris())) {
+            // client拥有的全部uri资源
+            List<ResourceUri> clientUris = resourceUriMapper.selectList(Wrappers.<ResourceUri>lambdaQuery()
+                    .eq(ResourceUri::getRealmId, getClient().getRealmId())
+                    .eq(ResourceUri::getClientId, getClient().getClientId())
+            );
+
+            resourceIds = clientUris.stream()
+                    .filter(resourceUri -> {
+                        for (String uri : checkParam.getUris()) {
+                            if (pathMatch(resourceUri.getUri(), uri)) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    })
+                    .map(ResourceUri::getResourceId)
+                    .collect(Collectors.toList());
+        }
+        return resourceMapper.getVOS(getClient().getRealmId(), getClient().getClientId(), resourceIds, checkParam.getNames(), kvs, true);
+    }
 
 
     /**
@@ -237,5 +278,15 @@ public abstract class AbstractAuthorizationChecker<P extends AuthorizationCheckP
         return LogicChecker.isSatisfied(logic, policies.size(), allowedCount);
     }
 
-
+    /**
+     * 判断path是否符合ant风格的pattern
+     *
+     * @param pattern ant风格的路径pattern
+     * @param path    访问的路径
+     * @return 是否匹配
+     */
+    public boolean pathMatch(String pattern, String path) {
+        EasyAntPathMatcher antPathMatcher = PATH_MATCHER.get();
+        return antPathMatcher.match(StringUtils.trim(pattern), StringUtils.trim(path));
+    }
 }

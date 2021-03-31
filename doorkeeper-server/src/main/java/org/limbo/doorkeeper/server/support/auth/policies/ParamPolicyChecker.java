@@ -17,10 +17,10 @@
 package org.limbo.doorkeeper.server.support.auth.policies;
 
 import org.limbo.doorkeeper.api.constants.Logic;
+import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyParamVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
-import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
-import org.limbo.doorkeeper.server.support.auth.checker.LogicChecker;
+import org.limbo.doorkeeper.server.support.auth.LogicChecker;
 
 import java.util.List;
 import java.util.Map;
@@ -45,7 +45,7 @@ public class ParamPolicyChecker extends AbstractPolicyChecker {
      * @return
      */
     @Override
-    protected boolean doCheck(AuthorizationCheckParam<?> authorizationCheckParam) {
+    protected boolean doCheck(AuthorizationCheckParam authorizationCheckParam) {
         Map<String, String> params = authorizationCheckParam.getParams();
         List<PolicyParamVO> policyParams = policy.getParams();
         Map<String, String> policyParamMap = policyParams.stream()

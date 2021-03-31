@@ -16,6 +16,10 @@
 
 package org.limbo.doorkeeper.api.model.param.check;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import lombok.experimental.Accessors;
+
 import java.util.List;
 import java.util.Map;
 
@@ -24,28 +28,26 @@ import java.util.Map;
  *
  * @author brozen
  * @date 2021/1/14
- * @param <T> 通过不同方式约束资源查询类型，T的类型不同。根据资源名称或资源URI约束时，T为String，参考{@link}。根据资源tag约束时，T为Map<String, String>，参考{@link}。
  */
-public interface AuthorizationCheckParam<T> {
+@Data
+@Accessors(chain = true)
+public class AuthorizationCheckParam {
 
-    /**
-     * 进行权限校验时，需要校验的用户ID
-     */
-    Long getUserId();
+    private Long userId;
 
-    /**
-     * 进行权限校验时，资源所属委托方
-     */
-    Long getClientId();
+    @Schema(description = "进行权限校验时，资源所属委托方")
+    private Long clientId;
 
-    /**
-     * 获取进行权限校验时的参数
-     */
-    Map<String, String> getParams();
+    @Schema(description = "进行权限校验时附带的参数")
+    private Map<String, String> params;
 
-    /**
-     * 获取授权校验Resource的约束，可以是String(资源名称、资源URI)或Map<String,String>(资源tag)
-     */
-    List<T> getResourceAssigner();
+    @Schema(description = "资源名称列表, 精确查询")
+    private List<String> names;
+
+    @Schema(description = "标签，同时满足")
+    private Map<String, String> tags;
+
+    @Schema(description = "uri列表")
+    private List<String> uris;
 
 }

@@ -18,8 +18,8 @@ package org.limbo.doorkeeper.server.support.auth.policies;
 
 import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.Logic;
-import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
+import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 
 /**
  * @author brozen
@@ -43,7 +43,7 @@ public abstract class AbstractPolicyChecker implements PolicyChecker {
      * @return
      */
     @Override
-    public Intention check(AuthorizationCheckParam<?> authorizationCheckParam) {
+    public Intention check(AuthorizationCheckParam authorizationCheckParam) {
         Intention intention = Intention.parse(policy.getIntention());
         return reverseIntentionIfNotPassed(intention, doCheck(authorizationCheckParam));
     }
@@ -52,7 +52,7 @@ public abstract class AbstractPolicyChecker implements PolicyChecker {
      * 检测策略是否通过
      * @param authorizationCheckParam 授权校验参数
      */
-    protected abstract boolean doCheck(AuthorizationCheckParam<?> authorizationCheckParam);
+    protected abstract boolean doCheck(AuthorizationCheckParam authorizationCheckParam);
 
     /**
      * 当策略检查结果为未通过时，将intention反转。<br/>

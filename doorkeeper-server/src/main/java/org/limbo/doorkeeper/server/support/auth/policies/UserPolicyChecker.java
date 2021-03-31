@@ -17,11 +17,11 @@
 package org.limbo.doorkeeper.server.support.auth.policies;
 
 import lombok.Setter;
+import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyUserVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
-import org.limbo.doorkeeper.server.dal.mapper.UserMapper;
 import org.limbo.doorkeeper.server.dal.entity.User;
-import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
+import org.limbo.doorkeeper.server.dal.mapper.UserMapper;
 
 import java.util.Objects;
 
@@ -48,7 +48,7 @@ public class UserPolicyChecker extends AbstractPolicyChecker {
      * @return
      */
     @Override
-    protected boolean doCheck(AuthorizationCheckParam<?> authorizationCheckParam) {
+    protected boolean doCheck(AuthorizationCheckParam authorizationCheckParam) {
         Long userId = authorizationCheckParam.getUserId();
         User user = userMapper.selectById(userId);
         return user != null && user.getIsEnabled() && policy.getUsers().stream()

@@ -27,7 +27,7 @@ import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 import org.limbo.doorkeeper.server.dal.entity.*;
 import org.limbo.doorkeeper.server.dal.mapper.*;
 import org.limbo.doorkeeper.server.support.GroupTool;
-import org.limbo.doorkeeper.server.support.auth.checker.LogicChecker;
+import org.limbo.doorkeeper.server.support.auth.LogicChecker;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 
 import java.util.ArrayList;
@@ -67,7 +67,7 @@ public class RolePolicyChecker extends AbstractPolicyChecker {
      * @return
      */
     @Override
-    protected boolean doCheck(AuthorizationCheckParam<?> authorizationCheckParam) {
+    protected boolean doCheck(AuthorizationCheckParam authorizationCheckParam) {
         // 策略绑定的角色 去除未启用的
         List<Long> roleIds = policy.getRoles().stream()
                 .filter(PolicyRoleVO::getIsEnabled)

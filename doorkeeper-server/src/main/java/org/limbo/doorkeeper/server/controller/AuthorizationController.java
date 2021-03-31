@@ -20,7 +20,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.check.*;
+import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
+import org.limbo.doorkeeper.api.model.param.check.GroupCheckParam;
+import org.limbo.doorkeeper.api.model.param.check.RoleCheckParam;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.api.model.vo.UserVO;
@@ -29,7 +31,7 @@ import org.limbo.doorkeeper.api.model.vo.check.GroupCheckResult;
 import org.limbo.doorkeeper.api.model.vo.check.RoleCheckResult;
 import org.limbo.doorkeeper.server.service.GroupUserService;
 import org.limbo.doorkeeper.server.service.UserRoleService;
-import org.limbo.doorkeeper.server.support.auth.checker.AuthorizationCheckerFactory;
+import org.limbo.doorkeeper.server.support.auth.AuthorizationChecker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,7 +52,7 @@ import java.util.List;
 public class AuthorizationController extends BaseController {
 
     @Autowired
-    private AuthorizationCheckerFactory authorizationCheckerFactory;
+    private AuthorizationChecker authorizationChecker;
 
     @Autowired
     private UserRoleService userRoleService;
@@ -58,32 +60,11 @@ public class AuthorizationController extends BaseController {
     @Autowired
     private GroupUserService groupUserService;
 
-    @PostMapping("/resource/check-uri")
-    @Operation(summary = "检查用户是否可以访问对应uri的资源")
-    public Response<AuthorizationCheckResult> checkResourceByUri(@RequestBody @Validated AuthorizationUriCheckParam param) {
+    @PostMapping("/resource/check")
+    @Operation(summary = "检查用户是否可以访问对应的资源")
+    public Response<AuthorizationCheckResult> checkResource(@RequestBody @Validated AuthorizationCheckParam param) {
         param.setUserId(getUser().getUserId());
-        return Response.success(authorizationCheckerFactory.newUriAuthorizationChecker(param).check());
-    }
-
-    @PostMapping("/resource/check-name")
-    @Operation(summary = "检查用户是否可以访问对应名称的资源")
-    public Response<AuthorizationCheckResult> checkResourceByName(@RequestBody @Validated AuthorizationNameCheckParam param) {
-        param.setUserId(getUser().getUserId());
-        return Response.success(authorizationCheckerFactory.newNameAuthorizationChecker(param).check());
-    }
-
-    @PostMapping("/resource/check-tag")
-    @Operation(summary = "检查用户是否可以访问对应标签的资源")
-    public Response<AuthorizationCheckResult> checkResourceByTag(@RequestBody @Validated AuthorizationTagCheckParam param) {
-        param.setUserId(getUser().getUserId());
-        return Response.success(authorizationCheckerFactory.newTagAuthorizationChecker(param).check());
-    }
-
-    @PostMapping("/resource/check-all")
-    @Operation(summary = "检查并返回用户可以的所有资源")
-    public Response<AuthorizationCheckResult> checkAllResource(@RequestBody @Validated AuthorizationAllCheckParam param) {
-        param.setUserId(getUser().getUserId());
-        return Response.success(authorizationCheckerFactory.newAllAuthorizationChecker(param).check());
+        return Response.success(authorizationChecker.check(param));
     }
 
     @PostMapping("/role/check")
