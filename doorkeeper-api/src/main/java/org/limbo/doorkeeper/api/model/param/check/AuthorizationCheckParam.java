@@ -20,6 +20,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +36,8 @@ public class AuthorizationCheckParam {
 
     private Long userId;
 
-    @Schema(description = "进行权限校验时，资源所属委托方")
+    @NotNull
+    @Schema(description = "进行权限校验时，资源所属委托方", required = true)
     private Long clientId;
 
     @Schema(description = "进行权限校验时附带的参数")
