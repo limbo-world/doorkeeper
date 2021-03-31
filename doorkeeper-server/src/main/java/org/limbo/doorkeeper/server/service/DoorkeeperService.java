@@ -118,8 +118,8 @@ public class DoorkeeperService {
         user.setIsEnabled(true);
         userMapper.insert(user);
         // 创建doorkeeper超管角色
-        RoleAddParam realmAdminRoleParam = createRole(DoorkeeperConstants.ADMIN, "");
-        RoleVO realmAdminRole = roleService.add(realm.getRealmId(), DoorkeeperConstants.REALM_CLIENT_ID, realmAdminRoleParam);
+        RoleAddParam realmAdminRoleParam = createRole(DoorkeeperConstants.REALM_CLIENT_ID, DoorkeeperConstants.ADMIN, "");
+        RoleVO realmAdminRole = roleService.add(realm.getRealmId(), realmAdminRoleParam);
         // 绑定管理员和角色
         UserRoleBatchUpdateParam userRoleBatchUpdateParam = new UserRoleBatchUpdateParam();
         userRoleBatchUpdateParam.setType(BatchMethod.SAVE);
@@ -136,6 +136,7 @@ public class DoorkeeperService {
 
     /**
      * 新建域 需要创建对应的资源
+     *
      * @param userId    创建者ID
      * @param realmId   新建的RealmId
      * @param realmName 新建的realm名称
@@ -154,8 +155,8 @@ public class DoorkeeperService {
         ResourceAddParam realmResourceParam = createRealmResource(realmId);
         ResourceVO realmResource = resourceService.add(client.getRealmId(), client.getClientId(), realmResourceParam);
         // 域管理员角色
-        RoleAddParam realmAdminRoleParam = createRole(DoorkeeperConstants.ADMIN, "");
-        RoleVO realmAdminRole = roleService.add(client.getRealmId(), client.getClientId(), realmAdminRoleParam);
+        RoleAddParam realmAdminRoleParam = createRole(client.getClientId(), DoorkeeperConstants.ADMIN, "");
+        RoleVO realmAdminRole = roleService.add(client.getRealmId(), realmAdminRoleParam);
         // 域管理员策略
         PolicyAddParam realmAdminPolicyParam = createRolePolicy(DoorkeeperConstants.ADMIN, realmAdminRole.getRoleId());
         PolicyVO realmAdminPolicy = policyService.add(client.getRealmId(), client.getClientId(), realmAdminPolicyParam);
@@ -212,9 +213,10 @@ public class DoorkeeperService {
         return resourceAddParam;
     }
 
-    private RoleAddParam createRole(String name, String description) {
+    private RoleAddParam createRole(Long clientId, String name, String description) {
         RoleAddParam roleAddParam = new RoleAddParam();
         roleAddParam.setName(name);
+        roleAddParam.setClientId(clientId);
         roleAddParam.setDescription(description);
         roleAddParam.setIsEnabled(true);
         return roleAddParam;
