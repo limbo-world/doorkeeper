@@ -34,7 +34,7 @@ public class RoleUserQueryParam extends Page<RoleUserVO> {
 
     private Long roleId;
 
-    @Schema(title = "是否公有域")
+    @Schema(title = "是否绑定")
     private Boolean isJoin;
 
     @Schema(title = "角色名称", description = "精确查询")

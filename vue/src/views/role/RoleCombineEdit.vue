@@ -76,8 +76,8 @@ export default {
 
         loadRoles() {
             this.startProgress();
-            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/role/${this.roleId}/role-combine`, {
-                params: this.queryForm
+            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/role/${this.roleId}/role-combine`, {
+                params: {...this.queryForm, clientId: this.clientId}
             }).then(response => {
                 this.roles = response.data;
             }).finally(() => this.stopProgress());
@@ -85,7 +85,7 @@ export default {
 
         bindRole(v, roleId) {
             const loading = this.$loading();
-            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/role/${this.roleId}/role-combine/batch`, {
+            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/role/${this.roleId}/role-combine/batch`, {
                 roleIds: [roleId], type: v ? this.batchMethod.SAVE : this.batchMethod.DELETE
             }).then(response => {
                 this.loadRoles();

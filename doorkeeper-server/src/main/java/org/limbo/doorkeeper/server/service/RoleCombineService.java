@@ -40,15 +40,14 @@ public class RoleCombineService {
     @Autowired
     private RoleCombineMapper roleCombineMapper;
 
-    public List<RoleCombineVO> list(Long realmId, Long clientId, Long parentId, RoleCombineQueryParam param) {
+    public List<RoleCombineVO> list(Long realmId, Long parentId, RoleCombineQueryParam param) {
         param.setRealmId(realmId);
-        param.setClientId(clientId);
         param.setParentId(parentId);
         return roleCombineMapper.listVOSByParent(param);
     }
 
     @Transactional
-    public void batchUpdate(Long realmId, Long clientId, Long parentId, RoleCombineBatchUpdateParam param) {
+    public void batchUpdate(Long realmId, Long parentId, RoleCombineBatchUpdateParam param) {
         switch (param.getType()) {
             case SAVE: // 新增
                 List<RoleCombine> roleCombines = new ArrayList<>();

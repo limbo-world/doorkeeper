@@ -32,7 +32,6 @@
         left join role_combine rc on r.role_id = rc.role_id and rc.parent_id = #{parentId}
         <where>
             and r.realm_id = #{realmId}
-            and r.client_id = #{clientId}
             <if test="name != null and name != ''">
                 and r.name = #{name}
             </if>

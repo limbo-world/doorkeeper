@@ -93,7 +93,7 @@ export default {
                 this.resetPageForm();
             }
             this.startProgress();
-            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/role/${this.roleId}/role-user`, {
+            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/role/${this.roleId}/role-user`, {
                 params: this.queryForm
             }).then(response => {
                 const page = response.data;
@@ -113,7 +113,7 @@ export default {
                 }
             }
             const loading = this.$loading();
-            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/role/${this.roleId}/role-user/batch`, {
+            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/role/${this.roleId}/role-user/batch`, {
                 userIds: userIds, type: this.$constants.batchMethod.SAVE
             }).then(response => {
                 this.loadUsers();
@@ -126,7 +126,7 @@ export default {
                 userIds.push(user.userId);
             }
             const loading = this.$loading();
-            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/role/${this.roleId}/role-user/batch`, {
+            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/role/${this.roleId}/role-user/batch`, {
                 userIds: userIds, type: this.$constants.batchMethod.DELETE
             }).then(response => {
                 this.loadUsers();

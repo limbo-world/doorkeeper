@@ -76,13 +76,13 @@ export default {
 
         loadRole() {
             this.startProgress({ speed: 'fast' });
-            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/role/${this.roleId}`).then(response => {
+            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/role/${this.roleId}`).then(response => {
                 this.role = response.data;
             }).finally(() => this.stopProgress());
         },
 
         updateRole() {
-            this.$ajax.put(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/role/${this.role.roleId}`, this.role).then(response => {
+            this.$ajax.put(`/admin/realm/${this.user.realm.realmId}/role/${this.role.roleId}`, this.role).then(response => {
                 this.loadRole()
             })
         },

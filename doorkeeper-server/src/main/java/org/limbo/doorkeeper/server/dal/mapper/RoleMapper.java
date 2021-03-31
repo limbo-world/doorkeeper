@@ -27,10 +27,8 @@ import org.limbo.doorkeeper.server.dal.entity.Role;
  */
 public interface RoleMapper extends BaseMapper<Role> {
 
-    @Select("select * from role where realm_id = #{realmId} and" +
-            " client_id =#{clientId} and role_id = #{roleId}")
-    Role getById(@Param("realmId") Long realmId, @Param("clientId") Long clientId,
-                       @Param("roleId") Long roleId);
+    @Select("select * from role where realm_id = #{realmId} and role_id = #{roleId}")
+    Role getById(@Param("realmId") Long realmId, @Param("roleId") Long roleId);
 
     @Select("select * from role where realm_id = #{realmId} and" +
             " client_id =#{clientId} and name = #{name}")

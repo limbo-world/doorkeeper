@@ -124,8 +124,8 @@ export default {
 
         loadRoles() {
             this.startProgress();
-            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/role`, {
-                params: this.queryForm
+            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/role`, {
+                params: {...this.queryForm, clientId: this.clientId}
             }).then(response => {
                 this.roles = response.data.data;
             }).finally(() => this.stopProgress());
@@ -133,7 +133,7 @@ export default {
 
         addRole() {
             this.dialogProcessing = true;
-            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/role`, this.role).then(() => {
+            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/role`, {...this.role, clientId: this.clientId}).then(() => {
                 this.loadRoles();
                 this.dialogOpened = false;
             }).finally(() => this.dialogProcessing = false);
@@ -162,7 +162,7 @@ export default {
                 type: 'warning'
             }).then(() => {
                 this.dialogProcessing = true;
-                this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/role/batch`, {
+                this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/role/batch`, {
                     type: this.$constants.batchMethod.DELETE, roleIds: [roleId]
                 }).then(() => {
                     this.loadRoles();

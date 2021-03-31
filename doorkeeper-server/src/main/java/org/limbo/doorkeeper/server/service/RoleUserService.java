@@ -21,9 +21,8 @@ import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.role.RoleUserBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.role.RoleUserQueryParam;
 import org.limbo.doorkeeper.api.model.vo.RoleUserVO;
-import org.limbo.doorkeeper.server.dal.mapper.RealmMapper;
-import org.limbo.doorkeeper.server.dal.mapper.UserRoleMapper;
 import org.limbo.doorkeeper.server.dal.entity.UserRole;
+import org.limbo.doorkeeper.server.dal.mapper.UserRoleMapper;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,9 +40,6 @@ public class RoleUserService {
 
     @Autowired
     private UserRoleMapper userRoleMapper;
-
-    @Autowired
-    private RealmMapper realmMapper;
 
     public Page<RoleUserVO> page(Long realmId, Long roleId, RoleUserQueryParam param) {
         param.setRealmId(realmId);

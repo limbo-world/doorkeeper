@@ -73,10 +73,9 @@ public class RoleService {
     private RolePolicyService rolePolicyService;
 
     @Transactional
-    public RoleVO add(Long realmId, Long clientId, RoleAddParam param) {
+    public RoleVO add(Long realmId, RoleAddParam param) {
         Role role = EnhancedBeanUtils.createAndCopy(param, Role.class);
         role.setRealmId(realmId);
-        role.setClientId(clientId);
         try {
             roleMapper.insert(role);
         } catch (DuplicateKeyException e) {
@@ -101,11 +100,11 @@ public class RoleService {
         return EnhancedBeanUtils.createAndCopy(role, RoleVO.class);
     }
 
-    public Page<RoleVO> page(Long realmId, Long clientId, RoleQueryParam param) {
+    public Page<RoleVO> page(Long realmId, RoleQueryParam param) {
         IPage<Role> mpage = MyBatisPlusUtils.pageOf(param);
         mpage = roleMapper.selectPage(mpage, Wrappers.<Role>lambdaQuery()
                 .eq(Role::getRealmId, realmId)
-                .eq(Role::getClientId, clientId)
+                .eq(Role::getClientId, param.getClientId())
                 .eq(param.getIsEnabled() != null, Role::getIsEnabled, param.getIsEnabled())
                 .eq(param.getIsDefault() != null, Role::getIsDefault, param.getIsDefault())
                 .eq(StringUtils.isNotBlank(param.getName()), Role::getName, param.getName())
@@ -117,14 +116,14 @@ public class RoleService {
         return param;
     }
 
-    public RoleVO get(Long realmId, Long clientId, Long roleId) {
-        Role role = roleMapper.getById(realmId, clientId, roleId);
+    public RoleVO get(Long realmId, Long roleId) {
+        Role role = roleMapper.getById(realmId, roleId);
         Verifies.notNull(role, "角色不存在");
         return EnhancedBeanUtils.createAndCopy(role, RoleVO.class);
     }
 
-    public void update(Long realmId, Long clientId, Long roleId, RoleUpdateParam param) {
-        Role role = roleMapper.getById(realmId, clientId, roleId);
+    public void update(Long realmId, Long roleId, RoleUpdateParam param) {
+        Role role = roleMapper.getById(realmId, roleId);
         Verifies.notNull(role, "角色不存在");
 
         roleMapper.update(null, Wrappers.<Role>lambdaUpdate()
@@ -136,7 +135,7 @@ public class RoleService {
     }
 
     @Transactional
-    public void batchUpdate(Long realmId, Long clientId, RoleBatchUpdateParam param) {
+    public void batchUpdate(Long realmId, RoleBatchUpdateParam param) {
         switch (param.getType()) {
             case DELETE: // 删除
                 if (CollectionUtils.isEmpty(param.getRoleIds())) {
@@ -145,7 +144,6 @@ public class RoleService {
                 List<Role> roles = roleMapper.selectList(Wrappers.<Role>lambdaQuery()
                         .select(Role::getRoleId)
                         .eq(Role::getRealmId, realmId)
-                        .eq(Role::getClientId, clientId)
                         .in(Role::getRoleId, param.getRoleIds())
                 );
                 if (CollectionUtils.isEmpty(roles)) {

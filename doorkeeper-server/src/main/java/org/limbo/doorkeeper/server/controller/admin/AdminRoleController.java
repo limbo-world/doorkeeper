@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.controller.client;
+package org.limbo.doorkeeper.server.controller.admin;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -42,7 +42,7 @@ import javax.validation.constraints.NotNull;
 @Tag(name = "角色")
 @Slf4j
 @RestController
-@RequestMapping("/api/admin/realm/{realmId}/client/{clientId}/role")
+@RequestMapping("/api/admin/realm/{realmId}/role")
 public class AdminRoleController extends BaseController {
 
     @Autowired
@@ -51,33 +51,33 @@ public class AdminRoleController extends BaseController {
     @Operation(summary = "新建角色")
     @PostMapping
     public Response<RoleVO> add(@RequestBody @Validated RoleAddParam param) {
-        return Response.success(roleService.add(getRealmId(), getClientId(), param));
+        return Response.success(roleService.add(getRealmId(), param));
     }
 
     @Operation(summary = "查询角色列表")
     @GetMapping
     public Response<Page<RoleVO>> page(@Validated RoleQueryParam param) {
-        return Response.success(roleService.page(getRealmId(), getClientId(), param));
+        return Response.success(roleService.page(getRealmId(), param));
     }
 
     @Operation(summary = "查询角色")
     @GetMapping("/{roleId}")
     public Response<RoleVO> get(@Validated @NotNull(message = "未提交角色ID") @PathVariable("roleId") Long roleId) {
-        return Response.success(roleService.get(getRealmId(), getClientId(), roleId));
+        return Response.success(roleService.get(getRealmId(), roleId));
     }
 
     @Operation(summary = "更新角色")
     @PutMapping("/{roleId}")
     public Response<RoleVO> update(@Validated @NotNull(message = "未提交角色ID") @PathVariable("roleId") Long roleId,
                                    @Validated @RequestBody RoleUpdateParam param) {
-        roleService.update(getRealmId(), getClientId(), roleId, param);
+        roleService.update(getRealmId(), roleId, param);
         return Response.success();
     }
 
     @Operation(summary = "批量更新角色")
     @PostMapping("/batch")
     public Response<Void> batch(@RequestBody @Validated RoleBatchUpdateParam param) {
-        roleService.batchUpdate(getRealmId(), getClientId(), param);
+        roleService.batchUpdate(getRealmId(), param);
         return Response.success();
     }
 

@@ -20,6 +20,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -28,6 +29,10 @@ import java.util.List;
  */
 @Data
 public class RoleAddParam {
+
+    @NotNull(message = "委托方不能为空")
+    @Schema(title = "委托方", description = "如果是域角色 clientId 为 0", required = true)
+    private Long clientId;
 
     @NotBlank(message = "名称不能为空")
     @Schema(title = "名称", required = true)

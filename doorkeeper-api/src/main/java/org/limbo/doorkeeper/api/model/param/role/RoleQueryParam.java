@@ -21,6 +21,8 @@ import lombok.Data;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * @author Devil
  * @date 2021/1/4 5:44 下午
@@ -30,6 +32,8 @@ public class RoleQueryParam extends Page<RoleVO> {
 
     private Long realmId;
 
+    @NotNull(message = "委托方不能为空")
+    @Schema(title = "委托方", description = "如果是域角色 clientId 为 0", required = true)
     private Long clientId;
 
     @Schema(title = "名称", description = "精确查询")

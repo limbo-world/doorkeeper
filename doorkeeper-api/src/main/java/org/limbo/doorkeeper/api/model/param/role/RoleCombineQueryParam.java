@@ -28,8 +28,6 @@ public class RoleCombineQueryParam {
 
     private Long realmId;
 
-    private Long clientId;
-
     private Long parentId;
 
     @Schema(title = "角色名称", description = "精确查询")
