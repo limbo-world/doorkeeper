@@ -27,21 +27,18 @@ import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.Logic;
 import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
 import org.limbo.doorkeeper.api.model.param.check.UriCheckParam;
+import org.limbo.doorkeeper.api.model.param.permission.PermissionQueryParam;
 import org.limbo.doorkeeper.api.model.param.resource.ResourceQueryParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionPolicyVO;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.limbo.doorkeeper.api.model.vo.ResourceVO;
 import org.limbo.doorkeeper.api.model.vo.check.AuthorizationCheckResult;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
-import org.limbo.doorkeeper.server.dal.dao.PermissionDao;
 import org.limbo.doorkeeper.server.dal.dao.PolicyDao;
 import org.limbo.doorkeeper.server.dal.entity.Client;
 import org.limbo.doorkeeper.server.dal.entity.PermissionResource;
 import org.limbo.doorkeeper.server.dal.entity.ResourceUri;
-import org.limbo.doorkeeper.server.dal.mapper.ClientMapper;
-import org.limbo.doorkeeper.server.dal.mapper.PermissionResourceMapper;
-import org.limbo.doorkeeper.server.dal.mapper.ResourceMapper;
-import org.limbo.doorkeeper.server.dal.mapper.ResourceUriMapper;
+import org.limbo.doorkeeper.server.dal.mapper.*;
 import org.limbo.doorkeeper.server.support.auth.policies.PolicyCheckerFactory;
 import org.limbo.doorkeeper.server.utils.EasyAntPathMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +59,7 @@ import java.util.stream.Collectors;
 public class AuthorizationChecker {
 
     @Autowired
-    private PermissionDao permissionDao;
+    private PermissionMapper permissionMapper;
 
     @Autowired
     private PolicyDao policyDao;
@@ -248,7 +245,13 @@ public class AuthorizationChecker {
             return new ArrayList<>();
         }
         List<Long> permissionIds = permissionResources.stream().map(PermissionResource::getPermissionId).collect(Collectors.toList());
-        return permissionDao.getVOSByPermissionIds(getClient().getRealmId(), getClient().getClientId(), permissionIds, true);
+        PermissionQueryParam param = new PermissionQueryParam();
+        param.setRealmId(getClient().getRealmId());
+        param.setClientId(getClient().getClientId());
+        param.setPermissionIds(permissionIds);
+        param.setIsEnabled(true);
+        param.setNeedAll(true);
+        return permissionMapper.getVOS(param);
     }
 
 

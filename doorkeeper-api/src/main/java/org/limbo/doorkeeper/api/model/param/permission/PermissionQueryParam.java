@@ -24,6 +24,8 @@ import org.limbo.doorkeeper.api.constants.Logic;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 
+import java.util.List;
+
 /**
  * @author Devil
  * @date 2021/1/8 9:32 上午
@@ -32,8 +34,15 @@ import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 @EqualsAndHashCode(callSuper = true)
 public class PermissionQueryParam extends Page<PermissionVO> {
 
-    @Schema(title = "名称", description = "精确查询")
-    private String name;
+    private Long realmId;
+
+    private Long clientId;
+
+    @Schema(title = "权限ID列表", description = "精确查询")
+    private List<Long> permissionIds;
+
+    @Schema(title = "名称列表", description = "精确查询")
+    private List<String> names;
 
     @Schema(title = "名称", description = "模糊查询")
     private String dimName;

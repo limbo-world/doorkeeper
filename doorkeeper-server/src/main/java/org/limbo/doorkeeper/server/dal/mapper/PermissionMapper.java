@@ -19,6 +19,7 @@ package org.limbo.doorkeeper.server.dal.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.limbo.doorkeeper.api.model.param.permission.PermissionQueryParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.limbo.doorkeeper.server.dal.entity.Permission;
 
@@ -35,6 +36,10 @@ public interface PermissionMapper extends BaseMapper<Permission> {
     Permission getById(@Param("realmId") Long realmId, @Param("clientId") Long clientId,
                        @Param("permissionId") Long permissionId);
 
-    List<PermissionVO> getVOS(@Param("realmId") Long realmId, @Param("clientId") Long clientId,
-                              @Param("permissionIds") List<Long> permissionIds, @Param("isEnabled") Boolean isEnabled);
+    long voCount(PermissionQueryParam param);
+
+    List<PermissionVO> getVOS(PermissionQueryParam param);
+
+    PermissionVO getVO(@Param("realmId") Long realmId, @Param("clientId") Long clientId, @Param("permissionId") Long permissionId);
+
 }

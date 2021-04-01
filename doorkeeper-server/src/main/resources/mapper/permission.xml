@@ -50,14 +50,8 @@
         <result column="resource_id" property="resourceId" jdbcType="BIGINT" javaType="java.lang.Long" />
     </resultMap>
 
-    <select id="getVOS" resultMap="PermissionVO">
-        select p.*,
-        pp.permission_policy_id as policy_permission_policy_id, pp.policy_id as policy_policy_id,
-        pr.permission_resource_id as resource_permission_resource_id, pr.resource_id as resource_resource_id
-        from permission p
-        left join permission_policy pp on pp.permission_id = p.permission_id
-        left join permission_resource pr on pr.permission_id = p.permission_id
-        where p.realm_id = #{realmId} and p.client_id = #{clientId}
+    <sql id="queryCondition">
+        and p.realm_id = #{realmId} and p.client_id = #{clientId}
         <if test="permissionIds != null and permissionIds.size() > 0">
             and p.permission_id in (
             <foreach collection="permissionIds" separator="," item="permissionId">
@@ -65,9 +59,63 @@
             </foreach>
             )
         </if>
+        <if test="names != null and names.size() > 0">
+            and p.name in (
+            <foreach collection="names" separator="," item="name">
+                #{name}
+            </foreach>
+            )
+        </if>
+        <if test="dimName != null and dimName != ''">
+            <bind name="dimName" value="'%' + dimName + '%'"/>
+            and p.name like #{dimName}
+        </if>
+        <if test="logic != null and logic != ''">
+            and p.logic = #{logic}
+        </if>
+        <if test="intention != null and intention != ''">
+            and p.intention = #{intention}
+        </if>
         <if test="isEnabled != null">
             and p.is_enabled = #{isEnabled}
         </if>
+    </sql>
+    <select id="voCount" resultType="java.lang.Long">
+        select count(*)
+        from permission p
+        <where>
+            <include refid="queryCondition"></include>
+        </where>
+    </select>
+    <select id="getVOS" resultMap="PermissionVO">
+        select p.*,
+        pp.permission_policy_id as policy_permission_policy_id, pp.policy_id as policy_policy_id,
+        pr.permission_resource_id as resource_permission_resource_id, pr.resource_id as resource_resource_id
+        from permission p
+        left join permission_policy pp on pp.permission_id = p.permission_id
+        left join permission_resource pr on pr.permission_id = p.permission_id
+        where p.permission_id in (
+            select * from (
+                select p.permission_id from permission p
+                <where>
+                    <include refid="queryCondition"></include>
+                </where>
+                <if test="needAll != true">
+                    order by p.permission_id desc
+                    limit #{offset}, #{size}
+                </if>
+            ) tmp
+        )
+    </select>
+
+    <select id="getVO" resultMap="PermissionVO">
+        select p.*,
+        pp.permission_policy_id as policy_permission_policy_id, pp.policy_id as policy_policy_id,
+        pr.permission_resource_id as resource_permission_resource_id, pr.resource_id as resource_resource_id
+        from permission p
+        left join permission_policy pp on pp.permission_id = p.permission_id
+        left join permission_resource pr on pr.permission_id = p.permission_id
+        where p.realm_id = #{realmId} and p.client_id = #{clientId} and p.permission_id = #{permissionId}
     </select>
 
 </mapper>

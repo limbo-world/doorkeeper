@@ -16,7 +16,6 @@
 
 package org.limbo.doorkeeper.server.service;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +25,6 @@ import org.limbo.doorkeeper.api.model.param.permission.PermissionBatchUpdatePara
 import org.limbo.doorkeeper.api.model.param.permission.PermissionQueryParam;
 import org.limbo.doorkeeper.api.model.param.permission.PermissionUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
-import org.limbo.doorkeeper.server.dal.dao.PermissionDao;
 import org.limbo.doorkeeper.server.dal.entity.Client;
 import org.limbo.doorkeeper.server.dal.entity.Permission;
 import org.limbo.doorkeeper.server.dal.entity.PermissionPolicy;
@@ -36,13 +34,11 @@ import org.limbo.doorkeeper.server.dal.mapper.PermissionMapper;
 import org.limbo.doorkeeper.server.dal.mapper.PermissionPolicyMapper;
 import org.limbo.doorkeeper.server.dal.mapper.PermissionResourceMapper;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
-import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,9 +51,6 @@ public class PermissionService {
 
     @Autowired
     private PermissionMapper permissionMapper;
-
-    @Autowired
-    private PermissionDao permissionDao;
 
     @Autowired
     private ClientMapper clientMapper;
@@ -140,26 +133,18 @@ public class PermissionService {
     }
 
     public Page<PermissionVO> page(Long realmId, Long clientId, PermissionQueryParam param) {
-        IPage<Permission> mpage = MyBatisPlusUtils.pageOf(param);
-        mpage = permissionMapper.selectPage(mpage, Wrappers.<Permission>lambdaQuery()
-                .eq(Permission::getRealmId, realmId)
-                .eq(Permission::getClientId, clientId)
-                .eq(StringUtils.isNotBlank(param.getName()), Permission::getName, param.getName())
-                .like(StringUtils.isNotBlank(param.getDimName()), Permission::getName, param.getDimName())
-                .eq(param.getLogic() != null, Permission::getLogic, param.getLogic())
-                .eq(param.getIntention() != null, Permission::getIntention, param.getIntention())
-                .eq(param.getIsEnabled() != null, Permission::getIsEnabled, param.getIsEnabled())
-                .orderByDesc(Permission::getPermissionId)
-        );
-
-        param.setTotal(mpage.getTotal());
-        param.setData(EnhancedBeanUtils.createAndCopyList(mpage.getRecords(), PermissionVO.class));
+        param.setRealmId(realmId);
+        param.setClientId(clientId);
+        long count = permissionMapper.voCount(param);
+        param.setTotal(count);
+        if (count > 0) {
+            param.setData(permissionMapper.getVOS(param));
+        }
         return param;
     }
 
     public PermissionVO get(Long realmId, Long clientId, Long permissionId) {
-        List<PermissionVO> vos = permissionDao.getVOSByPermissionIds(realmId, clientId, Collections.singletonList(permissionId), null);
-        return vos == null || vos.size() <= 0 ? null : vos.get(0);
+        return permissionMapper.getVO(realmId, clientId, permissionId);
     }
 
     @Transactional
