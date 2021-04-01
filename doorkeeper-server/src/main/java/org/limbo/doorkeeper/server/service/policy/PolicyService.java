@@ -21,7 +21,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.Page;
-import org.limbo.doorkeeper.api.model.param.permission.PermissionPolicyAddParam;
 import org.limbo.doorkeeper.api.model.param.policy.*;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 import org.limbo.doorkeeper.server.dal.entity.Client;
@@ -122,9 +121,9 @@ public class PolicyService {
                 break;
         }
         if (CollectionUtils.isNotEmpty(param.getPermissionIds())) {
-            List<PermissionPolicyAddParam> params = new ArrayList<>();
+            List<PermissionPolicy> params = new ArrayList<>();
             for (Long permissionId : param.getPermissionIds()) {
-                PermissionPolicyAddParam addParam = new PermissionPolicyAddParam();
+                PermissionPolicy addParam = new PermissionPolicy();
                 addParam.setPermissionId(permissionId);
                 addParam.setPolicyId(policy.getPolicyId());
                 params.add(addParam);

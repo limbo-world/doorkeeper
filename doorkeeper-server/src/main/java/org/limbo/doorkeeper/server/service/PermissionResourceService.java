@@ -18,14 +18,10 @@ package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
-import org.limbo.doorkeeper.api.model.param.permission.PermissionResourceAddParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionResourceVO;
 import org.limbo.doorkeeper.server.dal.entity.PermissionResource;
-import org.limbo.doorkeeper.server.dal.mapper.PermissionMapper;
 import org.limbo.doorkeeper.server.dal.mapper.PermissionResourceMapper;
-import org.limbo.doorkeeper.server.dal.mapper.ResourceMapper;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
-import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,12 +39,6 @@ public class PermissionResourceService {
     @Autowired
     private PermissionResourceMapper permissionResourceMapper;
 
-    @Autowired
-    private PermissionMapper permissionMapper;
-
-    @Autowired
-    private ResourceMapper resourceMapper;
-
     public List<PermissionResourceVO> getByPermissionId(Long permissionId) {
         List<PermissionResource> permissionResources = permissionResourceMapper.selectList(Wrappers.<PermissionResource>lambdaQuery()
                 .eq(PermissionResource::getPermissionId, permissionId)
@@ -57,31 +47,29 @@ public class PermissionResourceService {
     }
 
     @Transactional
-    public void update(Long permissionId, List<PermissionResourceAddParam> params) {
+    public void update(Long permissionId, List<Long> resourceIds) {
         // 删除
         permissionResourceMapper.delete(Wrappers.<PermissionResource>lambdaQuery()
                 .eq(PermissionResource::getPermissionId, permissionId)
         );
-        // 新增
-        if (CollectionUtils.isEmpty(params)) {
+        if (CollectionUtils.isEmpty(resourceIds)) {
             return;
         }
-        for (PermissionResourceAddParam param : params) {
-            param.setPermissionId(permissionId);
+        // 新增
+        List<PermissionResource> permissionResources = new ArrayList<>();
+        for (Long resourceId : resourceIds) {
+            PermissionResource permissionResource = new PermissionResource();
+            permissionResource.setPermissionId(permissionId);
+            permissionResource.setResourceId(resourceId);
+            permissionResources.add(permissionResource);
         }
-        batchSave(params);
+        batchSave(permissionResources);
     }
 
     @Transactional
-    public void batchSave(List<PermissionResourceAddParam> params) {
-        Verifies.verify(CollectionUtils.isNotEmpty(params), "资源列表为空");
-
-        List<PermissionResource> permissionResources = new ArrayList<>();
-        for (PermissionResourceAddParam param : params) {
-            PermissionResource permissionResource = new PermissionResource();
-            permissionResource.setPermissionId(param.getPermissionId());
-            permissionResource.setResourceId(param.getResourceId());
-            permissionResources.add(permissionResource);
+    public void batchSave(List<PermissionResource> permissionResources) {
+        if (CollectionUtils.isEmpty(permissionResources)) {
+            return;
         }
         permissionResourceMapper.batchInsertIgnore(permissionResources);
     }

@@ -33,7 +33,9 @@
                                     <el-input v-model="resourceQueryForm.dimName" placeholder="输入名称"></el-input>
                                 </el-form-item>
                                 <el-form-item>
-                                    <el-button type="primary" @click="loadResources" size="mini" icon="el-icon-search">查询</el-button>
+                                    <el-button type="primary" @click="loadResources" size="mini" icon="el-icon-search">
+                                        查询
+                                    </el-button>
                                 </el-form-item>
                             </el-form>
                         </el-header>
@@ -52,7 +54,9 @@
                                     <el-input v-model="policyQueryForm.dimName" placeholder="输入名称"></el-input>
                                 </el-form-item>
                                 <el-form-item>
-                                    <el-button type="primary" @click="loadPolicies" size="mini" icon="el-icon-search">查询</el-button>
+                                    <el-button type="primary" @click="loadPolicies" size="mini" icon="el-icon-search">
+                                        查询
+                                    </el-button>
                                 </el-form-item>
                             </el-form>
                         </el-header>
@@ -76,11 +80,14 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="是否启用">
-                    <el-switch v-model="permission.isEnabled" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+                    <el-switch v-model="permission.isEnabled" active-color="#13ce66"
+                               inactive-color="#ff4949"></el-switch>
                 </el-form-item>
                 <el-form-item>
-                    <el-button v-if="!permission.permissionId" type="primary" @click="addPermission" size="mini">新增</el-button>
-                    <el-button v-if="permission.permissionId" type="primary" @click="updatePermission" size="mini">保存</el-button>
+                    <el-button v-if="!permission.permissionId" type="primary" @click="addPermission" size="mini">新增
+                    </el-button>
+                    <el-button v-if="permission.permissionId" type="primary" @click="updatePermission" size="mini">保存
+                    </el-button>
                 </el-form-item>
             </el-form>
         </el-main>
@@ -90,168 +97,192 @@
 
 <script>
 
-    import { mapState, mapActions } from 'vuex';
+import {mapState, mapActions} from 'vuex';
 
-    export default {
-        data() {
-            return {
-                permission: {
-                    resources: [],
-                    policies: []
-                },
-
-                resourceQueryForm: {
-                    name: '',
-                    size: 100
-                },
-
-                policyQueryForm: {
-                    name: '',
-                    size: 100
-                },
-
+export default {
+    data() {
+        return {
+            permission: {
                 resources: [],
-                selectResourceIds: [],
+                policies: []
+            },
 
-                policies: [],
-                selectPolicyIds: []
-            };
+            resourceQueryForm: {
+                name: '',
+                size: 100
+            },
+
+            policyQueryForm: {
+                name: '',
+                size: 100
+            },
+
+            resources: [],
+            selectResourceIds: [],
+
+            policies: [],
+            selectPolicyIds: []
+        };
+    },
+
+    computed: {
+        ...mapState('session', ['user']),
+    },
+
+    created() {
+        pages.permissionEdit = this;
+        this.permission.clientId = this.$route.query.clientId;
+        if (this.$route.query.permissionId) {
+            this.permission.permissionId = this.$route.query.permissionId;
+            this.loadPermission();
+        }
+    },
+
+    methods: {
+        ...mapActions('ui', ['startProgress', 'stopProgress']),
+
+        // ========== 资源相关  ==========
+        loadResources() {
+            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.permission.clientId}/resource`, {
+                params: this.resourceQueryForm
+            }).then(response => {
+                let resources = response.data.data;
+                let resourceIds = [];
+                for (let resource of resources) {
+                    resource.key = resource.resourceId;
+                    resource.label = resource.name;
+                    resourceIds.push(resource.resourceId);
+                }
+                this.concatResources(resources, resourceIds);
+            });
         },
-
-        computed: {
-            ...mapState('session', ['user']),
-        },
-
-        created() {
-            pages.permissionEdit = this;
-            this.permission.clientId = this.$route.query.clientId;
-            if (this.$route.query.permissionId) {
-                this.permission.permissionId = this.$route.query.permissionId;
-                this.loadPermission();
+        changeResource(resourceIds, d, mvResourceIds) {
+            if (d === 'right') {
+                // 主要用于去除重复
+                this.permission.resources = this.permission.resources.filter(resource => mvResourceIds.indexOf(resource.resourceId) < 0)
+                // 获取新增的
+                let resources = this.resources.filter(resource => mvResourceIds.indexOf(resource.resourceId) >= 0)
+                this.permission.resources = this.permission.resources.concat(resources)
+            } else {
+                // 删除里面的
+                this.permission.resources = this.permission.resources.filter(resource => mvResourceIds.indexOf(resource.resourceId) < 0)
             }
         },
+        concatResources(resources, resourceIds) {
+            // 把不存在的加入进来
+            let permissionResources = this.permission.resources.filter(resource => resourceIds.indexOf(resource.resourceId) < 0)
+            resources = resources.concat(permissionResources);
+            this.resources = resources;
+            // 每次查询完，需要把已有的加入
+            this.selectResourceIds = this.permission.resources.map(resource => resource.resourceId)
+        },
 
-        methods: {
-            ...mapActions('ui', ['startProgress', 'stopProgress']),
-
-            // ========== 资源相关  ==========
-            loadResources() {
-                this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.permission.clientId}/resource`, {
-                    params: this.resourceQueryForm
-                }).then(response => {
-                    let resources = response.data.data;
-                    let resourceIds = [];
-                    for (let resource of resources) {
-                        resource.key = resource.resourceId;
-                        resource.label = resource.name;
-                        resourceIds.push(resource.resourceId);
-                    }
-                    this.concatResources(resources, resourceIds);
-                });
-            },
-            changeResource(resourceIds, d, mvResourceIds) {
-                if (d === 'right') {
-                    // 主要用于去除重复
-                    this.permission.resources = this.permission.resources.filter(resource => mvResourceIds.indexOf(resource.resourceId) < 0)
-                    // 获取新增的
-                    let resources = this.resources.filter(resource => mvResourceIds.indexOf(resource.resourceId) >= 0)
-                    this.permission.resources = this.permission.resources.concat(resources)
-                } else {
-                    // 删除里面的
-                    this.permission.resources = this.permission.resources.filter(resource => mvResourceIds.indexOf(resource.resourceId) < 0)
+        // ========== 策略相关  ==========
+        loadPolicies() {
+            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.permission.clientId}/policy`, {
+                params: this.policyQueryForm
+            }).then(response => {
+                let policies = response.data.data;
+                let policyIds = [];
+                for (let policy of policies) {
+                    policy.key = policy.policyId;
+                    policy.label = policy.name;
+                    policyIds.push(policy.policyId);
                 }
-            },
-            concatResources(resources, resourceIds) {
-                // 把不存在的加入进来
-                let permissionResources = this.permission.resources.filter(resource => resourceIds.indexOf(resource.resourceId) < 0)
-                resources = resources.concat(permissionResources);
-                this.resources = resources;
-                // 每次查询完，需要把已有的加入
-                this.selectResourceIds = this.permission.resources.map(resource => resource.resourceId)
-            },
+                this.concatPolicies(policies, policyIds);
+            });
+        },
+        changePolicy(policyIds, d, mvPolicyIds) {
+            if (d === 'right') {
+                // 主要用于去除重复
+                this.permission.policies = this.permission.policies.filter(policy => mvPolicyIds.indexOf(policy.policyId) < 0)
+                // 获取新增的
+                let policies = this.policies.filter(policy => mvPolicyIds.indexOf(policy.policyId) >= 0)
+                this.permission.policies = this.permission.policies.concat(policies)
+            } else {
+                // 删除里面的
+                this.permission.policies = this.permission.policies.filter(policy => mvPolicyIds.indexOf(policy.policyId) < 0)
+            }
+        },
+        concatPolicies(policies, policyIds) {
+            // 把不存在的加入进来
+            let permissionPolicies = this.permission.policies.filter(policy => policyIds.indexOf(policy.policyId) < 0)
+            policies = policies.concat(permissionPolicies);
+            this.policies = policies;
+            // 每次查询完，需要把已有的加入
+            this.selectPolicyIds = this.permission.policies.map(policy => policy.policyId)
+        },
 
-            // ========== 策略相关  ==========
-            loadPolicies() {
-                this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.permission.clientId}/policy`, {
-                    params: this.policyQueryForm
-                }).then(response => {
-                    let policies = response.data.data;
-                    let policyIds = [];
-                    for (let policy of policies) {
-                        policy.key = policy.policyId;
-                        policy.label = policy.name;
-                        policyIds.push(policy.policyId);
-                    }
-                    this.concatPolicies(policies, policyIds);
-                });
-            },
-            changePolicy(policyIds, d, mvPolicyIds) {
-                if (d === 'right') {
-                    // 主要用于去除重复
-                    this.permission.policies = this.permission.policies.filter(policy => mvPolicyIds.indexOf(policy.policyId) < 0)
-                    // 获取新增的
-                    let policies = this.policies.filter(policy => mvPolicyIds.indexOf(policy.policyId) >= 0)
-                    this.permission.policies = this.permission.policies.concat(policies)
-                } else {
-                    // 删除里面的
-                    this.permission.policies = this.permission.policies.filter(policy => mvPolicyIds.indexOf(policy.policyId) < 0)
-                }
-            },
-            concatPolicies(policies, policyIds) {
-                // 把不存在的加入进来
-                let permissionPolicies = this.permission.policies.filter(policy => policyIds.indexOf(policy.policyId) < 0)
-                policies = policies.concat(permissionPolicies);
-                this.policies = policies;
-                // 每次查询完，需要把已有的加入
-                this.selectPolicyIds = this.permission.policies.map(policy => policy.policyId)
-            },
-
-            // ========== 权限相关 ==========
-            loadPermission() {
-                this.startProgress({ speed: 'fast' });
-                this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.permission.clientId}/permission/${this.permission.permissionId}`).then(response => {
-                    this.permission = response.data;
-                    this.loadResources();
-                    this.loadPolicies();
-                }).finally(() => this.stopProgress());
-            },
-            addPermission() {
-                this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.permission.clientId}/permission`, this.permission).then(response => {
-                    this.permission = response.data;
-                    this.loadPermission();
+        // ========== 权限相关 ==========
+        loadPermission() {
+            this.startProgress({speed: 'fast'});
+            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.permission.clientId}/permission/${this.permission.permissionId}`).then(response => {
+                this.permission = response.data;
+                this.loadResources();
+                this.loadPolicies();
+            }).finally(() => this.stopProgress());
+        },
+        addPermission() {
+            let addParam = {...this.permission, resourceIds: [], policyIds: []}
+            if (addParam.resources && addParam.resources.length > 0) {
+                addParam.resources.forEach(r => {
+                    addParam.resourceIds.push(r.resourceId);
                 })
-            },
-            updatePermission() {
-                this.$ajax.put(`/admin/realm/${this.user.realm.realmId}/client/${this.permission.clientId}/permission/${this.permission.permissionId}`, this.permission).then(response => {
-                    this.loadPermission();
+            }
+            if (addParam.policies && addParam.policies.length > 0) {
+                addParam.policies.forEach(p => {
+                    addParam.policyIds.push(p.policyId);
                 })
-            },
-        }
+            }
+            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.permission.clientId}/permission`, addParam).then(response => {
+                this.permission = response.data;
+                this.loadPermission();
+            })
+        },
+        updatePermission() {
+            let updateParam = {...this.permission, resourceIds: [], policyIds: []}
+            if (updateParam.resources && updateParam.resources.length > 0) {
+                updateParam.resources.forEach(r => {
+                    updateParam.resourceIds.push(r.resourceId);
+                })
+            }
+            if (updateParam.policies && updateParam.policies.length > 0) {
+                updateParam.policies.forEach(p => {
+                    updateParam.policyIds.push(p.policyId);
+                })
+            }
+            this.$ajax.put(`/admin/realm/${this.user.realm.realmId}/client/${this.permission.clientId}/permission/${this.permission.permissionId}`, updateParam).then(response => {
+                this.loadPermission();
+            })
+        },
     }
+}
 </script>
 
 <style lang="scss">
-    .permission-resource-edit-page {
-        .el-transfer {
-            .el-transfer-panel {
-                width: 350px;
-                .el-transfer-panel__item {
-                    margin-left: 0;
-                    display: block!important;
-                }
-            }
-        }
-    }
+.permission-resource-edit-page {
+    .el-transfer {
+        .el-transfer-panel {
+            width: 350px;
 
-    .permission-policy-edit-page {
-        .el-transfer {
-            .el-transfer-panel {
-                width: 350px;
-                .el-transfer-panel__item {
-                    margin-left: 0;
-                    display: block!important;
-                }
+            .el-transfer-panel__item {
+                margin-left: 0;
+                display: block !important;
             }
         }
     }
+}
+
+.permission-policy-edit-page {
+    .el-transfer {
+        .el-transfer-panel {
+            width: 350px;
+
+            .el-transfer-panel__item {
+                margin-left: 0;
+                display: block !important;
+            }
+        }
+    }
+}
 </style>

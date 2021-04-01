@@ -18,13 +18,12 @@ package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
+import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.model.Page;
-import org.limbo.doorkeeper.api.model.param.permission.PermissionResourceAddParam;
 import org.limbo.doorkeeper.api.model.param.resource.*;
 import org.limbo.doorkeeper.api.model.vo.ResourceTagVO;
 import org.limbo.doorkeeper.api.model.vo.ResourceUriVO;
 import org.limbo.doorkeeper.api.model.vo.ResourceVO;
-import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.dal.entity.*;
 import org.limbo.doorkeeper.server.dal.mapper.*;
 import org.limbo.doorkeeper.server.support.ParamException;
@@ -84,9 +83,9 @@ public class ResourceService {
         // 资源标签
         batchSaveTag(resource.getResourceId(), resource.getRealmId(), resource.getClientId(), param.getTags());
         if (CollectionUtils.isNotEmpty(param.getPermissionIds())) {
-            List<PermissionResourceAddParam> params = new ArrayList<>();
+            List<PermissionResource> params = new ArrayList<>();
             for (Long permissionId : param.getPermissionIds()) {
-                PermissionResourceAddParam addParam = new PermissionResourceAddParam();
+                PermissionResource addParam = new PermissionResource();
                 addParam.setPermissionId(permissionId);
                 addParam.setResourceId(resource.getResourceId());
                 params.add(addParam);

@@ -18,14 +18,10 @@ package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
-import org.limbo.doorkeeper.api.model.param.permission.PermissionPolicyAddParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionPolicyVO;
 import org.limbo.doorkeeper.server.dal.entity.PermissionPolicy;
-import org.limbo.doorkeeper.server.dal.mapper.PermissionMapper;
 import org.limbo.doorkeeper.server.dal.mapper.PermissionPolicyMapper;
-import org.limbo.doorkeeper.server.dal.mapper.policy.PolicyMapper;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
-import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,12 +39,6 @@ public class PermissionPolicyService {
     @Autowired
     private PermissionPolicyMapper permissionPolicyMapper;
 
-    @Autowired
-    private PermissionMapper permissionMapper;
-
-    @Autowired
-    private PolicyMapper policyMapper;
-
     public List<PermissionPolicyVO> getByPermissionId(Long permissionId) {
         List<PermissionPolicy> permissionPolicies = permissionPolicyMapper.selectList(Wrappers.<PermissionPolicy>lambdaQuery()
                 .eq(PermissionPolicy::getPermissionId, permissionId)
@@ -57,32 +47,29 @@ public class PermissionPolicyService {
     }
 
     @Transactional
-    public void update(Long permissionId, List<PermissionPolicyAddParam> params) {
+    public void update(Long permissionId, List<Long> policyIds) {
         // 删除
         permissionPolicyMapper.delete(Wrappers.<PermissionPolicy>lambdaQuery()
                 .eq(PermissionPolicy::getPermissionId, permissionId)
         );
-        // 新增
-        if (CollectionUtils.isEmpty(params)) {
+        if (CollectionUtils.isEmpty(policyIds)) {
             return;
         }
-
-        for (PermissionPolicyAddParam param : params) {
-            param.setPermissionId(permissionId);
+        // 新增
+        List<PermissionPolicy> permissionPolicies = new ArrayList<>();
+        for (Long policyId : policyIds) {
+            PermissionPolicy permissionPolicy = new PermissionPolicy();
+            permissionPolicy.setPermissionId(permissionId);
+            permissionPolicy.setPolicyId(policyId);
+            permissionPolicies.add(permissionPolicy);
         }
-        batchSave(params);
+        batchSave(permissionPolicies);
     }
 
     @Transactional
-    public void batchSave(List<PermissionPolicyAddParam> params) {
-        Verifies.verify(CollectionUtils.isNotEmpty(params), "策略列表为空");
-
-        List<PermissionPolicy> permissionPolicies = new ArrayList<>();
-        for (PermissionPolicyAddParam param : params) {
-            PermissionPolicy permissionPolicy = new PermissionPolicy();
-            permissionPolicy.setPermissionId(param.getPermissionId());
-            permissionPolicy.setPolicyId(param.getPolicyId());
-            permissionPolicies.add(permissionPolicy);
+    public void batchSave(List<PermissionPolicy> permissionPolicies) {
+        if (CollectionUtils.isEmpty(permissionPolicies)) {
+            return;
         }
         permissionPolicyMapper.batchInsertIgnore(permissionPolicies);
     }

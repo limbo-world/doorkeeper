@@ -46,9 +46,9 @@ public class PermissionUpdateParam {
     private Boolean isEnabled;
 
     @Schema(title = "资源列表")
-    private List<PermissionResourceAddParam> resources;
+    private List<Long> resourceIds;
 
     @Schema(title = "策略列表")
-    private List<PermissionPolicyAddParam>  policies;
+    private List<Long>  policyIds;
 
 }

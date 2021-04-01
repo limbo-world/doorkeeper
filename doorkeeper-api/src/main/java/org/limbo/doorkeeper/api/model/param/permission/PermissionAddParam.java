@@ -22,7 +22,6 @@ import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.Logic;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -51,12 +50,10 @@ public class PermissionAddParam {
     @Schema(title = "是否启用")
     private Boolean isEnabled;
 
-    @NotEmpty(message = "资源列表不能为空")
-    @Schema(title = "资源列表", required = true)
-    private List<PermissionResourceAddParam> resources;
+    @Schema(title = "资源列表")
+    private List<Long> resourceIds;
 
-    @NotEmpty(message = "策略列表不能为空")
-    @Schema(title = "策略列表", required = true)
-    private List<PermissionPolicyAddParam> policies;
+    @Schema(title = "策略列表")
+    private List<Long> policyIds;
 
 }

@@ -16,17 +16,12 @@
 
 package org.limbo.doorkeeper.server.service;
 
-import org.limbo.doorkeeper.api.constants.BatchMethod;
-import org.limbo.doorkeeper.api.constants.Intention;
-import org.limbo.doorkeeper.api.constants.Logic;
-import org.limbo.doorkeeper.api.constants.PolicyType;
+import org.limbo.doorkeeper.api.constants.*;
 import org.limbo.doorkeeper.api.model.param.group.GroupAddParam;
 import org.limbo.doorkeeper.api.model.param.group.GroupRoleAddParam;
 import org.limbo.doorkeeper.api.model.param.group.GroupRoleBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.group.GroupUserBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.permission.PermissionAddParam;
-import org.limbo.doorkeeper.api.model.param.permission.PermissionPolicyAddParam;
-import org.limbo.doorkeeper.api.model.param.permission.PermissionResourceAddParam;
 import org.limbo.doorkeeper.api.model.param.policy.PolicyAddParam;
 import org.limbo.doorkeeper.api.model.param.policy.PolicyRoleAddParam;
 import org.limbo.doorkeeper.api.model.param.resource.ResourceAddParam;
@@ -38,7 +33,6 @@ import org.limbo.doorkeeper.api.model.vo.GroupVO;
 import org.limbo.doorkeeper.api.model.vo.ResourceVO;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
-import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.dal.entity.Client;
 import org.limbo.doorkeeper.server.dal.entity.Realm;
 import org.limbo.doorkeeper.server.dal.entity.User;
@@ -243,14 +237,8 @@ public class DoorkeeperService {
         permissionAddParam.setLogic(Logic.ALL);
         permissionAddParam.setIntention(Intention.ALLOW);
         permissionAddParam.setIsEnabled(Boolean.TRUE);
-
-        PermissionResourceAddParam permissionResourceAddParam = new PermissionResourceAddParam();
-        permissionResourceAddParam.setResourceId(resourceId);
-        permissionAddParam.setResources(Collections.singletonList(permissionResourceAddParam));
-
-        PermissionPolicyAddParam permissionPolicyAddParam = new PermissionPolicyAddParam();
-        permissionPolicyAddParam.setPolicyId(policyId);
-        permissionAddParam.setPolicies(Collections.singletonList(permissionPolicyAddParam));
+        permissionAddParam.setResourceIds(Collections.singletonList(resourceId));
+        permissionAddParam.setPolicyIds(Collections.singletonList(policyId));
         return permissionAddParam;
     }
 

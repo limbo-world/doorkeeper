@@ -21,7 +21,10 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.Page;
-import org.limbo.doorkeeper.api.model.param.permission.*;
+import org.limbo.doorkeeper.api.model.param.permission.PermissionAddParam;
+import org.limbo.doorkeeper.api.model.param.permission.PermissionBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.permission.PermissionQueryParam;
+import org.limbo.doorkeeper.api.model.param.permission.PermissionUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.limbo.doorkeeper.server.dal.dao.PermissionDao;
 import org.limbo.doorkeeper.server.dal.entity.Client;
@@ -88,15 +91,9 @@ public class PermissionService {
 
         permissionMapper.insert(permission);
 
-        for (PermissionResourceAddParam resource : param.getResources()) {
-            resource.setPermissionId(permission.getPermissionId());
-        }
-        permissionResourceService.batchSave(param.getResources());
+        permissionResourceService.update(permission.getPermissionId(), param.getResourceIds());
 
-        for (PermissionPolicyAddParam policy : param.getPolicies()) {
-            policy.setPermissionId(permission.getPermissionId());
-        }
-        permissionPolicyService.batchSave(param.getPolicies());
+        permissionPolicyService.update(permission.getPermissionId(), param.getPolicyIds());
 
         return EnhancedBeanUtils.createAndCopy(permission, PermissionVO.class);
     }
@@ -181,9 +178,9 @@ public class PermissionService {
                 .eq(Permission::getPermissionId, permissionId)
         );
 
-        permissionResourceService.update(permissionId, param.getResources());
+        permissionResourceService.update(permissionId, param.getResourceIds());
 
-        permissionPolicyService.update(permissionId, param.getPolicies());
+        permissionPolicyService.update(permissionId, param.getPolicyIds());
 
     }
 
