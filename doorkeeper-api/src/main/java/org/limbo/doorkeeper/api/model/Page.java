@@ -66,6 +66,11 @@ public class Page<T> {
     private List<T> data;
 
     /**
+     * 是否查询所有数据
+     */
+    private Boolean needAll;
+
+    /**
      * 是否还有下一页
      */
     public Boolean getHasNext() {

@@ -21,8 +21,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.resource.*;
-import org.limbo.doorkeeper.api.model.vo.ResourceTagVO;
-import org.limbo.doorkeeper.api.model.vo.ResourceUriVO;
 import org.limbo.doorkeeper.api.model.vo.ResourceVO;
 import org.limbo.doorkeeper.server.dal.entity.*;
 import org.limbo.doorkeeper.server.dal.mapper.*;
@@ -166,18 +164,7 @@ public class ResourceService {
     }
 
     public ResourceVO get(Long realmId, Long clientId, Long resourceId) {
-        Resource resource = resourceMapper.getById(realmId, clientId, resourceId);
-        Verifies.notNull(resource, "资源不存在");
-        List<ResourceTag> resourceTags = resourceTagMapper.selectList(Wrappers.<ResourceTag>lambdaQuery()
-                .eq(ResourceTag::getResourceId, resourceId)
-        );
-        List<ResourceUri> resourceUris = resourceUriMapper.selectList(Wrappers.<ResourceUri>lambdaQuery()
-                .eq(ResourceUri::getResourceId, resourceId)
-        );
-        ResourceVO result = EnhancedBeanUtils.createAndCopy(resource, ResourceVO.class);
-        result.setUris(EnhancedBeanUtils.createAndCopyList(resourceUris, ResourceUriVO.class));
-        result.setTags(EnhancedBeanUtils.createAndCopyList(resourceTags, ResourceTagVO.class));
-        return result;
+        return resourceMapper.getVO(realmId, clientId, resourceId);
     }
 
     public Page<ResourceVO> page(Long realmId, Long clientId, ResourceQueryParam param) {

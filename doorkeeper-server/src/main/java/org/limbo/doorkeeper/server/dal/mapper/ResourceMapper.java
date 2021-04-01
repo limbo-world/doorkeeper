@@ -45,4 +45,7 @@ public interface ResourceMapper extends BaseMapper<Resource> {
 
     List<ResourceVO> getVOS(ResourceQueryParam param);
 
+    ResourceVO getVO(@Param("realmId") Long realmId, @Param("clientId") Long clientId,
+                      @Param("resourceId") Long resourceId);
+
 }

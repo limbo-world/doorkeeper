@@ -230,6 +230,7 @@ public class AuthorizationChecker {
         param.setNames(checkParam.getNames());
         param.setKvs(kvs);
         param.setIsEnabled(true);
+        param.setNeedAll(true);
         return resourceMapper.getVOS(param);
     }
 
