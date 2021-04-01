@@ -26,8 +26,10 @@ import lombok.Data;
 @Data
 public class ResourceTagVO {
 
+    @Schema(title = "资源标签ID")
     private Long resourceTagId;
 
+    @Schema(title = "资源ID")
     private Long resourceId;
 
     @Schema(title = "标签名")

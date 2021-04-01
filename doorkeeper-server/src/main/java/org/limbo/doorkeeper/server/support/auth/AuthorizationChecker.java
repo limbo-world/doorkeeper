@@ -27,6 +27,7 @@ import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.Logic;
 import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
 import org.limbo.doorkeeper.api.model.param.check.UriCheckParam;
+import org.limbo.doorkeeper.api.model.param.resource.ResourceQueryParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionPolicyVO;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.limbo.doorkeeper.api.model.vo.ResourceVO;
@@ -210,7 +211,7 @@ public class AuthorizationChecker {
             resourceIds = clientUris.stream()
                     .filter(resourceUri -> {
                         for (UriCheckParam uriCheckParam : checkParam.getUris()) {
-                            if (!resourceUri.getMethod().equals(uriCheckParam.getMethod())) {
+                            if (resourceUri.getMethod() != uriCheckParam.getMethod()) {
                                 return false;
                             }
                             if (pathMatch(resourceUri.getUri(), uriCheckParam.getUri())) {
@@ -222,7 +223,14 @@ public class AuthorizationChecker {
                     .map(ResourceUri::getResourceId)
                     .collect(Collectors.toList());
         }
-        return resourceMapper.getVOS(getClient().getRealmId(), getClient().getClientId(), resourceIds, checkParam.getNames(), kvs, true);
+        ResourceQueryParam param = new ResourceQueryParam();
+        param.setRealmId(getClient().getRealmId());
+        param.setClientId(getClient().getClientId());
+        param.setResourceIds(resourceIds);
+        param.setNames(checkParam.getNames());
+        param.setKvs(kvs);
+        param.setIsEnabled(true);
+        return resourceMapper.getVOS(param);
     }
 
 

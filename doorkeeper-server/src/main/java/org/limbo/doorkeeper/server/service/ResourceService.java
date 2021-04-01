@@ -183,10 +183,10 @@ public class ResourceService {
     public Page<ResourceVO> page(Long realmId, Long clientId, ResourceQueryParam param) {
         param.setRealmId(realmId);
         param.setClientId(clientId);
-        long count = resourceMapper.pageVOCount(param);
+        long count = resourceMapper.voCount(param);
         param.setTotal(count);
         if (count > 0) {
-            param.setData(resourceMapper.pageVOS(param));
+            param.setData(resourceMapper.getVOS(param));
         }
         return param;
     }

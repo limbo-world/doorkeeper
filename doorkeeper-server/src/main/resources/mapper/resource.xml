@@ -45,6 +45,7 @@
         <result column="resource_uri_id" property="resourceUriId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="resource_id" property="resourceId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="uri" property="uri" jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result column="method" property="method" jdbcType="VARCHAR" javaType="java.lang.String" />
     </resultMap>
 
     <sql id="queryCondition">
@@ -56,26 +57,42 @@
             </foreach>
             )
         </if>
-        <if test="name != null and name != ''">
-            and r.name = #{name}
+        <if test="names != null and names.size() > 0">
+            and r.name in (
+            <foreach collection="names" separator="," item="name">
+                #{name}
+            </foreach>
+            )
         </if>
         <if test="dimName != null and dimName != ''">
             <bind name="dimName" value="'%' + dimName + '%'"/>
             and r.name like #{dimName}
         </if>
-
         <if test="isEnabled != null">
             and r.is_enabled = #{isEnabled}
         </if>
 
-        <if test="uri != null and uri != ''">
-            and exists (select resource_uri_id from resource_uri ru where ru.resource_id = r.resource_id and ru.uri = #{uri})
+        <if test="uris != null and uris.size() > 0">
+            and exists (select resource_uri_id from resource_uri ru where ru.resource_id = r.resource_id and r.name in (
+                <foreach collection="uris" separator="," item="uri">
+                    #{uri}
+                </foreach>
+                )
+            )
         </if>
         <if test="dimUri != null and dimUri != ''">
             <bind name="dimUri" value="'%' + dimUri + '%'"/>
             and exists (select resource_uri_id from resource_uri ru where ru.resource_id = r.resource_id and ru.uri like #{dimUri})
         </if>
 
+        <if test="kvs != null and kvs.size() > 0">
+            and exists (select resource_tag_id from resource_tag rt where rt.resource_id = r.resource_id and rt.kv in (
+                <foreach collection="kvs" separator="," item="kv">
+                    #{kv}
+                </foreach>
+                )
+            )
+        </if>
         <if test="k != null and k != ''">
             and exists (select resource_tag_id from resource_tag rt where rt.resource_id = r.resource_id and rt.k = #{k})
         </if>
@@ -91,56 +108,28 @@
             and exists (select resource_tag_id from resource_tag rt where rt.resource_id = r.resource_id and rt.v like #{dimV})
         </if>
     </sql>
-    <select id="pageVOCount" resultType="java.lang.Long">
+    <select id="voCount" resultType="java.lang.Long">
         select count(*)
         from resource r
         <where>
             <include refid="queryCondition"></include>
         </where>
     </select>
-    <select id="pageVOS" resultMap="ResourceVO">
-        select r.*
-        from resource r
-        <where>
-            <include refid="queryCondition"></include>
-        </where>
-        order by r.resource_id desc
-        limit ${offset}, ${size}
-    </select>
-
     <select id="getVOS" resultMap="ResourceVO">
-        select r.*, rt.k as tag_k, rt.v as tag_v, ru.uri as uri_uri
-        from resource r
+        select r.*,
+        rt.resource_tag_id as tag_resource_tag_id, rt.resource_id as tag_resource_id, rt.k as tag_k, rt.v as tag_v,
+        ru.resource_uri_id as uri_resource_uri_id, ru.resource_id as uri_resource_id, ru.uri as uri_uri, ru.method as uri_method
+        from (
+            select r.resource_id
+            from resource r
+            <where>
+                <include refid="queryCondition"></include>
+            </where>
+            order by r.resource_id desc
+            limit ${offset}, ${size}
+        ) r
         left join resource_tag rt on rt.resource_id = r.resource_id
         left join resource_uri ru on ru.resource_id = r.resource_id
-        where r.realm_id = #{realmId}
-        <if test="clientId != null">
-            and r.client_id = #{clientId}
-        </if>
-        <if test="resourceIds != null and resourceIds.size() > 0">
-            and r.resource_id in (
-            <foreach collection="resourceIds" separator="," item="resourceId">
-                #{resourceId}
-            </foreach>
-            )
-        </if>
-        <if test="names != null and names.size() > 0">
-            and r.name in (
-            <foreach collection="names" separator="," item="name">
-                #{name}
-            </foreach>
-            )
-        </if>
-        <if test="kvs != null and kvs.size() > 0">
-            and rt.kv in (
-            <foreach collection="kvs" separator="," item="kv">
-                #{kv}
-            </foreach>
-            )
-        </if>
-        <if test="isEnabled != null">
-            and r.is_enabled = #{isEnabled}
-        </if>
     </select>
 
 </mapper>

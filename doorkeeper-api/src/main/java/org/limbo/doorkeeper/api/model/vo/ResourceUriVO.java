@@ -26,8 +26,10 @@ import lombok.Data;
 @Data
 public class ResourceUriVO {
 
+    @Schema(title = "资源uriID")
     private Long resourceUriId;
 
+    @Schema(title = "资源ID")
     private Long resourceId;
 
     @Schema(title = "uri")
