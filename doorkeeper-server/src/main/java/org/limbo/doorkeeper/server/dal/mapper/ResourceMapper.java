@@ -41,12 +41,6 @@ public interface ResourceMapper extends BaseMapper<Resource> {
     Resource getByName(@Param("realmId") Long realmId, @Param("clientId") Long clientId,
                        @Param("name") String name);
 
-//    List<ResourceVO> getVOS(@Param("realmId") Long realmId, @Param("clientId") Long clientId,
-//                            @Param("resourceIds") List<Long> resourceIds,
-//                            @Param("names") List<String> names,
-//                            @Param("kvs") List<String> kvs,
-//                            @Param("isEnabled") Boolean isEnabled);
-
     long voCount(ResourceQueryParam param);
 
     List<ResourceVO> getVOS(ResourceQueryParam param);

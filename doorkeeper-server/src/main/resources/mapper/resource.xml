@@ -119,17 +119,19 @@
         select r.*,
         rt.resource_tag_id as tag_resource_tag_id, rt.resource_id as tag_resource_id, rt.k as tag_k, rt.v as tag_v,
         ru.resource_uri_id as uri_resource_uri_id, ru.resource_id as uri_resource_id, ru.uri as uri_uri, ru.method as uri_method
-        from (
-            select r.resource_id
-            from resource r
-            <where>
-                <include refid="queryCondition"></include>
-            </where>
-            order by r.resource_id desc
-            limit ${offset}, ${size}
-        ) r
+        from resource r
         left join resource_tag rt on rt.resource_id = r.resource_id
         left join resource_uri ru on ru.resource_id = r.resource_id
+        where r.resource_id in (
+            select * from (
+                select r.resource_id from resource r
+                <where>
+                    <include refid="queryCondition"></include>
+                </where>
+                order by r.resource_id desc
+                limit ${offset}, ${size}
+            ) tmp
+        )
     </select>
 
 </mapper>
