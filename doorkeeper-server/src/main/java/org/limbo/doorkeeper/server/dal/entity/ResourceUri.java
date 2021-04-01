@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import org.limbo.doorkeeper.api.constants.HttpMethod;
 
 /**
  * @author Devil
@@ -42,5 +43,8 @@ public class ResourceUri {
      * ant 风格
      */
     private String uri;
-
+    /**
+     * 请求方法
+     */
+    private HttpMethod method;
 }

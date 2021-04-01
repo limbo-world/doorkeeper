@@ -26,12 +26,29 @@
                 </el-form-item>
                 <el-form-item label="URI">
                     <el-row v-for="(uri, idx) in resource.uris" :key="uri.resourceUriId" class="uri-row">
-                        <el-input v-model="uri.uri" style="max-width:700px;"></el-input>
+                        <el-select v-model="uri.method" placeholder="http请求方式">
+                            <el-option v-for="item in $constants.httpMethod" :key="item.value" :label="item.label"
+                                       :value="item.value"></el-option>
+                        </el-select>
+                        <el-input v-model="uri.uri" style="max-width:600px;"></el-input>
                         <el-button @click="deleteUri(idx)" type="primary" size="mini" icon="el-icon-minus" circle></el-button>
                     </el-row>
                     <el-row>
-                        <el-input v-model="uriString" style="max-width:700px;"></el-input>
+                        <el-select v-model="uriMethod" placeholder="http请求方式">
+                            <el-option v-for="item in $constants.httpMethod" :key="item.value" :label="item.label"
+                                       :value="item.value"></el-option>
+                        </el-select>
+                        <el-input v-model="uriString" style="max-width:600px;"></el-input>
                         <el-button @click="addUri" type="primary" size="mini" icon="el-icon-plus" circle></el-button>
+                        <el-tooltip class="item" effect="dark" placement="left">
+                            <div slot="content">
+                                <p>Uri 支持Ant风格</p>
+                                <p>1）?：匹配任何单字符</p>
+                                <p>2）*：匹配0或者任意数量的字符</p>
+                                <p>3）**：匹配0或者更多的目录</p>
+                            </div>
+                            <i class="el-icon-question"></i>
+                        </el-tooltip>
                     </el-row>
                 </el-form-item>
                 <el-form-item label="标签">
@@ -65,6 +82,7 @@
         data() {
             return {
                 uriString: null,
+                uriMethod: null,
                 tagString: null,
                 resource: {
                     uris: [],
@@ -94,14 +112,9 @@
                 if (!this.uriString || this.uriString.length <= 0) {
                     return
                 }
-                // 检测是否已经存在
-                for (let uri of this.resource.uris) {
-                    if (uri.uri === this.uriString) {
-                        return
-                    }
-                }
-                this.resource.uris.push({uri: this.uriString})
-                this.uriString = null
+                this.resource.uris.push({uri: this.uriString, method: this.uriMethod})
+                this.uriMethod = null;
+                this.uriString = null;
             },
             deleteUri(idx) {
                 this.resource.uris.splice(idx, 1)

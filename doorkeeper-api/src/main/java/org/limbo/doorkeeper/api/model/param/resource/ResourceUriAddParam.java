@@ -18,8 +18,10 @@ package org.limbo.doorkeeper.api.model.param.resource;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.limbo.doorkeeper.api.constants.HttpMethod;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Devil
@@ -28,10 +30,11 @@ import javax.validation.constraints.NotBlank;
 @Data
 public class ResourceUriAddParam {
 
-    @Schema(title = "资源uri ID", description = "如果存在，表示是一个已经存在的uri")
-    private Long resourceUriId;
-
     @NotBlank(message = "uri不能为空")
     @Schema(title = "uri", required = true, description = "ant 风格")
     private String uri;
+
+    @NotNull(message = "method不能为空")
+    @Schema(title = "method", required = true, description = "ant 风格")
+    private HttpMethod method;
 }

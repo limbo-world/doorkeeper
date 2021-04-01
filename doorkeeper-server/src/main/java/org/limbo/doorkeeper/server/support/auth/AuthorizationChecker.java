@@ -26,6 +26,7 @@ import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.Logic;
 import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
+import org.limbo.doorkeeper.api.model.param.check.UriCheckParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionPolicyVO;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.limbo.doorkeeper.api.model.vo.ResourceVO;
@@ -189,6 +190,7 @@ public class AuthorizationChecker {
      * @return 返回资源列表
      */
     protected List<ResourceVO> assignCheckingResources() {
+        // 处理标签属性
         List<String> kvs = null;
         if (MapUtils.isNotEmpty(checkParam.getTags())) {
             kvs = new ArrayList<>();
@@ -196,6 +198,7 @@ public class AuthorizationChecker {
                 kvs.add(entry.getKey() + DoorkeeperConstants.KV_DELIMITER + entry.getValue());
             }
         }
+        // 获取uri资源id
         List<Long> resourceIds = null;
         if (CollectionUtils.isNotEmpty(checkParam.getUris())) {
             // client拥有的全部uri资源
@@ -206,8 +209,11 @@ public class AuthorizationChecker {
 
             resourceIds = clientUris.stream()
                     .filter(resourceUri -> {
-                        for (String uri : checkParam.getUris()) {
-                            if (pathMatch(resourceUri.getUri(), uri)) {
+                        for (UriCheckParam uriCheckParam : checkParam.getUris()) {
+                            if (!resourceUri.getMethod().equals(uriCheckParam.getMethod())) {
+                                return false;
+                            }
+                            if (pathMatch(resourceUri.getUri(), uriCheckParam.getUri())) {
                                 return true;
                             }
                         }

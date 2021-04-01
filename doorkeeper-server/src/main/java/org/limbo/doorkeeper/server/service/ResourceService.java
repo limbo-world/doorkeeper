@@ -197,6 +197,7 @@ public class ResourceService {
             for (ResourceUriAddParam uriParam : params) {
                 ResourceUri uri = new ResourceUri();
                 uri.setUri(uriParam.getUri());
+                uri.setMethod(uriParam.getMethod());
                 uri.setResourceId(resourceId);
                 uri.setRealmId(realmId);
                 uri.setClientId(clientId);

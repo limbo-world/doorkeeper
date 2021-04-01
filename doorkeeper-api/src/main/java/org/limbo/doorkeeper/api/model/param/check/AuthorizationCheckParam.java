@@ -50,6 +50,6 @@ public class AuthorizationCheckParam {
     private Map<String, String> tags;
 
     @Schema(description = "uri列表")
-    private List<String> uris;
+    private List<UriCheckParam> uris;
 
 }

@@ -295,10 +295,11 @@ CREATE TABLE `resource_uri` (
   `resource_id` bigint(20) NOT NULL,
   `realm_id` bigint(20) NOT NULL,
   `client_id` bigint(20) NOT NULL,
-  `uri` varchar(128) NOT NULL DEFAULT '',
-  PRIMARY KEY (`resource_uri_id`)
+  `uri` varchar(128) NOT NULL DEFAULT '' COMMENT 'ant风格uri',
+  `method` varchar(16) NOT NULL DEFAULT '' COMMENT 'http请求方法',
+  PRIMARY KEY (`resource_uri_id`),
+  KEY `idx_realm_client` (`realm_id`,`client_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10000 DEFAULT CHARSET=utf8mb4;
-
 
 
 # Dump of table role

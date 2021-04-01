@@ -37,7 +37,9 @@ public interface DoorkeeperConstants {
     String CLIENT = "client";
 
     String CLIENT_ID = "clientId";
-
+    /**
+     * 默认ID
+     */
     Long DEFAULT_ID = 0L;
     /**
      * 查询域角色时候使用
@@ -51,7 +53,9 @@ public interface DoorkeeperConstants {
     String USER_ID = "userId";
     String USERNAME = "username";
     String NICKNAME = "nickname";
-
+    /**
+     * k、v类型的连接方式
+     */
     String KV_DELIMITER = "=";
 
     String TREE = "tree";

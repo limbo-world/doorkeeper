@@ -14,13 +14,28 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.constants;
+package org.limbo.doorkeeper.api.model.param.check;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import org.limbo.doorkeeper.api.constants.HttpMethod;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Devil
- * @date 2021/1/11 4:25 下午
+ * @date 2021/4/1 3:56 下午
  */
-public enum  HttpMethod {
+@Data
+public class UriCheckParam {
 
-    GET, POST, PUT, DELETE;
+    @NotBlank(message = "uri不能为空")
+    @Schema(title = "uri")
+    private String uri;
+
+    @NotNull(message = "method不能为空")
+    @Schema(title = "method")
+    private HttpMethod method;
+
 }

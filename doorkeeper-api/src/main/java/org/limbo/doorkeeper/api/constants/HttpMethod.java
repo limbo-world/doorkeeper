@@ -14,26 +14,28 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.vo;
+package org.limbo.doorkeeper.api.constants;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
+import com.baomidou.mybatisplus.core.enums.IEnum;
 
 /**
  * @author Devil
- * @date 2021/1/5 4:52 下午
+ * @date 2021/1/11 4:25 下午
  */
-@Data
-public class ResourceUriVO {
+public enum HttpMethod implements IEnum<String> {
+    GET, POST, PUT, DELETE, HEAD, OPTIONS, TRACE, CONNECT;
 
-    private Long resourceUriId;
+    @Override
+    public String getValue() {
+        return toString();
+    }
 
-    private Long resourceId;
-
-    @Schema(title = "uri")
-    private String uri;
-
-    @Schema(title = "method", description = "http method")
-    private String method;
-
+    public static HttpMethod parse(String p) {
+        for (HttpMethod value : values()) {
+            if (value.getValue().equalsIgnoreCase(p)) {
+                return value;
+            }
+        }
+        return null;
+    }
 }

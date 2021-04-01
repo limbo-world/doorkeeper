@@ -26,6 +26,17 @@ const intentions = [
     {label: '拒绝', value: 'REFUSE'}
 ];
 
+const httpMethod = [
+    {label: 'GET', value: "GET"},
+    {label: 'POST', value: "POST"},
+    {label: 'PUT', value: "PUT"},
+    {label: 'DELETE', value: "DELETE"},
+    {label: 'HEAD', value: "HEAD"},
+    {label: 'OPTIONS', value: "OPTIONS"},
+    {label: 'TRACE', value: "TRACE"},
+    {label: 'CONNECT', value: "CONNECT"},
+]
+
 const batchMethod = {
     GET: 'GET',
     SAVE: 'SAVE',
@@ -48,6 +59,7 @@ export default {
     policyTypes,
     intentions,
     batchMethod,
+    httpMethod,
     enableTypes,
     logics,
 }
