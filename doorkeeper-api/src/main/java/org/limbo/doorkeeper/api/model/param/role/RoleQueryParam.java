@@ -16,7 +16,7 @@
 
 package org.limbo.doorkeeper.api.model.param.role;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.Data;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
@@ -33,18 +33,18 @@ public class RoleQueryParam extends Page<RoleVO> {
     private Long realmId;
 
     @NotNull(message = "委托方不能为空")
-    @Schema(description = "委托方，如果是域角色 clientId 为 0", required = true)
+    @Parameter(description = "委托方，如果是域角色 clientId 为 0", required = true)
     private Long clientId;
 
-    @Schema(description = "名称，精确查询")
+    @Parameter(description = "名称，精确查询")
     private String name;
 
-    @Schema(description = "名称，模糊查询")
+    @Parameter(description = "名称，模糊查询")
     private String dimName;
 
-    @Schema(description ="是否启用")
+    @Parameter(description ="是否启用")
     private Boolean isEnabled;
 
-    @Schema(description ="默认添加")
+    @Parameter(description ="默认添加")
     private Boolean isDefault;
 }

@@ -16,7 +16,7 @@
 
 package org.limbo.doorkeeper.api.model.param.group;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.Data;
 
 /**
@@ -26,13 +26,13 @@ import lombok.Data;
 @Data
 public class GroupQueryParam {
 
-    @Schema(description = "返回格式，默认列表形式，tree为树形")
+    @Parameter(description = "返回格式，默认列表形式，tree为树形")
     private String returnType;
 
-    @Schema(description ="父节点ID")
+    @Parameter(description ="父节点ID")
     private Long parentId;
 
-    @Schema(description ="名称")
+    @Parameter(description ="名称")
     private String name;
 
 }

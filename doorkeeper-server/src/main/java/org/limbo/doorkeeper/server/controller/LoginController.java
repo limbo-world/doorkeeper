@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.LoginParam;
 import org.limbo.doorkeeper.server.service.LoginService;
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,7 +44,7 @@ public class LoginController {
 
     @GetMapping
     @Operation(summary = "登录")
-    public Response<String> login(@Validated LoginParam param) {
+    public Response<String> login(@Validated @ParameterObject LoginParam param) {
         return Response.success(loginService.login(param));
     }
 

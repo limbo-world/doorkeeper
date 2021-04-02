@@ -16,7 +16,7 @@
 
 package org.limbo.doorkeeper.api.model.param;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -28,14 +28,14 @@ import javax.validation.constraints.NotBlank;
 @Data
 public class LoginParam {
 
-    @Schema(description = "域，为空则默认登录doorkeeper域")
+    @Parameter(description = "域，为空则默认登录doorkeeper域")
     private Long realmId;
 
     @NotBlank(message = "用户名不能为空")
-    @Schema(description ="用户名", required = true)
+    @Parameter(description ="用户名", required = true)
     private String username;
 
     @NotBlank(message = "密码不能为空")
-    @Schema(description ="密码", required = true)
+    @Parameter(description ="密码", required = true)
     private String password;
 }

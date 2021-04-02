@@ -27,6 +27,7 @@ import org.limbo.doorkeeper.api.model.param.user.UserUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.UserVO;
 import org.limbo.doorkeeper.server.controller.BaseController;
 import org.limbo.doorkeeper.server.service.UserService;
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -54,7 +55,7 @@ public class AdminUserController extends BaseController {
 
     @Operation(summary = "分页查询用户")
     @GetMapping
-    public Response<Page<UserVO>> page(@Validated UserQueryParam param) {
+    public Response<Page<UserVO>> page(@ParameterObject UserQueryParam param) {
         return Response.success(userService.page(getRealmId(), param));
     }
 
@@ -62,12 +63,6 @@ public class AdminUserController extends BaseController {
     @GetMapping("/{userId}")
     public Response<UserVO> getById(@Validated @NotNull(message = "未提交用户ID") @PathVariable("userId") Long userId) {
         return Response.success(userService.get(getRealmId(), userId, null));
-    }
-
-    @Operation(summary = "查询单个用户")
-    @GetMapping("/get")
-    public Response<UserVO> get(@RequestParam("username") String username) {
-        return Response.success(userService.get(getRealmId(), null, username));
     }
 
     @Operation(summary = "更新用户")

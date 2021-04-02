@@ -28,6 +28,7 @@ import org.limbo.doorkeeper.api.model.param.resource.ResourceUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ResourceVO;
 import org.limbo.doorkeeper.server.controller.BaseController;
 import org.limbo.doorkeeper.server.service.ResourceService;
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -62,7 +63,7 @@ public class AdminResourceController extends BaseController {
 
     @Operation(summary = "分页查询资源")
     @GetMapping
-    public Response<Page<ResourceVO>> page(@Validated ResourceQueryParam param) {
+    public Response<Page<ResourceVO>> page(@ParameterObject ResourceQueryParam param) {
         return Response.success(resourceService.page(getRealmId(), getClientId(), param));
     }
 

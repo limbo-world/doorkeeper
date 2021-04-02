@@ -26,6 +26,7 @@ import org.limbo.doorkeeper.api.model.param.role.RoleUserQueryParam;
 import org.limbo.doorkeeper.api.model.vo.RoleUserVO;
 import org.limbo.doorkeeper.server.controller.BaseController;
 import org.limbo.doorkeeper.server.service.RoleUserService;
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -49,7 +50,7 @@ public class AdminRoleUserController extends BaseController {
     @Operation(summary = "查询角色用户列表")
     @GetMapping("/{roleId}/role-user")
     public Response<Page<RoleUserVO>> page(@Validated @NotNull(message = "未提交角色ID") @PathVariable("roleId") Long roleId,
-                                           @Validated RoleUserQueryParam param) {
+                                           @ParameterObject RoleUserQueryParam param) {
         return Response.success(roleUserService.page(getRealmId(), roleId, param));
     }
 

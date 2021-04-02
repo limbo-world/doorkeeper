@@ -25,6 +25,7 @@ import org.limbo.doorkeeper.api.model.param.role.RoleCombineQueryParam;
 import org.limbo.doorkeeper.api.model.vo.RoleCombineVO;
 import org.limbo.doorkeeper.server.controller.BaseController;
 import org.limbo.doorkeeper.server.service.RoleCombineService;
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -48,7 +49,7 @@ public class AdminRoleCombineController extends BaseController {
     @Operation(summary = "查询角色组合列表")
     @GetMapping("/{roleId}/role-combine")
     public Response<List<RoleCombineVO>> list(@Validated @NotNull(message = "未提交角色ID") @PathVariable("roleId") Long roleId,
-                                              @Validated RoleCombineQueryParam param) {
+                                              @ParameterObject RoleCombineQueryParam param) {
         return Response.success(roleCombineService.list(getRealmId(), roleId, param));
     }
 

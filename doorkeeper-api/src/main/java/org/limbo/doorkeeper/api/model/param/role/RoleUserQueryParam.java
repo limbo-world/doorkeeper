@@ -16,7 +16,7 @@
 
 package org.limbo.doorkeeper.api.model.param.role;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.limbo.doorkeeper.api.model.Page;
@@ -34,13 +34,13 @@ public class RoleUserQueryParam extends Page<RoleUserVO> {
 
     private Long roleId;
 
-    @Schema(description ="是否绑定")
+    @Parameter(description ="是否绑定")
     private Boolean isJoin;
 
-    @Schema(description = "角色名称，精确查询")
+    @Parameter(description = "角色名称，精确查询")
     private String name;
 
-    @Schema(description = "角色名称，模糊查询")
+    @Parameter(description = "角色名称，模糊查询")
     private String dimName;
 
 }

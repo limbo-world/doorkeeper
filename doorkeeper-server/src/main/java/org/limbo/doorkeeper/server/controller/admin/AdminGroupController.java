@@ -28,6 +28,7 @@ import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.controller.BaseController;
 import org.limbo.doorkeeper.server.service.GroupService;
 import org.limbo.doorkeeper.server.support.GroupTool;
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -56,7 +57,7 @@ public class AdminGroupController extends BaseController {
 
     @Operation(summary = "返回所有用户组")
     @GetMapping
-    public Response<List<GroupVO>> list(GroupQueryParam param) {
+    public Response<List<GroupVO>> list(@ParameterObject GroupQueryParam param) {
         List<GroupVO> groups = groupService.list(getRealmId(), param);
         if (DoorkeeperConstants.TREE.equals(param.getReturnType())) {
             return Response.success(GroupTool.organizeGroupTree(null, groups));

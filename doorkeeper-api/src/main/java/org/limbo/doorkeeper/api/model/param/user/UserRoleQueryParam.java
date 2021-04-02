@@ -16,7 +16,7 @@
 
 package org.limbo.doorkeeper.api.model.param.user;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.Data;
 
 /**
@@ -30,13 +30,13 @@ public class UserRoleQueryParam {
 
     private Long userId;
 
-    @Schema(description = "委托方，0表示域")
+    @Parameter(description = "委托方，0表示域")
     private Long clientId;
 
-    @Schema(description = "角色名称，精确匹配")
+    @Parameter(description = "角色名称，精确匹配")
     private String name;
 
-    @Schema(description = "角色名称，模糊匹配")
+    @Parameter(description = "角色名称，模糊匹配")
     private String dimName;
 
 }

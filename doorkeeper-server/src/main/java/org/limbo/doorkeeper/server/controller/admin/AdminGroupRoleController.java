@@ -25,6 +25,7 @@ import org.limbo.doorkeeper.api.model.param.group.GroupRoleQueryParam;
 import org.limbo.doorkeeper.api.model.vo.GroupRoleVO;
 import org.limbo.doorkeeper.server.controller.BaseController;
 import org.limbo.doorkeeper.server.service.GroupRoleService;
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -48,7 +49,7 @@ public class AdminGroupRoleController extends BaseController {
     @Operation(summary = "查询用户组角色列表")
     @GetMapping("/{groupId}/group-role")
     public Response<List<GroupRoleVO>> listRole(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId,
-                                            @Validated GroupRoleQueryParam param) {
+                                            @ParameterObject GroupRoleQueryParam param) {
         return Response.success(groupRoleService.list(getRealmId(), groupId, param));
     }
 

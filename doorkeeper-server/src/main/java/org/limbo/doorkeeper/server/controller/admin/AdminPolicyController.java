@@ -28,6 +28,7 @@ import org.limbo.doorkeeper.api.model.param.policy.PolicyUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 import org.limbo.doorkeeper.server.controller.BaseController;
 import org.limbo.doorkeeper.server.service.policy.PolicyService;
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -62,7 +63,7 @@ public class AdminPolicyController extends BaseController {
 
     @Operation(summary = "分页查询策略")
     @GetMapping
-    public Response<Page<PolicyVO>> page(@Validated PolicyQueryParam param) {
+    public Response<Page<PolicyVO>> page(@ParameterObject PolicyQueryParam param) {
         return Response.success(policyService.page(getRealmId(), getClientId(), param));
     }
 

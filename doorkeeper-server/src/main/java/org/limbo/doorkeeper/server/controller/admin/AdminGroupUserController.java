@@ -26,6 +26,7 @@ import org.limbo.doorkeeper.api.model.param.group.GroupUserQueryParam;
 import org.limbo.doorkeeper.api.model.vo.GroupUserVO;
 import org.limbo.doorkeeper.server.controller.BaseController;
 import org.limbo.doorkeeper.server.service.GroupUserService;
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -48,7 +49,7 @@ public class AdminGroupUserController extends BaseController {
     @Operation(summary = "分页查询用户组用户列表")
     @GetMapping("/{groupId}/group-user")
     public Response<Page<GroupUserVO>> page(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId,
-                                            @Validated GroupUserQueryParam param) {
+                                            @ParameterObject GroupUserQueryParam param) {
         return Response.success(groupUserService.page(getRealmId(), groupId, param));
     }
 

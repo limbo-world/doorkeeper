@@ -16,6 +16,8 @@
 
 package org.limbo.doorkeeper.api.model;
 
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import javax.validation.constraints.Max;
@@ -36,6 +38,7 @@ public class Page<T> {
      */
     @Positive(message = "页码不可为负数")
     @Min(value = 1, message = "页码从1开始")
+    @Parameter(description = "页码")
     private int current = 1;
 
     /**
@@ -43,36 +46,43 @@ public class Page<T> {
      */
     @Positive(message = "条数不可为负数")
     @Max(value = 1000, message = "每页最多1000条数据")
+    @Parameter(description = "每页条数，默认20，上限1000")
     private int size = 20;
 
     /**
      * 排序字段
      */
+    @Parameter(description = "排序字段")
     private List<String> orderBy;
 
     /**
      * 排序字段的排序方式
      */
+    @Parameter(description = "排序字段的排序方式")
     private List<String> sort;
 
     /**
      * 总条数，总条数若为非负数，则不进行总数查询
      */
+    @Schema(description = "总条数，总条数若为非负数，则不进行总数查询")
     private long total = -1;
 
     /**
      * 当前页数据
      */
+    @Schema(description = "当前页数据")
     private List<T> data;
 
     /**
      * 是否查询所有数据
      */
+    @Parameter(description = "是否查询所有数据")
     private Boolean needAll;
 
     /**
      * 是否还有下一页
      */
+    @Schema(description = "是否还有下一页")
     public Boolean getHasNext() {
         return total > current * size;
     }

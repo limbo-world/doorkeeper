@@ -28,6 +28,7 @@ import org.limbo.doorkeeper.api.model.param.role.RoleUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.server.controller.BaseController;
 import org.limbo.doorkeeper.server.service.RoleService;
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -56,7 +57,7 @@ public class AdminRoleController extends BaseController {
 
     @Operation(summary = "查询角色列表")
     @GetMapping
-    public Response<Page<RoleVO>> page(@Validated RoleQueryParam param) {
+    public Response<Page<RoleVO>> page(@ParameterObject @Validated RoleQueryParam param) {
         return Response.success(roleService.page(getRealmId(), param));
     }
 

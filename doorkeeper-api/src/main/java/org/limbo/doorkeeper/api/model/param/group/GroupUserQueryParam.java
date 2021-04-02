@@ -16,7 +16,7 @@
 
 package org.limbo.doorkeeper.api.model.param.group;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.limbo.doorkeeper.api.model.Page;
@@ -34,13 +34,13 @@ public class GroupUserQueryParam extends Page<GroupUserVO> {
 
     private Long groupId;
 
-    @Schema(description = "角色名称，精确匹配")
+    @Parameter(description = "角色名称，精确匹配")
     private String name;
 
-    @Schema(description = "角色名称，模糊匹配")
+    @Parameter(description = "角色名称，模糊匹配")
     private String dimName;
 
-    @Schema(description ="是否加入用户组")
+    @Parameter(description ="是否加入用户组")
     private Boolean isJoin;
 
 }

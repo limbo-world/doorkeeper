@@ -16,7 +16,7 @@
 
 package org.limbo.doorkeeper.api.model.param.policy;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.limbo.doorkeeper.api.constants.PolicyType;
@@ -31,16 +31,16 @@ import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 @EqualsAndHashCode(callSuper = true)
 public class PolicyQueryParam extends Page<PolicyVO> {
 
-    @Schema(description = "名称，精确查询")
+    @Parameter(description = "名称，精确查询")
     private String name;
 
-    @Schema(description = "名称，模糊查询")
+    @Parameter(description = "名称，模糊查询")
     private String dimName;
 
-    @Schema(description ="是否启用")
+    @Parameter(description ="是否启用")
     private Boolean isEnabled;
 
-    @Schema(description ="类型")
+    @Parameter(description ="类型")
     private PolicyType type;
 
 }

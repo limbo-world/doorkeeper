@@ -16,6 +16,7 @@
 
 package org.limbo.doorkeeper.api.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.limbo.doorkeeper.api.constants.ResponseCode;
@@ -33,10 +34,13 @@ public class Response<T> implements Serializable {
 
     private static final long serialVersionUID = -7844608116500392515L;
 
+    @Schema(description = "返回码")
     private int code;
 
+    @Schema(description = "返回描述")
     private String msg;
 
+    @Schema(description = "返回数据")
     private T data;
 
     public Response(T data) {

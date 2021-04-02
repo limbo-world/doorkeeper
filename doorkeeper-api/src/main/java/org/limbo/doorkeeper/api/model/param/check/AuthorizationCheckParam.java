@@ -36,7 +36,7 @@ public class AuthorizationCheckParam {
 
     private Long userId;
 
-    @NotNull
+    @NotNull(message = "请选择委托方")
     @Schema(description = "进行权限校验时，资源所属委托方", required = true)
     private Long clientId;
 

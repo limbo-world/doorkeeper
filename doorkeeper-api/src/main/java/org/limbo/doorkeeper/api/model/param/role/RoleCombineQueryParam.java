@@ -16,7 +16,7 @@
 
 package org.limbo.doorkeeper.api.model.param.role;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.Data;
 
 /**
@@ -30,10 +30,10 @@ public class RoleCombineQueryParam {
 
     private Long parentId;
 
-    @Schema(description = "角色名称，精确查询")
+    @Parameter(description = "角色名称，精确查询")
     private String name;
 
-    @Schema(description = "角色名称，模糊查询")
+    @Parameter(description = "角色名称，模糊查询")
     private String dimName;
 
 }

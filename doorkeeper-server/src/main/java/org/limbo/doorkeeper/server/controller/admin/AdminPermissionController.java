@@ -28,6 +28,7 @@ import org.limbo.doorkeeper.api.model.param.permission.PermissionUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.limbo.doorkeeper.server.controller.BaseController;
 import org.limbo.doorkeeper.server.service.PermissionService;
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -62,7 +63,7 @@ public class AdminPermissionController extends BaseController {
 
     @Operation(summary = "分页查询权限")
     @GetMapping
-    public Response<Page<PermissionVO>> page(@Validated PermissionQueryParam param) {
+    public Response<Page<PermissionVO>> page(@ParameterObject PermissionQueryParam param) {
         return Response.success(permissionService.page(getRealmId(), getClientId(), param));
     }
 

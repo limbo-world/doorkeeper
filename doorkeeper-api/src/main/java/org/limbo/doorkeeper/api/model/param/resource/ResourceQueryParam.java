@@ -16,6 +16,7 @@
 
 package org.limbo.doorkeeper.api.model.param.resource;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -36,37 +37,37 @@ public class ResourceQueryParam extends Page<ResourceVO> {
 
     private Long clientId;
 
-    @Schema(description ="资源ID")
+    @Parameter(description ="资源ID")
     private List<Long> resourceIds;
 
-    @Schema(description = "名称列表，精确查询")
+    @Parameter(description = "名称列表，精确查询")
     private List<String> names;
 
-    @Schema(description = "名称，模糊查询")
+    @Parameter(description = "名称，模糊查询")
     private String dimName;
 
-    @Schema(description ="是否启用")
+    @Parameter(description ="是否启用")
     private Boolean isEnabled;
 
-    @Schema(description = "uri列表，精确查询")
+    @Parameter(description = "uri列表，精确查询")
     private List<String> uris;
 
-    @Schema(description = "uri，模糊查询")
+    @Parameter(description = "uri，模糊查询")
     private String dimUri;
 
-    @Schema(description = "k=v形式，精确查询")
+    @Parameter(description = "k=v形式，精确查询")
     private List<String> kvs;
 
-    @Schema(description = "标签名，精确查询")
+    @Parameter(description = "标签名，精确查询")
     private String k;
 
-    @Schema(description = "标签名，模糊查询")
+    @Parameter(description = "标签名，模糊查询")
     private String dimK;
 
-    @Schema(description = "标签值，精确查询")
+    @Parameter(description = "标签值，精确查询")
     private String v;
 
-    @Schema(description = "标签值，模糊查询")
+    @Parameter(description = "标签值，模糊查询")
     private String dimV;
 
 }

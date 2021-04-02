@@ -8,9 +8,9 @@ spring:
 # 注解 https://springdoc.org/#migrating-from-springfox
 # 访问 http://localhost:8088/api-docs.html
 springdoc:
-  # response 不写 yapi 识别不了
+  # response 不写 yapi 识别不了 SpringDocConfigProperties
   default-consumes-media-type: application/json
-  # response 不写 yapi 识别不了
+  # response 不写 yapi 识别不了 SpringDocConfigProperties
   default-produces-media-type: application/json
   swagger-ui:
     path: /api-docs.html

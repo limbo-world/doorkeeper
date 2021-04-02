@@ -16,7 +16,7 @@
 
 package org.limbo.doorkeeper.api.model.param.user;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.limbo.doorkeeper.api.model.Page;
@@ -30,6 +30,7 @@ import org.limbo.doorkeeper.api.model.vo.UserVO;
 @EqualsAndHashCode(callSuper = true)
 public class UserQueryParam extends Page<UserVO> {
 
-    @Schema(description = "名称，模糊匹配用户名和昵称")
+    @Parameter(description = "名称，模糊匹配用户名和昵称")
     private String dimName;
+
 }

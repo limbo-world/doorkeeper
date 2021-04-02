@@ -16,7 +16,7 @@
 
 package org.limbo.doorkeeper.api.model.param.permission;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.limbo.doorkeeper.api.constants.Intention;
@@ -38,22 +38,22 @@ public class PermissionQueryParam extends Page<PermissionVO> {
 
     private Long clientId;
 
-    @Schema(description = "权限ID列表，精确查询")
+    @Parameter(description = "权限ID列表，精确查询")
     private List<Long> permissionIds;
 
-    @Schema(description = "名称列表，精确查询")
+    @Parameter(description = "名称列表，精确查询")
     private List<String> names;
 
-    @Schema(description = "名称，模糊查询")
+    @Parameter(description = "名称，模糊查询")
     private String dimName;
 
-    @Schema(description ="判断逻辑")
+    @Parameter(description ="判断逻辑")
     private Logic logic;
 
-    @Schema(description ="执行逻辑")
+    @Parameter(description ="执行逻辑")
     private Intention intention;
 
-    @Schema(description ="是否启用")
+    @Parameter(description ="是否启用")
     private Boolean isEnabled;
 
 }
