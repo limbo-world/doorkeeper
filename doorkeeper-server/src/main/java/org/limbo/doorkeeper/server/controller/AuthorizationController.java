@@ -24,18 +24,17 @@ import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
 import org.limbo.doorkeeper.api.model.param.check.GroupCheckParam;
 import org.limbo.doorkeeper.api.model.param.check.RoleCheckParam;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
+import org.limbo.doorkeeper.api.model.vo.ResourceVO;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.api.model.vo.UserVO;
 import org.limbo.doorkeeper.api.model.vo.check.AuthorizationCheckResult;
-import org.limbo.doorkeeper.api.model.vo.check.GroupCheckResult;
-import org.limbo.doorkeeper.api.model.vo.check.RoleCheckResult;
 import org.limbo.doorkeeper.server.service.GroupUserService;
 import org.limbo.doorkeeper.server.service.UserRoleService;
 import org.limbo.doorkeeper.server.support.auth.AuthorizationChecker;
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -60,31 +59,26 @@ public class AuthorizationController extends BaseController {
     @Autowired
     private GroupUserService groupUserService;
 
-    @PostMapping("/resource/check")
     @Operation(summary = "检查用户是否可以访问对应的资源")
-    public Response<AuthorizationCheckResult> checkResource(@RequestBody @Validated AuthorizationCheckParam param) {
+    @GetMapping("/resource")
+    public Response<List<ResourceVO>> checkResource(@ParameterObject @Validated AuthorizationCheckParam param) {
         param.setUserId(getUser().getUserId());
-        return Response.success(authorizationChecker.check(param));
+        AuthorizationCheckResult check = authorizationChecker.check(param);
+        return Response.success(check.getResources());
     }
 
-    @PostMapping("/role/check")
-    @Operation(summary = "检查用户拥有的角色资源")
-    public Response<RoleCheckResult> checkRole(@RequestBody @Validated RoleCheckParam param) {
+    @Operation(summary = "检查用户拥有的角色")
+    @GetMapping("/role")
+    public Response<List<RoleVO>> checkRole(@ParameterObject @Validated RoleCheckParam param) {
         UserVO user = getUser();
-        List<RoleVO> roles = userRoleService.checkRole(user.getUserId(), user.getRealmId(), param);
-        RoleCheckResult result = new RoleCheckResult();
-        result.setRoles(roles);
-        return Response.success(result);
+        return Response.success(userRoleService.checkRole(user.getUserId(), user.getRealmId(), param));
     }
 
-    @PostMapping("/group/check")
     @Operation(summary = "检查用户所在的组")
-    public Response<GroupCheckResult> checkGroup(@RequestBody @Validated GroupCheckParam param) {
+    @GetMapping("/group")
+    public Response<List<GroupVO>> checkGroup(@ParameterObject @Validated GroupCheckParam param) {
         UserVO user = getUser();
-        List<GroupVO> groups = groupUserService.checkGroup(user.getUserId(), user.getRealmId(), param);
-        GroupCheckResult result = new GroupCheckResult();
-        result.setGroups(groups);
-        return Response.success(result);
+        return Response.success(groupUserService.checkGroup(user.getUserId(), user.getRealmId(), param));
     }
 
 }

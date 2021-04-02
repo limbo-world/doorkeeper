@@ -16,7 +16,7 @@
 
 package org.limbo.doorkeeper.api.model.param.check;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.Data;
 
 import java.util.List;
@@ -28,16 +28,16 @@ import java.util.List;
 @Data
 public class GroupCheckParam {
 
-    @Schema(description ="用户组ID列表")
+    @Parameter(description ="用户组ID列表")
     private List<Long> groupIds;
 
-    @Schema(description = "名称，精确查询")
+    @Parameter(description = "名称，精确查询")
     private String name;
 
-    @Schema(description = "名称，模糊查询")
+    @Parameter(description = "名称，模糊查询")
     private String dimName;
 
-    @Schema(description = "用户组名称列表，精确查询")
+    @Parameter(description = "用户组名称列表，精确查询")
     private List<String> names;
 
 }

@@ -16,7 +16,7 @@
 
 package org.limbo.doorkeeper.api.model.param.check;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -37,19 +37,19 @@ public class AuthorizationCheckParam {
     private Long userId;
 
     @NotNull(message = "请选择委托方")
-    @Schema(description = "进行权限校验时，资源所属委托方", required = true)
+    @Parameter(description = "进行权限校验时，资源所属委托方", required = true)
     private Long clientId;
 
-    @Schema(description = "进行权限校验时附带的参数")
+    @Parameter(description = "进行权限校验时附带的参数")
     private Map<String, String> params;
 
-    @Schema(description = "资源名称列表, 精确查询")
+    @Parameter(description = "资源名称列表, 精确查询")
     private List<String> names;
 
-    @Schema(description = "标签，同时满足")
+    @Parameter(description = "标签，同时满足")
     private Map<String, String> tags;
 
-    @Schema(description = "uri列表")
+    @Parameter(description = "uri列表")
     private List<UriCheckParam> uris;
 
 }
