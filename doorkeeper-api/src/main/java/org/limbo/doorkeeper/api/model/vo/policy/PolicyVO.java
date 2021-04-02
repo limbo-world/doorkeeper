@@ -35,37 +35,37 @@ public class PolicyVO {
 
     private Long clientId;
 
-    @Schema(title = "名称")
+    @Schema(description ="名称")
     private String name;
 
-    @Schema(title = "描述")
+    @Schema(description ="描述")
     private String description;
 
-    @Schema(title = "类型")
+    @Schema(description ="类型")
     private String type;
 
-    @Schema(title = "判断逻辑", description = "组合策略、角色策略需要")
+    @Schema(description = "判断逻辑，组合策略、角色策略需要")
     private String logic;
 
-    @Schema(title = "执行逻辑")
+    @Schema(description ="执行逻辑")
     private String intention;
 
-    @Schema(title = "是否启用")
+    @Schema(description ="是否启用")
     private Boolean isEnabled;
 
     private Date createTime;
 
     private Date updateTime;
 
-    @Schema(title = "操作策略")
+    @Schema(description ="操作策略")
     private List<PolicyParamVO> params;
 
-    @Schema(title = "角色策略")
+    @Schema(description ="角色策略")
     private List<PolicyRoleVO>  roles;
 
-    @Schema(title = "用户策略")
+    @Schema(description ="用户策略")
     private List<PolicyUserVO>  users;
 
-    @Schema(title = "用户组策略")
+    @Schema(description ="用户组策略")
     private List<PolicyGroupVO> groups;
 }

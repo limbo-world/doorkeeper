@@ -38,22 +38,22 @@ public class PermissionQueryParam extends Page<PermissionVO> {
 
     private Long clientId;
 
-    @Schema(title = "权限ID列表", description = "精确查询")
+    @Schema(description = "权限ID列表，精确查询")
     private List<Long> permissionIds;
 
-    @Schema(title = "名称列表", description = "精确查询")
+    @Schema(description = "名称列表，精确查询")
     private List<String> names;
 
-    @Schema(title = "名称", description = "模糊查询")
+    @Schema(description = "名称，模糊查询")
     private String dimName;
 
-    @Schema(title = "判断逻辑")
+    @Schema(description ="判断逻辑")
     private Logic logic;
 
-    @Schema(title = "执行逻辑")
+    @Schema(description ="执行逻辑")
     private Intention intention;
 
-    @Schema(title = "是否启用")
+    @Schema(description ="是否启用")
     private Boolean isEnabled;
 
 }

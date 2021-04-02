@@ -32,11 +32,11 @@ import java.util.List;
 public class RoleUserBatchUpdateParam {
 
     @NotNull(message = "操作类型不能为空")
-    @Schema(title = "操作类型", required = true)
+    @Schema(description ="操作类型", required = true)
     private BatchMethod type;
 
     @NotEmpty(message = "用户列表不能为空")
-    @Schema(title = "用户列表", required = true)
+    @Schema(description ="用户列表", required = true)
     private List<Long> userIds;
 
 }

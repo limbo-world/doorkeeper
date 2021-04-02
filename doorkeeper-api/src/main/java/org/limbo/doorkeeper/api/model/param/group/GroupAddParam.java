@@ -31,24 +31,24 @@ import java.util.List;
 public class GroupAddParam {
 
     @NotNull(message = "名称不能为空")
-    @Schema(title = "名称", required = true)
+    @Schema(description ="名称", required = true)
     private String name;
 
-    @Schema(title = "描述")
+    @Schema(description ="描述")
     private String description;
 
-    @Schema(title = "父ID")
+    @Schema(description ="父ID")
     private Long parentId;
 
-    @Schema(title = "默认添加")
+    @Schema(description ="默认添加")
     private Boolean isDefault;
 
-    @Schema(title = "添加的用户", description = "新增的时候同时在用户组加入用户")
+    @Schema(description = "添加的用户，新增的时候同时在用户组加入用户")
     private List<Long> userIds;
 
-    @Schema(title = "添加的策略", description = "新增的时候同时在将用户组加入策略")
+    @Schema(description = "添加的策略，新增的时候同时在将用户组加入策略")
     private List<PolicyGroupAddParam> policies;
 
-    @Schema(title = "添加的角色", description = "新增的时候同时在用户组加入角色")
+    @Schema(description = "添加的角色，新增的时候同时在用户组加入角色")
     private List<GroupRoleAddParam> roles;
 }

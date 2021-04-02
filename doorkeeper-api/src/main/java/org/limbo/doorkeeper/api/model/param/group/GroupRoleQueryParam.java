@@ -30,13 +30,13 @@ public class GroupRoleQueryParam {
 
     private Long groupId;
 
-    @Schema(title = "委托方", description = "0表示域")
+    @Schema(description = "委托方，0表示域")
     private Long clientId;
 
-    @Schema(title = "角色名称", description = "精确匹配")
+    @Schema(description = "角色名称，精确匹配")
     private String name;
 
-    @Schema(title = "角色名称", description = "模糊匹配")
+    @Schema(description = "角色名称，模糊匹配")
     private String dimName;
 
 }

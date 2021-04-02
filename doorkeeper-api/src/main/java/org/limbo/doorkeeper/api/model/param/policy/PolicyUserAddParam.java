@@ -28,10 +28,10 @@ import javax.validation.constraints.NotNull;
 @Data
 public class PolicyUserAddParam {
 
-    @Schema(title = "ID", description = "如果存在，表示是一个已经存在")
+    @Schema(description = "策略用户ID，如果存在，表示是一个已经存在")
     private Long policyUserId;
 
     @NotNull(message = "用户不能为空")
-    @Schema(title = "用户", required = true)
+    @Schema(description ="用户", required = true)
     private Long userId;
 }

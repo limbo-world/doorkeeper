@@ -28,11 +28,11 @@ import javax.validation.constraints.NotNull;
 @Data
 public class PolicyRoleAddParam {
 
-    @Schema(title = "ID", description = "如果存在，表示是一个已经存在")
+    @Schema(description = "策略角色ID，如果存在，表示是一个已经存在")
     private Long policyRoleId;
 
     @NotNull(message = "角色不能为空")
-    @Schema(title = "角色", required = true)
+    @Schema(description ="角色", required = true)
     private Long roleId;
 
 }

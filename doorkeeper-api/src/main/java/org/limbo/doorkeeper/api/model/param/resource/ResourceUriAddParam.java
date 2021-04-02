@@ -31,10 +31,10 @@ import javax.validation.constraints.NotNull;
 public class ResourceUriAddParam {
 
     @NotBlank(message = "uri不能为空")
-    @Schema(title = "uri", required = true, description = "ant 风格")
+    @Schema(required = true, description = "uri，ant 风格")
     private String uri;
 
     @NotNull(message = "method不能为空")
-    @Schema(title = "method", required = true, description = "ant 风格")
+    @Schema(required = true, description = "http method")
     private HttpMethod method;
 }

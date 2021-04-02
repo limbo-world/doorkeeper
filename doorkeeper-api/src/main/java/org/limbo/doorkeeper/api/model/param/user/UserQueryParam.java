@@ -30,10 +30,6 @@ import org.limbo.doorkeeper.api.model.vo.UserVO;
 @EqualsAndHashCode(callSuper = true)
 public class UserQueryParam extends Page<UserVO> {
 
-    @Schema(title = "名称", description = "模糊匹配用户名和昵称")
+    @Schema(description = "名称，模糊匹配用户名和昵称")
     private String dimName;
-
-    // private String username;
-
-    // private String nickname;
 }

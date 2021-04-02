@@ -28,19 +28,19 @@ import java.util.List;
 @Data
 public class RoleCheckParam {
 
-    @Schema(title = "角色ID列表")
+    @Schema(description ="角色ID列表")
     private List<Long> roleIds;
 
-    @Schema(title = "委托方ID", description = "域角色传 0")
+    @Schema(description = "委托方ID，查询域角色传 0")
     private Long clientId;
 
-    @Schema(title = "名称", description = "精确查询")
+    @Schema(description = "名称，精确查询")
     private String name;
 
-    @Schema(title = "名称", description = "模糊查询")
+    @Schema(description = "名称，模糊查询")
     private String dimName;
 
-    @Schema(title = "角色名称列表", description = "精确查询")
+    @Schema(description = "角色名称列表，精确查询")
     private List<String> names;
 
 }

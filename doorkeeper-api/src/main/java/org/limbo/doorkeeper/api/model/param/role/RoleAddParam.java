@@ -31,28 +31,28 @@ import java.util.List;
 public class RoleAddParam {
 
     @NotNull(message = "委托方不能为空")
-    @Schema(title = "委托方", description = "如果是域角色 clientId 为 0", required = true)
+    @Schema(description = "委托方，如果是域角色 clientId 为 0", required = true)
     private Long clientId;
 
     @NotBlank(message = "名称不能为空")
-    @Schema(title = "名称", required = true)
+    @Schema(description ="名称", required = true)
     private String name;
 
-    @Schema(title = "描述")
+    @Schema(description ="描述")
     private String description;
 
-    @Schema(title = "是否启用")
+    @Schema(description ="是否启用")
     private Boolean isEnabled;
 
-    @Schema(title = "是否默认添加")
+    @Schema(description ="是否默认添加")
     private Boolean isDefault;
 
-    @Schema(title = "添加的用户组", description = "新增的时候同时将角色加入此用户组")
+    @Schema(description = "添加的用户组，新增的时候同时将角色加入此用户组")
     private List<RoleGroupAddParam> groups;
 
-    @Schema(title = "用户列表", description = "新增的时候同时将用户加入此角色")
+    @Schema(description = "用户列表，新增的时候同时将用户加入此角色")
     private List<Long> userIds;
 
-    @Schema(title = "策略列表", description = "新增的时候同时将角色加入此策略")
+    @Schema(description = "策略列表，新增的时候同时将角色加入此策略")
     private List<Long> policyIds;
 }

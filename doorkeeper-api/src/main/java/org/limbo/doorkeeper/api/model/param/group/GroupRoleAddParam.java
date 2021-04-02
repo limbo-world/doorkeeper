@@ -29,9 +29,9 @@ import javax.validation.constraints.NotNull;
 public class GroupRoleAddParam {
 
     @NotNull(message = "角色不能为空")
-    @Schema(title = "角色", required = true)
+    @Schema(description ="角色", required = true)
     private Long roleId;
 
-    @Schema(title = "是否向下延伸", description = "true的情况下，会把角色传递给子用户组的用户")
+    @Schema(description = "是否向下延伸，true的情况下，会把角色传递给子用户组的用户")
     private Boolean isExtend;
 }

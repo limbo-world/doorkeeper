@@ -29,12 +29,12 @@ import javax.validation.constraints.NotBlank;
 public class ClientAddParam {
 
     @NotBlank(message = "名称不能为空")
-    @Schema(title = "名称", required = true)
+    @Schema(description ="名称", required = true)
     private String name;
 
-    @Schema(title = "描述")
+    @Schema(description ="描述")
     private String description;
 
-    @Schema(title = "是否启用")
+    @Schema(description ="是否启用")
     private Boolean isEnabled;
 }

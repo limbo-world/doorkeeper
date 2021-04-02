@@ -33,16 +33,16 @@ public class GroupVO {
 
     private Long realmId;
 
-    @Schema(title = "名称")
+    @Schema(description ="名称")
     private String name;
 
-    @Schema(title = "描述")
+    @Schema(description ="描述")
     private String description;
 
-    @Schema(title = "父级组id",description = "如果为第一级则为0")
+    @Schema(description = "父级组id，如果为第一级则为0")
     private Long parentId;
 
-    @Schema(title = "是否默认添加")
+    @Schema(description ="是否默认添加")
     private Boolean isDefault;
 
     private Date createTime;

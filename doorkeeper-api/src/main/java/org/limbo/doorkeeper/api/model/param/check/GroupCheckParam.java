@@ -28,16 +28,16 @@ import java.util.List;
 @Data
 public class GroupCheckParam {
 
-    @Schema(title = "用户组ID列表")
+    @Schema(description ="用户组ID列表")
     private List<Long> groupIds;
 
-    @Schema(title = "名称", description = "精确查询")
+    @Schema(description = "名称，精确查询")
     private String name;
 
-    @Schema(title = "名称", description = "模糊查询")
+    @Schema(description = "名称，模糊查询")
     private String dimName;
 
-    @Schema(title = "用户组名称列表", description = "精确查询")
+    @Schema(description = "用户组名称列表，精确查询")
     private List<String> names;
 
 }

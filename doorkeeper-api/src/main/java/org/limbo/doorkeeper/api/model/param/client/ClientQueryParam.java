@@ -19,8 +19,6 @@ package org.limbo.doorkeeper.api.model.param.client;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
-
 /**
  * @author Devil
  * @date 2021/1/4 2:57 下午
@@ -28,10 +26,10 @@ import javax.validation.constraints.NotNull;
 @Data
 public class ClientQueryParam {
 
-    @Schema(title = "名称", description = "精确查询")
+    @Schema(description = "名称，精确查询")
     private String name;
 
-    @Schema(title = "名称", description = "模糊查询")
+    @Schema(description = "名称，模糊查询")
     private String dimName;
 
 }

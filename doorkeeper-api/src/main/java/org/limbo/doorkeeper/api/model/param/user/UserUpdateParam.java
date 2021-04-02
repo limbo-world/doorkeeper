@@ -26,28 +26,28 @@ import lombok.Data;
 @Data
 public class UserUpdateParam {
 
-    @Schema(title = "昵称")
+    @Schema(description ="昵称")
     private String nickname;
 
-    @Schema(title = "描述")
+    @Schema(description ="描述")
     private String description;
 
-    @Schema(title = "是否启用")
+    @Schema(description ="是否启用")
     private Boolean isEnabled;
 
-    @Schema(title = "旧密码")
+    @Schema(description ="旧密码")
     private String oldPassword;
 
-    @Schema(title = "新密码")
+    @Schema(description ="新密码")
     private String newPassword;
 
-    @Schema(title = "邮箱")
+    @Schema(description ="邮箱")
     private String email;
 
-    @Schema(title = "电话")
+    @Schema(description ="电话")
     private String phone;
 
-    @Schema(title = "扩展信息")
+    @Schema(description ="扩展信息")
     private String extend;
 
 }

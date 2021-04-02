@@ -36,10 +36,10 @@ public class PolicyRoleVO {
 
     private Long clientId;
 
-    @Schema(title = "角色名称")
+    @Schema(description ="角色名称")
     private String name;
 
-    @Schema(title = "是否启用")
+    @Schema(description ="是否启用")
     private Boolean isEnabled;
 
 }

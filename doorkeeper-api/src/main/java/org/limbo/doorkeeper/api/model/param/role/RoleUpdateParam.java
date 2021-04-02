@@ -26,13 +26,13 @@ import lombok.Data;
 @Data
 public class RoleUpdateParam {
 
-    @Schema(title = "名称")
+    @Schema(description ="名称")
     private String description;
 
-    @Schema(title = "是否启用")
+    @Schema(description ="是否启用")
     private Boolean isEnabled;
 
-    @Schema(title = "是否默认添加")
+    @Schema(description ="是否默认添加")
     private Boolean isDefault;
 
 }

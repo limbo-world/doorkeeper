@@ -35,7 +35,7 @@ import java.util.List;
 @AllArgsConstructor
 public class GroupCheckResult {
 
-    @Schema(title = "用户组列表")
+    @Schema(description ="用户组列表")
     private List<GroupVO> groups;
 
 }

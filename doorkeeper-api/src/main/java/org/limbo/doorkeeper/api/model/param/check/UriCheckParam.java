@@ -31,11 +31,11 @@ import javax.validation.constraints.NotNull;
 public class UriCheckParam {
 
     @NotBlank(message = "uri不能为空")
-    @Schema(title = "uri")
+    @Schema(description ="uri")
     private String uri;
 
     @NotNull(message = "method不能为空")
-    @Schema(title = "method")
+    @Schema(description ="method")
     private HttpMethod method;
 
 }

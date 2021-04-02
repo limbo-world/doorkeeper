@@ -36,37 +36,37 @@ public class ResourceQueryParam extends Page<ResourceVO> {
 
     private Long clientId;
 
-    @Schema(title = "资源ID")
+    @Schema(description ="资源ID")
     private List<Long> resourceIds;
 
-    @Schema(title = "名称列表", description = "精确查询")
+    @Schema(description = "名称列表，精确查询")
     private List<String> names;
 
-    @Schema(title = "名称", description = "模糊查询")
+    @Schema(description = "名称，模糊查询")
     private String dimName;
 
-    @Schema(title = "是否启用")
+    @Schema(description ="是否启用")
     private Boolean isEnabled;
 
-    @Schema(title = "uri列表", description = "精确查询")
+    @Schema(description = "uri列表，精确查询")
     private List<String> uris;
 
-    @Schema(title = "uri", description = "模糊查询")
+    @Schema(description = "uri，模糊查询")
     private String dimUri;
 
-    @Schema(title = "k=v形式", description = "精确查询")
+    @Schema(description = "k=v形式，精确查询")
     private List<String> kvs;
 
-    @Schema(title = "标签名", description = "精确查询")
+    @Schema(description = "标签名，精确查询")
     private String k;
 
-    @Schema(title = "标签名", description = "模糊查询")
+    @Schema(description = "标签名，模糊查询")
     private String dimK;
 
-    @Schema(title = "标签值", description = "精确查询")
+    @Schema(description = "标签值，精确查询")
     private String v;
 
-    @Schema(title = "标签值", description = "模糊查询")
+    @Schema(description = "标签值，模糊查询")
     private String dimV;
 
 }

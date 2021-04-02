@@ -31,13 +31,13 @@ import java.util.List;
 public class GroupRoleBatchUpdateParam {
 
     @NotNull(message = "操作类型不能为空")
-    @Schema(title = "操作类型", required = true)
+    @Schema(description ="操作类型", required = true)
     private BatchMethod type;
 
-    @Schema(title = "角色ID列表", description = "删除操作的时候使用")
+    @Schema(description = "角色ID列表，删除操作的时候使用")
     private List<Long> roleIds;
 
-    @Schema(title = "角色列表", description = "新增、更新操作的时候使用")
+    @Schema(description = "角色列表，新增、更新操作的时候使用")
     private List<GroupRoleAddParam> roles;
 
 }

@@ -32,14 +32,14 @@ import java.util.List;
 public class PolicyBatchUpdateParam {
 
     @NotNull(message = "操作类型不能为空")
-    @Schema(title = "操作类型", required = true)
+    @Schema(description ="操作类型", required = true)
     private BatchMethod type;
 
-    @Schema(title = "是否启用")
+    @Schema(description ="是否启用")
     private Boolean isEnabled;
 
     @NotEmpty(message = "策略列表不能为空")
-    @Schema(title = "策略列表", required = true)
+    @Schema(description ="策略列表", required = true)
     private List<Long> policyIds;
 
 }

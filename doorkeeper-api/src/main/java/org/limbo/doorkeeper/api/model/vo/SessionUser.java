@@ -26,16 +26,16 @@ import lombok.Data;
 @Data
 public class SessionUser {
 
-    @Schema(title = "会话id")
+    @Schema(description ="会话id")
     private String sessionId;
 
-    @Schema(title = "用户唯一ID")
+    @Schema(description ="用户唯一ID")
     private Long userId;
 
-    @Schema(title = "用户属于哪个域")
+    @Schema(description ="用户属于哪个域")
     private Long realmId;
 
-    @Schema(title = "账户昵称")
+    @Schema(description ="账户昵称")
     private String nickname;
 
 }

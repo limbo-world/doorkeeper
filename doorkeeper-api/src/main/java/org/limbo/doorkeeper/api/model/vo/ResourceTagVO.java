@@ -26,15 +26,15 @@ import lombok.Data;
 @Data
 public class ResourceTagVO {
 
-    @Schema(title = "资源标签ID")
+    @Schema(description ="资源标签ID")
     private Long resourceTagId;
 
-    @Schema(title = "资源ID")
+    @Schema(description ="资源ID")
     private Long resourceId;
 
-    @Schema(title = "标签名")
+    @Schema(description ="标签名")
     private String k;
 
-    @Schema(title = "标签值")
+    @Schema(description ="标签值")
     private String v;
 }

@@ -28,15 +28,15 @@ import javax.validation.constraints.NotBlank;
 @Data
 public class ResourceTagAddParam {
 
-    @Schema(title = "资源标签 ID", description = "如果存在，表示是一个已经存在的标签")
+    @Schema(description = "资源标签 ID，如果存在，表示是一个已经存在的标签")
     private Long resourceTagId;
 
     @NotBlank(message = "标签名不能为空")
-    @Schema(title = "标签名", required = true)
+    @Schema(description ="标签名", required = true)
     private String k;
 
     @NotBlank(message = "标签值不能为空")
-    @Schema(title = "标签值", required = true)
+    @Schema(description ="标签值", required = true)
     private String v;
 
 }

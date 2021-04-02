@@ -32,24 +32,24 @@ public class UserRoleVO {
 
     private Long roleId;
 
-    @Schema(title = "角色所属域")
+    @Schema(description ="角色所属域")
     private Long realmId;
 
-    @Schema(title = "角色所委托方")
+    @Schema(description ="角色所委托方")
     private Long clientId;
 
-    @Schema(title = "角色名称")
+    @Schema(description ="角色名称")
     private String name;
 
-    @Schema(title = "角色描述")
+    @Schema(description ="角色描述")
     private String description;
 
-    @Schema(title = "是否组合角色")
+    @Schema(description ="是否组合角色")
     private Boolean isCombine;
 
-    @Schema(title = "是否启用")
+    @Schema(description ="是否启用")
     private Boolean isEnabled;
 
-    @Schema(title = "是否默认添加")
+    @Schema(description ="是否默认添加")
     private Boolean isDefault;
 }

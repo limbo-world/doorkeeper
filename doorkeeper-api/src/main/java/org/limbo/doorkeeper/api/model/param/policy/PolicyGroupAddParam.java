@@ -31,10 +31,10 @@ public class PolicyGroupAddParam {
     private Long policyId;
 
     @NotNull(message = "组不能为空")
-    @Schema(title = "组", required = true)
+    @Schema(description ="组", required = true)
     private Long groupId;
 
-    @Schema(title = "是否向下延伸", description = "true的情况下，用户在子用户组也满足策略")
+    @Schema(description = "是否向下延伸，true的情况下，用户在子用户组也满足策略")
     private Boolean isExtend;
 
 }

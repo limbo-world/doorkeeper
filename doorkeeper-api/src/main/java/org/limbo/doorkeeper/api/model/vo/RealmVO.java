@@ -28,10 +28,10 @@ public class RealmVO {
 
     private Long realmId;
 
-    @Schema(title = "名称")
+    @Schema(description ="名称")
     private String name;
 
-    @Schema(title = "秘钥")
+    @Schema(description ="秘钥")
     private String secret;
 
 }

@@ -26,10 +26,10 @@ import lombok.Data;
 @Data
 public class ClientUpdateParam {
 
-    @Schema(title = "描述")
+    @Schema(description ="描述")
     private String description;
 
-    @Schema(title = "是否启用")
+    @Schema(description ="是否启用")
     private Boolean isEnabled;
 
 }

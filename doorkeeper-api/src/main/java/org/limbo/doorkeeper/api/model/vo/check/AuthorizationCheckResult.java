@@ -35,7 +35,7 @@ import java.util.List;
 @AllArgsConstructor
 public class AuthorizationCheckResult {
 
-    @Schema(title = "允许访问的资源对象")
+    @Schema(description ="允许访问的资源对象")
     private List<ResourceVO> resources;
 
 }

@@ -29,7 +29,7 @@ import javax.validation.constraints.NotBlank;
 public class PolicyCombineAddParam {
 
     @NotBlank(message = "下级策略不能为空")
-    @Schema(title = "下级策略", required = true)
+    @Schema(description ="下级策略", required = true)
     private Long policyId;
 
 }

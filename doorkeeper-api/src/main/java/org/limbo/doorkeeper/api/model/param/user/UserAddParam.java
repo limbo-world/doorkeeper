@@ -30,35 +30,35 @@ import java.util.List;
 public class UserAddParam {
 
     @NotNull(message = "用户名不能为空")
-    @Schema(title = "用户名", required = true)
+    @Schema(description ="用户名", required = true)
     private String username;
 
     @NotNull(message = "昵称不能为空")
-    @Schema(title = "昵称", required = true)
+    @Schema(description ="昵称", required = true)
     private String nickname;
 
     @NotNull(message = "密码不能为空")
-    @Schema(title = "密码", required = true)
+    @Schema(description ="密码", required = true)
     private String password;
 
-    @Schema(title = "邮箱")
+    @Schema(description ="邮箱")
     private String email;
 
-    @Schema(title = "电话")
+    @Schema(description ="电话")
     private String phone;
 
-    @Schema(title = "扩展信息")
+    @Schema(description ="扩展信息")
     private String extend;
 
-    @Schema(title = "是否启用")
+    @Schema(description ="是否启用")
     private Boolean isEnabled;
 
-    @Schema(title = "用户组列表", description = "新增的时候将用户加入哪些用户组")
+    @Schema(description = "用户组列表，新增的时候将用户加入哪些用户组")
     private List<Long> groupIds;
 
-    @Schema(title = "角色列表", description = "新增的时候将用户加入哪些角色")
+    @Schema(description = "角色列表，新增的时候将用户加入哪些角色")
     private List<Long> roleIds;
 
-    @Schema(title = "策略列表", description = "新增的时候将用户加入哪些策略")
+    @Schema(description = "策略列表，新增的时候将用户加入哪些策略")
     private List<Long> policyIds;
 }

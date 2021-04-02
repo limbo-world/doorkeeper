@@ -28,16 +28,16 @@ import java.util.List;
 @Data
 public class AccountGrantVO {
 
-    @Schema(title = "用户ID")
+    @Schema(description ="用户ID")
     private Long accountId;
 
-    @Schema(title = "用户授予的角色")
+    @Schema(description ="用户授予的角色")
     private List<RoleVO> roles;
 
-    @Schema(title = "用户可以访问的权限")
+    @Schema(description ="用户可以访问的权限")
     private List<PermissionVO> allowedPermissions;
 
-    @Schema(title = "用户禁止访问的权限")
+    @Schema(description ="用户禁止访问的权限")
     private List<PermissionVO> refusedPermissions;
 
 }

@@ -29,9 +29,9 @@ import javax.validation.constraints.NotBlank;
 public class RealmAddParam {
 
     @NotBlank(message = "名称不能为空")
-    @Schema(title = "名称", required = true)
+    @Schema(description ="名称", required = true)
     private String name;
 
-    @Schema(title = "secret")
+    @Schema(description ="secret")
     private String secret;
 }

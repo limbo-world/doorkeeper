@@ -28,14 +28,14 @@ import javax.validation.constraints.NotBlank;
 @Data
 public class PolicyParamAddParam {
 
-    @Schema(title = "ID", description = "如果存在，表示是一个已经存在")
+    @Schema(description = "策略参数ID，如果存在，表示是一个已经存在")
     private Long policyParamId;
 
     @NotBlank(message = "键不能为空")
-    @Schema(title = "键", required = true)
+    @Schema(description ="键", required = true)
     private String k;
 
     @NotBlank(message = "值不能为空")
-    @Schema(title = "值", required = true)
+    @Schema(description ="值", required = true)
     private String v;
 }

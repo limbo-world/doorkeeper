@@ -33,18 +33,18 @@ public class RoleQueryParam extends Page<RoleVO> {
     private Long realmId;
 
     @NotNull(message = "委托方不能为空")
-    @Schema(title = "委托方", description = "如果是域角色 clientId 为 0", required = true)
+    @Schema(description = "委托方，如果是域角色 clientId 为 0", required = true)
     private Long clientId;
 
-    @Schema(title = "名称", description = "精确查询")
+    @Schema(description = "名称，精确查询")
     private String name;
 
-    @Schema(title = "名称", description = "模糊查询")
+    @Schema(description = "名称，模糊查询")
     private String dimName;
 
-    @Schema(title = "是否启用")
+    @Schema(description ="是否启用")
     private Boolean isEnabled;
 
-    @Schema(title = "默认添加")
+    @Schema(description ="默认添加")
     private Boolean isDefault;
 }

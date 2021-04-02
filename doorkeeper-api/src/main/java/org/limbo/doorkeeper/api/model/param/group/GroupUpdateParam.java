@@ -26,12 +26,12 @@ import lombok.Data;
 @Data
 public class GroupUpdateParam {
 
-    @Schema(title = "描述")
+    @Schema(description ="描述")
     private String description;
 
-    @Schema(title = "父级组id")
+    @Schema(description ="父级组id")
     private Long parentId;
 
-    @Schema(title = "是否默认添加")
+    @Schema(description ="是否默认添加")
     private Boolean isDefault;
 }

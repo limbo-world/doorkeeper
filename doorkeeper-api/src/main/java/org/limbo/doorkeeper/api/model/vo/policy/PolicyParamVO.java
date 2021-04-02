@@ -30,9 +30,9 @@ public class PolicyParamVO {
 
     private Long policyId;
 
-    @Schema(title = "键")
+    @Schema(description ="键")
     private String k;
 
-    @Schema(title = "值")
+    @Schema(description ="值")
     private String v;
 }

@@ -30,24 +30,24 @@ public class UserVO {
 
     private Long realmId;
 
-    @Schema(title = "用户名")
+    @Schema(description ="用户名")
     private String username;
 
-    @Schema(title = "昵称")
+    @Schema(description ="昵称")
     private String nickname;
 
-    @Schema(title = "描述")
+    @Schema(description ="描述")
     private String description;
 
-    @Schema(title = "邮箱")
+    @Schema(description ="邮箱")
     private String email;
 
-    @Schema(title = "电话")
+    @Schema(description ="电话")
     private String phone;
 
-    @Schema(title = "扩展信息")
+    @Schema(description ="扩展信息")
     private String extend;
 
-    @Schema(title = "是否启用")
+    @Schema(description ="是否启用")
     private Boolean isEnabled;
 }

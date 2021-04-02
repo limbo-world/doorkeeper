@@ -35,7 +35,7 @@ import java.util.List;
 @AllArgsConstructor
 public class RoleCheckResult {
 
-    @Schema(title = "角色列表")
+    @Schema(description ="角色列表")
     private List<RoleVO> roles;
 
 }

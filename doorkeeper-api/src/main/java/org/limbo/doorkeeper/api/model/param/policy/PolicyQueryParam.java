@@ -31,16 +31,16 @@ import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 @EqualsAndHashCode(callSuper = true)
 public class PolicyQueryParam extends Page<PolicyVO> {
 
-    @Schema(title = "名称", description = "精确查询")
+    @Schema(description = "名称，精确查询")
     private String name;
 
-    @Schema(title = "名称", description = "模糊查询")
+    @Schema(description = "名称，模糊查询")
     private String dimName;
 
-    @Schema(title = "是否启用")
+    @Schema(description ="是否启用")
     private Boolean isEnabled;
 
-    @Schema(title = "类型")
+    @Schema(description ="类型")
     private PolicyType type;
 
 }

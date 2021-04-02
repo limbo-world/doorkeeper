@@ -26,13 +26,13 @@ import lombok.Data;
 @Data
 public class GroupQueryParam {
 
-    @Schema(title = "返回格式", description = "默认列表形式，tree为树形")
+    @Schema(description = "返回格式，默认列表形式，tree为树形")
     private String returnType;
 
-    @Schema(title = "父节点ID")
+    @Schema(description ="父节点ID")
     private Long parentId;
 
-    @Schema(title = "名称")
+    @Schema(description ="名称")
     private String name;
 
 }

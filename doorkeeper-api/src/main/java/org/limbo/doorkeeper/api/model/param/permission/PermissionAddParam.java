@@ -33,27 +33,27 @@ import java.util.List;
 public class PermissionAddParam {
 
     @NotBlank(message = "名称不能为空")
-    @Schema(title = "名称", required = true)
+    @Schema(description ="名称", required = true)
     private String name;
 
-    @Schema(title = "描述")
+    @Schema(description ="描述")
     private String description;
 
     @NotNull(message = "判断逻辑不能为空")
-    @Schema(title = "判断逻辑", required = true)
+    @Schema(description ="判断逻辑", required = true)
     private Logic logic;
 
     @NotNull(message = "执行逻辑不能为空")
-    @Schema(title = "执行逻辑", required = true)
+    @Schema(description ="执行逻辑", required = true)
     private Intention intention;
 
-    @Schema(title = "是否启用")
+    @Schema(description ="是否启用")
     private Boolean isEnabled;
 
-    @Schema(title = "资源列表")
+    @Schema(description ="资源列表")
     private List<Long> resourceIds;
 
-    @Schema(title = "策略列表")
+    @Schema(description ="策略列表")
     private List<Long> policyIds;
 
 }

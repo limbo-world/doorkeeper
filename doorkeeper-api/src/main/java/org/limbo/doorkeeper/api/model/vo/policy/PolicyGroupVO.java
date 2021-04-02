@@ -32,7 +32,7 @@ public class PolicyGroupVO {
 
     private Long groupId;
 
-    @Schema(title = "是否向下延伸", description = "true的情况下，用户在子用户组也满足策略")
+    @Schema(description = "是否向下延伸，true的情况下，用户在子用户组也满足策略")
     private Boolean isExtend;
 
 }

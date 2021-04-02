@@ -30,25 +30,25 @@ import java.util.List;
 @Data
 public class PermissionUpdateParam {
 
-    @Schema(title = "名称")
+    @Schema(description ="名称")
     private String name;
 
-    @Schema(title = "描述")
+    @Schema(description ="描述")
     private String description;
 
-    @Schema(title = "判断逻辑")
+    @Schema(description ="判断逻辑")
     private Logic logic;
 
-    @Schema(title = "执行逻辑")
+    @Schema(description ="执行逻辑")
     private Intention intention;
 
-    @Schema(title = "是否启用")
+    @Schema(description ="是否启用")
     private Boolean isEnabled;
 
-    @Schema(title = "资源列表")
+    @Schema(description ="资源列表")
     private List<Long> resourceIds;
 
-    @Schema(title = "策略列表")
+    @Schema(description ="策略列表")
     private List<Long>  policyIds;
 
 }

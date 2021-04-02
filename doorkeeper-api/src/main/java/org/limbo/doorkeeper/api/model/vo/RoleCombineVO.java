@@ -28,15 +28,15 @@ public class RoleCombineVO {
 
     private Long roleCombineId;
 
-    @Schema(title = "上级角色")
+    @Schema(description ="上级角色")
     private Long parentId;
 
-    @Schema(title = "下级角色")
+    @Schema(description ="下级角色")
     private Long roleId;
 
-    @Schema(title = "角色名称")
+    @Schema(description ="角色名称")
     private String name;
 
-    @Schema(title = "角色名称")
+    @Schema(description ="角色名称")
     private String description;
 }

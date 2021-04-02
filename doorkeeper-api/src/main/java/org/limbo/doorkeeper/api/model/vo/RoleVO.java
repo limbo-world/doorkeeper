@@ -32,19 +32,19 @@ public class RoleVO {
 
     private Long realmId;
 
-    @Schema(title = "属于哪个委托方", description = "如果为0表示为域角色")
+    @Schema(description = "属于哪个委托方，如果为0表示为域角色")
     private Long clientId;
 
-    @Schema(title = "名称")
+    @Schema(description ="名称")
     private String name;
 
-    @Schema(title = "描述")
+    @Schema(description ="描述")
     private String description;
 
-    @Schema(title = "是否启用")
+    @Schema(description ="是否启用")
     private Boolean isEnabled;
 
-    @Schema(title = "默认添加")
+    @Schema(description ="默认添加")
     private Boolean isDefault;
 
     private Date createTime;

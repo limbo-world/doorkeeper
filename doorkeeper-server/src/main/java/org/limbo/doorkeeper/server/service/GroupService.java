@@ -88,17 +88,18 @@ public class GroupService {
             throw new ParamException("用户组已存在");
         }
 
+        // 用户组用户
         if (CollectionUtils.isNotEmpty(param.getUserIds())) {
             GroupUserBatchUpdateParam batchUpdateParam  = new GroupUserBatchUpdateParam();
             batchUpdateParam.setType(BatchMethod.SAVE);
             batchUpdateParam.setUserIds(param.getUserIds());
             groupUserService.batchUpdate(group.getGroupId(), batchUpdateParam);
         }
-
+        // 用户组策略
         if (CollectionUtils.isNotEmpty(param.getPolicies())) {
             policyGroupService.batchSave(param.getPolicies());
         }
-
+        // 用户组角色
         if (CollectionUtils.isNotEmpty(param.getRoles())) {
             GroupRoleBatchUpdateParam batchUpdateParam  = new GroupRoleBatchUpdateParam();
             batchUpdateParam.setType(BatchMethod.SAVE);

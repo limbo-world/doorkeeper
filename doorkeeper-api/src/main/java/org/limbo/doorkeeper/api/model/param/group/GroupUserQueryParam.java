@@ -34,13 +34,13 @@ public class GroupUserQueryParam extends Page<GroupUserVO> {
 
     private Long groupId;
 
-    @Schema(title = "角色名称", description = "精确匹配")
+    @Schema(description = "角色名称，精确匹配")
     private String name;
 
-    @Schema(title = "角色名称", description = "模糊匹配")
+    @Schema(description = "角色名称，模糊匹配")
     private String dimName;
 
-    @Schema(title = "是否加入用户组")
+    @Schema(description ="是否加入用户组")
     private Boolean isJoin;
 
 }

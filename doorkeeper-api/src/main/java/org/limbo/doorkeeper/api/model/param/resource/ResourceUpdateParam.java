@@ -28,16 +28,16 @@ import java.util.List;
 @Data
 public class ResourceUpdateParam {
 
-    @Schema(title = "描述")
+    @Schema(description ="描述")
     private String description;
 
-    @Schema(title = "是否启用")
+    @Schema(description ="是否启用")
     private Boolean isEnabled;
 
-    @Schema(title = "资源uri")
+    @Schema(description ="资源uri")
     private List<ResourceUriAddParam> uris;
 
-    @Schema(title = "资源标签")
+    @Schema(description ="资源标签")
     private List<ResourceTagAddParam> tags;
 
 }

@@ -34,38 +34,38 @@ import java.util.List;
 public class PolicyAddParam {
 
     @NotBlank(message = "名称不能为空")
-    @Schema(title = "名称", required = true)
+    @Schema(description ="名称", required = true)
     private String name;
 
-    @Schema(title = "描述")
+    @Schema(description ="描述")
     private String description;
 
     @NotNull(message = "类型不能为空")
-    @Schema(title = "类型", required = true)
+    @Schema(description ="类型", required = true)
     private PolicyType type;
 
-    @Schema(title = "判断逻辑", description = "只有组合策略需要")
+    @Schema(description = "判断逻辑，只有组合策略需要")
     private Logic logic;
 
     @NotNull(message = "执行逻辑不能为空")
-    @Schema(title = "执行逻辑", required = true)
+    @Schema(description ="执行逻辑", required = true)
     private Intention intention;
 
-    @Schema(title = "是否启用")
+    @Schema(description ="是否启用")
     private Boolean isEnabled;
 
-    @Schema(title = "参数策略")
+    @Schema(description ="参数策略")
     private List<PolicyParamAddParam>  params;
 
-    @Schema(title = "角色策略")
+    @Schema(description ="角色策略")
     private List<PolicyRoleAddParam>  roles;
 
-    @Schema(title = "用户策略")
+    @Schema(description ="用户策略")
     private List<PolicyUserAddParam>  users;
 
-    @Schema(title = "用户组策略")
+    @Schema(description ="用户组策略")
     private List<PolicyGroupAddParam>  groups;
 
-    @Schema(title = "添加的权限", description = "新增的时候同时在权限加入此策略")
+    @Schema(description = "添加的权限，新增的时候同时在权限加入此策略")
     private List<Long> permissionIds;
 }

@@ -35,22 +35,22 @@ public class ResourceVO {
 
     private Long clientId;
 
-    @Schema(title = "名称")
+    @Schema(description ="名称")
     private String name;
 
-    @Schema(title = "描述")
+    @Schema(description ="描述")
     private String description;
 
-    @Schema(title = "是否启用")
+    @Schema(description ="是否启用")
     private Boolean isEnabled;
 
     private Date createTime;
 
     private Date updateTime;
 
-    @Schema(title = "资源uri")
+    @Schema(description ="资源uri")
     private List<ResourceUriVO> uris;
 
-    @Schema(title = "资源标签")
+    @Schema(description ="资源标签")
     private List<ResourceTagVO> tags;
 }

@@ -30,28 +30,28 @@ import java.util.List;
 @Data
 public class PolicyUpdateParam {
 
-    @Schema(title = "描述")
+    @Schema(description ="描述")
     private String description;
 
-    @Schema(title = "判断逻辑", description = "只有组合策略需要")
+    @Schema(description = "判断逻辑，只有组合策略需要")
     private Logic logic;
 
-    @Schema(title = "执行逻辑")
+    @Schema(description ="执行逻辑")
     private Intention intention;
 
-    @Schema(title = "是否启用")
+    @Schema(description ="是否启用")
     private Boolean isEnabled;
 
-    @Schema(title = "操作策略")
+    @Schema(description ="操作策略")
     private List<PolicyParamAddParam> params;
 
-    @Schema(title = "角色策略")
+    @Schema(description ="角色策略")
     private List<PolicyRoleAddParam>  roles;
 
-    @Schema(title = "用户策略")
+    @Schema(description ="用户策略")
     private List<PolicyUserAddParam>  users;
 
-    @Schema(title = "用户组策略")
+    @Schema(description ="用户组策略")
     private List<PolicyGroupAddParam> groups;
 
 }

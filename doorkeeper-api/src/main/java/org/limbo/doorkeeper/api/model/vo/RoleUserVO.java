@@ -32,13 +32,13 @@ public class RoleUserVO {
 
     private Long roleId;
 
-    @Schema(title = "用户名")
+    @Schema(description ="用户名")
     private String username;
 
-    @Schema(title = "昵称")
+    @Schema(description ="昵称")
     private String nickname;
 
-    @Schema(title = "描述")
+    @Schema(description ="描述")
     private String description;
 
 }

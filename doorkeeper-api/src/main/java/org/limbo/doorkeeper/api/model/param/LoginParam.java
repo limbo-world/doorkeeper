@@ -28,14 +28,14 @@ import javax.validation.constraints.NotBlank;
 @Data
 public class LoginParam {
 
-    @Schema(title = "域", description = "为空则默认登录doorkeeper域")
+    @Schema(description = "域，为空则默认登录doorkeeper域")
     private Long realmId;
 
     @NotBlank(message = "用户名不能为空")
-    @Schema(title = "用户名", required = true)
+    @Schema(description ="用户名", required = true)
     private String username;
 
     @NotBlank(message = "密码不能为空")
-    @Schema(title = "密码", required = true)
+    @Schema(description ="密码", required = true)
     private String password;
 }

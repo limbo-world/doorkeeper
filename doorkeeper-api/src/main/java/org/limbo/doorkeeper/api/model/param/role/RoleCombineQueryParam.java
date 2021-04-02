@@ -30,10 +30,10 @@ public class RoleCombineQueryParam {
 
     private Long parentId;
 
-    @Schema(title = "角色名称", description = "精确查询")
+    @Schema(description = "角色名称，精确查询")
     private String name;
 
-    @Schema(title = "角色名称", description = "模糊查询")
+    @Schema(description = "角色名称，模糊查询")
     private String dimName;
 
 }
