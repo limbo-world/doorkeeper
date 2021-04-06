@@ -22,7 +22,6 @@ import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 授权校验参数
@@ -40,16 +39,16 @@ public class AuthorizationCheckParam {
     @Parameter(description = "进行权限校验时，资源所属委托方", required = true)
     private Long clientId;
 
-    @Parameter(description = "进行权限校验时附带的参数")
-    private Map<String, String> params;
-
     @Parameter(description = "资源名称列表, 精确查询")
     private List<String> names;
 
-    @Parameter(description = "标签，同时满足")
-    private Map<String, String> tags;
+    @Parameter(description = "标签 k=v")
+    private List<String> tags;
 
-    @Parameter(description = "uri列表")
-    private List<UriCheckParam> uris;
+    @Parameter(description = "uri列表 method=uri 如 get=/api/test")
+    private List<String> uris;
+
+    @Parameter(description = "进行权限校验时附带的参数 k=v")
+    private List<String> params;
 
 }

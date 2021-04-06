@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.constants.*;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
-import org.limbo.doorkeeper.api.model.param.check.UriCheckParam;
 import org.limbo.doorkeeper.api.model.vo.check.AuthorizationCheckResult;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyRoleVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
@@ -117,14 +116,9 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
         // 获取对应的client
         Client client = clientMapper.getByName(doorkeeperRealm.getRealmId(), realm.getName());
-
-        UriCheckParam uriCheckParam = new UriCheckParam();
-        uriCheckParam.setMethod(HttpMethod.parse(request.getMethod()));
-        uriCheckParam.setUri(request.getRequestURI());
-
         AuthorizationCheckParam checkParam = new AuthorizationCheckParam()
                 .setUserId(userId).setClientId(client.getClientId())
-                .setUris(Collections.singletonList(uriCheckParam));
+                .setUris(Collections.singletonList(HttpMethod.parse(request.getMethod()) + DoorkeeperConstants.KV_DELIMITER + request.getRequestURI()));
         AuthorizationCheckResult checkResult = authorizationChecker.check(checkParam);
 
         if (checkResult.getResources().size() <= 0) {

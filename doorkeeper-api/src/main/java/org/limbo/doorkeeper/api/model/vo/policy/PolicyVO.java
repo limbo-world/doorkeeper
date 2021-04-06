@@ -16,6 +16,7 @@
 
 package org.limbo.doorkeeper.api.model.vo.policy;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -53,8 +54,10 @@ public class PolicyVO {
     @Schema(description ="是否启用")
     private Boolean isEnabled;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
     @Schema(description ="操作策略")

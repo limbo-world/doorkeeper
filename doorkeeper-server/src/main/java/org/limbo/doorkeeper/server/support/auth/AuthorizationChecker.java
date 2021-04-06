@@ -20,13 +20,12 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.api.constants.HttpMethod;
 import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.Logic;
 import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
-import org.limbo.doorkeeper.api.model.param.check.UriCheckParam;
 import org.limbo.doorkeeper.api.model.param.permission.PermissionQueryParam;
 import org.limbo.doorkeeper.api.model.param.resource.ResourceQueryParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionPolicyVO;
@@ -188,14 +187,6 @@ public class AuthorizationChecker {
      * @return 返回资源列表
      */
     protected List<ResourceVO> assignCheckingResources() {
-        // 处理标签属性
-        List<String> kvs = null;
-        if (MapUtils.isNotEmpty(checkParam.getTags())) {
-            kvs = new ArrayList<>();
-            for (Map.Entry<String, String> entry : checkParam.getTags().entrySet()) {
-                kvs.add(entry.getKey() + DoorkeeperConstants.KV_DELIMITER + entry.getValue());
-            }
-        }
         // 获取uri资源id
         List<Long> resourceIds = null;
         if (CollectionUtils.isNotEmpty(checkParam.getUris())) {
@@ -207,11 +198,12 @@ public class AuthorizationChecker {
 
             resourceIds = clientUris.stream()
                     .filter(resourceUri -> {
-                        for (UriCheckParam uriCheckParam : checkParam.getUris()) {
-                            if (resourceUri.getMethod() != uriCheckParam.getMethod()) {
+                        for (String str : checkParam.getUris()) {
+                            String[] split = str.split(DoorkeeperConstants.KV_DELIMITER);
+                            if (resourceUri.getMethod() != HttpMethod.parse(split[0])) {
                                 return false;
                             }
-                            if (pathMatch(resourceUri.getUri(), uriCheckParam.getUri())) {
+                            if (pathMatch(resourceUri.getUri(), split[1])) {
                                 return true;
                             }
                         }
@@ -225,7 +217,7 @@ public class AuthorizationChecker {
         param.setClientId(getClient().getClientId());
         param.setResourceIds(resourceIds);
         param.setNames(checkParam.getNames());
-        param.setKvs(kvs);
+        param.setKvs(checkParam.getTags());
         param.setIsEnabled(true);
         param.setNeedAll(true);
         return resourceMapper.getVOS(param);

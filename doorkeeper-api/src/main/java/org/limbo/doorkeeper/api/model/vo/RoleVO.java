@@ -16,6 +16,7 @@
 
 package org.limbo.doorkeeper.api.model.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -47,7 +48,9 @@ public class RoleVO {
     @Schema(description ="默认添加")
     private Boolean isDefault;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 }
