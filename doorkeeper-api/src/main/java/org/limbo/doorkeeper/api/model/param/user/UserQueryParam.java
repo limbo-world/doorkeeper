@@ -30,6 +30,12 @@ import org.limbo.doorkeeper.api.model.vo.UserVO;
 @EqualsAndHashCode(callSuper = true)
 public class UserQueryParam extends Page<UserVO> {
 
+    @Parameter(description = "用户名，精确匹配用户名")
+    private String username;
+
+    @Parameter(description = "昵称，精确匹配昵称")
+    private String nickname;
+
     @Parameter(description = "名称，模糊匹配用户名和昵称")
     private String dimName;
 

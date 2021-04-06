@@ -119,6 +119,8 @@ public class UserService {
         IPage<User> mpage = MyBatisPlusUtils.pageOf(param);
         mpage = userMapper.selectPage(mpage, Wrappers.<User>lambdaQuery()
                 .eq(User::getRealmId, realmId)
+                .eq(StringUtils.isNotBlank(param.getUsername()), User::getUsername, param.getUsername())
+                .eq(StringUtils.isNotBlank(param.getNickname()), User::getNickname, param.getNickname())
                 .and(StringUtils.isNotBlank(param.getDimName()), wrapper -> wrapper
                         .like(StringUtils.isNotBlank(param.getDimName()), User::getUsername, param.getDimName())
                         .or()
