@@ -19,6 +19,7 @@ package org.limbo.doorkeeper.server.support.auth.policies;
 import org.limbo.doorkeeper.api.constants.PolicyType;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 import org.limbo.doorkeeper.server.dal.mapper.*;
+import org.limbo.doorkeeper.server.service.UserRoleService;
 import org.limbo.doorkeeper.server.support.auth.AuthorizationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -34,7 +35,7 @@ public class PolicyCheckerFactory {
     private UserMapper userMapper;
 
     @Autowired
-    private UserRoleMapper userRoleMapper;
+    private UserRoleService userRoleService;
 
     @Autowired
     private GroupUserMapper groupUserMapper;
@@ -117,7 +118,7 @@ public class PolicyCheckerFactory {
         RolePolicyChecker rolePolicyChecker = new RolePolicyChecker(policy);
         rolePolicyChecker.setGroupRoleMapper(groupRoleMapper);
         rolePolicyChecker.setGroupUserMapper(groupUserMapper);
-        rolePolicyChecker.setUserRoleMapper(userRoleMapper);
+        rolePolicyChecker.setUserRoleService(userRoleService);
         rolePolicyChecker.setGroupMapper(groupMapper);
         rolePolicyChecker.setRoleMapper(roleMapper);
         return rolePolicyChecker;
