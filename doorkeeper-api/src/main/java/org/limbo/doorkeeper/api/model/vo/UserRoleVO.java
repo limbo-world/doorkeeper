@@ -26,30 +26,13 @@ import lombok.Data;
 @Data
 public class UserRoleVO {
 
+    @Schema(description ="用户角色ID")
     private Long userRoleId;
 
+    @Schema(description ="用户ID")
     private Long userId;
 
+    @Schema(description ="角色ID")
     private Long roleId;
 
-    @Schema(description ="角色所属域")
-    private Long realmId;
-
-    @Schema(description ="角色所委托方")
-    private Long clientId;
-
-    @Schema(description ="角色名称")
-    private String name;
-
-    @Schema(description ="角色描述")
-    private String description;
-
-    @Schema(description ="是否组合角色")
-    private Boolean isCombine;
-
-    @Schema(description ="是否启用")
-    private Boolean isEnabled;
-
-    @Schema(description ="是否默认添加")
-    private Boolean isDefault;
 }

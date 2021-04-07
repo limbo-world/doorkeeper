@@ -21,11 +21,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.user.UserRoleBatchUpdateParam;
-import org.limbo.doorkeeper.api.model.param.user.UserRoleQueryParam;
 import org.limbo.doorkeeper.api.model.vo.UserRoleVO;
 import org.limbo.doorkeeper.server.controller.BaseController;
 import org.limbo.doorkeeper.server.service.UserRoleService;
-import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -47,14 +45,13 @@ public class AdminUserRoleController extends BaseController {
     private UserRoleService userRoleService;
 
     @Operation(summary = "查询用户角色列表")
-    @GetMapping("/{userId}/user-role")
-    public Response<List<UserRoleVO>> list(@Validated @NotNull(message = "未提交用户ID") @PathVariable("userId") Long userId,
-                                           @ParameterObject UserRoleQueryParam param) {
-        return Response.success(userRoleService.list(getRealmId(), userId, param));
+    @GetMapping("/{userId}/role")
+    public Response<List<UserRoleVO>> list(@Validated @NotNull(message = "未提交用户ID") @PathVariable("userId") Long userId) {
+        return Response.success(userRoleService.list(getRealmId(), userId));
     }
 
     @Operation(summary = "批量修改用户角色")
-    @PostMapping("/{userId}/user-role/batch")
+    @PostMapping("/{userId}/role/batch")
     public Response<Void> batch(@Validated @NotNull(message = "未提交用户ID") @PathVariable("userId") Long userId,
                                                @RequestBody @Validated UserRoleBatchUpdateParam param) {
         userRoleService.batchUpdate(userId, param);

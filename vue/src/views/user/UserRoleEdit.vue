@@ -51,10 +51,12 @@ export default {
             queryForm: {
                 clientId: null,
                 name: '',
+                size: 1000,
             },
 
             roles: [],
             clients: [],
+            userRoles: []
         }
     },
 
@@ -82,18 +84,35 @@ export default {
             }).finally(() => this.stopProgress());
         },
 
-        loadRoles() {
+        loadRoles(current) {
+            if (1 === current) {
+                this.resetPageForm();
+            }
             this.startProgress();
-            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/user/${this.userId}/user-role`, {
-                params: this.queryForm
-            }).then(response => {
-                this.roles = response.data;
-            }).finally(() => this.stopProgress());
+            axios.all([
+                this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/role`, {params: this.queryForm}),
+                this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/user/${this.userId}/role`)
+            ]).then(axios.spread((rolesResponse, userRolesResponse) => {
+                const page = rolesResponse.data;
+                this.queryForm.total = page.total >= 0 ? page.total : this.queryForm.total;
+                let roles = page.data;
+                let userRoles = userRolesResponse.data;
+                for (let userRole of userRoles) {
+                    for (let role of roles){
+                        if (userRole.roleId === role.roleId) {
+                            role.userId = userRole.userId;
+                            role.userRoleId = userRole.userRoleId;
+                        }
+                    }
+                }
+                this.userRoles = userRoles;
+                this.roles = roles;
+            })).finally(() => this.stopProgress());
         },
 
         bindRole(v, roleId) {
             const loading = this.$loading();
-            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/user/${this.userId}/user-role/batch`, {
+            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/user/${this.userId}/role/batch`, {
                 roleIds: [roleId], type: v ? this.$constants.batchMethod.SAVE : this.$constants.batchMethod.DELETE
             }).then(response => {
                 this.loadRoles();

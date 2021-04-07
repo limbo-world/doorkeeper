@@ -21,7 +21,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.param.check.RoleCheckParam;
 import org.limbo.doorkeeper.api.model.param.user.UserRoleBatchUpdateParam;
-import org.limbo.doorkeeper.api.model.param.user.UserRoleQueryParam;
 import org.limbo.doorkeeper.api.model.vo.GroupRoleVO;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
@@ -63,10 +62,11 @@ public class UserRoleService {
     @Autowired
     private GroupUserMapper groupUserMapper;
 
-    public List<UserRoleVO> list(Long realmId, Long userId, UserRoleQueryParam param) {
-        param.setRealmId(realmId);
-        param.setUserId(userId);
-        return userRoleMapper.listUserRoleVOS(param);
+    public List<UserRoleVO> list(Long realmId, Long userId) {
+        List<UserRole> userRoles = userRoleMapper.selectList(Wrappers.<UserRole>lambdaQuery()
+                .eq(UserRole::getUserId, userId)
+        );
+        return EnhancedBeanUtils.createAndCopyList(userRoles, UserRoleVO.class);
     }
 
     @Transactional
