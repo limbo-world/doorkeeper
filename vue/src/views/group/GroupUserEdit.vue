@@ -68,7 +68,8 @@ export default {
                 isJoin: true
             },
             users: [],
-            selectUsers: []
+            selectUsers: [],
+            groupUsers: [],
         }
     },
 
@@ -93,13 +94,26 @@ export default {
                 this.resetPageForm();
             }
             this.startProgress();
-            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/group/${this.groupId}/group-user`, {
-                params: this.queryForm
-            }).then(response => {
-                const page = response.data;
+
+            axios.all([
+                this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/user`, {params: this.queryForm}),
+                this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/group/${this.groupId}/user`)
+            ]).then(axios.spread((usersResponse, groupUsersResponse) => {
+                const page = usersResponse.data;
                 this.queryForm.total = page.total >= 0 ? page.total : this.queryForm.total;
-                this.users = page.data;
-            }).finally(() => this.stopProgress());
+                let users = page.data;
+                let groupUsers = groupUsersResponse.data;
+                for (let groupUser of groupUsers) {
+                    for (let user of users){
+                        if (groupUser.userId === user.userId) {
+                            user.groupId = groupUser.groupId;
+                            user.groupUserId = groupUser.groupUserId;
+                        }
+                    }
+                }
+                this.groupUsers = groupUsers;
+                this.users = users;
+            })).finally(() => this.stopProgress());
         },
 
         handleSelectionChange(val) {
@@ -113,7 +127,7 @@ export default {
                 }
             }
             const loading = this.$loading();
-            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/group/${this.groupId}/group-user/batch`, {
+            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/group/${this.groupId}/user/batch`, {
                 userIds: userIds, type: this.$constants.batchMethod.SAVE
             }).then(response => {
                 this.loadGroupUsers();
@@ -126,7 +140,7 @@ export default {
                 userIds.push(user.userId);
             }
             const loading = this.$loading();
-            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/group/${this.groupId}/group-user/batch`, {
+            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/group/${this.groupId}/user/batch`, {
                 userIds: userIds, type: this.$constants.batchMethod.DELETE
             }).then(response => {
                 this.loadGroupUsers();

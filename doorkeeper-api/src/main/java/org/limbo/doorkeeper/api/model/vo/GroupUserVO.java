@@ -26,20 +26,12 @@ import lombok.Data;
 @Data
 public class GroupUserVO {
 
+    @Schema(description ="用户在组内的ID")
     private Long groupUserId;
 
+    @Schema(description ="组ID")
     private Long groupId;
 
+    @Schema(description ="用户ID")
     private Long userId;
-
-    private Long realmId;
-
-    @Schema(description ="用户名")
-    private String username;
-
-    @Schema(description ="昵称")
-    private String nickname;
-
-    @Schema(description ="用户描述")
-    private String description;
 }

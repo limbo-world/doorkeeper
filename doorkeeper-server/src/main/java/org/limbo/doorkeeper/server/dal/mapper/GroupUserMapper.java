@@ -18,8 +18,6 @@ package org.limbo.doorkeeper.server.dal.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
-import org.limbo.doorkeeper.api.model.param.group.GroupUserQueryParam;
-import org.limbo.doorkeeper.api.model.vo.GroupUserVO;
 import org.limbo.doorkeeper.server.dal.entity.GroupUser;
 
 import java.util.List;
@@ -31,9 +29,5 @@ import java.util.List;
 public interface GroupUserMapper extends BaseMapper<GroupUser> {
 
     void batchInsertIgnore(@Param("groupUsers") List<GroupUser> groupUsers);
-
-    long listVOCount(GroupUserQueryParam param);
-
-    List<GroupUserVO> listVOS(GroupUserQueryParam param);
 
 }

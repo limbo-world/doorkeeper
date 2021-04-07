@@ -19,19 +19,17 @@ package org.limbo.doorkeeper.server.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.group.GroupUserBatchUpdateParam;
-import org.limbo.doorkeeper.api.model.param.group.GroupUserQueryParam;
 import org.limbo.doorkeeper.api.model.vo.GroupUserVO;
 import org.limbo.doorkeeper.server.controller.BaseController;
 import org.limbo.doorkeeper.server.service.GroupUserService;
-import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * @author Devil
@@ -47,14 +45,13 @@ public class AdminGroupUserController extends BaseController {
     private GroupUserService groupUserService;
 
     @Operation(summary = "分页查询用户组用户列表")
-    @GetMapping("/{groupId}/group-user")
-    public Response<Page<GroupUserVO>> page(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId,
-                                            @ParameterObject GroupUserQueryParam param) {
-        return Response.success(groupUserService.page(getRealmId(), groupId, param));
+    @GetMapping("/{groupId}/user")
+    public Response<List<GroupUserVO>> list(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId) {
+        return Response.success(groupUserService.list(getRealmId(), groupId));
     }
 
     @Operation(summary = "批量修改用户组用户")
-    @PostMapping("/{groupId}/group-user/batch")
+    @PostMapping("/{groupId}/user/batch")
     public Response<Void> batchUser(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId,
                                                @RequestBody @Validated GroupUserBatchUpdateParam param) {
         groupUserService.batchUpdate(groupId, param);

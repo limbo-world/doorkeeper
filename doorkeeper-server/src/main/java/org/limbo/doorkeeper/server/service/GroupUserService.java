@@ -19,10 +19,8 @@ package org.limbo.doorkeeper.server.service;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.check.GroupCheckParam;
 import org.limbo.doorkeeper.api.model.param.group.GroupUserBatchUpdateParam;
-import org.limbo.doorkeeper.api.model.param.group.GroupUserQueryParam;
 import org.limbo.doorkeeper.api.model.vo.GroupUserVO;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
 import org.limbo.doorkeeper.server.dal.entity.Group;
@@ -51,15 +49,11 @@ public class GroupUserService {
     @Autowired
     private GroupMapper groupMapper;
 
-    public Page<GroupUserVO> page(Long realmId, Long groupId, GroupUserQueryParam param) {
-        param.setRealmId(realmId);
-        param.setGroupId(groupId);
-        long count = groupUserMapper.listVOCount(param);
-        param.setTotal(count);
-        if (count > 0) {
-            param.setData(groupUserMapper.listVOS(param));
-        }
-        return param;
+    public List<GroupUserVO> list(Long realmId, Long groupId) {
+        List<GroupUser> groupUsers = groupUserMapper.selectList(Wrappers.<GroupUser>lambdaQuery()
+                .eq(GroupUser::getGroupId, groupId)
+        );
+        return EnhancedBeanUtils.createAndCopyList(groupUsers, GroupUserVO.class);
     }
 
     @Transactional

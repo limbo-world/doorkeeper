@@ -16,7 +16,7 @@ module.exports = {
             'vue-router': 'VueRouter',
             'vue-i18n': 'VueI18n',
             'element-ui': 'ELEMENT',
-            'jsencrypt': 'JSEncrypt'
+            'jsencrypt': 'JSEncrypt',
         },
         module: {
             rules: [

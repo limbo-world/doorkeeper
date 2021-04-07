@@ -37,41 +37,4 @@
         </foreach>
     </insert>
 
-    <sql id="queryCondition">
-        and u.realm_id = #{realmId}
-        <if test="name != null and name != ''">
-            and (u.username = #{name} or u.nickname = #{name})
-        </if>
-        <if test="dimName != null and dimName != ''">
-            <bind name="dimName" value="'%' + dimName + '%'"/>
-            and (u.username like #{dimName} or u.nickname like #{dimName})
-        </if>
-        <choose>
-            <when test="true == isJoin">
-                and gu.group_user_id is not null
-            </when>
-            <when test="false == isJoin">
-                and gu.group_user_id is null
-            </when>
-        </choose>
-    </sql>
-    <select id="listVOCount" resultType="java.lang.Long">
-        select count(*)
-        from `user` u
-        left join group_user gu on gu.user_id = u.user_id and gu.group_id = #{groupId}
-        <where>
-            <include refid="queryCondition"></include>
-        </where>
-    </select>
-    <select id="listVOS" resultMap="UserRoleVO">
-        select gu.group_user_id, gu.group_id, u.user_id, u.username, u.nickname, u.description, u.realm_id
-        from `user` u
-        left join group_user gu on gu.user_id = u.user_id and gu.group_id = #{groupId}
-        <where>
-            <include refid="queryCondition"></include>
-        </where>
-        order by u.user_id desc
-        limit ${offset}, ${size}
-    </select>
-
 </mapper>
