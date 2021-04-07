@@ -20,7 +20,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.user.UserUpdateParam;
+import org.limbo.doorkeeper.api.model.param.user.PasswordUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.AccountGrantVO;
 import org.limbo.doorkeeper.api.model.vo.UserVO;
 import org.limbo.doorkeeper.server.service.LoginService;
@@ -64,7 +64,7 @@ public class SessionController extends BaseController {
 
     @Operation(summary = "修改密码")
     @PutMapping("/change-password")
-    public Response<String> changePassword(@RequestBody UserUpdateParam param) {
+    public Response<String> changePassword(@RequestBody PasswordUpdateParam param) {
         UserVO user = getUser();
         userService.changePassword(user.getRealmId(), user.getUserId(), param);
         return Response.success();

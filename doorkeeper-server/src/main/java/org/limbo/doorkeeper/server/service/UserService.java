@@ -23,10 +23,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.BatchMethod;
 import org.limbo.doorkeeper.api.model.Page;
-import org.limbo.doorkeeper.api.model.param.user.UserAddParam;
-import org.limbo.doorkeeper.api.model.param.user.UserQueryParam;
-import org.limbo.doorkeeper.api.model.param.user.UserRoleBatchUpdateParam;
-import org.limbo.doorkeeper.api.model.param.user.UserUpdateParam;
+import org.limbo.doorkeeper.api.model.param.user.*;
 import org.limbo.doorkeeper.api.model.vo.UserVO;
 import org.limbo.doorkeeper.server.dal.dao.GroupDao;
 import org.limbo.doorkeeper.server.dal.dao.RoleDao;
@@ -173,14 +170,14 @@ public class UserService {
                 .eq(User::getRealmId, realmId);
 
         // 判断是否需要更新密码
-        if (StringUtils.isNotBlank(param.getNewPassword())) {
-            updateWrapper.set(User::getPassword, MD5Utils.md5WithSalt(param.getNewPassword()));
+        if (StringUtils.isNotBlank(param.getPassword())) {
+            updateWrapper.set(User::getPassword, MD5Utils.md5WithSalt(param.getPassword()));
         }
         userMapper.update(null, updateWrapper);
     }
 
     @Transactional
-    public void changePassword(Long realmId, Long userId, UserUpdateParam param) {
+    public void changePassword(Long realmId, Long userId, PasswordUpdateParam param) {
         if (StringUtils.isBlank(param.getNewPassword())) {
             return;
         }

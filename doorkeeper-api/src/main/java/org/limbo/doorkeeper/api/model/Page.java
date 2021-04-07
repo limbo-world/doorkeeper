@@ -50,6 +50,11 @@ public class Page<T> {
     private int size = 20;
 
     /**
+     * 最大条数
+     */
+    public static final int MAX_SIZE = 1000;
+
+    /**
      * 排序字段
      */
     @Parameter(description = "排序字段")

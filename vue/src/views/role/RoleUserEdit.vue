@@ -5,12 +5,6 @@
                 <el-form-item label="名称">
                     <el-input v-model="queryForm.dimName" placeholder="输入名称"></el-input>
                 </el-form-item>
-                <el-form-item label="加入">
-                    <el-select v-model="queryForm.isJoin" clearable>
-                        <el-option :key="true" label="已加入" :value="true"></el-option>
-                        <el-option :key="false" label="未加入" :value="false"></el-option>
-                    </el-select>
-                </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="loadUsers(1)" size="mini" icon="el-icon-search">查询</el-button>
                     <el-button type="primary" @click="usersJoin" size="mini" icon="el-icon-search">加入</el-button>
@@ -64,11 +58,14 @@ export default {
     data() {
         return {
             queryForm: {
-                isJoin: true
+                current: 1,
+                size: 10,
+                total: -1
             },
 
             users: [],
-            selectUsers: []
+            selectUsers: [],
+            roleUsers: []
         }
     },
 
@@ -77,7 +74,7 @@ export default {
     },
 
     created() {
-        pages.roleCombine = this;
+        pages.roleUser = this;
         this.loadUsers();
     },
 
@@ -93,13 +90,26 @@ export default {
                 this.resetPageForm();
             }
             this.startProgress();
-            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/role/${this.roleId}/role-user`, {
-                params: this.queryForm
-            }).then(response => {
-                const page = response.data;
+
+            axios.all([
+                this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/user`, {params: this.queryForm}),
+                this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/role/${this.roleId}/user`)
+            ]).then(axios.spread((usersResponse, roleUsersResponse) => {
+                const page = usersResponse.data;
                 this.queryForm.total = page.total >= 0 ? page.total : this.queryForm.total;
-                this.users = page.data;
-            }).finally(() => this.stopProgress());
+                let users = page.data;
+                let roleUsers = roleUsersResponse.data;
+                for (let roleUser of roleUsers) {
+                    for (let user of users){
+                        if (roleUser.userId === user.userId) {
+                            user.roleId = roleUser.roleId;
+                            user.userRoleId = roleUser.userRoleId;
+                        }
+                    }
+                }
+                this.roleUsers = roleUsers;
+                this.users = users;
+            })).finally(() => this.stopProgress());
         },
 
         handleSelectionChange(val) {
@@ -113,7 +123,7 @@ export default {
                 }
             }
             const loading = this.$loading();
-            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/role/${this.roleId}/role-user/batch`, {
+            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/role/${this.roleId}/user/batch`, {
                 userIds: userIds, type: this.$constants.batchMethod.SAVE
             }).then(response => {
                 this.loadUsers();
@@ -126,7 +136,7 @@ export default {
                 userIds.push(user.userId);
             }
             const loading = this.$loading();
-            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/role/${this.roleId}/role-user/batch`, {
+            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/role/${this.roleId}/user/batch`, {
                 userIds: userIds, type: this.$constants.batchMethod.DELETE
             }).then(response => {
                 this.loadUsers();

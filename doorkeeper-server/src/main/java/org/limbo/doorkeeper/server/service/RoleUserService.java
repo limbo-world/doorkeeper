@@ -17,12 +17,11 @@
 package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.role.RoleUserBatchUpdateParam;
-import org.limbo.doorkeeper.api.model.param.role.RoleUserQueryParam;
-import org.limbo.doorkeeper.api.model.vo.RoleUserVO;
+import org.limbo.doorkeeper.api.model.vo.UserRoleVO;
 import org.limbo.doorkeeper.server.dal.entity.UserRole;
 import org.limbo.doorkeeper.server.dal.mapper.UserRoleMapper;
+import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,15 +40,11 @@ public class RoleUserService {
     @Autowired
     private UserRoleMapper userRoleMapper;
 
-    public Page<RoleUserVO> page(Long realmId, Long roleId, RoleUserQueryParam param) {
-        param.setRealmId(realmId);
-        param.setRoleId(roleId);
-        long count = userRoleMapper.listRoleUserCount(param);
-        param.setTotal(count);
-        if (count > 0) {
-            param.setData(userRoleMapper.listRoleUserVOS(param));
-        }
-        return param;
+    public List<UserRoleVO> list(Long realmId, Long roleId) {
+        List<UserRole> userRoles = userRoleMapper.selectList(Wrappers.<UserRole>lambdaQuery()
+                .eq(UserRole::getRoleId, roleId)
+        );
+        return EnhancedBeanUtils.createAndCopyList(userRoles, UserRoleVO.class);
     }
 
     @Transactional

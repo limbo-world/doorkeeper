@@ -55,6 +55,7 @@ export default {
             if (this.user.newPassword !== value) {
                 cb(new Error('两次输入密码不一致'));
             } else {
+                this.user.password = this.user.newPassword;
                 cb();
             }
         };

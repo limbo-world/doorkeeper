@@ -19,19 +19,17 @@ package org.limbo.doorkeeper.server.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.Response;
 import org.limbo.doorkeeper.api.model.param.role.RoleUserBatchUpdateParam;
-import org.limbo.doorkeeper.api.model.param.role.RoleUserQueryParam;
-import org.limbo.doorkeeper.api.model.vo.RoleUserVO;
+import org.limbo.doorkeeper.api.model.vo.UserRoleVO;
 import org.limbo.doorkeeper.server.controller.BaseController;
 import org.limbo.doorkeeper.server.service.RoleUserService;
-import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * 如果是域角色 clientId 为 0
@@ -47,15 +45,14 @@ public class AdminRoleUserController extends BaseController {
     @Autowired
     private RoleUserService roleUserService;
 
-    @Operation(summary = "查询角色用户列表")
+    @Operation(summary = "查询角色绑定的用户列表")
     @GetMapping("/{roleId}/user")
-    public Response<Page<RoleUserVO>> page(@Validated @NotNull(message = "未提交角色ID") @PathVariable("roleId") Long roleId,
-                                           @ParameterObject RoleUserQueryParam param) {
-        return Response.success(roleUserService.page(getRealmId(), roleId, param));
+    public Response<List<UserRoleVO>> list(@Validated @NotNull(message = "未提交角色ID") @PathVariable("roleId") Long roleId) {
+        return Response.success(roleUserService.list(getRealmId(), roleId));
     }
 
     @Operation(summary = "批量修改角色用户")
-    @PostMapping("/{roleId}/role-user/batch")
+    @PostMapping("/{roleId}/user/batch")
     public Response<Void> batch(@Validated @NotNull(message = "未提交角色ID") @PathVariable("roleId") Long roleId,
                                 @RequestBody @Validated RoleUserBatchUpdateParam param) {
         roleUserService.batchUpdate(roleId, param);

@@ -5,12 +5,6 @@
                 <el-form-item label="名称">
                     <el-input v-model="queryForm.dimName" placeholder="输入名称"></el-input>
                 </el-form-item>
-                <el-form-item label="加入">
-                    <el-select v-model="queryForm.isJoin" clearable>
-                        <el-option :key="true" label="已加入" :value="true"></el-option>
-                        <el-option :key="false" label="未加入" :value="false"></el-option>
-                    </el-select>
-                </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="loadGroupUsers(1)" size="mini" icon="el-icon-search">查询
                     </el-button>
@@ -64,8 +58,7 @@ export default {
             queryForm: {
                 current: 1,
                 size: 10,
-                total: -1,
-                isJoin: true
+                total: -1
             },
             users: [],
             selectUsers: [],

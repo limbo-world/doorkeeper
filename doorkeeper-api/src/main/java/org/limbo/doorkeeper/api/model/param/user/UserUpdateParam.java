@@ -35,11 +35,8 @@ public class UserUpdateParam {
     @Schema(description ="是否启用")
     private Boolean isEnabled;
 
-    @Schema(description ="旧密码")
-    private String oldPassword;
-
-    @Schema(description ="新密码")
-    private String newPassword;
+    @Schema(description ="密码")
+    private String password;
 
     @Schema(description ="邮箱")
     private String email;

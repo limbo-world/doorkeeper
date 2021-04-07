@@ -14,31 +14,22 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.vo;
+package org.limbo.doorkeeper.api.model.param.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
  * @author Devil
- * @date 2021/1/5 1:55 下午
+ * @date 2021/1/9 7:56 下午
  */
 @Data
-public class RoleUserVO {
+public class PasswordUpdateParam {
 
-    private Long userRoleId;
+    @Schema(description ="旧密码")
+    private String oldPassword;
 
-    private Long userId;
-
-    private Long roleId;
-
-    @Schema(description ="用户名")
-    private String username;
-
-    @Schema(description ="昵称")
-    private String nickname;
-
-    @Schema(description ="描述")
-    private String description;
+    @Schema(description ="新密码")
+    private String newPassword;
 
 }
