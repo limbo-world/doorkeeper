@@ -68,10 +68,13 @@ export default {
         return {
             queryForm: {
                 clientId: null,
+                name: '',
+                size: 1000,
             },
 
             roles: [],
             clients: [],
+            groupRoles: [],
         }
     },
 
@@ -98,25 +101,43 @@ export default {
             }).finally(() => this.stopProgress());
         },
 
-        loadRoles() {
+        loadRoles(current) {
+            if (1 === current) {
+                this.resetPageForm();
+            }
             this.startProgress();
-            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/group/${this.groupId}/group-role`, {
-                params: this.queryForm
-            }).then(response => {
-                this.roles = response.data;
-            }).finally(() => this.stopProgress());
+            axios.all([
+                this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/role`, {params: this.queryForm}),
+                this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/group/${this.groupId}/role`)
+            ]).then(axios.spread((rolesResponse, groupRolesResponse) => {
+                const page = rolesResponse.data;
+                this.queryForm.total = page.total >= 0 ? page.total : this.queryForm.total;
+                let roles = page.data;
+                let groupRoles = groupRolesResponse.data;
+                for (let groupRole of groupRoles) {
+                    for (let role of roles){
+                        if (groupRole.roleId === role.roleId) {
+                            role.groupId = groupRole.groupId;
+                            role.groupRoleId = groupRole.groupRoleId;
+                            role.isExtend = groupRole.isExtend;
+                        }
+                    }
+                }
+                this.groupRoles = groupRoles;
+                this.roles = roles;
+            })).finally(() => this.stopProgress());
         },
 
         bindRole(v, roleId) {
             const loading = this.$loading();
             if (v) { // 新增
-                this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/group/${this.groupId}/group-role/batch`, {
+                this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/group/${this.groupId}/role/batch`, {
                     roles: [{roleId: roleId}], type: this.$constants.batchMethod.SAVE
                 }).then(response => {
                     this.loadRoles();
                 }).finally(() => loading.close());
             } else { // 删除
-                this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/group/${this.groupId}/group-role/batch`, {
+                this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/group/${this.groupId}/role/batch`, {
                     roleIds: [roleId], type: this.$constants.batchMethod.DELETE
                 }).then(response => {
                     this.loadRoles();
@@ -126,7 +147,7 @@ export default {
 
         updateRole(v, roleId) {
             const loading = this.$loading();
-            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/group/${this.groupId}/group-role/batch`, {
+            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/group/${this.groupId}/role/batch`, {
                 roles: [{roleId: roleId, isExtend: v}], type: this.$constants.batchMethod.UPDATE
             }).then(response => {
                 this.loadRoles();

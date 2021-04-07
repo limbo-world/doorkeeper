@@ -18,20 +18,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="org.limbo.doorkeeper.server.dal.mapper.GroupRoleMapper" >
 
-    <resultMap id="GroupRoleVO" type="org.limbo.doorkeeper.api.model.vo.GroupRoleVO">
-        <result column="group_role_id" property="groupRoleId" jdbcType="BIGINT" javaType="java.lang.Long" />
-        <result column="group_id" property="groupId" jdbcType="BIGINT" javaType="java.lang.Long" />
-        <result column="role_id" property="roleId" jdbcType="BIGINT" javaType="java.lang.Long" />
-        <result column="realm_id" property="realmId" jdbcType="BIGINT" javaType="java.lang.Long" />
-        <result column="client_id" property="clientId" jdbcType="BIGINT" javaType="java.lang.Long" />
-        <result column="name" property="name" jdbcType="VARCHAR" javaType="java.lang.String" />
-        <result column="description" property="description" jdbcType="VARCHAR" javaType="java.lang.String" />
-        <result column="is_default" property="isDefault" jdbcType="BIT" javaType="java.lang.Boolean" />
-        <result column="is_extend" property="isExtend" jdbcType="BIT" javaType="java.lang.Boolean" />
-        <result column="is_combine" property="isCombine" jdbcType="BIT" javaType="java.lang.Boolean" />
-        <result column="is_enabled" property="isEnabled" jdbcType="BIT" javaType="java.lang.Boolean" />
-    </resultMap>
-
     <insert id="batchInsertIgnore" parameterType="org.limbo.doorkeeper.server.dal.entity.GroupRole">
         INSERT ignore INTO group_role (
         group_id, role_id
@@ -40,25 +26,5 @@
             ( #{groupRole.groupId}, #{groupRole.roleId} )
         </foreach>
     </insert>
-
-    <select id="listVOS" resultMap="GroupRoleVO">
-        select r.*, gr.group_role_id, gr.group_id, gr.is_extend
-        from `role` r
-        left join group_role gr on gr.role_id = r.role_id and gr.group_id = #{groupId}
-        <where>
-            and r.realm_id = #{realmId}
-            <if test="clientId != null">
-                and r.client_id like #{clientId}
-            </if>
-            <if test="name != null and name != ''">
-                and r.name = #{name}
-            </if>
-            <if test="dimName != null and dimName != ''">
-                <bind name="dimName" value="'%' + dimName + '%'"/>
-                and r.name like #{dimName}
-            </if>
-        </where>
-        order by r.role_id desc
-    </select>
 
 </mapper>

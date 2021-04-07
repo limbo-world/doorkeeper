@@ -26,32 +26,14 @@ import lombok.Data;
 @Data
 public class GroupRoleVO {
 
+    @Schema(description ="组角色ID")
     private Long groupRoleId;
 
+    @Schema(description ="组ID")
     private Long groupId;
 
+    @Schema(description ="角色ID")
     private Long roleId;
-
-    @Schema(description ="角色所属域")
-    private Long realmId;
-
-    @Schema(description ="角色所委托方")
-    private Long clientId;
-
-    @Schema(description ="角色名称")
-    private String name;
-
-    @Schema(description ="角色描述")
-    private String description;
-
-    @Schema(description ="是否组合角色")
-    private Boolean isCombine;
-
-    @Schema(description ="是否启用")
-    private Boolean isEnabled;
-
-    @Schema(description ="是否默认添加")
-    private Boolean isDefault;
 
     @Schema(description = "是否向下延伸，true的情况下，会把角色传递给子用户组的用户")
     private Boolean isExtend;

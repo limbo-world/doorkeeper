@@ -21,10 +21,10 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.model.param.group.GroupRoleAddParam;
 import org.limbo.doorkeeper.api.model.param.group.GroupRoleBatchUpdateParam;
-import org.limbo.doorkeeper.api.model.param.group.GroupRoleQueryParam;
 import org.limbo.doorkeeper.api.model.vo.GroupRoleVO;
 import org.limbo.doorkeeper.server.dal.entity.GroupRole;
 import org.limbo.doorkeeper.server.dal.mapper.GroupRoleMapper;
+import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,10 +43,11 @@ public class GroupRoleService {
     @Autowired
     private GroupRoleMapper groupRoleMapper;
 
-    public List<GroupRoleVO> list(Long realmId, Long groupId, GroupRoleQueryParam param) {
-        param.setRealmId(realmId);
-        param.setGroupId(groupId);
-        return groupRoleMapper.listVOS(param);
+    public List<GroupRoleVO> list(Long realmId, Long groupId) {
+        List<GroupRole> groupRoles = groupRoleMapper.selectList(Wrappers.<GroupRole>lambdaQuery()
+                .eq(GroupRole::getGroupId, groupId)
+        );
+        return EnhancedBeanUtils.createAndCopyList(groupRoles, GroupRoleVO.class);
     }
 
     @Transactional
