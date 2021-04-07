@@ -25,6 +25,15 @@
                     <el-input type="textarea" v-model="resource.description"></el-input>
                 </el-form-item>
                 <el-form-item label="URI">
+                    <el-tooltip class="item" effect="dark" placement="left">
+                        <div slot="content">
+                            <p>Uri 支持Ant风格</p>
+                            <p>1）?：匹配任何单字符</p>
+                            <p>2）*：匹配0或者任意数量的字符</p>
+                            <p>3）**：匹配0或者更多的目录</p>
+                        </div>
+                        <i class="el-icon-question"></i>
+                    </el-tooltip>
                     <el-row v-for="(uri, idx) in resource.uris" :key="uri.resourceUriId" class="uri-row">
                         <el-select v-model="uri.method" placeholder="http请求方式">
                             <el-option v-for="item in $constants.httpMethod" :key="item.value" :label="item.label"
@@ -38,17 +47,8 @@
                             <el-option v-for="item in $constants.httpMethod" :key="item.value" :label="item.label"
                                        :value="item.value"></el-option>
                         </el-select>
-                        <el-input v-model="uriString" style="max-width:600px;"></el-input>
+                        <el-input v-model="uriString" style="max-width:600px;" @blur="addUri"></el-input>
                         <el-button @click="addUri" type="primary" size="mini" icon="el-icon-plus" circle></el-button>
-                        <el-tooltip class="item" effect="dark" placement="left">
-                            <div slot="content">
-                                <p>Uri 支持Ant风格</p>
-                                <p>1）?：匹配任何单字符</p>
-                                <p>2）*：匹配0或者任意数量的字符</p>
-                                <p>3）**：匹配0或者更多的目录</p>
-                            </div>
-                            <i class="el-icon-question"></i>
-                        </el-tooltip>
                     </el-row>
                 </el-form-item>
                 <el-form-item label="标签">

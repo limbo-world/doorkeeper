@@ -16,7 +16,7 @@
 
 <template>
     <el-container class="resource-page">
-        <el-header class="padding-top-xs" height="80px">
+        <el-header class="padding-top-xs" height="100px">
             <el-row>
                 <el-form ref="searchForm" :inline="true" size="mini">
                     <el-form-item label="名称">
@@ -52,7 +52,7 @@
         </el-header>
 
         <el-main>
-            <el-table :data="resources" size="mini" @selection-change="handleSelectionChange">
+            <el-table :data="resources" size="mini" height="300" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="50"></el-table-column>
                 <el-table-column prop="resourceId" label="ID"></el-table-column>
                 <el-table-column prop="name" label="名称"></el-table-column>
