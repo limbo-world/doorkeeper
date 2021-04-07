@@ -48,7 +48,7 @@ public class AdminRoleUserController extends BaseController {
     private RoleUserService roleUserService;
 
     @Operation(summary = "查询角色用户列表")
-    @GetMapping("/{roleId}/role-user")
+    @GetMapping("/{roleId}/user")
     public Response<Page<RoleUserVO>> page(@Validated @NotNull(message = "未提交角色ID") @PathVariable("roleId") Long roleId,
                                            @ParameterObject RoleUserQueryParam param) {
         return Response.success(roleUserService.page(getRealmId(), roleId, param));

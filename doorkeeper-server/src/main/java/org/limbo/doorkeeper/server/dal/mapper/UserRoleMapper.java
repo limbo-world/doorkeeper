@@ -18,9 +18,7 @@ package org.limbo.doorkeeper.server.dal.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.limbo.doorkeeper.api.model.param.role.RoleUserQueryParam;
-import org.limbo.doorkeeper.api.model.param.user.UserRoleQueryParam;
 import org.limbo.doorkeeper.api.model.vo.RoleUserVO;
-import org.limbo.doorkeeper.api.model.vo.UserRoleVO;
 import org.limbo.doorkeeper.server.dal.entity.UserRole;
 
 import java.util.List;
@@ -30,8 +28,6 @@ import java.util.List;
  * @date 2021/1/12 3:32 下午
  */
 public interface UserRoleMapper extends BaseMapper<UserRole> {
-
-    List<UserRoleVO> listUserRoleVOS(UserRoleQueryParam param);
 
     long listRoleUserCount(RoleUserQueryParam param);
 
