@@ -30,7 +30,7 @@ import org.limbo.doorkeeper.api.model.vo.UserVO;
 import org.limbo.doorkeeper.api.model.vo.check.AuthorizationCheckResult;
 import org.limbo.doorkeeper.server.service.GroupUserService;
 import org.limbo.doorkeeper.server.service.UserRoleService;
-import org.limbo.doorkeeper.server.support.auth.AuthorizationChecker;
+import org.limbo.doorkeeper.server.support.auth.AuthorizationCheckerFactory;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -51,7 +51,7 @@ import java.util.List;
 public class AuthorizationController extends BaseController {
 
     @Autowired
-    private AuthorizationChecker authorizationChecker;
+    private AuthorizationCheckerFactory authorizationCheckerFactory;
 
     @Autowired
     private UserRoleService userRoleService;
@@ -63,7 +63,7 @@ public class AuthorizationController extends BaseController {
     @GetMapping("/resource")
     public Response<List<ResourceVO>> checkResource(@ParameterObject @Validated AuthorizationCheckParam param) {
         param.setUserId(getUser().getUserId());
-        AuthorizationCheckResult check = authorizationChecker.check(param);
+        AuthorizationCheckResult check = authorizationCheckerFactory.createChecker().check(param);
         return Response.success(check.getResources());
     }
 

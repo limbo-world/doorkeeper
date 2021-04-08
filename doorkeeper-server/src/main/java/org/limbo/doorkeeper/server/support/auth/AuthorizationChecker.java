@@ -40,8 +40,6 @@ import org.limbo.doorkeeper.server.dal.entity.ResourceUri;
 import org.limbo.doorkeeper.server.dal.mapper.*;
 import org.limbo.doorkeeper.server.support.auth.policies.PolicyCheckerFactory;
 import org.limbo.doorkeeper.server.utils.EasyAntPathMatcher;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.function.Function;
@@ -54,31 +52,30 @@ import java.util.stream.Collectors;
  * @date 2021/3/31 2:04 下午
  */
 @Slf4j
-@Component
 public class AuthorizationChecker {
 
-    @Autowired
+    @Setter
     private PermissionMapper permissionMapper;
 
-    @Autowired
+    @Setter
     private PolicyDao policyDao;
 
-    @Autowired
+    @Setter
     private ClientMapper clientMapper;
 
-    @Autowired
+    @Setter
     private PermissionResourceMapper permissionResourceMapper;
 
-    @Autowired
+    @Setter
     private ResourceMapper resourceMapper;
 
-    @Autowired
+    @Setter
     private ResourceUriMapper resourceUriMapper;
 
     /**
      * 策略检查器工厂
      */
-    @Autowired
+    @Setter
     private PolicyCheckerFactory policyCheckerFactory;
 
     /**

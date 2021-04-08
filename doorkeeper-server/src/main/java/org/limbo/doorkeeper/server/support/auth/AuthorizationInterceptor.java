@@ -67,7 +67,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     private ClientMapper clientMapper;
 
     @Autowired
-    private AuthorizationChecker authorizationChecker;
+    private AuthorizationCheckerFactory authorizationCheckerFactory;
 
     @Autowired
     private PolicyCheckerFactory policyCheckerFactory;
@@ -119,10 +119,11 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         AuthorizationCheckParam checkParam = new AuthorizationCheckParam()
                 .setUserId(userId).setClientId(client.getClientId())
                 .setUris(Collections.singletonList(HttpMethod.parse(request.getMethod()) + DoorkeeperConstants.KV_DELIMITER + request.getRequestURI()));
-        AuthorizationCheckResult checkResult = authorizationChecker.check(checkParam);
+        AuthorizationCheckResult checkResult = authorizationCheckerFactory.createChecker().check(checkParam);
 
         if (checkResult.getResources().size() <= 0) {
             WebUtil.writeToResponse(response, JacksonUtil.toJSONString(Response.unauthorized(AuthorizationException.msg)));
+            return false;
         }
 
         return true;
