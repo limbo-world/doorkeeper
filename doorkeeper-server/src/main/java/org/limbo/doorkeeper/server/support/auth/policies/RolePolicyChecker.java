@@ -17,16 +17,13 @@
 package org.limbo.doorkeeper.server.support.auth.policies;
 
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
 import org.limbo.doorkeeper.api.model.param.check.RoleCheckParam;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyRoleVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
-import org.limbo.doorkeeper.server.dal.mapper.GroupMapper;
-import org.limbo.doorkeeper.server.dal.mapper.GroupRoleMapper;
-import org.limbo.doorkeeper.server.dal.mapper.GroupUserMapper;
-import org.limbo.doorkeeper.server.dal.mapper.RoleMapper;
 import org.limbo.doorkeeper.server.service.UserRoleService;
 import org.limbo.doorkeeper.server.support.auth.LogicChecker;
 
@@ -37,22 +34,11 @@ import java.util.stream.Collectors;
  * @author brozen
  * @date 2021/1/18
  */
+@Slf4j
 public class RolePolicyChecker extends AbstractPolicyChecker {
 
     @Setter
     private UserRoleService userRoleService;
-
-    @Setter
-    private GroupUserMapper groupUserMapper;
-
-    @Setter
-    private GroupRoleMapper groupRoleMapper;
-
-    @Setter
-    private GroupMapper groupMapper;
-
-    @Setter
-    private RoleMapper roleMapper;
 
     public RolePolicyChecker(PolicyVO policy) {
         super(policy);

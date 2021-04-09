@@ -16,15 +16,18 @@
 
 package org.limbo.doorkeeper.server.support.auth.policies;
 
+import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.Logic;
 import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
+import org.limbo.doorkeeper.server.utils.JacksonUtil;
 
 /**
  * @author brozen
  * @date 2021/1/18
  */
+@Slf4j
 public abstract class AbstractPolicyChecker implements PolicyChecker {
 
     /**
@@ -45,7 +48,14 @@ public abstract class AbstractPolicyChecker implements PolicyChecker {
     @Override
     public Intention check(AuthorizationCheckParam authorizationCheckParam) {
         Intention intention = Intention.parse(policy.getIntention());
-        return reverseIntentionIfNotPassed(intention, doCheck(authorizationCheckParam));
+        boolean checkPassed;
+        try {
+            checkPassed = doCheck(authorizationCheckParam);
+        } catch (Exception e) {
+            log.error("策略校验失败 " + JacksonUtil.toJSONString(policy));
+            throw e;
+        }
+        return reverseIntentionIfNotPassed(intention, checkPassed);
     }
 
     /**

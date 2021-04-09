@@ -17,6 +17,7 @@
 package org.limbo.doorkeeper.server.support.auth.policies;
 
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyUserVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
@@ -29,6 +30,7 @@ import java.util.Objects;
  * @author brozen
  * @date 2021/1/18
  */
+@Slf4j
 public class UserPolicyChecker extends AbstractPolicyChecker {
 
     @Setter
