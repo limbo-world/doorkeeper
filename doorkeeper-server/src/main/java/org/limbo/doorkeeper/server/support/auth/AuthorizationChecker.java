@@ -184,15 +184,15 @@ public class AuthorizationChecker {
      * @return 返回资源列表
      */
     protected List<ResourceVO> findResources() {
-        // 获取uri资源id
         List<Long> resourceIds = null;
+        // 获取uri资源id
         if (CollectionUtils.isNotEmpty(checkParam.getUris())) {
             // client拥有的全部uri资源
             List<ResourceUri> clientUris = resourceUriMapper.selectList(Wrappers.<ResourceUri>lambdaQuery()
                     .eq(ResourceUri::getRealmId, getClient().getRealmId())
                     .eq(ResourceUri::getClientId, getClient().getClientId())
             );
-
+            // 根据路径和请求方式，获取资源ID
             resourceIds = clientUris.stream()
                     .filter(resourceUri -> {
                         for (String str : checkParam.getUris()) {
@@ -203,7 +203,7 @@ public class AuthorizationChecker {
                             } else {
                                 String[] split = str.split(DoorkeeperConstants.KV_DELIMITER);
                                 requestMethod = split[0];
-                                requestUri = split[0];
+                                requestUri = split[1];
                             }
 
                             // 判断配置的uri是否需要方法
@@ -222,6 +222,12 @@ public class AuthorizationChecker {
                     })
                     .map(ResourceUri::getResourceId)
                     .collect(Collectors.toList());
+
+            // 如果匹配到的资源为空 则返回空
+            if (CollectionUtils.isEmpty(resourceIds)) {
+                return new ArrayList<>();
+            }
+
         }
         ResourceQueryParam param = new ResourceQueryParam();
         param.setRealmId(getClient().getRealmId());
