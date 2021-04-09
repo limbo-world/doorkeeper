@@ -42,7 +42,6 @@
 
 <script>
 
-import AppConstants from "@/utils/AppConstants";
 import {mapState, mapActions} from 'vuex';
 
 export default {

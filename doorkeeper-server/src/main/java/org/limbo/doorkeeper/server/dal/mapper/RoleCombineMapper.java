@@ -17,17 +17,11 @@
 package org.limbo.doorkeeper.server.dal.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.limbo.doorkeeper.api.model.param.role.RoleCombineQueryParam;
-import org.limbo.doorkeeper.api.model.vo.RoleCombineVO;
 import org.limbo.doorkeeper.server.dal.entity.RoleCombine;
-
-import java.util.List;
 
 /**
  * @author Devil
  * @date 2021/1/3 6:08 下午
  */
 public interface RoleCombineMapper extends BaseMapper<RoleCombine> {
-
-    List<RoleCombineVO> listVOSByParent(RoleCombineQueryParam param);
 }

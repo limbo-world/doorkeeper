@@ -18,10 +18,10 @@ package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.limbo.doorkeeper.api.model.param.role.RoleCombineBatchUpdateParam;
-import org.limbo.doorkeeper.api.model.param.role.RoleCombineQueryParam;
 import org.limbo.doorkeeper.api.model.vo.RoleCombineVO;
-import org.limbo.doorkeeper.server.dal.mapper.RoleCombineMapper;
 import org.limbo.doorkeeper.server.dal.entity.RoleCombine;
+import org.limbo.doorkeeper.server.dal.mapper.RoleCombineMapper;
+import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,10 +40,11 @@ public class RoleCombineService {
     @Autowired
     private RoleCombineMapper roleCombineMapper;
 
-    public List<RoleCombineVO> list(Long realmId, Long parentId, RoleCombineQueryParam param) {
-        param.setRealmId(realmId);
-        param.setParentId(parentId);
-        return roleCombineMapper.listVOSByParent(param);
+    public List<RoleCombineVO> list(Long realmId, Long parentId) {
+        List<RoleCombine> roleCombines = roleCombineMapper.selectList(Wrappers.<RoleCombine>lambdaQuery()
+                .eq(RoleCombine::getParentId, parentId)
+        );
+        return EnhancedBeanUtils.createAndCopyList(roleCombines, RoleCombineVO.class);
     }
 
     @Transactional

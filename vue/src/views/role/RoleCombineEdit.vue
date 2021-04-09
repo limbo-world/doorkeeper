@@ -33,7 +33,6 @@
 
 <script>
 
-import AppConstants from "@/utils/AppConstants";
 import {mapState, mapActions} from 'vuex';
 
 export default {
@@ -52,13 +51,15 @@ export default {
         return {
             queryForm: {
                 name: '',
+                size: 1000
             },
 
             roles: [],
             clients: [],
+            roleCombines: [],
+
             dialogOpened: false,
-            dialogProcessing: false,
-            batchMethod: AppConstants.batchMethod
+            dialogProcessing: false
         }
     },
 
@@ -74,19 +75,37 @@ export default {
     methods: {
         ...mapActions('ui', ['startProgress', 'stopProgress']),
 
-        loadRoles() {
+        loadRoles(current) {
+            if (1 === current) {
+                this.resetPageForm();
+            }
             this.startProgress();
-            this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/role/${this.roleId}/role-combine`, {
-                params: {...this.queryForm, clientId: this.clientId}
-            }).then(response => {
-                this.roles = response.data;
-            }).finally(() => this.stopProgress());
+
+            axios.all([
+                this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/role`, {params: {...this.queryForm, clientId: this.clientId}}),
+                this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/role/${this.roleId}/combine`)
+            ]).then(axios.spread((rolesResponse, roleCombinesResponse) => {
+                const page = rolesResponse.data;
+                this.queryForm.total = page.total >= 0 ? page.total : this.queryForm.total;
+                let roles = page.data;
+                let roleCombines = roleCombinesResponse.data;
+                for (let roleCombine of roleCombines) {
+                    for (let role of roles){
+                        if (roleCombine.roleId === role.roleId) {
+                            role.parentId = roleCombine.parentId;
+                            role.roleCombineId = roleCombine.roleCombineId;
+                        }
+                    }
+                }
+                this.roleCombines = roleCombines;
+                this.roles = roles;
+            })).finally(() => this.stopProgress());
         },
 
         bindRole(v, roleId) {
             const loading = this.$loading();
-            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/role/${this.roleId}/role-combine/batch`, {
-                roleIds: [roleId], type: v ? this.batchMethod.SAVE : this.batchMethod.DELETE
+            this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/role/${this.roleId}/combine/batch`, {
+                roleIds: [roleId], type: v ? this.$constants.batchMethod.SAVE : this.$constants.batchMethod.DELETE
             }).then(response => {
                 this.loadRoles();
             }).finally(() => loading.close());

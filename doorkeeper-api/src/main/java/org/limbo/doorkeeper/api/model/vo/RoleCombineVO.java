@@ -26,6 +26,7 @@ import lombok.Data;
 @Data
 public class RoleCombineVO {
 
+    @Schema(description ="角色组合ID")
     private Long roleCombineId;
 
     @Schema(description ="上级角色")
@@ -33,10 +34,4 @@ public class RoleCombineVO {
 
     @Schema(description ="下级角色")
     private Long roleId;
-
-    @Schema(description ="角色名称")
-    private String name;
-
-    @Schema(description ="角色名称")
-    private String description;
 }
