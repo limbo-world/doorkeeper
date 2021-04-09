@@ -45,7 +45,7 @@ public class AuthorizationCheckParam {
     @Parameter(description = "标签 k=v")
     private List<String> tags;
 
-    @Parameter(description = "uri列表 method=uri 如 get=/api/test")
+    @Parameter(description = "uri列表 method=uri 如 get=/api/test 或者 /api/test")
     private List<String> uris;
 
     @Parameter(description = "进行权限校验时附带的参数 k=v")

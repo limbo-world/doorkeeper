@@ -108,7 +108,7 @@ public class AuthorizationChecker {
             List<ResourceVO> result = new ArrayList<>();
 
             // 找到待检测的启用资源
-            List<ResourceVO> findResources = assignCheckingResources();
+            List<ResourceVO> findResources = findResources();
             ASSIGNER_ITER:
             for (ResourceVO findResource : findResources) {
                 // 遍历资源依次拿到权限Permission
@@ -179,11 +179,11 @@ public class AuthorizationChecker {
     }
 
     /**
-     * 决定资源约束对应着哪些资源。
+     * 根据参数获取需要校验的资源
      *
      * @return 返回资源列表
      */
-    protected List<ResourceVO> assignCheckingResources() {
+    protected List<ResourceVO> findResources() {
         // 获取uri资源id
         List<Long> resourceIds = null;
         if (CollectionUtils.isNotEmpty(checkParam.getUris())) {
@@ -196,14 +196,28 @@ public class AuthorizationChecker {
             resourceIds = clientUris.stream()
                     .filter(resourceUri -> {
                         for (String str : checkParam.getUris()) {
-                            String[] split = str.split(DoorkeeperConstants.KV_DELIMITER);
-                            if (resourceUri.getMethod() != HttpMethod.parse(split[0])) {
-                                return false;
+                            String requestMethod = "";
+                            String requestUri = "";
+                            if (!str.contains(DoorkeeperConstants.KV_DELIMITER)) {
+                                requestUri = str;
+                            } else {
+                                String[] split = str.split(DoorkeeperConstants.KV_DELIMITER);
+                                requestMethod = split[0];
+                                requestUri = split[0];
                             }
-                            if (pathMatch(resourceUri.getUri(), split[1])) {
+
+                            // 判断配置的uri是否需要方法
+                            if (resourceUri.getMethod() != null) {
+                                if (resourceUri.getMethod() != HttpMethod.parse(requestMethod)) {
+                                    continue;
+                                }
+                            }
+                            if (pathMatch(resourceUri.getUri(), requestUri)) {
                                 return true;
                             }
+
                         }
+                        // 如果都不匹配，返回匹配失败
                         return false;
                     })
                     .map(ResourceUri::getResourceId)

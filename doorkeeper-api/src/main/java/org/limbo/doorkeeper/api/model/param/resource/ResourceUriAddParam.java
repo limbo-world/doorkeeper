@@ -21,7 +21,6 @@ import lombok.Data;
 import org.limbo.doorkeeper.api.constants.HttpMethod;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 /**
  * @author Devil
@@ -34,7 +33,6 @@ public class ResourceUriAddParam {
     @Schema(required = true, description = "uri，ant 风格")
     private String uri;
 
-    @NotNull(message = "method不能为空")
-    @Schema(required = true, description = "http method")
+    @Schema(description = "http method 如果为空 表示适配所有请求方式")
     private HttpMethod method;
 }
