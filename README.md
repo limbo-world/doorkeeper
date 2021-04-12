@@ -29,7 +29,7 @@ doorkeeper是一个可扩展的权限认证管理平台，可以在此平台上�
 
 ## 概念
 
-![数据模型](https://github.com/LimboHome/limbo-authc/raw/master/doc/auth-model.jpg)
+![数据模型](https://github.com/LimboHome/limbo-authc/raw/master/doc/auth-model.png)
 
 - **域** :   
   域表示独立的一块区域，域与域之间的所有数据是隔离的，如用户等。Doorkeeper属于特殊的域，用于数据管理操作。
