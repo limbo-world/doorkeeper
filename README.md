@@ -5,6 +5,7 @@
 - [介绍](#%E4%BB%8B%E7%BB%8D)
   - [技术选型](#%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B)
   - [概念](#%E6%A6%82%E5%BF%B5)
+  - [处理流程](#%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B)
 - [使用说明](#%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E)
 - [安装教程](#%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B)
 - [QA](#qa)
@@ -27,6 +28,8 @@ doorkeeper是一个可扩展的权限认证管理平台，可以在此平台上�
 - MySQL 持久化关系数据库；
 
 ## 概念
+
+![数据模型](https://github.com/LimboHome/limbo-authc/raw/master/doc/auth-model.jpg)
 
 - **域** :   
   域表示独立的一块区域，域与域之间的所有数据是隔离的，如用户等。Doorkeeper属于特殊的域，用于数据管理操作。
@@ -52,6 +55,10 @@ doorkeeper是一个可扩展的权限认证管理平台，可以在此平台上�
      
 - **权限** :   
   权限其实就是真正定义资源和访问策略的绑定关系的一个模型。
+  
+## 处理流程
+
+![处理流程](https://github.com/LimboHome/limbo-authc/raw/master/doc/auth-process.png)
 
 # 使用说明
 
