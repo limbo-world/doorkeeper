@@ -29,6 +29,7 @@ import org.limbo.doorkeeper.server.dal.entity.GroupUser;
 import org.limbo.doorkeeper.server.dal.mapper.GroupMapper;
 import org.limbo.doorkeeper.server.dal.mapper.GroupUserMapper;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -122,6 +123,24 @@ public class GroupUserService {
         }
 
         return EnhancedBeanUtils.createAndCopyList(groups, GroupVO.class);
+    }
+
+    public List<GroupUserVO> getByUser(Long userId) {
+        Verifies.notNull(userId, "用户ID不能为空");
+        List<GroupUser> groupUsers = groupUserMapper.selectList(Wrappers.<GroupUser>lambdaQuery()
+                .eq(GroupUser::getUserId, userId)
+        );
+        return EnhancedBeanUtils.createAndCopyList(groupUsers, GroupUserVO.class);
+    }
+
+    public GroupUserVO getByUserAndGroup(Long userId, Long groupId) {
+        Verifies.notNull(userId, "用户ID不能为空");
+        Verifies.notNull(groupId, "用户组ID不能为空");
+        GroupUser groupUser = groupUserMapper.selectOne(Wrappers.<GroupUser>lambdaQuery()
+                .eq(GroupUser::getUserId, userId)
+                .eq(GroupUser::getGroupId, groupId)
+        );
+        return EnhancedBeanUtils.createAndCopy(groupUser, GroupUserVO.class);
     }
 
 }
