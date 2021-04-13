@@ -170,9 +170,7 @@ public class DoorkeeperService {
         // 用户加入用户组
         GroupUserBatchUpdateParam doorkeeperRealmUserGroupParam = new GroupUserBatchUpdateParam();
         doorkeeperRealmUserGroupParam.setType(BatchMethod.SAVE);
-        GroupUserUpdateParam groupUserUpdateParam = new GroupUserUpdateParam();
-        groupUserUpdateParam.setUserId(userId);
-        doorkeeperRealmUserGroupParam.setUsers(Collections.singletonList(groupUserUpdateParam));
+        doorkeeperRealmUserGroupParam.setUserIds(Collections.singletonList(userId));
         groupUserService.batchUpdate(group.getGroupId(), doorkeeperRealmUserGroupParam);
     }
 

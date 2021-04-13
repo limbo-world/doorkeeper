@@ -89,10 +89,10 @@ public class GroupService {
         }
 
         // 用户组用户
-        if (CollectionUtils.isNotEmpty(param.getUsers())) {
+        if (CollectionUtils.isNotEmpty(param.getUserIds())) {
             GroupUserBatchUpdateParam batchUpdateParam  = new GroupUserBatchUpdateParam();
             batchUpdateParam.setType(BatchMethod.SAVE);
-            batchUpdateParam.setUsers(param.getUsers());
+            batchUpdateParam.setUserIds(param.getUserIds());
             groupUserService.batchUpdate(group.getGroupId(), batchUpdateParam);
         }
         // 用户组策略

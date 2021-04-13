@@ -37,6 +37,9 @@ public class GroupUserBatchUpdateParam {
 
     @NotEmpty(message = "用户列表不能为空")
     @Schema(description ="用户列表", required = true)
-    private List<GroupUserUpdateParam> users;
+    private List<Long> userIds;
+
+    @Schema(description ="扩展字段 新增/更新时使用")
+    private String extend;
 
 }
