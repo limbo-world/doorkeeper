@@ -58,17 +58,6 @@ public class GroupUserService {
     }
 
     @Transactional
-    public void update(Long realmId, Long groupId, Long groupUserId, String extend) {
-        if (StringUtils.isNotBlank(extend)) {
-            return;
-        }
-        groupUserMapper.update(null, Wrappers.<GroupUser>lambdaUpdate()
-                .set(GroupUser::getExtend, extend)
-                .eq(GroupUser::getGroupUserId, groupUserId)
-        );
-    }
-
-    @Transactional
     public void batchUpdate(Long groupId, GroupUserBatchUpdateParam param) {
         if (CollectionUtils.isEmpty(param.getUsers())) {
             return;
@@ -85,6 +74,14 @@ public class GroupUserService {
                     groupUsers.add(groupUser);
                 }
                 groupUserMapper.batchInsertIgnore(groupUsers);
+                break;
+            case UPDATE:
+                for (GroupUserUpdateParam user : param.getUsers()) {
+                    GroupUser groupUser = new GroupUser();
+                    groupUser.setGroupUserId(user.getGroupUserId());
+                    groupUser.setExtend(user.getExtend());
+                    groupUserMapper.updateById(groupUser);
+                }
                 break;
             case DELETE: // 删除
                 List<Long> userIds = param.getUsers().stream().map(GroupUserUpdateParam::getUserId).collect(Collectors.toList());
