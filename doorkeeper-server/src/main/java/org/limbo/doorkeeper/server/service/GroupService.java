@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.BatchMethod;
 import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.model.param.group.*;
+import org.limbo.doorkeeper.api.model.param.policy.PolicyGroupAddParam;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
 import org.limbo.doorkeeper.server.dal.entity.Group;
 import org.limbo.doorkeeper.server.dal.entity.GroupRole;
@@ -42,6 +43,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -97,7 +99,10 @@ public class GroupService {
         }
         // 用户组策略
         if (CollectionUtils.isNotEmpty(param.getPolicies())) {
-            policyGroupService.batchSave(param.getPolicies());
+            for (PolicyGroupAddParam policy : param.getPolicies()) {
+                policy.setGroupId(group.getGroupId());
+                policyGroupService.batchSave(policy.getPolicyId(), Collections.singletonList(policy));
+            }
         }
         // 用户组角色
         if (CollectionUtils.isNotEmpty(param.getRoles())) {

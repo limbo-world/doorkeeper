@@ -112,12 +112,7 @@ public class PolicyService {
                 policyParamService.batchSave(policy.getPolicyId(), param.getParams());
                 break;
             case GROUP:
-                if (CollectionUtils.isNotEmpty(param.getGroups())) {
-                    for (PolicyGroupAddParam group : param.getGroups()) {
-                        group.setPolicyId(policy.getPolicyId());
-                    }
-                    policyGroupService.batchSave(param.getGroups());
-                }
+                policyGroupService.batchSave(policy.getPolicyId(), param.getGroups());
                 break;
         }
         if (CollectionUtils.isNotEmpty(param.getPermissionIds())) {

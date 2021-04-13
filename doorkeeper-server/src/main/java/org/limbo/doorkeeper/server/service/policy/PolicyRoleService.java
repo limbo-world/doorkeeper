@@ -22,7 +22,6 @@ import org.limbo.doorkeeper.api.model.param.policy.PolicyRoleAddParam;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyRoleVO;
 import org.limbo.doorkeeper.server.dal.entity.policy.PolicyRole;
 import org.limbo.doorkeeper.server.dal.mapper.policy.PolicyRoleMapper;
-import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,14 +50,14 @@ public class PolicyRoleService {
                 .eq(PolicyRole::getPolicyId, policyId)
         );
         // 新增
-        if (CollectionUtils.isNotEmpty(params)) {
-            batchSave(policyId, params);
-        }
+        batchSave(policyId, params);
     }
 
     @Transactional
     public void batchSave(Long policyId, List<PolicyRoleAddParam> params) {
-        Verifies.verify(CollectionUtils.isNotEmpty(params), "角色列表为空");
+        if (CollectionUtils.isEmpty(params)) {
+            return;
+        }
         List<PolicyRole> policyRoles = new ArrayList<>();
         for (PolicyRoleAddParam role : params) {
             PolicyRole policyRole = new PolicyRole();

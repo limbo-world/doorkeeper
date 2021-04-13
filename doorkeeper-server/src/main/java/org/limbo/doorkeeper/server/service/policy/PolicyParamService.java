@@ -18,14 +18,13 @@ package org.limbo.doorkeeper.server.service.policy;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
+import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.model.param.policy.PolicyParamAddParam;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyParamVO;
-import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.server.dal.mapper.policy.PolicyParamMapper;
 import org.limbo.doorkeeper.server.dal.entity.policy.PolicyParam;
+import org.limbo.doorkeeper.server.dal.mapper.policy.PolicyParamMapper;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
-import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,14 +56,14 @@ public class PolicyParamService {
                 .eq(PolicyParam::getPolicyId, policyId)
         );
         // 新增
-        if (CollectionUtils.isNotEmpty(params)) {
-            batchSave(policyId, params);
-        }
+        batchSave(policyId, params);
     }
 
     @Transactional
     public void batchSave(Long policyId, List<PolicyParamAddParam> params) {
-        Verifies.verify(CollectionUtils.isNotEmpty(params), "标签列表为空");
+        if (CollectionUtils.isEmpty(params)) {
+            return;
+        }
         List<PolicyParam> policyParams = new ArrayList<>();
         for (PolicyParamAddParam tag : params) {
             PolicyParam policyParam = new PolicyParam();

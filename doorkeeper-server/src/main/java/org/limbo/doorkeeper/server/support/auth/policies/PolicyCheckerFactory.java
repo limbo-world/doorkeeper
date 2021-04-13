@@ -16,6 +16,7 @@
 
 package org.limbo.doorkeeper.server.support.auth.policies;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.constants.PolicyType;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 import org.limbo.doorkeeper.server.dal.mapper.*;
@@ -61,16 +62,16 @@ public class PolicyCheckerFactory {
 
         switch (policyType) {
             case ROLE:
-                return newRolePolicyChecker(policy);
+                return CollectionUtils.isEmpty(policy.getRoles()) ? null : newRolePolicyChecker(policy);
 
             case PARAM:
-                return newParamPolicyChecker(policy);
+                return CollectionUtils.isEmpty(policy.getParams()) ? null : newParamPolicyChecker(policy);
 
             case USER:
-                return newUserPolicyChecker(policy);
+                return CollectionUtils.isEmpty(policy.getUsers()) ? null : newUserPolicyChecker(policy);
 
             case GROUP:
-                return newGroupPolicyChecker(policy);
+                return CollectionUtils.isEmpty(policy.getGroups()) ? null : newGroupPolicyChecker(policy);
 
             case COMBINE:
             case TIME:
@@ -109,9 +110,7 @@ public class PolicyCheckerFactory {
      * 创建根据 用户角色 检查的策略checker
      */
     public PolicyChecker newRolePolicyChecker(PolicyVO policy) {
-        RolePolicyChecker rolePolicyChecker = new RolePolicyChecker(policy);
-        rolePolicyChecker.setUserRoleService(userRoleService);
-        return rolePolicyChecker;
+        return new ParamPolicyChecker(policy);
     }
 
 }

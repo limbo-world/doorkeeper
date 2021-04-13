@@ -23,7 +23,6 @@ import org.limbo.doorkeeper.api.model.vo.policy.PolicyGroupVO;
 import org.limbo.doorkeeper.server.dal.entity.policy.PolicyGroup;
 import org.limbo.doorkeeper.server.dal.mapper.policy.PolicyGroupMapper;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
-import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,21 +54,18 @@ public class PolicyGroupService {
                 .eq(PolicyGroup::getPolicyId, policyId)
         );
         // 新增
-        if (CollectionUtils.isNotEmpty(params)) {
-            for (PolicyGroupAddParam param : params) {
-                param.setPolicyId(policyId);
-            }
-            batchSave(params);
-        }
+        batchSave(policyId, params);
     }
 
     @Transactional
-    public void batchSave(List<PolicyGroupAddParam> params) {
-        Verifies.verify(CollectionUtils.isNotEmpty(params), "角色列表为空");
+    public void batchSave(Long policyId, List<PolicyGroupAddParam> params) {
+        if (CollectionUtils.isEmpty(params)) {
+            return;
+        }
         List<PolicyGroup> policyGroups = new ArrayList<>();
         for (PolicyGroupAddParam param : params) {
             PolicyGroup policyGroup = new PolicyGroup();
-            policyGroup.setPolicyId(param.getPolicyId());
+            policyGroup.setPolicyId(policyId);
             policyGroup.setGroupId(param.getGroupId());
             policyGroup.setIsExtend(param.getIsExtend());
             policyGroups.add(policyGroup);

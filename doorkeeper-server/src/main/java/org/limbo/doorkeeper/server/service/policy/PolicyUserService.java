@@ -20,13 +20,12 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.model.param.policy.PolicyUserAddParam;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyUserVO;
-import org.limbo.doorkeeper.server.dal.mapper.UserMapper;
-import org.limbo.doorkeeper.server.dal.mapper.policy.PolicyUserMapper;
 import org.limbo.doorkeeper.server.dal.entity.User;
 import org.limbo.doorkeeper.server.dal.entity.policy.PolicyUser;
+import org.limbo.doorkeeper.server.dal.mapper.UserMapper;
+import org.limbo.doorkeeper.server.dal.mapper.policy.PolicyUserMapper;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
-import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,14 +73,14 @@ public class PolicyUserService {
                 .eq(PolicyUser::getPolicyId, policyId)
         );
         // 新增
-        if (CollectionUtils.isNotEmpty(params)) {
-            batchSave(policyId, params);
-        }
+        batchSave(policyId, params);
     }
 
     @Transactional
     public void batchSave(Long policyId, List<PolicyUserAddParam> params) {
-        Verifies.verify(CollectionUtils.isNotEmpty(params), "用户列表为空");
+        if (CollectionUtils.isEmpty(params)) {
+            return;
+        }
         List<PolicyUser> policyUsers = new ArrayList<>();
         for (PolicyUserAddParam user : params) {
             PolicyUser policyUser = new PolicyUser();

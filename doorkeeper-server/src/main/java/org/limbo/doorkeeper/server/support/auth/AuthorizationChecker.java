@@ -38,6 +38,7 @@ import org.limbo.doorkeeper.server.dal.entity.Client;
 import org.limbo.doorkeeper.server.dal.entity.PermissionResource;
 import org.limbo.doorkeeper.server.dal.entity.ResourceUri;
 import org.limbo.doorkeeper.server.dal.mapper.*;
+import org.limbo.doorkeeper.server.support.auth.policies.PolicyChecker;
 import org.limbo.doorkeeper.server.support.auth.policies.PolicyCheckerFactory;
 import org.limbo.doorkeeper.server.utils.EasyAntPathMatcher;
 
@@ -294,15 +295,22 @@ public class AuthorizationChecker {
         }
 
         int allowedCount = 0;
+        int totalCount = 0;
         for (PolicyVO policy : policies) {
-            Intention policyCheckIntention = policyCheckerFactory.newPolicyChecker(policy).check(checkParam);
+            PolicyChecker policyChecker = policyCheckerFactory.newPolicyChecker(policy);
+            if (policyChecker == null) {
+                continue;
+            }
+
+            Intention policyCheckIntention = policyChecker.check(checkParam);
+            totalCount++;
             // 统计允许的policy个数
             if (Intention.ALLOW == policyCheckIntention) {
                 allowedCount++;
             }
         }
 
-        return LogicChecker.isSatisfied(logic, policies.size(), allowedCount);
+        return LogicChecker.isSatisfied(logic, totalCount, allowedCount);
     }
 
     /**
