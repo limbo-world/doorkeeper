@@ -44,7 +44,7 @@ public class GroupAddParam {
     private Boolean isDefault;
 
     @Schema(description = "添加的用户，新增的时候同时在用户组加入用户")
-    private List<Long> userIds;
+    private List<GroupUserUpdateParam> users;
 
     @Schema(description = "添加的策略，新增的时候同时在将用户组加入策略")
     private List<PolicyGroupAddParam> policies;

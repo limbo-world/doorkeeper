@@ -112,28 +112,28 @@ export default {
             this.selectUsers = val;
         },
         usersJoin() {
-            let userIds = [];
+            let users = [];
             for (let user of this.selectUsers) {
                 if (!user.groupUserId) {
-                    userIds.push(user.userId);
+                    users.push({userId: user.userId});
                 }
             }
             const loading = this.$loading();
             this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/group/${this.groupId}/user/batch`, {
-                userIds: userIds, type: this.$constants.batchMethod.SAVE
+                users: users, type: this.$constants.batchMethod.SAVE
             }).then(response => {
                 this.loadGroupUsers();
             }).finally(() => loading.close());
         },
 
         usersLeave() {
-            let userIds = [];
+            let users = [];
             for (let user of this.selectUsers) {
-                userIds.push(user.userId);
+                users.push({userId: user.userId});
             }
             const loading = this.$loading();
             this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/group/${this.groupId}/user/batch`, {
-                userIds: userIds, type: this.$constants.batchMethod.DELETE
+                users: users, type: this.$constants.batchMethod.DELETE
             }).then(response => {
                 this.loadGroupUsers();
             }).finally(() => loading.close());

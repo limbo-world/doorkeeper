@@ -20,9 +20,9 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.BatchMethod;
+import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.model.param.group.*;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
-import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.dal.entity.Group;
 import org.limbo.doorkeeper.server.dal.entity.GroupRole;
 import org.limbo.doorkeeper.server.dal.entity.GroupUser;
@@ -89,10 +89,10 @@ public class GroupService {
         }
 
         // 用户组用户
-        if (CollectionUtils.isNotEmpty(param.getUserIds())) {
+        if (CollectionUtils.isNotEmpty(param.getUsers())) {
             GroupUserBatchUpdateParam batchUpdateParam  = new GroupUserBatchUpdateParam();
             batchUpdateParam.setType(BatchMethod.SAVE);
-            batchUpdateParam.setUserIds(param.getUserIds());
+            batchUpdateParam.setUsers(param.getUsers());
             groupUserService.batchUpdate(group.getGroupId(), batchUpdateParam);
         }
         // 用户组策略

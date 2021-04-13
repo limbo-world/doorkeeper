@@ -17,10 +17,7 @@
 package org.limbo.doorkeeper.server.service;
 
 import org.limbo.doorkeeper.api.constants.*;
-import org.limbo.doorkeeper.api.model.param.group.GroupAddParam;
-import org.limbo.doorkeeper.api.model.param.group.GroupRoleAddParam;
-import org.limbo.doorkeeper.api.model.param.group.GroupRoleBatchUpdateParam;
-import org.limbo.doorkeeper.api.model.param.group.GroupUserBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.group.*;
 import org.limbo.doorkeeper.api.model.param.permission.PermissionAddParam;
 import org.limbo.doorkeeper.api.model.param.policy.PolicyAddParam;
 import org.limbo.doorkeeper.api.model.param.policy.PolicyRoleAddParam;
@@ -173,7 +170,9 @@ public class DoorkeeperService {
         // 用户加入用户组
         GroupUserBatchUpdateParam doorkeeperRealmUserGroupParam = new GroupUserBatchUpdateParam();
         doorkeeperRealmUserGroupParam.setType(BatchMethod.SAVE);
-        doorkeeperRealmUserGroupParam.setUserIds(Collections.singletonList(userId));
+        GroupUserUpdateParam groupUserUpdateParam = new GroupUserUpdateParam();
+        groupUserUpdateParam.setUserId(userId);
+        doorkeeperRealmUserGroupParam.setUsers(Collections.singletonList(groupUserUpdateParam));
         groupUserService.batchUpdate(group.getGroupId(), doorkeeperRealmUserGroupParam);
     }
 

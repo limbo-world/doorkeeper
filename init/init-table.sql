@@ -64,6 +64,7 @@ CREATE TABLE `group_user` (
   `group_user_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `group_id` bigint(20) NOT NULL,
   `user_id` bigint(20) NOT NULL,
+  `extend` varchar(1024) NOT NULL DEFAULT '' COMMENT '扩展信息',
   PRIMARY KEY (`group_user_id`),
   UNIQUE KEY `uq_key` (`group_id`,`user_id`),
   KEY `idx_user_group` (`user_id`,`group_id`)
