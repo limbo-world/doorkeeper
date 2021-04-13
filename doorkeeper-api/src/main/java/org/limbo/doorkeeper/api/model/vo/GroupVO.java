@@ -58,4 +58,12 @@ public class GroupVO {
 
     private List<Long> groupIds;
 
+    @Schema(description ="用户组用户ID")
+    private Long groupUserId;
+
+    @Schema(description ="用户ID")
+    private Long userId;
+
+    @Schema(description ="是否默认添加")
+    private String extend;
 }

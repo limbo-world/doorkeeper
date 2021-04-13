@@ -121,7 +121,17 @@ public class GroupUserService {
             return new ArrayList<>();
         }
 
-        return EnhancedBeanUtils.createAndCopyList(groups, GroupVO.class);
+        List<GroupVO> result = EnhancedBeanUtils.createAndCopyList(groups, GroupVO.class);
+        for (GroupVO groupVO : result) {
+            for (GroupUser userGroup : userGroups) {
+                if (groupVO.getGroupId().equals(userGroup.getGroupId())) {
+                    groupVO.setGroupUserId(userGroup.getGroupUserId());
+                    groupVO.setUserId(userGroup.getUserId());
+                    groupVO.setExtend(userGroup.getExtend());
+                }
+            }
+        }
+        return result;
     }
 
     public List<GroupUserVO> getByUser(Long userId) {
