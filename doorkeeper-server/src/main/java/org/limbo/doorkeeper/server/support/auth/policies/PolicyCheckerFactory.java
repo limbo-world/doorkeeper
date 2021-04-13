@@ -110,7 +110,9 @@ public class PolicyCheckerFactory {
      * 创建根据 用户角色 检查的策略checker
      */
     public PolicyChecker newRolePolicyChecker(PolicyVO policy) {
-        return new ParamPolicyChecker(policy);
+        RolePolicyChecker rolePolicyChecker = new RolePolicyChecker(policy);
+        rolePolicyChecker.setUserRoleService(userRoleService);
+        return rolePolicyChecker;
     }
 
 }
