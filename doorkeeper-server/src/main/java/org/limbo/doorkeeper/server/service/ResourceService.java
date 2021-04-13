@@ -18,6 +18,7 @@ package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.resource.*;
@@ -182,8 +183,11 @@ public class ResourceService {
         if (CollectionUtils.isNotEmpty(params)) {
             List<ResourceUri> uris = new ArrayList<>();
             for (ResourceUriAddParam uriParam : params) {
+                if (StringUtils.isBlank(uriParam.getUri())) {
+                    continue;
+                }
                 ResourceUri uri = new ResourceUri();
-                uri.setUri(uriParam.getUri());
+                uri.setUri(uriParam.getUri().trim());
                 uri.setMethod(uriParam.getMethod());
                 uri.setResourceId(resourceId);
                 uri.setRealmId(realmId);

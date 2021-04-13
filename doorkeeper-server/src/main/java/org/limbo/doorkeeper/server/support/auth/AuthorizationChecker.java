@@ -212,7 +212,7 @@ public class AuthorizationChecker {
                                     continue;
                                 }
                             }
-                            if (pathMatch(resourceUri.getUri(), requestUri)) {
+                            if (pathMatch(resourceUri.getUri().trim(), requestUri.trim())) {
                                 return true;
                             }
 
