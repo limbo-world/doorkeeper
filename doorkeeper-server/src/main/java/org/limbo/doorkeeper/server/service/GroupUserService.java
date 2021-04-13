@@ -21,6 +21,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.param.check.GroupCheckParam;
 import org.limbo.doorkeeper.api.model.param.group.GroupUserBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.group.GroupUserUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.GroupUserVO;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
 import org.limbo.doorkeeper.server.dal.entity.Group;
@@ -57,22 +58,39 @@ public class GroupUserService {
     }
 
     @Transactional
+    public void update(Long realmId, Long groupId, Long groupUserId, String extend) {
+        if (StringUtils.isNotBlank(extend)) {
+            return;
+        }
+        groupUserMapper.update(null, Wrappers.<GroupUser>lambdaUpdate()
+                .set(GroupUser::getExtend, extend)
+                .eq(GroupUser::getGroupUserId, groupUserId)
+        );
+    }
+
+    @Transactional
     public void batchUpdate(Long groupId, GroupUserBatchUpdateParam param) {
+        if (CollectionUtils.isEmpty(param.getUsers())) {
+            return;
+        }
+
         switch (param.getType()) {
             case SAVE: // 新增
                 List<GroupUser> groupUsers = new ArrayList<>();
-                for (Long userId : param.getUserIds()) {
+                for (GroupUserUpdateParam user : param.getUsers()) {
                     GroupUser groupUser = new GroupUser();
                     groupUser.setGroupId(groupId);
-                    groupUser.setUserId(userId);
+                    groupUser.setUserId(user.getUserId());
+                    groupUser.setExtend(user.getExtend());
                     groupUsers.add(groupUser);
                 }
                 groupUserMapper.batchInsertIgnore(groupUsers);
                 break;
             case DELETE: // 删除
+                List<Long> userIds = param.getUsers().stream().map(GroupUserUpdateParam::getUserId).collect(Collectors.toList());
                 groupUserMapper.delete(Wrappers.<GroupUser>lambdaQuery()
                         .eq(GroupUser::getGroupId, groupId)
-                        .in(GroupUser::getUserId, param.getUserIds())
+                        .in(GroupUser::getUserId, userIds)
                 );
                 break;
             default:

@@ -34,4 +34,7 @@ public class GroupUserVO {
 
     @Schema(description ="用户ID")
     private Long userId;
+
+    @Schema(description ="扩展信息")
+    private String extend;
 }

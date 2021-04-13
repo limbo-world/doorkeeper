@@ -18,25 +18,21 @@ package org.limbo.doorkeeper.api.model.param.group;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import org.limbo.doorkeeper.api.constants.BatchMethod;
-
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import java.util.List;
 
 /**
  * @author Devil
  * @date 2021/1/5 11:16 上午
  */
 @Data
-public class GroupUserBatchUpdateParam {
+public class GroupUserUpdateParam {
 
-    @NotNull(message = "操作类型不能为空")
-    @Schema(description ="操作类型 SAVE/DELETE", required = true)
-    private BatchMethod type;
+    @Schema(description ="用户组用户ID，更新时必传")
+    private Long groupUserId;
 
-    @NotEmpty(message = "用户列表不能为空")
-    @Schema(description ="用户列表", required = true)
-    private List<GroupUserUpdateParam> users;
+    @Schema(description ="用户ID，删除时必传")
+    private Long userId;
+
+    @Schema(description ="扩展字段 新增/更新时使用")
+    private String extend;
 
 }
