@@ -24,6 +24,12 @@
                 <el-form-item label="昵称">
                     <el-input v-model="user.nickname"></el-input>
                 </el-form-item>
+                <el-form-item label="邮箱">
+                    <el-input v-model="user.email"></el-input>
+                </el-form-item>
+                <el-form-item label="电话">
+                    <el-input v-model="user.phone"></el-input>
+                </el-form-item>
                 <el-form-item label="密码">
                     <el-input type="password" v-model="user.newPassword"></el-input>
                 </el-form-item>
