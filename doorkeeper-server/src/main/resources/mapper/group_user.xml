@@ -20,10 +20,10 @@
 
     <insert id="batchInsertIgnore" parameterType="org.limbo.doorkeeper.server.dal.entity.GroupUser">
         INSERT ignore INTO group_user (
-            group_id, user_id
+            group_id, user_id, extend
         ) VALUES
         <foreach collection="groupUsers" separator="," item="groupUser">
-            ( #{groupUser.groupId}, #{groupUser.userId} )
+            ( #{groupUser.groupId}, #{groupUser.userId}, #{groupUser.extend} )
         </foreach>
     </insert>
 

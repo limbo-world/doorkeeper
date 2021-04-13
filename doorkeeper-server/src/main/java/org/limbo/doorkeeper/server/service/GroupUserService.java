@@ -70,7 +70,7 @@ public class GroupUserService {
                     GroupUser groupUser = new GroupUser();
                     groupUser.setGroupId(groupId);
                     groupUser.setUserId(userId);
-                    groupUser.setExtend(param.getExtend());
+                    groupUser.setExtend(StringUtils.isBlank(param.getExtend()) ? "" : param.getExtend());
                     groupUsers.add(groupUser);
                 }
                 groupUserMapper.batchInsertIgnore(groupUsers);

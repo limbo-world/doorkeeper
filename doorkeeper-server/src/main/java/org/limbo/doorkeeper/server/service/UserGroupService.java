@@ -46,6 +46,7 @@ public class UserGroupService {
             GroupUser groupUser = new GroupUser();
             groupUser.setGroupId(groupId);
             groupUser.setUserId(userId);
+            groupUser.setExtend("");
             groupUsers.add(groupUser);
         }
         groupUserMapper.batchInsertIgnore(groupUsers);
