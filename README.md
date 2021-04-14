@@ -22,7 +22,7 @@
 
 # 介绍
 
-<div align="center"><img src="https://github.com/LimboHome/limbo-authc/raw/master/doc/logo.jpg" width="30%" /></div>
+<div align="center"><img src="doc/logo.jpg" width="30%" /></div>
 doorkeeper是一个可扩展的认证管理平台，可以在此平台上快速接入权限管理，(不是认证授权框架 Shiro\Spring Security)，但可以集成认证授权框架一起使用。
 
 这是一个独立的权限配置管理服务的脚手架，用于将登录认证、权限验证、权限管理从业务中抽离，便于业务系统快速接入权限功能。
@@ -39,7 +39,7 @@ doorkeeper是一个可扩展的认证管理平台，可以在此平台上快速�
 
 ### 概念
 
-![数据模型](https://github.com/LimboHome/limbo-authc/raw/master/doc/db-model.png)
+![数据模型](doc/db-model.png)
 
 - **域** :   
   域表示独立的一块区域，域与域之间的所有数据是隔离的，如用户等。Doorkeeper属于特殊的域，用于数据管理操作。
@@ -68,7 +68,7 @@ doorkeeper是一个可扩展的认证管理平台，可以在此平台上快速�
   
 ### 处理流程
 
-![处理流程](https://github.com/LimboHome/limbo-authc/raw/master/doc/auth-process.png)
+![处理流程](doc/auth-process.png)
 
 核心的思想就是根据调用参数，找到需要认证的资源，通过不同的权限策略流程后返回可访问的资源。
 
@@ -95,10 +95,12 @@ doorkeeper是一个可扩展的认证管理平台，可以在此平台上快速�
  1. 创建委托方
  2. 创建菜单资源
     ![创建菜单资源](doc/menu-resource.jpg)
+    
     名称是唯一编码，可用于前端标识，对于用户管理这个菜单，只要授予权限，则默认拥有用户列表接口的访问权限。定义标签`type=menu`表示告诉前端这个是一个菜单资源。
  
  3. 创建按钮资源
     ![创建按钮资源](doc/function-resource.jpg)
+    
     这是一个按钮操作控制，`type=fn`表示告诉前端这个是功能而不是菜单。
     
  4. 创建策略/权限
