@@ -80,11 +80,11 @@ doorkeeper是一个可扩展的认证管理平台，可以在此平台上快速�
 对于非doorkeeper域的用户来说，他们只关心资源的认证。对于不同项目组，可以分配不同的doorkeeper用户，他们自行创建域，就可以达到配置隔离的目的。
 目前权限只控制到域级别，没有对更细的操作进行配置，更加详细的配置可以通过自定义扩展实现。
 
-![域组分配](raw/master/doc/realm-group.jpg)
+![域组分配](doc/realm-group.jpg)
 
 在doorkeeper域的用户组可以发现父级为realm的用户组，子组名称都是域的名称 （**_新增域的时候会创建_**）。当前的逻辑中，只要将用户加入对于的域名的用户组，刷新页面即可在右上角切换新增的域。
 
-![域委托方分配](raw/master/doc/realm-client.jpg)
+![域委托方分配](doc/realm-client.jpg)
 
 这里具体的实现就直接使用了doorkeeper整套处理流程来实现。当新增一个域的时候，doorkeeper域下会新增一个client并且名称就是对应域名。
 同时增加对应uri资源、角色、策略和权限，并绑定对应的用户组。具体实现可以从上图进入对应域的client来查看。
@@ -94,11 +94,11 @@ doorkeeper是一个可扩展的认证管理平台，可以在此平台上快速�
  这里使用例子实现一个菜单和api的权限认证。
  1. 创建委托方
  2. 创建菜单资源
-    ![创建菜单资源](raw/master/doc/menu-resource.jpg)
+    ![创建菜单资源](doc/menu-resource.jpg)
     名称是唯一编码，可用于前端标识，对于用户管理这个菜单，只要授予权限，则默认拥有用户列表接口的访问权限。定义标签`type=menu`表示告诉前端这个是一个菜单资源。
  
  3. 创建按钮资源
-    ![创建按钮资源](raw/master/doc/function-resource.jpg)
+    ![创建按钮资源](doc/function-resource.jpg)
     这是一个按钮操作控制，`type=fn`表示告诉前端这个是功能而不是菜单。
     
  4. 创建策略/权限
