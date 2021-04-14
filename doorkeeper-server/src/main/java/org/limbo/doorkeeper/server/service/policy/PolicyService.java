@@ -21,7 +21,10 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.Page;
-import org.limbo.doorkeeper.api.model.param.policy.*;
+import org.limbo.doorkeeper.api.model.param.policy.PolicyAddParam;
+import org.limbo.doorkeeper.api.model.param.policy.PolicyBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.policy.PolicyQueryParam;
+import org.limbo.doorkeeper.api.model.param.policy.PolicyUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 import org.limbo.doorkeeper.server.dal.entity.Client;
 import org.limbo.doorkeeper.server.dal.entity.PermissionPolicy;
@@ -222,13 +225,19 @@ public class PolicyService {
         Policy policy = policyMapper.getById(realmId, clientId, policyId);
         Verifies.notNull(policy, "策略不存在");
 
-        policyMapper.update(null, Wrappers.<Policy>lambdaUpdate()
-                .set(param.getDescription() != null, Policy::getDescription, param.getDescription())
-                .set(param.getLogic() != null, Policy::getLogic, param.getLogic())
-                .set(param.getIntention() != null, Policy::getIntention, param.getIntention())
-                .set(param.getIsEnabled() != null, Policy::getIsEnabled, param.getIsEnabled())
-                .eq(Policy::getPolicyId, policyId)
-        );
+        try {
+            policyMapper.update(null, Wrappers.<Policy>lambdaUpdate()
+                    .set(StringUtils.isNotBlank(param.getName()) && !policy.getName().equals(param.getName()),
+                            Policy::getName, param.getName())
+                    .set(param.getDescription() != null, Policy::getDescription, param.getDescription())
+                    .set(param.getLogic() != null, Policy::getLogic, param.getLogic())
+                    .set(param.getIntention() != null, Policy::getIntention, param.getIntention())
+                    .set(param.getIsEnabled() != null, Policy::getIsEnabled, param.getIsEnabled())
+                    .eq(Policy::getPolicyId, policyId)
+            );
+        } catch (DuplicateKeyException e) {
+            throw new ParamException("策略已存在");
+        }
 
         switch (policy.getType()) {
             case ROLE:

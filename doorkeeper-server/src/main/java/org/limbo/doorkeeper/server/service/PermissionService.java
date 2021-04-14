@@ -25,17 +25,16 @@ import org.limbo.doorkeeper.api.model.param.permission.PermissionBatchUpdatePara
 import org.limbo.doorkeeper.api.model.param.permission.PermissionQueryParam;
 import org.limbo.doorkeeper.api.model.param.permission.PermissionUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
-import org.limbo.doorkeeper.server.dal.entity.Client;
-import org.limbo.doorkeeper.server.dal.entity.Permission;
-import org.limbo.doorkeeper.server.dal.entity.PermissionPolicy;
-import org.limbo.doorkeeper.server.dal.entity.PermissionResource;
+import org.limbo.doorkeeper.server.dal.entity.*;
 import org.limbo.doorkeeper.server.dal.mapper.ClientMapper;
 import org.limbo.doorkeeper.server.dal.mapper.PermissionMapper;
 import org.limbo.doorkeeper.server.dal.mapper.PermissionPolicyMapper;
 import org.limbo.doorkeeper.server.dal.mapper.PermissionResourceMapper;
+import org.limbo.doorkeeper.server.support.ParamException;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -152,16 +151,21 @@ public class PermissionService {
         Permission permission = permissionMapper.getById(realmId, clientId, permissionId);
         Verifies.notNull(permission, "权限不存在");
 
-        permissionMapper.update(null, Wrappers.<Permission>lambdaUpdate()
-                .set(StringUtils.isNotBlank(param.getName()), Permission::getName, param.getName())
-                .set(param.getDescription() != null, Permission::getDescription, param.getDescription())
-                .set(param.getLogic() != null, Permission::getLogic, param.getLogic())
-                .set(param.getIntention() != null, Permission::getIntention, param.getIntention())
-                .set(param.getIsEnabled() != null, Permission::getIsEnabled, param.getIsEnabled())
-                .eq(Permission::getRealmId, realmId)
-                .eq(Permission::getClientId, clientId)
-                .eq(Permission::getPermissionId, permissionId)
-        );
+        try {
+            permissionMapper.update(null, Wrappers.<Permission>lambdaUpdate()
+                    .set(StringUtils.isNotBlank(param.getName()) && !permission.getName().equals(param.getName()),
+                            Permission::getName, param.getName())
+                    .set(param.getDescription() != null, Permission::getDescription, param.getDescription())
+                    .set(param.getLogic() != null, Permission::getLogic, param.getLogic())
+                    .set(param.getIntention() != null, Permission::getIntention, param.getIntention())
+                    .set(param.getIsEnabled() != null, Permission::getIsEnabled, param.getIsEnabled())
+                    .eq(Permission::getRealmId, realmId)
+                    .eq(Permission::getClientId, clientId)
+                    .eq(Permission::getPermissionId, permissionId)
+            );
+        } catch (DuplicateKeyException e) {
+            throw new ParamException("权限已存在");
+        }
 
         permissionResourceService.update(permissionId, param.getResourceIds());
 

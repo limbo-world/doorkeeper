@@ -19,7 +19,7 @@
         <el-main>
             <el-form :model="role" label-width="80px" size="mini" class="edit-form" ref="editForm">
                 <el-form-item label="名称">
-                    <el-input v-model="role.name" disabled></el-input>
+                    <el-input v-model="role.name"></el-input>
                 </el-form-item>
                 <el-form-item label="描述">
                     <el-input type="textarea" v-model="role.description"></el-input>
@@ -83,6 +83,7 @@ export default {
 
         updateRole() {
             this.$ajax.put(`/admin/realm/${this.user.realm.realmId}/role/${this.role.roleId}`, this.role).then(response => {
+                this.$message.success('更新成功');
                 this.loadRole()
             })
         },

@@ -99,12 +99,18 @@ public class ResourceService {
         Resource resource = resourceMapper.getById(realmId, clientId, resourceId);
         Verifies.notNull(resource, "资源不存在");
 
-        // 更新
-        resourceMapper.update(null, Wrappers.<Resource>lambdaUpdate()
-                .set(param.getDescription() != null, Resource::getDescription, param.getDescription())
-                .set(param.getIsEnabled() != null, Resource::getIsEnabled, param.getIsEnabled())
-                .eq(Resource::getResourceId, resourceId)
-        );
+        try {
+            // 更新
+            resourceMapper.update(null, Wrappers.<Resource>lambdaUpdate()
+                    .set(StringUtils.isNotBlank(param.getName()) && !resource.getName().equals(param.getName()),
+                            Resource::getName, param.getName())
+                    .set(param.getDescription() != null, Resource::getDescription, param.getDescription())
+                    .set(param.getIsEnabled() != null, Resource::getIsEnabled, param.getIsEnabled())
+                    .eq(Resource::getResourceId, resourceId)
+            );
+        } catch (DuplicateKeyException e) {
+            throw new ParamException("资源已存在");
+        }
 
         // 删除uri
         resourceUriMapper.delete(Wrappers.<ResourceUri>lambdaQuery()
@@ -214,7 +220,6 @@ public class ResourceService {
             MyBatisPlusUtils.batchSave(tags, ResourceTag.class);
         }
     }
-
 
 
 }

@@ -126,12 +126,18 @@ public class RoleService {
         Role role = roleMapper.getById(realmId, roleId);
         Verifies.notNull(role, "角色不存在");
 
-        roleMapper.update(null, Wrappers.<Role>lambdaUpdate()
-                .set(Role::getDescription, param.getDescription())
-                .set(Role::getIsDefault, param.getIsDefault())
-                .set(Role::getIsEnabled, param.getIsEnabled())
-                .eq(Role::getRoleId, roleId)
-        );
+        try {
+            roleMapper.update(null, Wrappers.<Role>lambdaUpdate()
+                    .set(StringUtils.isNotBlank(param.getName()) && !role.getName().equals(param.getName()),
+                            Role::getName, param.getName())
+                    .set(param.getDescription() != null, Role::getDescription, param.getDescription())
+                    .set(param.getIsDefault() != null, Role::getIsDefault, param.getIsDefault())
+                    .set(param.getIsEnabled() != null, Role::getIsEnabled, param.getIsEnabled())
+                    .eq(Role::getRoleId, roleId)
+            );
+        } catch (DuplicateKeyException e) {
+            throw new ParamException("角色已存在");
+        }
     }
 
     @Transactional

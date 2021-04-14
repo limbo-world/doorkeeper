@@ -19,7 +19,7 @@
         <el-main>
             <el-form :model="permission" label-width="120px" size="mini" class="edit-form" ref="editForm">
                 <el-form-item label="名称" prop="name">
-                    <el-input v-model="permission.name" :disabled="permission.permissionId"></el-input>
+                    <el-input v-model="permission.name"></el-input>
                 </el-form-item>
                 <el-form-item label="描述">
                     <el-input type="textarea" v-model="permission.description"></el-input>
@@ -236,6 +236,7 @@ export default {
             }
             this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.permission.clientId}/permission`, addParam).then(response => {
                 this.permission = response.data;
+                this.$message.success("新增成功")
                 this.loadPermission();
             })
         },
@@ -252,6 +253,7 @@ export default {
                 })
             }
             this.$ajax.put(`/admin/realm/${this.user.realm.realmId}/client/${this.permission.clientId}/permission/${this.permission.permissionId}`, updateParam).then(response => {
+                this.$message.success("更新成功")
                 this.loadPermission();
             })
         },

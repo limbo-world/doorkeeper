@@ -19,7 +19,7 @@
         <el-main>
             <el-form :model="policy" label-width="120px" size="mini" class="edit-form" ref="editForm">
                 <el-form-item label="名称" prop="name">
-                    <el-input v-model="policy.name" :disabled="policy.policyId"></el-input>
+                    <el-input v-model="policy.name"></el-input>
                 </el-form-item>
                 <el-form-item label="描述">
                     <el-input type="textarea" v-model="policy.description"></el-input>
@@ -111,7 +111,7 @@ export default {
         },
         addPolicy() {
             this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.policy.clientId}/policy`, this.policy).then(response => {
-                this.$message.success("更新成功")
+                this.$message.success("新增成功")
                 // todo 由于组策略 tag问题，先临时这样解决
                 // this.policy = response.data;
                 // this.loadPolicy();

@@ -28,6 +28,9 @@ import java.util.List;
 @Data
 public class ResourceUpdateParam {
 
+    @Schema(description ="名称")
+    private String name;
+
     @Schema(description ="描述")
     private String description;
 

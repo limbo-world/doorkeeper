@@ -30,6 +30,9 @@ import java.util.List;
 @Data
 public class PolicyUpdateParam {
 
+    @Schema(description ="名称")
+    private String name;
+
     @Schema(description ="描述")
     private String description;
 

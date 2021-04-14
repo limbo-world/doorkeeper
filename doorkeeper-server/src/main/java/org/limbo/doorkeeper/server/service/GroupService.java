@@ -24,10 +24,7 @@ import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.model.param.group.*;
 import org.limbo.doorkeeper.api.model.param.policy.PolicyGroupAddParam;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
-import org.limbo.doorkeeper.server.dal.entity.Group;
-import org.limbo.doorkeeper.server.dal.entity.GroupRole;
-import org.limbo.doorkeeper.server.dal.entity.GroupUser;
-import org.limbo.doorkeeper.server.dal.entity.Realm;
+import org.limbo.doorkeeper.server.dal.entity.*;
 import org.limbo.doorkeeper.server.dal.entity.policy.PolicyGroup;
 import org.limbo.doorkeeper.server.dal.mapper.GroupMapper;
 import org.limbo.doorkeeper.server.dal.mapper.GroupRoleMapper;
@@ -92,7 +89,7 @@ public class GroupService {
 
         // 用户组用户
         if (CollectionUtils.isNotEmpty(param.getUserIds())) {
-            GroupUserBatchUpdateParam batchUpdateParam  = new GroupUserBatchUpdateParam();
+            GroupUserBatchUpdateParam batchUpdateParam = new GroupUserBatchUpdateParam();
             batchUpdateParam.setType(BatchMethod.SAVE);
             batchUpdateParam.setUserIds(param.getUserIds());
             groupUserService.batchUpdate(group.getGroupId(), batchUpdateParam);
@@ -106,7 +103,7 @@ public class GroupService {
         }
         // 用户组角色
         if (CollectionUtils.isNotEmpty(param.getRoles())) {
-            GroupRoleBatchUpdateParam batchUpdateParam  = new GroupRoleBatchUpdateParam();
+            GroupRoleBatchUpdateParam batchUpdateParam = new GroupRoleBatchUpdateParam();
             batchUpdateParam.setType(BatchMethod.SAVE);
             batchUpdateParam.setRoles(param.getRoles());
             groupRoleService.batchUpdate(group.getGroupId(), batchUpdateParam);
@@ -160,13 +157,22 @@ public class GroupService {
 
     @Transactional
     public void update(Long realmId, Long groupId, GroupUpdateParam param) {
-        groupMapper.update(null, Wrappers.<Group>lambdaUpdate()
-                .set(param.getDescription() != null, Group::getDescription, param.getDescription())
-                .set(param.getIsDefault() != null, Group::getIsDefault, param.getIsDefault())
-                .set(param.getParentId() != null, Group::getParentId, param.getParentId())
-                .eq(Group::getGroupId, groupId)
-                .eq(Group::getRealmId, realmId)
-        );
+        Group group = groupMapper.selectById(groupId);
+        Verifies.notNull(group, "用户组不存在");
+
+        try {
+            groupMapper.update(null, Wrappers.<Group>lambdaUpdate()
+                    .set(StringUtils.isNotBlank(param.getName()) && !group.getName().equals(param.getName()),
+                            Group::getName, param.getName())
+                    .set(param.getDescription() != null, Group::getDescription, param.getDescription())
+                    .set(param.getIsDefault() != null, Group::getIsDefault, param.getIsDefault())
+                    .set(param.getParentId() != null, Group::getParentId, param.getParentId())
+                    .eq(Group::getGroupId, groupId)
+                    .eq(Group::getRealmId, realmId)
+            );
+        } catch (DuplicateKeyException e) {
+            throw new ParamException("用户组已存在");
+        }
     }
 
     @Transactional

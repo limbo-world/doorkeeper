@@ -19,7 +19,7 @@
         <el-main>
             <el-form :model="client" label-width="80px" size="mini" class="edit-form" ref="editForm">
                 <el-form-item label="名称">
-                    <el-input v-model="client.name" disabled></el-input>
+                    <el-input v-model="client.name"></el-input>
                 </el-form-item>
                 <el-form-item label="描述">
                     <el-input type="textarea" v-model="client.description"></el-input>
@@ -76,7 +76,8 @@ export default {
 
         updateClient() {
             this.$ajax.put(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}`, this.client).then(response => {
-                this.loadClient()
+                this.$message.success('更新成功');
+                this.loadClient();
             })
         },
     }

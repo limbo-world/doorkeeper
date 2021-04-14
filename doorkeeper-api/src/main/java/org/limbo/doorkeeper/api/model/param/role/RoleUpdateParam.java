@@ -27,6 +27,9 @@ import lombok.Data;
 public class RoleUpdateParam {
 
     @Schema(description ="名称")
+    private String name;
+
+    @Schema(description ="描述")
     private String description;
 
     @Schema(description ="是否启用")

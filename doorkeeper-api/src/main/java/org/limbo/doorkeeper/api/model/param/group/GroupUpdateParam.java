@@ -26,6 +26,9 @@ import lombok.Data;
 @Data
 public class GroupUpdateParam {
 
+    @Schema(description ="名称")
+    private String name;
+
     @Schema(description ="描述")
     private String description;
 

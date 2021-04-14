@@ -90,11 +90,18 @@ public class ClientService {
         Client client = clientMapper.getById(realmId, clientId);
         Verifies.notNull(client, "委托方不存在");
 
-        clientMapper.update(null, Wrappers.<Client>lambdaUpdate()
-                .set(param.getDescription() != null, Client::getDescription, param.getDescription())
-                .set(param.getIsEnabled() != null, Client::getIsEnabled, param.getIsEnabled())
-                .eq(Client::getClientId, clientId)
-        );
+        try {
+            clientMapper.update(null, Wrappers.<Client>lambdaUpdate()
+                    .set(StringUtils.isNotBlank(param.getName()) && !client.getName().equals(param.getName()),
+                            Client::getName, param.getName())
+                    .set(param.getDescription() != null, Client::getDescription, param.getDescription())
+                    .set(param.getIsEnabled() != null, Client::getIsEnabled, param.getIsEnabled())
+                    .eq(Client::getClientId, clientId)
+            );
+        } catch (DuplicateKeyException e) {
+            throw new ParamException("名称已存在");
+        }
+
     }
 
 }

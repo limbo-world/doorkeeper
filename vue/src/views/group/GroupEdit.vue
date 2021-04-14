@@ -19,7 +19,7 @@
         <el-main>
             <el-form :model="group" label-width="80px" size="mini" class="edit-form" ref="editForm">
                 <el-form-item label="名称">
-                    <el-input v-model="group.name" disabled></el-input>
+                    <el-input v-model="group.name"></el-input>
                 </el-form-item>
                 <el-form-item label="描述">
                     <el-input type="textarea" v-model="group.description"></el-input>
