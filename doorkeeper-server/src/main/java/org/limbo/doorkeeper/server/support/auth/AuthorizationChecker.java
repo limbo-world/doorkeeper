@@ -208,7 +208,7 @@ public class AuthorizationChecker {
                             }
 
                             // 判断配置的uri是否需要方法
-                            if (resourceUri.getMethod() != null && resourceUri.getMethod() != HttpMethod.parse(requestMethod)) {
+                            if (HttpMethod.ALL != resourceUri.getMethod() && resourceUri.getMethod() != HttpMethod.parse(requestMethod)) {
                                 continue;
                             }
                             if (pathMatch(resourceUri.getUri().trim(), requestUri.trim())) {
