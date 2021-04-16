@@ -27,6 +27,7 @@ const intentions = [
 ];
 
 const httpMethod = [
+    {label: '所有', value: ""},
     {label: 'GET', value: "GET"},
     {label: 'POST', value: "POST"},
     {label: 'PUT', value: "PUT"},
