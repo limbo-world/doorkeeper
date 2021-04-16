@@ -23,7 +23,7 @@ import com.baomidou.mybatisplus.core.enums.IEnum;
  * @date 2021/1/11 4:25 下午
  */
 public enum HttpMethod implements IEnum<String> {
-    GET, POST, PUT, DELETE, HEAD, OPTIONS, TRACE, CONNECT;
+    ALL, GET, POST, PUT, DELETE, HEAD, OPTIONS, TRACE, CONNECT;
 
     @Override
     public String getValue() {
