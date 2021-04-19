@@ -19,8 +19,9 @@ package org.limbo.doorkeeper.server.support.auth.policies;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.Logic;
-import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
+import org.limbo.doorkeeper.api.model.param.check.ResourceCheckParam;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
+import org.limbo.doorkeeper.server.dal.entity.User;
 import org.limbo.doorkeeper.server.utils.JacksonUtil;
 
 /**
@@ -31,26 +32,31 @@ import org.limbo.doorkeeper.server.utils.JacksonUtil;
 public abstract class AbstractPolicyChecker implements PolicyChecker {
 
     /**
+     * 待检查的用户
+     */
+    protected User user;
+    /**
      * 待检查的策略
      */
     protected PolicyVO policy;
 
-    public AbstractPolicyChecker(PolicyVO policy) {
+    public AbstractPolicyChecker(User user, PolicyVO policy) {
+        this.user = user;
         this.policy = policy;
     }
 
     /**
      * {@inheritDoc}
      *
-     * @param authorizationCheckParam 授权校验参数
+     * @param resourceCheckParam 授权校验参数
      * @return
      */
     @Override
-    public Intention check(AuthorizationCheckParam authorizationCheckParam) {
+    public Intention check(ResourceCheckParam resourceCheckParam) {
         Intention intention = Intention.parse(policy.getIntention());
         boolean checkPassed;
         try {
-            checkPassed = doCheck(authorizationCheckParam);
+            checkPassed = doCheck(resourceCheckParam);
         } catch (Exception e) {
             log.error("策略校验失败 " + JacksonUtil.toJSONString(policy));
             throw e;
@@ -60,9 +66,9 @@ public abstract class AbstractPolicyChecker implements PolicyChecker {
 
     /**
      * 检测策略是否通过
-     * @param authorizationCheckParam 授权校验参数
+     * @param resourceCheckParam 授权校验参数
      */
-    protected abstract boolean doCheck(AuthorizationCheckParam authorizationCheckParam);
+    protected abstract boolean doCheck(ResourceCheckParam resourceCheckParam);
 
     /**
      * 当策略检查结果为未通过时，将intention反转。<br/>

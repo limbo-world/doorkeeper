@@ -25,58 +25,65 @@ import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.constants.HttpMethod;
 import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.Logic;
-import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
+import org.limbo.doorkeeper.api.model.param.check.ResourceCheckParam;
 import org.limbo.doorkeeper.api.model.param.permission.PermissionQueryParam;
 import org.limbo.doorkeeper.api.model.param.resource.ResourceQueryParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionPolicyVO;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.limbo.doorkeeper.api.model.vo.ResourceVO;
-import org.limbo.doorkeeper.api.model.vo.check.AuthorizationCheckResult;
+import org.limbo.doorkeeper.api.model.vo.check.ResourceCheckResult;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 import org.limbo.doorkeeper.server.dal.dao.PolicyDao;
 import org.limbo.doorkeeper.server.dal.entity.Client;
 import org.limbo.doorkeeper.server.dal.entity.PermissionResource;
 import org.limbo.doorkeeper.server.dal.entity.ResourceUri;
+import org.limbo.doorkeeper.server.dal.entity.User;
 import org.limbo.doorkeeper.server.dal.mapper.*;
 import org.limbo.doorkeeper.server.support.auth.policies.PolicyChecker;
 import org.limbo.doorkeeper.server.support.auth.policies.PolicyCheckerFactory;
 import org.limbo.doorkeeper.server.utils.EasyAntPathMatcher;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * 授权校验器
+ * 资源校验器
  *
  * @author Devil
  * @date 2021/3/31 2:04 下午
  */
 @Slf4j
-public class AuthorizationChecker {
+@Component
+public class ResourceChecker {
 
-    @Setter
+    @Autowired
     private PermissionMapper permissionMapper;
 
-    @Setter
+    @Autowired
     private PolicyDao policyDao;
 
-    @Setter
+    @Autowired
     private ClientMapper clientMapper;
 
-    @Setter
+    @Autowired
     private PermissionResourceMapper permissionResourceMapper;
 
-    @Setter
+    @Autowired
     private ResourceMapper resourceMapper;
 
-    @Setter
+    @Autowired
     private ResourceUriMapper resourceUriMapper;
+
+    @Autowired
+    private UserMapper userMapper;
 
     /**
      * 策略检查器工厂
      */
-    @Setter
+    @Autowired
     private PolicyCheckerFactory policyCheckerFactory;
 
     /**
@@ -91,20 +98,23 @@ public class AuthorizationChecker {
     /**
      * 校验参数
      */
-    protected AuthorizationCheckParam checkParam;
+    private ResourceCheckParam checkParam;
 
     /**
      * 校验参数中clientId对应的client
      */
-    protected Client client;
+    private Client client;
+
+    private User user;
 
     /**
      * 进行权限校验，是否有资格访问
      *
      * @return 校验结果，分为refused和allowed两类
      */
-    public AuthorizationCheckResult check(AuthorizationCheckParam checkParam) {
-        this.checkParam = checkParam;
+    public ResourceCheckResult check(Long userId, ResourceCheckParam checkParam) {
+        initCheck(userId, checkParam);
+
         try {
             List<ResourceVO> result = new ArrayList<>();
 
@@ -146,7 +156,7 @@ public class AuthorizationChecker {
                 }
             }
 
-            return new AuthorizationCheckResult(result);
+            return new ResourceCheckResult(result);
 
         } catch (Exception e) {
             log.error("鉴权校验失败", e);
@@ -154,29 +164,24 @@ public class AuthorizationChecker {
         }
     }
 
-    /**
-     * 异步初始化 根据校验参数，查询委托方
-     *
-     * @return 委托方PO
-     * @throws IllegalArgumentException 当根据clientId查询不到委托方时，会抛出异常
-     */
-    protected Client getClient() throws IllegalArgumentException {
-        if (this.client == null) {
-            synchronized (this) {
-                if (this.client == null) {
-                    this.client = clientMapper.selectById(checkParam.getClientId());
-                }
-            }
-
-            if (client == null) {
-                throw new AuthorizationException("无法找到Client，clientId=" + checkParam.getClientId());
-            }
-            if (!client.getIsEnabled()) {
-                throw new AuthorizationException("此Client未启用");
-            }
+    private void initCheck(Long userId, ResourceCheckParam checkParam) {
+        this.client = clientMapper.selectById(checkParam.getClientId());
+        if (client == null) {
+            throw new AuthorizationException("无法找到Client，clientId=" + checkParam.getClientId());
         }
+        if (!client.getIsEnabled()) {
+            throw new AuthorizationException("此Client未启用");
+        }
+        this.user = userMapper.selectById(userId);
+        if (user == null) {
+            throw new AuthorizationException("无法找到用户，Id=" + userId);
+        }
+        if (!user.getIsEnabled()) {
+            throw new AuthorizationException("此用户未启用");
+        }
+        user.setPassword(null);
 
-        return this.client;
+        this.checkParam = checkParam;
     }
 
     /**
@@ -184,43 +189,35 @@ public class AuthorizationChecker {
      *
      * @return 返回资源列表
      */
-    protected List<ResourceVO> findResources() {
-        List<Long> resourceIds = null;
+    private List<ResourceVO> findResources() {
+        List<Long> resourceIds = new ArrayList<>();
         // 获取uri资源id
         if (CollectionUtils.isNotEmpty(checkParam.getUris())) {
             // client拥有的全部uri资源
             List<ResourceUri> clientUris = resourceUriMapper.selectList(Wrappers.<ResourceUri>lambdaQuery()
-                    .eq(ResourceUri::getRealmId, getClient().getRealmId())
-                    .eq(ResourceUri::getClientId, getClient().getClientId())
+                    .eq(ResourceUri::getRealmId, client.getRealmId())
+                    .eq(ResourceUri::getClientId, client.getClientId())
             );
             // 根据路径和请求方式，获取资源ID
-            resourceIds = clientUris.stream()
-                    .filter(resourceUri -> {
-                        for (String str : checkParam.getUris()) {
-                            String requestMethod = "";
-                            String requestUri = "";
-                            if (!str.contains(DoorkeeperConstants.KV_DELIMITER)) {
-                                requestUri = str;
-                            } else {
-                                String[] split = str.split(DoorkeeperConstants.KV_DELIMITER);
-                                requestMethod = split[0];
-                                requestUri = split[1];
-                            }
+            for (String str : checkParam.getUris()) {
+                for (ResourceUri resourceUri : clientUris) {
+                    String requestMethod = HttpMethod.ALL.getValue();
+                    String requestUri;
+                    if (str.contains(DoorkeeperConstants.KV_DELIMITER)) {
+                        String[] split = str.split(DoorkeeperConstants.KV_DELIMITER);
+                        requestMethod = split[0];
+                        requestUri = split[1];
+                    } else {
+                        requestUri = str;
+                    }
 
-                            // 判断配置的uri是否需要方法
-                            if (HttpMethod.ALL != resourceUri.getMethod() && resourceUri.getMethod() != HttpMethod.parse(requestMethod)) {
-                                continue;
-                            }
-                            if (pathMatch(resourceUri.getUri().trim(), requestUri.trim())) {
-                                return true;
-                            }
-
-                        }
-                        // 如果都不匹配，返回匹配失败
-                        return false;
-                    })
-                    .map(ResourceUri::getResourceId)
-                    .collect(Collectors.toList());
+                    // 判断是否匹配方法和路径
+                    if (resourceUri.getMethod() == HttpMethod.parse(requestMethod) && pathMatch(resourceUri.getUri().trim(), requestUri.trim())) {
+                        resourceIds.add(resourceUri.getResourceId());
+                        break;
+                    }
+                }
+            }
 
             // 如果匹配到的资源为空 则返回空
             if (CollectionUtils.isEmpty(resourceIds)) {
@@ -229,8 +226,8 @@ public class AuthorizationChecker {
 
         }
         ResourceQueryParam param = new ResourceQueryParam();
-        param.setRealmId(getClient().getRealmId());
-        param.setClientId(getClient().getClientId());
+        param.setRealmId(client.getRealmId());
+        param.setClientId(client.getClientId());
         param.setResourceIds(resourceIds);
         param.setNames(checkParam.getNames());
         param.setKvs(checkParam.getTags());
@@ -245,7 +242,7 @@ public class AuthorizationChecker {
      *
      * @return 资源关联的权限列表
      */
-    protected List<PermissionVO> findResourcePermissions(Long resourceId) {
+    private List<PermissionVO> findResourcePermissions(Long resourceId) {
         List<PermissionResource> permissionResources = permissionResourceMapper.selectList(Wrappers.<PermissionResource>lambdaQuery()
                 .eq(PermissionResource::getResourceId, resourceId)
         );
@@ -254,8 +251,8 @@ public class AuthorizationChecker {
         }
         List<Long> permissionIds = permissionResources.stream().map(PermissionResource::getPermissionId).collect(Collectors.toList());
         PermissionQueryParam param = new PermissionQueryParam();
-        param.setRealmId(getClient().getRealmId());
-        param.setClientId(getClient().getClientId());
+        param.setRealmId(client.getRealmId());
+        param.setClientId(client.getClientId());
         param.setPermissionIds(permissionIds);
         param.setIsEnabled(true);
         param.setNeedAll(true);
@@ -269,7 +266,7 @@ public class AuthorizationChecker {
      * @param permission 待校验的授权信息
      * @return 返回Permission校验是否通过
      */
-    protected boolean checkPermissionLogic(PermissionVO permission) {
+    private boolean checkPermissionLogic(PermissionVO permission) {
         // 检测权限是否禁用
         if (!permission.getIsEnabled()) {
             return false;
@@ -287,7 +284,7 @@ public class AuthorizationChecker {
 
         // 逐个policy检查
         List<Long> policyIds = permissionPolicies.stream().map(PermissionPolicyVO::getPolicyId).collect(Collectors.toList());
-        List<PolicyVO> policies = policyDao.getVOSByPolicyIds(getClient().getRealmId(), getClient().getClientId(), policyIds, true);
+        List<PolicyVO> policies = policyDao.getVOSByPolicyIds(client.getRealmId(), client.getClientId(), policyIds, true);
         if (CollectionUtils.isEmpty(policies)) {
             return false;
         }
@@ -295,7 +292,7 @@ public class AuthorizationChecker {
         int allowedCount = 0;
         int totalCount = 0;
         for (PolicyVO policy : policies) {
-            PolicyChecker policyChecker = policyCheckerFactory.newPolicyChecker(policy);
+            PolicyChecker policyChecker = policyCheckerFactory.newPolicyChecker(user, policy);
             if (policyChecker == null) {
                 continue;
             }

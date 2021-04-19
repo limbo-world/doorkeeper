@@ -20,17 +20,18 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
 import org.limbo.doorkeeper.api.model.param.check.GroupCheckParam;
+import org.limbo.doorkeeper.api.model.param.check.ResourceCheckParam;
 import org.limbo.doorkeeper.api.model.param.check.RoleCheckParam;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
 import org.limbo.doorkeeper.api.model.vo.ResourceVO;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
-import org.limbo.doorkeeper.api.model.vo.UserVO;
-import org.limbo.doorkeeper.api.model.vo.check.AuthorizationCheckResult;
-import org.limbo.doorkeeper.server.service.GroupUserService;
-import org.limbo.doorkeeper.server.service.UserRoleService;
-import org.limbo.doorkeeper.server.support.auth.AuthorizationCheckerFactory;
+import org.limbo.doorkeeper.api.model.vo.check.GroupCheckResult;
+import org.limbo.doorkeeper.api.model.vo.check.ResourceCheckResult;
+import org.limbo.doorkeeper.api.model.vo.check.RoleCheckResult;
+import org.limbo.doorkeeper.server.support.auth.GroupChecker;
+import org.limbo.doorkeeper.server.support.auth.ResourceChecker;
+import org.limbo.doorkeeper.server.support.auth.RoleChecker;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -51,34 +52,33 @@ import java.util.List;
 public class AuthorizationController extends BaseController {
 
     @Autowired
-    private AuthorizationCheckerFactory authorizationCheckerFactory;
+    private ResourceChecker resourceChecker;
 
     @Autowired
-    private UserRoleService userRoleService;
+    private RoleChecker roleChecker;
 
     @Autowired
-    private GroupUserService groupUserService;
+    private GroupChecker groupChecker;
 
     @Operation(summary = "检查用户是否可以访问对应的资源")
     @GetMapping("/resource")
-    public Response<List<ResourceVO>> checkResource(@ParameterObject @Validated AuthorizationCheckParam param) {
-        param.setUserId(getUser().getUserId());
-        AuthorizationCheckResult check = authorizationCheckerFactory.createChecker().check(param);
-        return Response.success(check.getResources());
+    public Response<List<ResourceVO>> checkResource(@ParameterObject @Validated ResourceCheckParam param) {
+        ResourceCheckResult result = resourceChecker.check(getUser().getUserId(), param);
+        return Response.success(result.getResources());
     }
 
     @Operation(summary = "检查用户拥有的角色")
     @GetMapping("/role")
     public Response<List<RoleVO>> checkRole(@ParameterObject @Validated RoleCheckParam param) {
-        UserVO user = getUser();
-        return Response.success(userRoleService.checkRole(user.getUserId(), user.getRealmId(), param));
+        RoleCheckResult result = roleChecker.check(getUser().getUserId(), param);
+        return Response.success(result.getRoles());
     }
 
     @Operation(summary = "检查用户所在的组")
     @GetMapping("/group")
     public Response<List<GroupVO>> checkGroup(@ParameterObject @Validated GroupCheckParam param) {
-        UserVO user = getUser();
-        return Response.success(groupUserService.checkGroup(user.getUserId(), user.getRealmId(), param));
+        GroupCheckResult result = groupChecker.check(getUser().getUserId(), param);
+        return Response.success(result.getGroups());
     }
 
 }

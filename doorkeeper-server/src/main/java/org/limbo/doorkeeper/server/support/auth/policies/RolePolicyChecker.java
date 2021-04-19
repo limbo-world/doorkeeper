@@ -19,13 +19,14 @@ package org.limbo.doorkeeper.server.support.auth.policies;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
+import org.limbo.doorkeeper.api.model.param.check.ResourceCheckParam;
 import org.limbo.doorkeeper.api.model.param.check.RoleCheckParam;
-import org.limbo.doorkeeper.api.model.vo.RoleVO;
+import org.limbo.doorkeeper.api.model.vo.check.RoleCheckResult;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyRoleVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
-import org.limbo.doorkeeper.server.service.UserRoleService;
+import org.limbo.doorkeeper.server.dal.entity.User;
 import org.limbo.doorkeeper.server.support.auth.LogicChecker;
+import org.limbo.doorkeeper.server.support.auth.RoleChecker;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,20 +39,20 @@ import java.util.stream.Collectors;
 public class RolePolicyChecker extends AbstractPolicyChecker {
 
     @Setter
-    private UserRoleService userRoleService;
+    private RoleChecker roleChecker;
 
-    public RolePolicyChecker(PolicyVO policy) {
-        super(policy);
+    public RolePolicyChecker(User user, PolicyVO policy) {
+        super(user, policy);
     }
 
     /**
      * 获取用户角色  以及用户所在用户组角色（目前用户组角色是继承的，后面可以做成可配置的方式）
      *
-     * @param authorizationCheckParam 授权校验参数
+     * @param resourceCheckParam 授权校验参数
      * @return
      */
     @Override
-    protected boolean doCheck(AuthorizationCheckParam authorizationCheckParam) {
+    protected boolean doCheck(ResourceCheckParam resourceCheckParam) {
         // 策略绑定的角色 去除未启用的
         List<Long> roleIds = policy.getRoles().stream()
                 .filter(PolicyRoleVO::getIsEnabled)
@@ -63,10 +64,11 @@ public class RolePolicyChecker extends AbstractPolicyChecker {
 
         RoleCheckParam roleCheckParam = new RoleCheckParam();
         roleCheckParam.setRoleIds(roleIds);
-        List<RoleVO> roles = userRoleService.checkRole(authorizationCheckParam.getUserId(), policy.getRealmId(), roleCheckParam);
+        RoleCheckResult check = roleChecker.check(user.getUserId(), roleCheckParam);
 
         // 解析策略逻辑，判断是否满足逻辑条件
-        return LogicChecker.isSatisfied(getPolicyLogic(), roleIds.size(), roles == null ? 0 : roles.size());
+        return LogicChecker.isSatisfied(getPolicyLogic(), roleIds.size(),
+                check != null && check.getRoles() != null ? check.getRoles().size() : 0);
     }
 
 }

@@ -31,9 +31,7 @@ import java.util.List;
  */
 @Data
 @Accessors(chain = true)
-public class AuthorizationCheckParam {
-
-    private Long userId;
+public class ResourceCheckParam {
 
     @NotNull(message = "请选择委托方")
     @Parameter(description = "进行权限校验时，资源所属委托方", required = true)

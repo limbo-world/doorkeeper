@@ -19,12 +19,13 @@ package org.limbo.doorkeeper.server.support.auth.policies;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
-import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
+import org.limbo.doorkeeper.api.model.param.check.ResourceCheckParam;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyGroupVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 import org.limbo.doorkeeper.server.dal.entity.Group;
 import org.limbo.doorkeeper.server.dal.entity.GroupUser;
+import org.limbo.doorkeeper.server.dal.entity.User;
 import org.limbo.doorkeeper.server.dal.mapper.GroupMapper;
 import org.limbo.doorkeeper.server.dal.mapper.GroupUserMapper;
 import org.limbo.doorkeeper.server.support.GroupTool;
@@ -47,8 +48,8 @@ public class GroupPolicyChecker extends AbstractPolicyChecker {
     @Setter
     private GroupMapper groupMapper;
 
-    public GroupPolicyChecker(PolicyVO policy) {
-        super(policy);
+    public GroupPolicyChecker(User user, PolicyVO policy) {
+        super(user, policy);
     }
 
 
@@ -58,11 +59,11 @@ public class GroupPolicyChecker extends AbstractPolicyChecker {
      * 检查授权校验参数中的用户是否在对应用户组
      * 目前用户组有继承关系（后面考虑做成可配置的）
      *
-     * @param authorizationCheckParam 授权校验参数
+     * @param resourceCheckParam 授权校验参数
      * @return
      */
     @Override
-    protected boolean doCheck(AuthorizationCheckParam authorizationCheckParam) {
+    protected boolean doCheck(ResourceCheckParam resourceCheckParam) {
         List<Group> groups = groupMapper.selectList(Wrappers.<Group>lambdaQuery()
                 .eq(Group::getRealmId, policy.getRealmId())
         );
@@ -71,7 +72,7 @@ public class GroupPolicyChecker extends AbstractPolicyChecker {
         }
         // 获取用户用户组关系
         List<GroupUser> groupUsers = groupUserMapper.selectList(Wrappers.<GroupUser>lambdaQuery()
-                .eq(GroupUser::getUserId, authorizationCheckParam.getUserId())
+                .eq(GroupUser::getUserId, user.getUserId())
         );
         if (CollectionUtils.isEmpty(groupUsers)) {
             return false;

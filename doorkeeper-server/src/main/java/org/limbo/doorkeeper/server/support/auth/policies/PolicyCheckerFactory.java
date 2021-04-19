@@ -19,9 +19,12 @@ package org.limbo.doorkeeper.server.support.auth.policies;
 import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.constants.PolicyType;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
-import org.limbo.doorkeeper.server.dal.mapper.*;
-import org.limbo.doorkeeper.server.service.UserRoleService;
+import org.limbo.doorkeeper.server.dal.entity.User;
+import org.limbo.doorkeeper.server.dal.mapper.GroupMapper;
+import org.limbo.doorkeeper.server.dal.mapper.GroupUserMapper;
+import org.limbo.doorkeeper.server.dal.mapper.UserMapper;
 import org.limbo.doorkeeper.server.support.auth.AuthorizationException;
+import org.limbo.doorkeeper.server.support.auth.RoleChecker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,7 +39,7 @@ public class PolicyCheckerFactory {
     private UserMapper userMapper;
 
     @Autowired
-    private UserRoleService userRoleService;
+    private RoleChecker roleChecker;
 
     @Autowired
     private GroupUserMapper groupUserMapper;
@@ -50,7 +53,7 @@ public class PolicyCheckerFactory {
      * @param policy 策略
      * @return {@link PolicyChecker}
      */
-    public PolicyChecker newPolicyChecker(PolicyVO policy) {
+    public PolicyChecker newPolicyChecker(User user, PolicyVO policy) {
         if (policy == null) {
             throw new AuthorizationException("policy不可为null");
         }
@@ -62,16 +65,16 @@ public class PolicyCheckerFactory {
 
         switch (policyType) {
             case ROLE:
-                return CollectionUtils.isEmpty(policy.getRoles()) ? null : newRolePolicyChecker(policy);
+                return CollectionUtils.isEmpty(policy.getRoles()) ? null : newRolePolicyChecker(user, policy);
 
             case PARAM:
-                return CollectionUtils.isEmpty(policy.getParams()) ? null : newParamPolicyChecker(policy);
+                return CollectionUtils.isEmpty(policy.getParams()) ? null : newParamPolicyChecker(user, policy);
 
             case USER:
-                return CollectionUtils.isEmpty(policy.getUsers()) ? null : newUserPolicyChecker(policy);
+                return CollectionUtils.isEmpty(policy.getUsers()) ? null : newUserPolicyChecker(user, policy);
 
             case GROUP:
-                return CollectionUtils.isEmpty(policy.getGroups()) ? null : newGroupPolicyChecker(policy);
+                return CollectionUtils.isEmpty(policy.getGroups()) ? null : newGroupPolicyChecker(user, policy);
 
             case COMBINE:
             case TIME:
@@ -83,8 +86,8 @@ public class PolicyCheckerFactory {
     /**
      * 创建根据 用户 检查的策略checker
      */
-    public PolicyChecker newUserPolicyChecker(PolicyVO policy) {
-        UserPolicyChecker userPolicyChecker = new UserPolicyChecker(policy);
+    public PolicyChecker newUserPolicyChecker(User user, PolicyVO policy) {
+        UserPolicyChecker userPolicyChecker = new UserPolicyChecker(user, policy);
         userPolicyChecker.setUserMapper(userMapper);
         return userPolicyChecker;
     }
@@ -92,8 +95,8 @@ public class PolicyCheckerFactory {
     /**
      * 创建根据 用户组 检查的策略checker
      */
-    public PolicyChecker newGroupPolicyChecker(PolicyVO policy) {
-        GroupPolicyChecker userPolicyChecker = new GroupPolicyChecker(policy);
+    public PolicyChecker newGroupPolicyChecker(User user, PolicyVO policy) {
+        GroupPolicyChecker userPolicyChecker = new GroupPolicyChecker(user, policy);
         userPolicyChecker.setGroupUserMapper(groupUserMapper);
         userPolicyChecker.setGroupMapper(groupMapper);
         return userPolicyChecker;
@@ -102,16 +105,16 @@ public class PolicyCheckerFactory {
     /**
      * 创建根据 请求参数 检查的策略checker
      */
-    public PolicyChecker newParamPolicyChecker(PolicyVO policy) {
-        return new ParamPolicyChecker(policy);
+    public PolicyChecker newParamPolicyChecker(User user, PolicyVO policy) {
+        return new ParamPolicyChecker(user, policy);
     }
 
     /**
      * 创建根据 用户角色 检查的策略checker
      */
-    public PolicyChecker newRolePolicyChecker(PolicyVO policy) {
-        RolePolicyChecker rolePolicyChecker = new RolePolicyChecker(policy);
-        rolePolicyChecker.setUserRoleService(userRoleService);
+    public PolicyChecker newRolePolicyChecker(User user, PolicyVO policy) {
+        RolePolicyChecker rolePolicyChecker = new RolePolicyChecker(user, policy);
+        rolePolicyChecker.setRoleChecker(roleChecker);
         return rolePolicyChecker;
     }
 

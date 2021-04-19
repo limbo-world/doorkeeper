@@ -18,7 +18,7 @@ package org.limbo.doorkeeper.server.support.auth.policies;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
+import org.limbo.doorkeeper.api.model.param.check.ResourceCheckParam;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyUserVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 import org.limbo.doorkeeper.server.dal.entity.User;
@@ -36,8 +36,8 @@ public class UserPolicyChecker extends AbstractPolicyChecker {
     @Setter
     private UserMapper userMapper;
 
-    public UserPolicyChecker(PolicyVO policy) {
-        super(policy);
+    public UserPolicyChecker(User user, PolicyVO policy) {
+        super(user, policy);
     }
 
 
@@ -46,12 +46,12 @@ public class UserPolicyChecker extends AbstractPolicyChecker {
      *
      * 检查授权校验参数中的userId是否在策略授予的用户中
      *
-     * @param authorizationCheckParam 授权校验参数
+     * @param resourceCheckParam 授权校验参数
      * @return
      */
     @Override
-    protected boolean doCheck(AuthorizationCheckParam authorizationCheckParam) {
-        Long userId = authorizationCheckParam.getUserId();
+    protected boolean doCheck(ResourceCheckParam resourceCheckParam) {
+        Long userId = user.getUserId();
         User user = userMapper.selectById(userId);
         return user != null && user.getIsEnabled() && policy.getUsers().stream()
                 .map(PolicyUserVO::getUserId)

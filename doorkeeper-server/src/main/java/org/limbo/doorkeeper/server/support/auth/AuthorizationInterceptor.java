@@ -19,8 +19,8 @@ package org.limbo.doorkeeper.server.support.auth;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.constants.*;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.check.AuthorizationCheckParam;
-import org.limbo.doorkeeper.api.model.vo.check.AuthorizationCheckResult;
+import org.limbo.doorkeeper.api.model.param.check.ResourceCheckParam;
+import org.limbo.doorkeeper.api.model.vo.check.ResourceCheckResult;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyRoleVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 import org.limbo.doorkeeper.server.dal.entity.Client;
@@ -67,7 +67,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     private ClientMapper clientMapper;
 
     @Autowired
-    private AuthorizationCheckerFactory authorizationCheckerFactory;
+    private ResourceChecker resourceChecker;
 
     @Autowired
     private PolicyCheckerFactory policyCheckerFactory;
@@ -82,6 +82,12 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         Long userId = JWTUtil.getUserId(token);
         User user = userMapper.selectById(userId);
 
+        // 判断用户是否启用
+        if (!user.getIsEnabled()) {
+            WebUtil.writeToResponse(response, JacksonUtil.toJSONString(Response.unauthorized("用户未启用")));
+            return false;
+        }
+
         Realm doorkeeperRealm = realmMapper.getDoorkeeperRealm();
 
         // 判断用户是否属于doorkeeper域或公有域
@@ -91,19 +97,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         }
 
         // 超级管理员认证
-        Role doorkeeperAdmin = roleMapper.getByName(doorkeeperRealm.getRealmId(), DoorkeeperConstants.REALM_CLIENT_ID, DoorkeeperConstants.ADMIN);
-        PolicyRoleVO policyRoleVO = new PolicyRoleVO();
-        policyRoleVO.setRoleId(doorkeeperAdmin.getRoleId());
-        policyRoleVO.setIsEnabled(doorkeeperAdmin.getIsEnabled());
-        PolicyVO adminPolicy = new PolicyVO();
-        adminPolicy.setRealmId(doorkeeperRealm.getRealmId());
-        adminPolicy.setLogic(Logic.ALL.getValue());
-        adminPolicy.setType(PolicyType.ROLE.getValue());
-        adminPolicy.setIntention(Intention.ALLOW.getValue());
-        adminPolicy.setRoles(Collections.singletonList(policyRoleVO));
-        AuthorizationCheckParam adminCheckParam = new AuthorizationCheckParam().setUserId(user.getUserId());
-        Intention policyCheckIntention = policyCheckerFactory.newPolicyChecker(adminPolicy).check(adminCheckParam);
-        if (Intention.ALLOW == policyCheckIntention) {
+        if (isSuperAdmin(doorkeeperRealm.getRealmId(), user)) {
             return true;
         }
 
@@ -116,10 +110,10 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
         // 获取对应的client
         Client client = clientMapper.getByName(doorkeeperRealm.getRealmId(), realm.getName());
-        AuthorizationCheckParam checkParam = new AuthorizationCheckParam()
-                .setUserId(userId).setClientId(client.getClientId())
+        ResourceCheckParam checkParam = new ResourceCheckParam()
+                .setClientId(client.getClientId())
                 .setUris(Collections.singletonList(HttpMethod.parse(request.getMethod()) + DoorkeeperConstants.KV_DELIMITER + request.getRequestURI()));
-        AuthorizationCheckResult checkResult = authorizationCheckerFactory.createChecker().check(checkParam);
+        ResourceCheckResult checkResult = resourceChecker.check(userId, checkParam);
 
         if (checkResult.getResources().size() <= 0) {
             WebUtil.writeToResponse(response, JacksonUtil.toJSONString(Response.unauthorized(AuthorizationException.msg)));
@@ -127,6 +121,27 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         }
 
         return true;
+    }
+
+    /**
+     * 判断用户是否doorkeeper的管理员 校验是否为 doorkeeper域下的域管理员
+     * @param realmId doorkeeper realmId
+     * @param user 用户
+     * @return 是否超级管理员
+     */
+    public boolean isSuperAdmin(Long realmId, User user) {
+        Role doorkeeperAdmin = roleMapper.getByName(realmId, DoorkeeperConstants.REALM_CLIENT_ID, DoorkeeperConstants.ADMIN);
+        PolicyRoleVO policyRoleVO = new PolicyRoleVO();
+        policyRoleVO.setRoleId(doorkeeperAdmin.getRoleId());
+        policyRoleVO.setIsEnabled(doorkeeperAdmin.getIsEnabled());
+        PolicyVO adminPolicy = new PolicyVO();
+        adminPolicy.setRealmId(realmId);
+        adminPolicy.setLogic(Logic.ALL.getValue());
+        adminPolicy.setType(PolicyType.ROLE.getValue());
+        adminPolicy.setIntention(Intention.ALLOW.getValue());
+        adminPolicy.setRoles(Collections.singletonList(policyRoleVO));
+        Intention policyCheckIntention = policyCheckerFactory.newPolicyChecker(user, adminPolicy).check(new ResourceCheckParam());
+        return Intention.ALLOW == policyCheckIntention;
     }
 
 }

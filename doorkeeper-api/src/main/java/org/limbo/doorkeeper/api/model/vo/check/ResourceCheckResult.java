@@ -25,7 +25,7 @@ import org.limbo.doorkeeper.api.model.vo.ResourceVO;
 import java.util.List;
 
 /**
- * 授权校验结果
+ * 资源校验结果
  *
  * @author brozen
  * @date 2021/1/14
@@ -33,7 +33,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthorizationCheckResult {
+public class ResourceCheckResult {
 
     @Schema(description ="允许访问的资源对象")
     private List<ResourceVO> resources;
