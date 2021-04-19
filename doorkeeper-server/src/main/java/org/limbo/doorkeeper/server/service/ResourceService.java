@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,6 +63,9 @@ public class ResourceService {
 
     @Autowired
     private PermissionResourceService permissionResourceService;
+
+    @Autowired
+    private TagMapper tagMapper;
 
     @Transactional
     public ResourceVO add(Long realmId, Long clientId, ResourceAddParam param) {
@@ -206,18 +210,47 @@ public class ResourceService {
 
     private void batchSaveTag(Long resourceId, Long realmId, Long clientId, List<ResourceTagAddParam> params) {
         if (CollectionUtils.isNotEmpty(params)) {
-            List<ResourceTag> tags = new ArrayList<>();
+
+            // 新增并获取标签
+            List<Tag> tags = new ArrayList<>();
+            HashSet<String> kvs = new HashSet<>();
             for (ResourceTagAddParam tagParam : params) {
-                ResourceTag tag = new ResourceTag();
-                tag.setK(tagParam.getK());
-                tag.setV(tagParam.getV());
-                tag.setKv(tagParam.getK() + DoorkeeperConstants.KV_DELIMITER + tagParam.getV());
-                tag.setResourceId(resourceId);
+                Tag tag = new Tag();
+                String kv = tagParam.getK() + DoorkeeperConstants.KV_DELIMITER + tagParam.getV();
                 tag.setRealmId(realmId);
                 tag.setClientId(clientId);
+                tag.setK(tagParam.getK());
+                tag.setV(tagParam.getV());
+                tag.setKv(kv);
+
                 tags.add(tag);
+                kvs.add(kv);
             }
-            MyBatisPlusUtils.batchSave(tags, ResourceTag.class);
+            tagMapper.batchInsertIgnore(tags);
+
+            tags = tagMapper.selectList(Wrappers.<Tag>lambdaQuery()
+                    .eq(Tag::getRealmId, realmId)
+                    .eq(Tag::getClientId, clientId)
+                    .in(Tag::getKv, kvs)
+            );
+
+            List<ResourceTag> resourceTags = new ArrayList<>();
+            for (ResourceTagAddParam tagParam : params) {
+                for (Tag tag : tags) {
+                    if (tag.getK().equals(tagParam.getK()) && tag.getV().equals(tagParam.getV())) {
+                        ResourceTag resourceTag = new ResourceTag();
+                        resourceTag.setResourceId(resourceId);
+                        resourceTag.setRealmId(realmId);
+                        resourceTag.setClientId(clientId);
+                        resourceTag.setTagId(tag.getTagId());
+
+                        resourceTags.add(resourceTag);
+                        break;
+                    }
+                }
+            }
+
+            MyBatisPlusUtils.batchSave(resourceTags, ResourceTag.class);
         }
     }
 

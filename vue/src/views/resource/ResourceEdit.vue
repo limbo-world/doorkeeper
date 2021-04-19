@@ -57,8 +57,9 @@
                         <el-tag v-for="(tag, idx) in resource.tags" :key="tag.resourceTagId" closable @close="deleteTag(idx)"
                                 type="success" size="big" :disable-transitions="false" class="tag-lab">{{tag.k}}={{tag.v}}
                         </el-tag>
-                        <el-input v-model="tagString" size="small" placeholder="输入标签名与标签值" style="width:300px;"
-                                  @keyup.enter.native="addTag" @blur="addTag"></el-input>
+                        <el-autocomplete v-model="tagString" size="small" placeholder="输入标签名与标签值" style="width:300px;"
+                                  @keyup.enter.native="addTag" @blur="addTag" @select="addTag"
+                                  :fetch-suggestions="tagSearch"></el-autocomplete>
                     </el-row>
                 </el-form-item>
                 <el-form-item label="是否启用">
@@ -87,7 +88,8 @@
                 resource: {
                     uris: [],
                     tags: []
-                }
+                },
+                tags: []
             };
         },
 
@@ -102,6 +104,7 @@
                 this.resource.resourceId = this.$route.query.resourceId;
                 this.loadResource();
             }
+            this.getTags();
         },
 
         methods: {
@@ -121,7 +124,25 @@
             },
 
             // ========== 标签相关 ==========
+            getTags() {
+                this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.resource.clientId}/tag`).then(response => {
+                    let tags = response.data;
+                    tags.forEach(tag => {
+                        tag.value = tag.kv;
+                    })
+                    this.tags = response.data;
+                });
+            },
+            tagSearch(queryString, cb) {
+                let tags = this.tags;
+                let results = queryString ? tags.filter(tag => {
+                    return (tag.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+                }) : tags;
+                // 调用 callback 返回建议列表的数据
+                cb(results);
+            },
             addTag() {
+                console.log(11111)
                 if (!this.tagString || this.tagString.indexOf("=") < 0) {
                     return
                 }
@@ -154,6 +175,7 @@
             addResource() {
                 this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.resource.clientId}/resource`, this.resource).then(response => {
                     this.resource = response.data;
+                    this.$message.success("新建成功")
                     this.loadResource();
                 })
             },

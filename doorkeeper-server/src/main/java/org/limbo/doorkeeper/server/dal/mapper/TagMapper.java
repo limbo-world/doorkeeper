@@ -14,26 +14,20 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param.resource;
+package org.limbo.doorkeeper.server.dal.mapper;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+import org.limbo.doorkeeper.server.dal.entity.Tag;
 
-import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 /**
  * @author Devil
- * @date 2021/1/5 4:53 下午
+ * @date 2020/12/31 5:44 下午
  */
-@Data
-public class ResourceTagAddParam {
+public interface TagMapper extends BaseMapper<Tag> {
 
-    @NotBlank(message = "标签名不能为空")
-    @Schema(description ="标签名", required = true)
-    private String k;
-
-    @NotBlank(message = "标签值不能为空")
-    @Schema(description ="标签值", required = true)
-    private String v;
+    void batchInsertIgnore(@Param("tags") List<Tag> tags);
 
 }

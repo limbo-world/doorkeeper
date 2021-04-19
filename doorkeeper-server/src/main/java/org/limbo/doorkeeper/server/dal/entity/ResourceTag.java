@@ -38,11 +38,5 @@ public class ResourceTag {
 
     private Long clientId;
 
-    private String k;
-
-    private String v;
-    /**
-     * k=v
-     */
-    private String kv;
+    private Long tagId;
 }

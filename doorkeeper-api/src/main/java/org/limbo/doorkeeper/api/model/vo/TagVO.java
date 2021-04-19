@@ -14,26 +14,33 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param.resource;
+package org.limbo.doorkeeper.api.model.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
-
 /**
  * @author Devil
- * @date 2021/1/5 4:53 下午
+ * @date 2021/4/19 8:27 下午
  */
 @Data
-public class ResourceTagAddParam {
+public class TagVO {
 
-    @NotBlank(message = "标签名不能为空")
-    @Schema(description ="标签名", required = true)
+    @Schema(description ="ID")
+    private Long tagId;
+
+    @Schema(description ="域ID")
+    private Long realmId;
+
+    @Schema(description ="clientID")
+    private Long clientId;
+
+    @Schema(description ="key")
     private String k;
 
-    @NotBlank(message = "标签值不能为空")
-    @Schema(description ="标签值", required = true)
+    @Schema(description ="value")
     private String v;
 
+    @Schema(description ="key=value")
+    private String kv;
 }
