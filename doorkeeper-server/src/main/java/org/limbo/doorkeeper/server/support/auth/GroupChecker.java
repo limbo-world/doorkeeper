@@ -56,6 +56,9 @@ public class GroupChecker {
     @Autowired
     private GroupUserMapper groupUserMapper;
 
+    /**
+     * 获取用户所在用户组
+     */
     public GroupCheckResult check(Long userId, GroupCheckParam checkParam) {
         User user = userMapper.selectById(userId);
         if (user == null) {
@@ -69,6 +72,7 @@ public class GroupChecker {
         GroupCheckResult result = new GroupCheckResult();
         result.setGroups(new ArrayList<>());
 
+        // 获取用户用户组
         List<GroupUser> userGroups = groupUserMapper.selectList(Wrappers.<GroupUser>lambdaQuery()
                 .eq(GroupUser::getUserId, userId)
                 .in(CollectionUtils.isNotEmpty(checkParam.getGroupIds()), GroupUser::getGroupId, checkParam.getGroupIds())
@@ -78,6 +82,7 @@ public class GroupChecker {
             return result;
         }
 
+        // 获取用户组
         List<Long> groupIds = userGroups.stream().map(GroupUser::getGroupId).collect(Collectors.toList());
         List<Group> groups = groupMapper.selectList(Wrappers.<Group>lambdaQuery()
                 .eq(Group::getRealmId, user.getRealmId())
@@ -91,6 +96,7 @@ public class GroupChecker {
             return result;
         }
 
+        // 合并数据
         List<GroupVO> groupVOS = EnhancedBeanUtils.createAndCopyList(groups, GroupVO.class);
         for (GroupVO groupVO : groupVOS) {
             for (GroupUser userGroup : userGroups) {

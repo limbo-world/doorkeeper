@@ -64,6 +64,6 @@ public class GroupVO {
     @Schema(description ="用户ID")
     private Long userId;
 
-    @Schema(description ="是否默认添加")
+    @Schema(description ="扩展信息")
     private String extend;
 }

@@ -66,6 +66,9 @@ public class RoleChecker {
     @Autowired
     private GroupUserMapper groupUserMapper;
 
+    /**
+     * 获取用户拥有的角色
+     */
     public RoleCheckResult check(Long userId, RoleCheckParam checkParam) {
         User user = userMapper.selectById(userId);
         if (user == null) {
