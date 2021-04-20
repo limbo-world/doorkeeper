@@ -216,11 +216,11 @@ public class ResourceService {
             HashSet<String> kvs = new HashSet<>();
             for (ResourceTagAddParam tagParam : params) {
                 Tag tag = new Tag();
-                String kv = tagParam.getK() + DoorkeeperConstants.KV_DELIMITER + tagParam.getV();
                 tag.setRealmId(realmId);
                 tag.setClientId(clientId);
-                tag.setK(tagParam.getK());
-                tag.setV(tagParam.getV());
+                tag.setK(tagParam.getK().trim());
+                tag.setV(tagParam.getV().trim());
+                String kv = tag.getK() + DoorkeeperConstants.KV_DELIMITER + tag.getV();
                 tag.setKv(kv);
 
                 tags.add(tag);
@@ -237,7 +237,7 @@ public class ResourceService {
             List<ResourceTag> resourceTags = new ArrayList<>();
             for (ResourceTagAddParam tagParam : params) {
                 for (Tag tag : tags) {
-                    if (tag.getK().equals(tagParam.getK()) && tag.getV().equals(tagParam.getV())) {
+                    if (tag.getK().trim().equals(tagParam.getK().trim()) && tag.getV().trim().equals(tagParam.getV().trim())) {
                         ResourceTag resourceTag = new ResourceTag();
                         resourceTag.setResourceId(resourceId);
                         resourceTag.setRealmId(realmId);
