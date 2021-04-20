@@ -73,6 +73,6 @@ public class ResourceQueryParam extends Page<ResourceVO> {
     private Boolean needTag;
 
     @Parameter(description = "是否返回uri")
-    private String needUri;
+    private Boolean needUri;
 
 }
