@@ -63,7 +63,7 @@ public class AuthorizationController extends BaseController {
     @Operation(summary = "检查用户是否可以访问对应的资源")
     @GetMapping("/resource")
     public Response<List<ResourceVO>> checkResource(@ParameterObject @Validated ResourceCheckParam param) {
-        ResourceCheckResult result = resourceChecker.check(getUser().getUserId(), param);
+        ResourceCheckResult result = resourceChecker.check(getUser().getUserId(), true, param);
         return Response.success(result.getResources());
     }
 

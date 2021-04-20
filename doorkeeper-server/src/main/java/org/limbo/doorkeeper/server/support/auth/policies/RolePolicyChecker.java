@@ -19,7 +19,7 @@ package org.limbo.doorkeeper.server.support.auth.policies;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.limbo.doorkeeper.api.model.param.check.ResourceCheckParam;
+import org.limbo.doorkeeper.api.model.param.check.PolicyCheckerParam;
 import org.limbo.doorkeeper.api.model.param.check.RoleCheckParam;
 import org.limbo.doorkeeper.api.model.vo.check.RoleCheckResult;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyRoleVO;
@@ -48,11 +48,11 @@ public class RolePolicyChecker extends AbstractPolicyChecker {
     /**
      * 获取用户角色  以及用户所在用户组角色（目前用户组角色是继承的，后面可以做成可配置的方式）
      *
-     * @param resourceCheckParam 授权校验参数
+     * @param checkerParam 授权校验参数
      * @return
      */
     @Override
-    protected boolean doCheck(ResourceCheckParam resourceCheckParam) {
+    protected boolean doCheck(PolicyCheckerParam checkerParam) {
         // 策略绑定的角色 去除未启用的
         List<Long> roleIds = policy.getRoles().stream()
                 .filter(PolicyRoleVO::getIsEnabled)

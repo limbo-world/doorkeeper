@@ -19,6 +19,7 @@ package org.limbo.doorkeeper.server.support.auth;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.constants.*;
 import org.limbo.doorkeeper.api.model.Response;
+import org.limbo.doorkeeper.api.model.param.check.PolicyCheckerParam;
 import org.limbo.doorkeeper.api.model.param.check.ResourceCheckParam;
 import org.limbo.doorkeeper.api.model.vo.check.ResourceCheckResult;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyRoleVO;
@@ -113,7 +114,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         ResourceCheckParam checkParam = new ResourceCheckParam()
                 .setClientId(client.getClientId())
                 .setUris(Collections.singletonList(HttpMethod.parse(request.getMethod()) + DoorkeeperConstants.KV_DELIMITER + request.getRequestURI()));
-        ResourceCheckResult checkResult = resourceChecker.check(userId, checkParam);
+        ResourceCheckResult checkResult = resourceChecker.check(userId, true, checkParam);
 
         if (checkResult.getResources().size() <= 0) {
             WebUtil.writeToResponse(response, JacksonUtil.toJSONString(Response.unauthorized(AuthorizationException.msg)));
@@ -140,7 +141,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         adminPolicy.setType(PolicyType.ROLE.getValue());
         adminPolicy.setIntention(Intention.ALLOW.getValue());
         adminPolicy.setRoles(Collections.singletonList(policyRoleVO));
-        Intention policyCheckIntention = policyCheckerFactory.newPolicyChecker(user, adminPolicy).check(new ResourceCheckParam());
+        Intention policyCheckIntention = policyCheckerFactory.newPolicyChecker(user, adminPolicy).check(new PolicyCheckerParam());
         return Intention.ALLOW == policyCheckIntention;
     }
 

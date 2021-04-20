@@ -19,7 +19,7 @@ package org.limbo.doorkeeper.server.support.auth.policies;
 import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.constants.Logic;
-import org.limbo.doorkeeper.api.model.param.check.ResourceCheckParam;
+import org.limbo.doorkeeper.api.model.param.check.PolicyCheckerParam;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyParamVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 import org.limbo.doorkeeper.server.dal.entity.User;
@@ -46,14 +46,14 @@ public class ParamPolicyChecker extends AbstractPolicyChecker {
      *
      * 将 校验参数 和 策略限制的参数 进行对比，匹配的参数个数再根据{@link Logic}的约束进行判断，是否满足条件。
      *
-     * @param resourceCheckParam 授权校验参数
+     * @param checkerParam 授权校验参数
      * @return
      */
     @Override
-    protected boolean doCheck(ResourceCheckParam resourceCheckParam) {
+    protected boolean doCheck(PolicyCheckerParam checkerParam) {
         Map<String, String> params = new HashMap<>();
-        if (CollectionUtils.isNotEmpty(resourceCheckParam.getParams())) {
-            for (String param : resourceCheckParam.getParams()) {
+        if (CollectionUtils.isNotEmpty(checkerParam.getParams())) {
+            for (String param : checkerParam.getParams()) {
                 String[] split = param.split(DoorkeeperConstants.KV_DELIMITER);
                 params.put(split[0], split[1]);
             }

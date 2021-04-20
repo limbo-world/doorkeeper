@@ -19,7 +19,7 @@ package org.limbo.doorkeeper.server.support.auth.policies;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.Logic;
-import org.limbo.doorkeeper.api.model.param.check.ResourceCheckParam;
+import org.limbo.doorkeeper.api.model.param.check.PolicyCheckerParam;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 import org.limbo.doorkeeper.server.dal.entity.User;
 import org.limbo.doorkeeper.server.utils.JacksonUtil;
@@ -48,15 +48,15 @@ public abstract class AbstractPolicyChecker implements PolicyChecker {
     /**
      * {@inheritDoc}
      *
-     * @param resourceCheckParam 授权校验参数
+     * @param checkerParam 授权校验参数
      * @return
      */
     @Override
-    public Intention check(ResourceCheckParam resourceCheckParam) {
+    public Intention check(PolicyCheckerParam checkerParam) {
         Intention intention = Intention.parse(policy.getIntention());
         boolean checkPassed;
         try {
-            checkPassed = doCheck(resourceCheckParam);
+            checkPassed = doCheck(checkerParam);
         } catch (Exception e) {
             log.error("策略校验失败 " + JacksonUtil.toJSONString(policy));
             throw e;
@@ -66,9 +66,9 @@ public abstract class AbstractPolicyChecker implements PolicyChecker {
 
     /**
      * 检测策略是否通过
-     * @param resourceCheckParam 授权校验参数
+     * @param checkerParam 授权校验参数
      */
-    protected abstract boolean doCheck(ResourceCheckParam resourceCheckParam);
+    protected abstract boolean doCheck(PolicyCheckerParam checkerParam);
 
     /**
      * 当策略检查结果为未通过时，将intention反转。<br/>

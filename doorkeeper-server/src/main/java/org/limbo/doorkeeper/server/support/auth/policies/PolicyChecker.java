@@ -17,7 +17,7 @@
 package org.limbo.doorkeeper.server.support.auth.policies;
 
 import org.limbo.doorkeeper.api.constants.Intention;
-import org.limbo.doorkeeper.api.model.param.check.ResourceCheckParam;
+import org.limbo.doorkeeper.api.model.param.check.PolicyCheckerParam;
 
 /**
  * 策略校验器
@@ -29,9 +29,9 @@ public interface PolicyChecker {
 
     /**
      * 校验策略是否通过
-     * @param resourceCheckParam 授权校验参数
+     * @param checkerParam 授权校验参数
      * @return 返回策略是否通过
      */
-    Intention check(ResourceCheckParam resourceCheckParam);
+    Intention check(PolicyCheckerParam checkerParam);
 
 }

@@ -17,7 +17,6 @@
 package org.limbo.doorkeeper.server.support.auth;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +24,7 @@ import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.constants.HttpMethod;
 import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.Logic;
+import org.limbo.doorkeeper.api.model.param.check.PolicyCheckerParam;
 import org.limbo.doorkeeper.api.model.param.check.ResourceCheckParam;
 import org.limbo.doorkeeper.api.model.param.permission.PermissionQueryParam;
 import org.limbo.doorkeeper.api.model.param.resource.ResourceQueryParam;
@@ -59,6 +59,8 @@ import java.util.stream.Collectors;
 @Component
 public class ResourceChecker {
 
+    private static final ThreadLocal<EasyAntPathMatcher> PATH_MATCHER = ThreadLocal.withInitial(EasyAntPathMatcher::new);
+
     @Autowired
     private PermissionMapper permissionMapper;
 
@@ -87,43 +89,40 @@ public class ResourceChecker {
     private PolicyCheckerFactory policyCheckerFactory;
 
     /**
-     * 未授权情况下是否拒绝，默认ture。
-     * 未授权是指，资源找不到对应的Permission
-     */
-    @Setter
-    private boolean refuseWhenUnauthorized = true;
-
-    private static final ThreadLocal<EasyAntPathMatcher> PATH_MATCHER = ThreadLocal.withInitial(EasyAntPathMatcher::new);
-
-    /**
-     * 校验参数
-     */
-    private ResourceCheckParam checkParam;
-
-    /**
-     * 校验参数中clientId对应的client
-     */
-    private Client client;
-
-    private User user;
-
-    /**
      * 进行权限校验，是否有资格访问
      *
-     * @return 校验结果，分为refused和allowed两类
+     * @param userId 用户id
+     * @param refuseWhenUnauthorized 未授权情况下是否拒绝，未授权是指，资源找不到对应的Permission
+     * @param checkParam 用于获取资源的参数
+     * @return
      */
-    public ResourceCheckResult check(Long userId, ResourceCheckParam checkParam) {
-        initCheck(userId, checkParam);
+    public ResourceCheckResult check(Long userId, boolean refuseWhenUnauthorized, ResourceCheckParam checkParam) {
+        Client client = clientMapper.selectById(checkParam.getClientId());
+        if (client == null) {
+            throw new AuthorizationException("无法找到Client，clientId=" + checkParam.getClientId());
+        }
+        if (!client.getIsEnabled()) {
+            throw new AuthorizationException("此Client未启用");
+        }
+
+        List<ResourceVO> result = new ArrayList<>();
+
+        User user = userMapper.selectById(userId);
+        if (user == null) {
+            throw new AuthorizationException("无法找到用户，Id=" + userId);
+        }
+        if (!user.getIsEnabled()) {
+            return new ResourceCheckResult(result);
+        }
+        user.setPassword(null);
 
         try {
-            List<ResourceVO> result = new ArrayList<>();
-
             // 找到待检测的启用资源
-            List<ResourceVO> findResources = findResources();
+            List<ResourceVO> findResources = findResources(client.getRealmId(), client.getClientId(), checkParam);
             ASSIGNER_ITER:
             for (ResourceVO findResource : findResources) {
                 // 遍历资源依次拿到权限Permission
-                List<PermissionVO> permissions = findResourcePermissions(findResource.getResourceId());
+                List<PermissionVO> permissions = findResourcePermissions(client.getRealmId(), client.getClientId(), findResource.getResourceId());
 
                 // 未授权的情况
                 if (CollectionUtils.isEmpty(permissions)) {
@@ -142,14 +141,14 @@ public class ResourceChecker {
                 // 先检测 REFUSE 的权限，如果存在一个 REFUSE 的权限校验通过，则此资源约束被看作拒绝
                 Set<PermissionVO> refusedPerms = intentGroupedPerms.getOrDefault(Intention.REFUSE, new HashSet<>());
                 for (PermissionVO permission : refusedPerms) {
-                    if (checkPermissionLogic(permission)) {
+                    if (checkPermissionLogic(client.getRealmId(), client.getClientId(), user, checkParam, permission)) {
                         continue ASSIGNER_ITER;
                     }
                 }
                 // 再检测 ALLOW 的权限
                 Set<PermissionVO> allowedPerms = intentGroupedPerms.getOrDefault(Intention.ALLOW, new HashSet<>());
                 for (PermissionVO permission : allowedPerms) {
-                    if (checkPermissionLogic(permission)) {
+                    if (checkPermissionLogic(client.getRealmId(), client.getClientId(), user, checkParam, permission)) {
                         result.add(findResource);
                         continue ASSIGNER_ITER;
                     }
@@ -164,39 +163,19 @@ public class ResourceChecker {
         }
     }
 
-    private void initCheck(Long userId, ResourceCheckParam checkParam) {
-        this.client = clientMapper.selectById(checkParam.getClientId());
-        if (client == null) {
-            throw new AuthorizationException("无法找到Client，clientId=" + checkParam.getClientId());
-        }
-        if (!client.getIsEnabled()) {
-            throw new AuthorizationException("此Client未启用");
-        }
-        this.user = userMapper.selectById(userId);
-        if (user == null) {
-            throw new AuthorizationException("无法找到用户，Id=" + userId);
-        }
-        if (!user.getIsEnabled()) {
-            throw new AuthorizationException("此用户未启用");
-        }
-        user.setPassword(null);
-
-        this.checkParam = checkParam;
-    }
-
     /**
      * 根据参数获取需要校验的资源
      *
      * @return 返回资源列表
      */
-    private List<ResourceVO> findResources() {
+    private List<ResourceVO> findResources(Long realmId, Long clientId, ResourceCheckParam checkParam) {
         List<Long> resourceIds = new ArrayList<>();
         // 获取uri资源id
         if (CollectionUtils.isNotEmpty(checkParam.getUris())) {
             // client拥有的全部uri资源
             List<ResourceUri> clientUris = resourceUriMapper.selectList(Wrappers.<ResourceUri>lambdaQuery()
-                    .eq(ResourceUri::getRealmId, client.getRealmId())
-                    .eq(ResourceUri::getClientId, client.getClientId())
+                    .eq(ResourceUri::getRealmId, realmId)
+                    .eq(ResourceUri::getClientId, clientId)
             );
             // 根据路径和请求方式，获取资源ID
             for (String str : checkParam.getUris()) {
@@ -212,7 +191,8 @@ public class ResourceChecker {
                     }
 
                     // 判断是否匹配方法和路径
-                    if (resourceUri.getMethod() == HttpMethod.parse(requestMethod) && pathMatch(resourceUri.getUri().trim(), requestUri.trim())) {
+                    if ((HttpMethod.ALL == resourceUri.getMethod() || resourceUri.getMethod() == HttpMethod.parse(requestMethod))
+                            && pathMatch(resourceUri.getUri().trim(), requestUri.trim())) {
                         resourceIds.add(resourceUri.getResourceId());
                         break;
                     }
@@ -226,13 +206,15 @@ public class ResourceChecker {
 
         }
         ResourceQueryParam param = new ResourceQueryParam();
-        param.setRealmId(client.getRealmId());
-        param.setClientId(client.getClientId());
+        param.setRealmId(realmId);
+        param.setClientId(clientId);
         param.setResourceIds(resourceIds);
         param.setNames(checkParam.getNames());
         param.setKvs(checkParam.getTags());
         param.setIsEnabled(true);
         param.setNeedAll(true);
+        param.setNeedTag(true);
+        param.setNeedUri(true);
         return resourceMapper.getVOS(param);
     }
 
@@ -242,7 +224,7 @@ public class ResourceChecker {
      *
      * @return 资源关联的权限列表
      */
-    private List<PermissionVO> findResourcePermissions(Long resourceId) {
+    private List<PermissionVO> findResourcePermissions(Long realmId, Long clientId, Long resourceId) {
         List<PermissionResource> permissionResources = permissionResourceMapper.selectList(Wrappers.<PermissionResource>lambdaQuery()
                 .eq(PermissionResource::getResourceId, resourceId)
         );
@@ -251,8 +233,8 @@ public class ResourceChecker {
         }
         List<Long> permissionIds = permissionResources.stream().map(PermissionResource::getPermissionId).collect(Collectors.toList());
         PermissionQueryParam param = new PermissionQueryParam();
-        param.setRealmId(client.getRealmId());
-        param.setClientId(client.getClientId());
+        param.setRealmId(realmId);
+        param.setClientId(clientId);
         param.setPermissionIds(permissionIds);
         param.setIsEnabled(true);
         param.setNeedAll(true);
@@ -266,7 +248,7 @@ public class ResourceChecker {
      * @param permission 待校验的授权信息
      * @return 返回Permission校验是否通过
      */
-    private boolean checkPermissionLogic(PermissionVO permission) {
+    private boolean checkPermissionLogic(Long realmId, Long clientId, User user, ResourceCheckParam checkParam, PermissionVO permission) {
         // 检测权限是否禁用
         if (!permission.getIsEnabled()) {
             return false;
@@ -284,7 +266,7 @@ public class ResourceChecker {
 
         // 逐个policy检查
         List<Long> policyIds = permissionPolicies.stream().map(PermissionPolicyVO::getPolicyId).collect(Collectors.toList());
-        List<PolicyVO> policies = policyDao.getVOSByPolicyIds(client.getRealmId(), client.getClientId(), policyIds, true);
+        List<PolicyVO> policies = policyDao.getVOSByPolicyIds(realmId, clientId, policyIds, true);
         if (CollectionUtils.isEmpty(policies)) {
             return false;
         }
@@ -297,7 +279,9 @@ public class ResourceChecker {
                 continue;
             }
 
-            Intention policyCheckIntention = policyChecker.check(checkParam);
+            PolicyCheckerParam policyCheckerParam = new PolicyCheckerParam();
+            policyCheckerParam.setParams(checkParam.getParams());
+            Intention policyCheckIntention = policyChecker.check(policyCheckerParam);
             totalCount++;
             // 统计允许的policy个数
             if (Intention.ALLOW == policyCheckIntention) {

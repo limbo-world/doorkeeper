@@ -53,7 +53,7 @@ public class AdminUserResourceController extends BaseController {
     @GetMapping("/resource")
     public Response<List<ResourceVO>> checkResource(@Validated @NotNull(message = "未提交用户ID") @PathVariable("userId") Long userId,
                                                     @ParameterObject @Validated ResourceCheckParam param) {
-        ResourceCheckResult check = resourceChecker.check(userId, param);
+        ResourceCheckResult check = resourceChecker.check(userId, true, param);
         return Response.success(check.getResources());
     }
 

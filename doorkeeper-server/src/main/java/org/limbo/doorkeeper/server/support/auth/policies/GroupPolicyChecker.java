@@ -19,7 +19,7 @@ package org.limbo.doorkeeper.server.support.auth.policies;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
-import org.limbo.doorkeeper.api.model.param.check.ResourceCheckParam;
+import org.limbo.doorkeeper.api.model.param.check.PolicyCheckerParam;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyGroupVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
@@ -59,11 +59,11 @@ public class GroupPolicyChecker extends AbstractPolicyChecker {
      * 检查授权校验参数中的用户是否在对应用户组
      * 目前用户组有继承关系（后面考虑做成可配置的）
      *
-     * @param resourceCheckParam 授权校验参数
+     * @param checkerParam 授权校验参数
      * @return
      */
     @Override
-    protected boolean doCheck(ResourceCheckParam resourceCheckParam) {
+    protected boolean doCheck(PolicyCheckerParam checkerParam) {
         List<Group> groups = groupMapper.selectList(Wrappers.<Group>lambdaQuery()
                 .eq(Group::getRealmId, policy.getRealmId())
         );
