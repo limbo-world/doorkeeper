@@ -70,18 +70,17 @@ public class RoleChecker {
      * 获取用户拥有的角色
      */
     public RoleCheckResult check(Long userId, RoleCheckParam checkParam) {
+        RoleCheckResult result = new RoleCheckResult();
+        result.setRoles(new ArrayList<>());
+
         User user = userMapper.selectById(userId);
         if (user == null) {
             throw new AuthorizationException("无法找到用户，Id=" + userId);
         }
         if (!user.getIsEnabled()) {
-            throw new AuthorizationException("此用户未启用");
+            return result;
         }
         user.setPassword(null);
-
-
-        RoleCheckResult result = new RoleCheckResult();
-        result.setRoles(new ArrayList<>());
 
         // 根据查询条件获取角色id
         List<Role> roles = roleMapper.selectList(Wrappers.<Role>lambdaQuery()

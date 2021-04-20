@@ -60,17 +60,17 @@ public class GroupChecker {
      * 获取用户所在用户组
      */
     public GroupCheckResult check(Long userId, GroupCheckParam checkParam) {
+        GroupCheckResult result = new GroupCheckResult();
+        result.setGroups(new ArrayList<>());
+
         User user = userMapper.selectById(userId);
         if (user == null) {
             throw new AuthorizationException("无法找到用户，Id=" + userId);
         }
         if (!user.getIsEnabled()) {
-            throw new AuthorizationException("此用户未启用");
+            return result;
         }
         user.setPassword(null);
-
-        GroupCheckResult result = new GroupCheckResult();
-        result.setGroups(new ArrayList<>());
 
         // 获取用户用户组
         List<GroupUser> userGroups = groupUserMapper.selectList(Wrappers.<GroupUser>lambdaQuery()
