@@ -17,7 +17,6 @@
 package org.limbo.doorkeeper.api.model.param.resource;
 
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.limbo.doorkeeper.api.model.Page;
@@ -69,5 +68,11 @@ public class ResourceQueryParam extends Page<ResourceVO> {
 
     @Parameter(description = "标签值，模糊查询")
     private String dimV;
+
+    @Parameter(description = "是否返回标签")
+    private Boolean needTag;
+
+    @Parameter(description = "是否返回uri")
+    private String needUri;
 
 }
