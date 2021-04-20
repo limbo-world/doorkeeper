@@ -178,8 +178,9 @@ public class ResourceChecker {
                     .eq(ResourceUri::getClientId, clientId)
             );
             // 根据路径和请求方式，获取资源ID
-            for (String str : checkParam.getUris()) {
-                for (ResourceUri resourceUri : clientUris) {
+            // 对于所有的uri 如果匹配 checkParam 其中的某一项 则表示对应资源需要返回
+            for (ResourceUri resourceUri : clientUris) {
+                for (String str : checkParam.getUris()) {
                     String requestMethod = HttpMethod.ALL.getValue();
                     String requestUri;
                     if (str.contains(DoorkeeperConstants.KV_DELIMITER)) {
