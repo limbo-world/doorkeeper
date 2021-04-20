@@ -88,7 +88,7 @@
         <if test="kvs != null and kvs.size() > 0">
             and exists (select resource_tag_id from resource_tag rt where rt.resource_id = r.resource_id
                 and rt.tag_id in (
-                    select * from tag where realm_id = #{realmId} and client_id = #{clientId} and kv in (
+                    select tag_id from tag where realm_id = #{realmId} and client_id = #{clientId} and kv in (
                         <foreach collection="kvs" separator="," item="kv">
                             #{kv}
                         </foreach>
@@ -98,24 +98,24 @@
         </if>
         <if test="k != null and k != ''">
             and exists (select resource_tag_id from resource_tag rt where rt.resource_id = r.resource_id
-                and rt.tag_id = (select * from tag where realm_id = #{realmId} and client_id = #{clientId} and k = #{k})
+                and rt.tag_id = (select tag_id from tag where realm_id = #{realmId} and client_id = #{clientId} and k = #{k})
             )
         </if>
         <if test="dimK != null and dimK != ''">
             <bind name="dimK" value="'%' + dimK + '%'"/>
             and exists (select resource_tag_id from resource_tag rt where rt.resource_id = r.resource_id
-                and rt.tag_id = (select * from tag where realm_id = #{realmId} and client_id = #{clientId} and k like #{dimK})
+                and rt.tag_id = (select tag_id from tag where realm_id = #{realmId} and client_id = #{clientId} and k like #{dimK})
             )
         </if>
         <if test="v != null and v != ''">
             and exists (select resource_tag_id from resource_tag rt where rt.resource_id = r.resource_id
-                and rt.tag_id = (select * from tag where realm_id = #{realmId} and client_id = #{clientId} and v = #{v})
+                and rt.tag_id = (select tag_id from tag where realm_id = #{realmId} and client_id = #{clientId} and v = #{v})
             )
         </if>
         <if test="dimV != null and dimV != ''">
             <bind name="dimV" value="'%' + dimV + '%'"/>
             and exists (select resource_tag_id from resource_tag rt where rt.resource_id = r.resource_id
-                and rt.tag_id = (select * from tag where realm_id = #{realmId} and client_id = #{clientId} and v like #{dimV})
+                and rt.tag_id = (select tag_id from tag where realm_id = #{realmId} and client_id = #{clientId} and v like #{dimV})
             )
         </if>
     </sql>
