@@ -276,12 +276,9 @@ CREATE TABLE `resource_tag` (
   `resource_id` bigint(20) NOT NULL,
   `realm_id` bigint(20) NOT NULL,
   `client_id` bigint(20) NOT NULL,
-  `k` varchar(128) NOT NULL DEFAULT '',
-  `v` varchar(128) NOT NULL DEFAULT '',
-  `kv` varchar(256) NOT NULL DEFAULT '',
+  `tag_id` bigint(20) NOT NULL DEFAULT '0',
   PRIMARY KEY (`resource_tag_id`),
-  UNIQUE KEY `uq_resource` (`resource_id`,`k`,`v`),
-  KEY `idx_r_c_kv` (`realm_id`,`client_id`,`kv`)
+  UNIQUE KEY `uq_resource` (`resource_id`,`tag_id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=10000 DEFAULT CHARSET=utf8mb4;
 
 
@@ -336,6 +333,25 @@ CREATE TABLE `role_combine` (
   `role_id` bigint(20) NOT NULL,
   PRIMARY KEY (`role_combine_id`),
   UNIQUE KEY `uq_key` (`parent_id`,`role_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10000 DEFAULT CHARSET=utf8mb4;
+
+
+
+# Dump of table tag
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `tag`;
+
+CREATE TABLE `tag` (
+  `tag_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `realm_id` bigint(20) NOT NULL,
+  `client_id` bigint(20) NOT NULL,
+  `k` varchar(128) NOT NULL DEFAULT '',
+  `v` varchar(128) NOT NULL DEFAULT '',
+  `kv` varchar(256) NOT NULL DEFAULT '',
+  PRIMARY KEY (`tag_id`) USING BTREE,
+  UNIQUE KEY `uq_tag` (`realm_id`,`client_id`,`k`,`v`) USING BTREE,
+  KEY `idx_r_c_kv` (`realm_id`,`client_id`,`kv`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10000 DEFAULT CHARSET=utf8mb4;
 
 

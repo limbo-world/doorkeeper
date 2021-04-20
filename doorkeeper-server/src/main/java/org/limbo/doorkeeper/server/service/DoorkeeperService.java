@@ -183,6 +183,7 @@ public class DoorkeeperService {
         resourceAddParam.setIsEnabled(true);
 
         ResourceUriAddParam uriAddParam = new ResourceUriAddParam();
+        uriAddParam.setMethod(HttpMethod.ALL);
         uriAddParam.setUri("/api/admin/realm/" + realmId + "/**");
 
         resourceAddParam.setUris(Collections.singletonList(uriAddParam));
