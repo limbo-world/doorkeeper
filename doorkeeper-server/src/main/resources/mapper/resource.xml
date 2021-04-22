@@ -71,7 +71,7 @@
         <if test="isEnabled != null">
             and r.is_enabled = #{isEnabled}
         </if>
-
+        <!-- uri相关 -->
         <if test="uris != null and uris.size() > 0">
             and exists (select resource_uri_id from resource_uri ru where ru.resource_id = r.resource_id and r.name in (
                 <foreach collection="uris" separator="," item="uri">
@@ -84,7 +84,7 @@
             <bind name="dimUri" value="'%' + dimUri + '%'"/>
             and exists (select resource_uri_id from resource_uri ru where ru.resource_id = r.resource_id and ru.uri like #{dimUri})
         </if>
-
+        <!-- 标签相关 -->
         <if test="kvs != null and kvs.size() > 0">
             and exists (select resource_tag_id from resource_tag rt where rt.resource_id = r.resource_id
                 and rt.tag_id in (
@@ -104,7 +104,7 @@
         <if test="dimK != null and dimK != ''">
             <bind name="dimK" value="'%' + dimK + '%'"/>
             and exists (select resource_tag_id from resource_tag rt where rt.resource_id = r.resource_id
-                and rt.tag_id = (select tag_id from tag where realm_id = #{realmId} and client_id = #{clientId} and k like #{dimK})
+                and rt.tag_id in (select tag_id from tag where realm_id = #{realmId} and client_id = #{clientId} and k like #{dimK})
             )
         </if>
         <if test="v != null and v != ''">
@@ -115,7 +115,7 @@
         <if test="dimV != null and dimV != ''">
             <bind name="dimV" value="'%' + dimV + '%'"/>
             and exists (select resource_tag_id from resource_tag rt where rt.resource_id = r.resource_id
-                and rt.tag_id = (select tag_id from tag where realm_id = #{realmId} and client_id = #{clientId} and v like #{dimV})
+                and rt.tag_id in (select tag_id from tag where realm_id = #{realmId} and client_id = #{clientId} and v like #{dimV})
             )
         </if>
     </sql>
