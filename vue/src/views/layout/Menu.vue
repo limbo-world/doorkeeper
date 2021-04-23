@@ -16,20 +16,20 @@
                 :collapse="isMenuHidden"
                 :collapse-transition="false"
                 active-text-color="#409EFF"
-                :default-openeds="['配置管理', '用户管理']"
+                :default-openeds="['001', '002']"
                 :unique-opened="false"
                 :router="true"
             >
                 <template v-for="menu in menus">
                     <!-- 当前菜单无子菜单，即叶子菜单，直接渲染router-link -->
-                    <el-menu-item v-if="!hasChildren(menu)" :index="menu.route" :route="menu.route"
+                    <el-menu-item v-if="!hasChildren(menu)" :index="menu.menuCode" :route="menu.route"
                                   :class="menuHiddenClass">
                         <i class="menu-icon" :class="menu.icon"></i>
                         <span slot="title">{{menu.menuName}}</span>
                     </el-menu-item>
 
                     <!-- 存在子菜单时，先渲染当前菜单 -->
-                    <el-submenu v-else :index="menu.menuName" :key="menu.menuName" :class="menuHiddenClass">
+                    <el-submenu v-else :index="menu.menuCode" :key="menu.menuName" :class="menuHiddenClass">
                         <template slot="title">
                             <i class="menu-icon" :class="menu.icon"></i>
                             <span slot="title">{{menu.menuName}}</span>
