@@ -16,6 +16,7 @@
                 :collapse="isMenuHidden"
                 :collapse-transition="false"
                 active-text-color="#409EFF"
+                :default-openeds="['配置管理', '用户管理']"
                 :unique-opened="false"
                 :router="true"
             >
