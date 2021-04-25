@@ -14,25 +14,20 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param.resource;
+package org.limbo.doorkeeper.server.dal.mapper;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-import org.limbo.doorkeeper.api.constants.UriMethod;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+import org.limbo.doorkeeper.server.dal.entity.Uri;
 
-import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 /**
  * @author Devil
- * @date 2021/1/5 4:52 下午
+ * @date 2021/4/25 4:44 下午
  */
-@Data
-public class ResourceUriAddParam {
+public interface UriMapper extends BaseMapper<Uri> {
 
-    @NotBlank(message = "uri不能为空")
-    @Schema(required = true, description = "uri，ant 风格")
-    private String uri;
+    void batchInsertIgnore(@Param("uris") List<Uri> uris);
 
-    @Schema(description = "http method 如果为空 表示适配所有请求方式")
-    private UriMethod method;
 }

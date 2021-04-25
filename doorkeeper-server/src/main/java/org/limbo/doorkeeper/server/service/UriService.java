@@ -1,0 +1,51 @@
+/*
+ * Copyright 2020-2024 Limbo Team (https://github.com/limbo-world).
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *   	http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
+
+package org.limbo.doorkeeper.server.service;
+
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import org.limbo.doorkeeper.api.model.param.UriQueryParam;
+import org.limbo.doorkeeper.api.model.vo.UriVO;
+import org.limbo.doorkeeper.server.dal.entity.Uri;
+import org.limbo.doorkeeper.server.dal.mapper.UriMapper;
+import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+/**
+ * @author Devil
+ * @date 2021/4/19 8:26 下午
+ */
+@Service
+public class UriService {
+
+    @Autowired
+    private UriMapper uriMapper;
+
+    public List<UriVO> list(Long realmId, Long clientId, UriQueryParam param) {
+        List<Uri> uris = uriMapper.selectList(Wrappers.<Uri>lambdaQuery()
+                .eq(Uri::getRealmId, realmId)
+                .eq(Uri::getClientId, clientId)
+                .eq(param.getMethod() != null, Uri::getMethod, param.getMethod())
+                .eq(StringUtils.isNotBlank(param.getUri()), Uri::getUri, param.getUri())
+                .like(StringUtils.isNotBlank(param.getDimUri()), Uri::getUri, param.getDimUri())
+        );
+        return EnhancedBeanUtils.createAndCopyList(uris, UriVO.class);
+    }
+}

@@ -274,11 +274,9 @@ DROP TABLE IF EXISTS `resource_tag`;
 CREATE TABLE `resource_tag` (
   `resource_tag_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `resource_id` bigint(20) NOT NULL,
-  `realm_id` bigint(20) NOT NULL,
-  `client_id` bigint(20) NOT NULL,
   `tag_id` bigint(20) NOT NULL DEFAULT '0',
   PRIMARY KEY (`resource_tag_id`),
-  UNIQUE KEY `uq_resource` (`resource_id`,`tag_id`) USING BTREE
+  UNIQUE KEY `uq_resource` (`resource_id`,`tag_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10000 DEFAULT CHARSET=utf8mb4;
 
 
@@ -291,12 +289,9 @@ DROP TABLE IF EXISTS `resource_uri`;
 CREATE TABLE `resource_uri` (
   `resource_uri_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `resource_id` bigint(20) NOT NULL,
-  `realm_id` bigint(20) NOT NULL,
-  `client_id` bigint(20) NOT NULL,
-  `uri` varchar(128) NOT NULL DEFAULT '' COMMENT 'ant风格uri',
-  `method` varchar(16) NOT NULL DEFAULT '' COMMENT 'http请求方法',
+  `uri_id` bigint(20) NOT NULL DEFAULT '0',
   PRIMARY KEY (`resource_uri_id`),
-  KEY `idx_realm_client` (`realm_id`,`client_id`)
+  UNIQUE KEY `uq_uri` (`resource_id`,`uri_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10000 DEFAULT CHARSET=utf8mb4;
 
 
@@ -352,6 +347,23 @@ CREATE TABLE `tag` (
   PRIMARY KEY (`tag_id`) USING BTREE,
   UNIQUE KEY `uq_tag` (`realm_id`,`client_id`,`k`,`v`) USING BTREE,
   KEY `idx_r_c_kv` (`realm_id`,`client_id`,`kv`)
+) ENGINE=InnoDB AUTO_INCREMENT=10000 DEFAULT CHARSET=utf8mb4;
+
+
+
+# Dump of table uri
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `uri`;
+
+CREATE TABLE `uri` (
+  `uri_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `realm_id` bigint(20) NOT NULL,
+  `client_id` bigint(20) NOT NULL,
+  `uri` varchar(256) NOT NULL DEFAULT '' COMMENT 'ant风格uri',
+  `method` varchar(16) NOT NULL DEFAULT '' COMMENT 'http请求方法',
+  PRIMARY KEY (`uri_id`) USING BTREE,
+  UNIQUE KEY `uq_uri` (`realm_id`,`client_id`,`uri`,`method`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=10000 DEFAULT CHARSET=utf8mb4;
 
 

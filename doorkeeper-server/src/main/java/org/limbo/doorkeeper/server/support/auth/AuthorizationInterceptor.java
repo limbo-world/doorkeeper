@@ -113,7 +113,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         Client client = clientMapper.getByName(doorkeeperRealm.getRealmId(), realm.getName());
         ResourceCheckParam checkParam = new ResourceCheckParam()
                 .setClientId(client.getClientId())
-                .setUris(Collections.singletonList(HttpMethod.parse(request.getMethod()) + DoorkeeperConstants.KV_DELIMITER + request.getRequestURI()));
+                .setUris(Collections.singletonList(UriMethod.parse(request.getMethod()) + DoorkeeperConstants.KV_DELIMITER + request.getRequestURI()));
         ResourceCheckResult checkResult = resourceChecker.check(userId, true, checkParam);
 
         if (checkResult.getResources().size() <= 0) {

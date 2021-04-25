@@ -14,25 +14,26 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param.resource;
+package org.limbo.doorkeeper.api.model.param;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.Data;
 import org.limbo.doorkeeper.api.constants.UriMethod;
 
-import javax.validation.constraints.NotBlank;
-
 /**
  * @author Devil
- * @date 2021/1/5 4:52 下午
+ * @date 2021/4/19 8:29 下午
  */
 @Data
-public class ResourceUriAddParam {
+public class UriQueryParam {
 
-    @NotBlank(message = "uri不能为空")
-    @Schema(required = true, description = "uri，ant 风格")
+    @Parameter(description = "方法类型")
+    private UriMethod method;
+
+    @Parameter(description = "uri 精准查询")
     private String uri;
 
-    @Schema(description = "http method 如果为空 表示适配所有请求方式")
-    private UriMethod method;
+    @Parameter(description = "uri 模糊查询")
+    private String dimUri;
+
 }

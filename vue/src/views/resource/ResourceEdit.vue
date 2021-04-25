@@ -39,7 +39,7 @@
                             <el-option v-for="item in $constants.httpMethod" :key="item.value" :label="item.label"
                                        :value="item.value"></el-option>
                         </el-select>
-                        <el-input v-model="uri.uri" style="max-width:600px;"></el-input>
+                        <el-input v-model="uri.uri" style="width:600px;"></el-input>
                         <el-button @click="deleteUri(idx)" type="primary" size="mini" icon="el-icon-minus" circle></el-button>
                     </el-row>
                     <el-row>
@@ -47,7 +47,9 @@
                             <el-option v-for="item in $constants.httpMethod" :key="item.value" :label="item.label"
                                        :value="item.value"></el-option>
                         </el-select>
-                        <el-input v-model="uriString" style="max-width:600px;" @blur="addUri"></el-input>
+                        <el-autocomplete v-model="uriString" size="small" placeholder="输入uri" style="width:600px;"
+                                         @keyup.enter.native="addUri" @blur="addUri" @select="addUri" value-key="uri"
+                                         :fetch-suggestions="uriSearch"></el-autocomplete>
                         <el-button @click="addUri" type="primary" size="mini" icon="el-icon-plus" circle></el-button>
                     </el-row>
                 </el-form-item>
@@ -58,7 +60,7 @@
                                 type="success" size="big" :disable-transitions="false" class="tag-lab">{{tag.k}}={{tag.v}}
                         </el-tag>
                         <el-autocomplete v-model="tagString" size="small" placeholder="输入标签名与标签值" style="width:300px;"
-                                  @keyup.enter.native="addTag" @blur="addTag" @select="addTag"
+                                  @keyup.enter.native="addTag" @blur="addTag" @select="addTag" value-key="kv"
                                   :fetch-suggestions="tagSearch"></el-autocomplete>
                     </el-row>
                 </el-form-item>
@@ -89,7 +91,8 @@
                     uris: [],
                     tags: []
                 },
-                tags: []
+                tags: [],
+                uris: []
             };
         },
 
@@ -105,17 +108,53 @@
                 this.loadResource();
             }
             this.getTags();
+            this.getUris();
         },
 
         methods: {
             ...mapActions('ui', ['startProgress', 'stopProgress']),
 
             // ========== uri相关 ==========
+            getUris() {
+                this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.resource.clientId}/uri`).then(response => {
+                    this.uris = response.data;
+                });
+            },
+            uriSearch(queryString, cb) {
+                let uris = this.uris;
+                let results = queryString ? uris.filter(uri => {
+                    return (uri.uri.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+                }) : uris;
+                // 去重
+                let uqResults = [];
+                for (let uri of results) {
+                    let has = false;
+                    for (let hasUri of uqResults) {
+                        if (hasUri.uri === uri.uri) {
+                            has = true;
+                            break;
+                        }
+                    }
+                    if (!has) {
+                        uqResults.push(uri);
+                    }
+                }
+                // 调用 callback 返回建议列表的数据
+                cb(uqResults);
+            },
             addUri() {
                 if (!this.uriString || this.uriString.length <= 0) {
                     return
                 }
+                // 检测是否已经存在
+                for (let uri of this.uris) {
+                    if (uri.method === this.uriMethod && uri.uri === this.uriString) {
+                        return
+                    }
+                }
                 this.resource.uris.push({uri: this.uriString, method: this.uriMethod})
+                this.uris.push({uri: this.uriString, method: this.uriMethod})
+                // 重置数据
                 this.uriMethod = null;
                 this.uriString = null;
             },
@@ -126,23 +165,18 @@
             // ========== 标签相关 ==========
             getTags() {
                 this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.resource.clientId}/tag`).then(response => {
-                    let tags = response.data;
-                    tags.forEach(tag => {
-                        tag.value = tag.kv;
-                    })
                     this.tags = response.data;
                 });
             },
             tagSearch(queryString, cb) {
                 let tags = this.tags;
                 let results = queryString ? tags.filter(tag => {
-                    return (tag.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+                    return (tag.kv.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
                 }) : tags;
                 // 调用 callback 返回建议列表的数据
                 cb(results);
             },
             addTag() {
-                console.log(11111)
                 if (!this.tagString || this.tagString.indexOf("=") < 0) {
                     return
                 }
@@ -159,6 +193,17 @@
                     }
                 }
                 this.resource.tags.push({k: key, v: value})
+                let has = false;
+                for (let tag of this.tags) {
+                    if (tag.k === key && tag.v === value) {
+                        has = true;
+                        break;
+                    }
+                }
+                if (!has) {
+                    this.tags.push({k: key, v: value, kv: this.tagString})
+                }
+                // 重置数据
                 this.tagString = null
             },
             deleteTag(idx) {

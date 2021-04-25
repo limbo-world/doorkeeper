@@ -34,9 +34,5 @@ public class ResourceTag {
 
     private Long resourceId;
 
-    private Long realmId;
-
-    private Long clientId;
-
     private Long tagId;
 }

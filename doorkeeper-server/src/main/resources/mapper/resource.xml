@@ -73,16 +73,21 @@
         </if>
         <!-- uri相关 -->
         <if test="uris != null and uris.size() > 0">
-            and exists (select resource_uri_id from resource_uri ru where ru.resource_id = r.resource_id and r.name in (
-                <foreach collection="uris" separator="," item="uri">
-                    #{uri}
-                </foreach>
+            and exists (select resource_uri_id from resource_uri ru where ru.resource_id = r.resource_id
+                and ru.uri in (
+                    select uri_id from uri where realm_id = #{realmId} and client_id = #{clientId} and uri in (
+                        <foreach collection="uris" separator="," item="uri">
+                            #{uri}
+                        </foreach>
+                    )
                 )
             )
         </if>
         <if test="dimUri != null and dimUri != ''">
             <bind name="dimUri" value="'%' + dimUri + '%'"/>
-            and exists (select resource_uri_id from resource_uri ru where ru.resource_id = r.resource_id and ru.uri like #{dimUri})
+            and exists (select resource_uri_id from resource_uri ru where ru.resource_id = r.resource_id
+                and ru.uri_id in (select uri_id from uri where realm_id = #{realmId} and client_id = #{clientId} and uri like #{dimUri})
+            )
         </if>
         <!-- 标签相关 -->
         <if test="kvs != null and kvs.size() > 0">
@@ -131,13 +136,14 @@
         <if test="needTag == true">
             ,rt.resource_tag_id as tag_resource_tag_id, rt.resource_id as tag_resource_id, t.k as tag_k, t.v as tag_v
         </if>
-        <if test="needTag == true">
-            ,ru.resource_uri_id as uri_resource_uri_id, ru.resource_id as uri_resource_id, ru.uri as uri_uri, ru.method as uri_method
+        <if test="needUri == true">
+            ,ru.resource_uri_id as uri_resource_uri_id, ru.resource_id as uri_resource_id, u.uri as uri_uri, u.method as uri_method
         </if>
         from resource r
         left join resource_tag rt on rt.resource_id = r.resource_id
         left join resource_uri ru on ru.resource_id = r.resource_id
         left join tag t on t.tag_id = rt.tag_id
+        left join uri u on u.uri_id = ru.uri_id
         where r.resource_id in (
             select * from (
                 select r.resource_id from resource r
@@ -155,11 +161,12 @@
     <select id="getVO" resultMap="ResourceVO">
         select r.*,
         rt.resource_tag_id as tag_resource_tag_id, rt.resource_id as tag_resource_id, t.k as tag_k, t.v as tag_v,
-        ru.resource_uri_id as uri_resource_uri_id, ru.resource_id as uri_resource_id, ru.uri as uri_uri, ru.method as uri_method
+        ru.resource_uri_id as uri_resource_uri_id, ru.resource_id as uri_resource_id, u.uri as uri_uri, u.method as uri_method
         from resource r
         left join resource_tag rt on rt.resource_id = r.resource_id
         left join resource_uri ru on ru.resource_id = r.resource_id
         left join tag t on t.tag_id = rt.tag_id
+        left join uri u on u.uri_id = ru.uri_id
         where r.realm_id = #{realmId} and r.client_id = #{clientId} and r.resource_id = #{resourceId}
     </select>
 

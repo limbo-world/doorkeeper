@@ -50,6 +50,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * doorkeeper资源等管理逻辑
+ *
  * @author Devil
  * @date 2021/1/10 10:39 上午
  */
@@ -183,7 +185,7 @@ public class DoorkeeperService {
         resourceAddParam.setIsEnabled(true);
 
         ResourceUriAddParam uriAddParam = new ResourceUriAddParam();
-        uriAddParam.setMethod(HttpMethod.ALL);
+        uriAddParam.setMethod(UriMethod.ALL);
         uriAddParam.setUri("/api/admin/realm/" + realmId + "/**");
 
         resourceAddParam.setUris(Collections.singletonList(uriAddParam));

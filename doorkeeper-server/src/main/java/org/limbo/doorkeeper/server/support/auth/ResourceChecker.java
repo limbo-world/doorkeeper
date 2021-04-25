@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.api.constants.HttpMethod;
+import org.limbo.doorkeeper.api.constants.UriMethod;
 import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.Logic;
 import org.limbo.doorkeeper.api.model.param.check.PolicyCheckerParam;
@@ -34,10 +34,7 @@ import org.limbo.doorkeeper.api.model.vo.ResourceVO;
 import org.limbo.doorkeeper.api.model.vo.check.ResourceCheckResult;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 import org.limbo.doorkeeper.server.dal.dao.PolicyDao;
-import org.limbo.doorkeeper.server.dal.entity.Client;
-import org.limbo.doorkeeper.server.dal.entity.PermissionResource;
-import org.limbo.doorkeeper.server.dal.entity.ResourceUri;
-import org.limbo.doorkeeper.server.dal.entity.User;
+import org.limbo.doorkeeper.server.dal.entity.*;
 import org.limbo.doorkeeper.server.dal.mapper.*;
 import org.limbo.doorkeeper.server.support.auth.policies.PolicyChecker;
 import org.limbo.doorkeeper.server.support.auth.policies.PolicyCheckerFactory;
@@ -81,6 +78,9 @@ public class ResourceChecker {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private UriMapper uriMapper;
 
     /**
      * 策略检查器工厂
@@ -172,16 +172,19 @@ public class ResourceChecker {
         List<Long> resourceIds = new ArrayList<>();
         // 获取uri资源id
         if (CollectionUtils.isNotEmpty(checkParam.getUris())) {
+            List<Long> uriIds = new ArrayList<>();
+
             // client拥有的全部uri资源
-            List<ResourceUri> clientUris = resourceUriMapper.selectList(Wrappers.<ResourceUri>lambdaQuery()
-                    .eq(ResourceUri::getRealmId, realmId)
-                    .eq(ResourceUri::getClientId, clientId)
+            List<Uri> clientUris = uriMapper.selectList(Wrappers.<Uri>lambdaQuery()
+                    .eq(Uri::getRealmId, realmId)
+                    .eq(Uri::getClientId, clientId)
             );
+
             // 根据路径和请求方式，获取资源ID
             // 对于所有的uri 如果匹配 checkParam 其中的某一项 则表示对应资源需要返回
-            for (ResourceUri resourceUri : clientUris) {
+            for (Uri uri : clientUris) {
                 for (String str : checkParam.getUris()) {
-                    String requestMethod = HttpMethod.ALL.getValue();
+                    String requestMethod = UriMethod.ALL.getValue();
                     String requestUri;
                     if (str.contains(DoorkeeperConstants.KV_DELIMITER)) {
                         String[] split = str.split(DoorkeeperConstants.KV_DELIMITER);
@@ -192,13 +195,23 @@ public class ResourceChecker {
                     }
 
                     // 判断是否匹配方法和路径
-                    if ((HttpMethod.ALL == resourceUri.getMethod() || resourceUri.getMethod() == HttpMethod.parse(requestMethod))
-                            && pathMatch(resourceUri.getUri().trim(), requestUri.trim())) {
-                        resourceIds.add(resourceUri.getResourceId());
+                    if ((UriMethod.ALL == uri.getMethod() || uri.getMethod() == UriMethod.parse(requestMethod))
+                            && pathMatch(uri.getUri().trim(), requestUri.trim())) {
+                        uriIds.add(uri.getUriId());
                         break;
                     }
                 }
             }
+
+            // 如果匹配到的资源为空 则返回空
+            if (CollectionUtils.isEmpty(uriIds)) {
+                return new ArrayList<>();
+            }
+
+            List<ResourceUri> resourceUris = resourceUriMapper.selectList(Wrappers.<ResourceUri>lambdaQuery()
+                    .in(ResourceUri::getUriId, uriIds)
+            );
+            resourceIds = resourceUris.stream().map(ResourceUri::getResourceId).collect(Collectors.toList());
 
             // 如果匹配到的资源为空 则返回空
             if (CollectionUtils.isEmpty(resourceIds)) {
@@ -206,6 +219,7 @@ public class ResourceChecker {
             }
 
         }
+
         ResourceQueryParam param = new ResourceQueryParam();
         param.setRealmId(realmId);
         param.setClientId(clientId);

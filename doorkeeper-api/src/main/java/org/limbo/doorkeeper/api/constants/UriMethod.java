@@ -14,25 +14,28 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param.resource;
+package org.limbo.doorkeeper.api.constants;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-import org.limbo.doorkeeper.api.constants.UriMethod;
-
-import javax.validation.constraints.NotBlank;
+import com.baomidou.mybatisplus.core.enums.IEnum;
 
 /**
  * @author Devil
- * @date 2021/1/5 4:52 下午
+ * @date 2021/1/11 4:25 下午
  */
-@Data
-public class ResourceUriAddParam {
+public enum UriMethod implements IEnum<String> {
+    ALL, GET, POST, PUT, DELETE, HEAD, OPTIONS, TRACE, CONNECT;
 
-    @NotBlank(message = "uri不能为空")
-    @Schema(required = true, description = "uri，ant 风格")
-    private String uri;
+    @Override
+    public String getValue() {
+        return toString();
+    }
 
-    @Schema(description = "http method 如果为空 表示适配所有请求方式")
-    private UriMethod method;
+    public static UriMethod parse(String p) {
+        for (UriMethod value : values()) {
+            if (value.getValue().equalsIgnoreCase(p)) {
+                return value;
+            }
+        }
+        return null;
+    }
 }

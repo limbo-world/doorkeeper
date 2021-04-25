@@ -14,28 +14,35 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.constants;
+package org.limbo.doorkeeper.server.dal.entity;
 
-import com.baomidou.mybatisplus.core.enums.IEnum;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+import org.limbo.doorkeeper.api.constants.UriMethod;
 
 /**
  * @author Devil
- * @date 2021/1/11 4:25 下午
+ * @date 2021/4/25 4:42 下午
  */
-public enum HttpMethod implements IEnum<String> {
-    ALL, GET, POST, PUT, DELETE, HEAD, OPTIONS, TRACE, CONNECT;
+@Data
+@TableName("uri")
+public class Uri {
 
-    @Override
-    public String getValue() {
-        return toString();
-    }
+    @TableId(type = IdType.AUTO)
+    private Long uriId;
 
-    public static HttpMethod parse(String p) {
-        for (HttpMethod value : values()) {
-            if (value.getValue().equalsIgnoreCase(p)) {
-                return value;
-            }
-        }
-        return null;
-    }
+    private Long realmId;
+
+    private Long clientId;
+    /**
+     * ant 风格
+     */
+    private String uri;
+    /**
+     * 请求方法
+     */
+    private UriMethod method;
+
 }

@@ -44,7 +44,7 @@ public class Tag {
      */
     private String v;
     /**
-     * k=v
+     * k=v 用于 kv 列表查询
      */
     private String kv;
 }

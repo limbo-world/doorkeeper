@@ -67,6 +67,9 @@ public class ResourceService {
     @Autowired
     private TagMapper tagMapper;
 
+    @Autowired
+    private UriMapper uriMapper;
+
     @Transactional
     public ResourceVO add(Long realmId, Long clientId, ResourceAddParam param) {
         Client client = clientMapper.getById(realmId, clientId);
@@ -191,20 +194,43 @@ public class ResourceService {
 
     private void batchSaveUri(Long resourceId, Long realmId, Long clientId, List<ResourceUriAddParam> params) {
         if (CollectionUtils.isNotEmpty(params)) {
-            List<ResourceUri> uris = new ArrayList<>();
+
+            // 新增并获取uri
+            List<Uri> uris = new ArrayList<>();
+            HashSet<String> uriP = new HashSet<>();
             for (ResourceUriAddParam uriParam : params) {
-                if (StringUtils.isBlank(uriParam.getUri())) {
-                    continue;
-                }
-                ResourceUri uri = new ResourceUri();
-                uri.setUri(uriParam.getUri().trim());
-                uri.setMethod(uriParam.getMethod());
-                uri.setResourceId(resourceId);
+                Uri uri = new Uri();
                 uri.setRealmId(realmId);
                 uri.setClientId(clientId);
+                uri.setMethod(uriParam.getMethod());
+                uri.setUri(uriParam.getUri().trim());
+
                 uris.add(uri);
+                uriP.add(uriParam.getUri().trim());
             }
-            MyBatisPlusUtils.batchSave(uris, ResourceUri.class);
+            uriMapper.batchInsertIgnore(uris);
+
+            uris = uriMapper.selectList(Wrappers.<Uri>lambdaQuery()
+                    .eq(Uri::getRealmId, realmId)
+                    .eq(Uri::getClientId, clientId)
+                    .in(Uri::getUri, uriP)
+            );
+
+            List<ResourceUri> resourceUris = new ArrayList<>();
+            for (ResourceUriAddParam uriParam : params) {
+                for (Uri uri : uris) {
+                    if (uri.getUri().trim().equals(uriParam.getUri().trim()) && uri.getMethod() == uriParam.getMethod()) {
+                        ResourceUri resourceUri = new ResourceUri();
+                        resourceUri.setResourceId(resourceId);
+                        resourceUri.setUriId(uri.getUriId());
+                        resourceUris.add(resourceUri);
+                        break;
+                    }
+                }
+            }
+
+            MyBatisPlusUtils.batchSave(resourceUris, ResourceUri.class);
+
         }
     }
 
@@ -240,8 +266,6 @@ public class ResourceService {
                     if (tag.getK().trim().equals(tagParam.getK().trim()) && tag.getV().trim().equals(tagParam.getV().trim())) {
                         ResourceTag resourceTag = new ResourceTag();
                         resourceTag.setResourceId(resourceId);
-                        resourceTag.setRealmId(realmId);
-                        resourceTag.setClientId(clientId);
                         resourceTag.setTagId(tag.getTagId());
 
                         resourceTags.add(resourceTag);
