@@ -107,7 +107,7 @@ public class ClientService {
                     continue;
                 }
                 for (ResourceTagVO tag : resource.getTags()) {
-                    if (DoorkeeperConstants.CLIENT_NAME.equals(tag.getK())) {
+                    if (DoorkeeperConstants.CLIENT_ID.equals(tag.getK())) {
                         clientNames.add(tag.getV());
                         break;
                     }

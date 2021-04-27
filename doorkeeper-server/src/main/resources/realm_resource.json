@@ -26,8 +26,8 @@
         "v": "realmOwn"
       },
       {
-        "k": "realmName",
-        "v": "${realmName}"
+        "k": "realmId",
+        "v": "${realmId}"
       }
     ]
   },

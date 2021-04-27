@@ -12,6 +12,10 @@
       {
         "k": "type",
         "v": "clientOwn"
+      },
+      {
+        "k": "clientId",
+        "v": "${clientId}"
       }
     ]
   },

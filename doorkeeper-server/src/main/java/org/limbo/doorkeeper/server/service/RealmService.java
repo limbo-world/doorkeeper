@@ -117,7 +117,7 @@ public class RealmService {
                 continue;
             }
             for (ResourceTagVO tag : resource.getTags()) {
-                if (DoorkeeperConstants.REALM_NAME.equals(tag.getK())) {
+                if (DoorkeeperConstants.REALM_ID.equals(tag.getK())) {
                     realmNames.add(tag.getV());
                     break;
                 }
