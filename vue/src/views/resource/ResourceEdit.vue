@@ -147,13 +147,22 @@
                     return
                 }
                 // 检测是否已经存在
-                for (let uri of this.uris) {
+                for (let uri of this.resource.uris) {
                     if (uri.method === this.uriMethod && uri.uri === this.uriString) {
                         return
                     }
                 }
                 this.resource.uris.push({uri: this.uriString, method: this.uriMethod})
-                this.uris.push({uri: this.uriString, method: this.uriMethod})
+                let has = false;
+                for (let uri of this.uris) {
+                    if (uri.method === this.uriMethod && uri.uri === this.uriString) {
+                        has = true;
+                        break;
+                    }
+                }
+                if (!has) {
+                    this.uris.push({uri: this.uriString, method: this.uriMethod})
+                }
                 // 重置数据
                 this.uriMethod = null;
                 this.uriString = null;
