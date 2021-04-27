@@ -155,7 +155,7 @@
                 this.resource.uris.push({uri: this.uriString, method: this.uriMethod})
                 let has = false;
                 for (let uri of this.uris) {
-                    if (uri.method === this.uriMethod && uri.uri === this.uriString) {
+                    if (uri.uri === this.uriString) {
                         has = true;
                         break;
                     }
