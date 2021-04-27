@@ -1,6 +1,6 @@
 [
   {
-    "name": "${realmName}-${clientName}-client-own",
+    "name": "${realmName}-${clientName}-client-join",
     "isEnabled": true,
     "uris": [
       {

@@ -1,22 +1,10 @@
 [
   {
-    "name": "${realmName}-realm-own",
+    "name": "${realmName}-realm-join",
     "isEnabled": true,
     "uris": [
       {
-        "uri": "/api/admin/realm/${realmId}",
-        "method": "GET"
-      },
-      {
-        "uri": "/api/admin/realm/${realmId}/role/**",
-        "method": "GET"
-      },
-      {
-        "uri": "/api/admin/realm/${realmId}/user/**",
-        "method": "GET"
-      },
-      {
-        "uri": "/api/admin/realm/${realmId}/group/**",
+        "uri": "/api/admin/realm/${realmId}/**",
         "method": "GET"
       }
     ],

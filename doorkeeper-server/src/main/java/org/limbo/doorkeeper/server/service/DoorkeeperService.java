@@ -176,7 +176,10 @@ public class DoorkeeperService {
         }
 
         User user = userMapper.selectById(userId);
-        bindUser(user.getUserId(), user.getUsername(), realmName + "-realm-own", apiClient.getRealmId(), apiClient.getClientId());
+        List<String> resourceNames = new ArrayList<>();
+        resourceNames.add(realmName + "-realm-join");
+        resourceNames.add(realmName + "-realm-manager");
+        bindUser(user.getUserId(), user.getUsername(), resourceNames, apiClient.getRealmId(), apiClient.getClientId());
     }
 
     /**
@@ -206,19 +209,22 @@ public class DoorkeeperService {
         }
 
         User user = userMapper.selectById(userId);
-        bindUser(user.getUserId(), user.getUsername(), realm.getName() + "-" + clientName + "-client-own", apiClient.getRealmId(), apiClient.getClientId());
+        List<String> resourceNames = new ArrayList<>();
+        resourceNames.add(realm.getName() + "-" + clientName + "-client-join");
+        resourceNames.add(realm.getName() + "-" + clientName + "-client-manager");
+        bindUser(user.getUserId(), user.getUsername(), resourceNames, apiClient.getRealmId(), apiClient.getClientId());
     }
 
     /**
      * 创建用户策略/权限
      *
-     * @param userId   用户ID
-     * @param username 用户名称
-     * @param name     需要绑定的资源名称
-     * @param realmId  doorkeeper realmId
-     * @param clientId doorkeeper api clientId
+     * @param userId        用户ID
+     * @param username      用户名称
+     * @param resourceNames 需要绑定的资源名称
+     * @param realmId       doorkeeper realmId
+     * @param clientId      doorkeeper api clientId
      */
-    public void bindUser(Long userId, String username, String name, Long realmId, Long clientId) {
+    public void bindUser(Long userId, String username, List<String> resourceNames, Long realmId, Long clientId) {
         String uqName = username + "-user";
         // 用户策略
         Wrapper<Policy> policyWrapper = Wrappers.<Policy>lambdaQuery()
@@ -239,11 +245,11 @@ public class DoorkeeperService {
 
         // 权限
         List<ResourceVO> resources = new ArrayList<>();
-        if (StringUtils.isNotBlank(name)) {
+        if (CollectionUtils.isNotEmpty(resourceNames)) {
             ResourceQueryParam resourceQueryParam = new ResourceQueryParam();
             resourceQueryParam.setRealmId(realmId);
             resourceQueryParam.setClientId(clientId);
-            resourceQueryParam.setNames(Collections.singletonList(name));
+            resourceQueryParam.setNames(resourceNames);
             resources = resourceMapper.getVOS(resourceQueryParam);
         }
         List<Long> resourceIds = resources.stream().map(ResourceVO::getResourceId).collect(Collectors.toList());
