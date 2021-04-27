@@ -25,6 +25,7 @@ import org.limbo.doorkeeper.api.model.param.client.ClientAddParam;
 import org.limbo.doorkeeper.api.model.param.client.ClientQueryParam;
 import org.limbo.doorkeeper.api.model.param.client.ClientUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ClientVO;
+import org.limbo.doorkeeper.api.model.vo.ResourceTagVO;
 import org.limbo.doorkeeper.api.model.vo.ResourceVO;
 import org.limbo.doorkeeper.api.model.vo.check.ResourceCheckResult;
 import org.limbo.doorkeeper.server.dal.entity.Client;
@@ -102,8 +103,15 @@ public class ClientService {
             }
 
             for (ResourceVO resource : check.getResources()) {
-                String[] split = resource.getName().split("-");
-                clientNames.add(split[1]);
+                if (org.apache.commons.collections4.CollectionUtils.isEmpty(resource.getTags())) {
+                    continue;
+                }
+                for (ResourceTagVO tag : resource.getTags()) {
+                    if (DoorkeeperConstants.CLIENT_NAME.equals(tag.getK())) {
+                        clientNames.add(tag.getV());
+                        break;
+                    }
+                }
             }
         }
 

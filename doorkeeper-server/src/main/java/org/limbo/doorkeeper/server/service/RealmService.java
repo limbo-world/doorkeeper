@@ -25,6 +25,7 @@ import org.limbo.doorkeeper.api.model.param.check.ResourceCheckParam;
 import org.limbo.doorkeeper.api.model.param.realm.RealmUpdateParam;
 import org.limbo.doorkeeper.api.model.param.resource.RealmAddParam;
 import org.limbo.doorkeeper.api.model.vo.RealmVO;
+import org.limbo.doorkeeper.api.model.vo.ResourceTagVO;
 import org.limbo.doorkeeper.api.model.vo.ResourceVO;
 import org.limbo.doorkeeper.api.model.vo.check.ResourceCheckResult;
 import org.limbo.doorkeeper.server.dal.entity.Client;
@@ -112,8 +113,15 @@ public class RealmService {
 
         List<String> realmNames = new ArrayList<>();
         for (ResourceVO resource : check.getResources()) {
-            String[] sp = resource.getName().split("-");
-            realmNames.add(sp[0]);
+            if (CollectionUtils.isEmpty(resource.getTags())) {
+                continue;
+            }
+            for (ResourceTagVO tag : resource.getTags()) {
+                if (DoorkeeperConstants.REALM_NAME.equals(tag.getK())) {
+                    realmNames.add(tag.getV());
+                    break;
+                }
+            }
         }
 
         List<Realm> realms = realmMapper.selectList(realmSelect

@@ -24,6 +24,10 @@
       {
         "k": "type",
         "v": "realmOwn"
+      },
+      {
+        "k": "realmName",
+        "v": "${realmName}"
       }
     ]
   },

@@ -34,9 +34,13 @@ public interface DoorkeeperConstants {
 
     String REALM_ID = "realmId";
 
+    String REALM_NAME = "realmName";
+
     String CLIENT = "client";
 
     String CLIENT_ID = "clientId";
+
+    String CLIENT_NAME = "clientName";
 
     String API_CLIENT = "api";
     /**
