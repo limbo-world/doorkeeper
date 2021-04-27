@@ -1,6 +1,6 @@
 [
   {
-    "name": "${clientName}-client-own",
+    "name": "${realmName}-${clientName}-client-own",
     "isEnabled": true,
     "uris": [
       {
@@ -16,7 +16,7 @@
     ]
   },
   {
-    "name": "${clientName}-client-all",
+    "name": "${realmName}-${clientName}-client-all",
     "isEnabled": true,
     "uris": [
       {
@@ -26,7 +26,7 @@
     ]
   },
   {
-    "name": "${clientName}-resource-manager",
+    "name": "${realmName}-${clientName}-resource-manager",
     "isEnabled": true,
     "uris": [
       {
@@ -36,7 +36,7 @@
     ]
   },
   {
-    "name": "${clientName}-policy-manager",
+    "name": "${realmName}-${clientName}-policy-manager",
     "isEnabled": true,
     "uris": [
       {
@@ -46,7 +46,7 @@
     ]
   },
   {
-    "name": "${clientName}-permission-manager",
+    "name": "${realmName}-${clientName}-permission-manager",
     "isEnabled": true,
     "uris": [
       {

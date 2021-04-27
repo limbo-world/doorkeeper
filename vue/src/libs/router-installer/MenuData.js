@@ -7,7 +7,6 @@ export const MenuRoute = [{
         "menuName": "域",
         "icon": "fa fa-server",
         "route": "/realm/realm",
-        "doorkeeper": true
     }, {
         "menuCode": "001002",
         "menuName": "委托方",

@@ -1,6 +1,6 @@
 [
   {
-    "name": "realm-own",
+    "name": "${realmName}-realm-own",
     "isEnabled": true,
     "uris": [
       {
@@ -28,7 +28,7 @@
     ]
   },
   {
-    "name": "realm-manager",
+    "name": "${realmName}-realm-manager",
     "isEnabled": true,
     "uris": [
       {
@@ -38,7 +38,7 @@
     ]
   },
   {
-    "name": "role-manager",
+    "name": "${realmName}-role-manager",
     "isEnabled": true,
     "uris": [
       {
@@ -48,7 +48,7 @@
     ]
   },
   {
-    "name": "user-manager",
+    "name": "${realmName}-user-manager",
     "isEnabled": true,
     "uris": [
       {
@@ -58,7 +58,7 @@
     ]
   },
   {
-    "name": "group-manager",
+    "name": "${realmName}-group-manager",
     "isEnabled": true,
     "uris": [
       {

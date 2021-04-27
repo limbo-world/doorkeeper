@@ -14,15 +14,15 @@
 
         <el-main>
             <el-table :data="clients" size="mini">
-                <el-table-column prop="clientId" label="ID"></el-table-column>
+                <el-table-column prop="clientId" label="ID" width="100"></el-table-column>
                 <el-table-column prop="name" label="名称"></el-table-column>
                 <el-table-column prop="description" label="描述"></el-table-column>
-                <el-table-column label="是否启用">
+                <el-table-column label="是否启用" width="100">
                     <template slot-scope="scope">
                         {{scope.row.isEnabled ? "已启用" : "未启用"}}
                     </template>
                 </el-table-column>
-                <el-table-column label="操作">
+                <el-table-column label="操作" width="100">
                     <template slot-scope="scope">
                         <div class="operations">
                             <template>

@@ -19,6 +19,7 @@ package org.limbo.doorkeeper.server.service;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.lang3.StringUtils;
+import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.model.param.check.ResourceCheckParam;
 import org.limbo.doorkeeper.api.model.param.client.ClientAddParam;
 import org.limbo.doorkeeper.api.model.param.client.ClientQueryParam;
@@ -73,7 +74,7 @@ public class ClientService {
         }
 
         // 初始化client数据
-        doorkeeperService.createClientResource(userId, realmId, client.getClientId(), client.getName(), true);
+        doorkeeperService.createClientResource(userId, realmId, client.getClientId(), client.getName());
 
         return EnhancedBeanUtils.createAndCopy(client, ClientVO.class);
     }
@@ -90,13 +91,10 @@ public class ClientService {
             Realm realm = realmMapper.selectById(realmId);
             Realm doorkeeperRealm = realmMapper.getDoorkeeperRealm();
             // 获取realm在doorkeeper下对应的client
-            Client client = clientMapper.selectOne(Wrappers.<Client>lambdaQuery()
-                    .eq(Client::getRealmId, doorkeeperRealm.getRealmId())
-                    .eq(Client::getName, realm.getName())
-            );
+            Client apiClient = clientMapper.getByName(doorkeeperRealm.getRealmId(), DoorkeeperConstants.API_CLIENT);
 
             ResourceCheckParam checkParam = new ResourceCheckParam();
-            checkParam.setClientId(client.getClientId());
+            checkParam.setClientId(apiClient.getClientId());
             checkParam.setTags(Collections.singletonList("type=clientOwn"));
             ResourceCheckResult check = resourceChecker.check(userId, true, checkParam);
             if (CollectionUtils.isEmpty(check.getResources())) {
@@ -105,7 +103,7 @@ public class ClientService {
 
             for (ResourceVO resource : check.getResources()) {
                 String[] split = resource.getName().split("-");
-                clientNames.add(split[0]);
+                clientNames.add(split[1]);
             }
         }
 

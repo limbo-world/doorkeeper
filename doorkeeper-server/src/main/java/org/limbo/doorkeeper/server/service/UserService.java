@@ -22,14 +22,15 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.BatchMethod;
+import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.model.Page;
 import org.limbo.doorkeeper.api.model.param.user.*;
 import org.limbo.doorkeeper.api.model.vo.UserVO;
 import org.limbo.doorkeeper.server.dal.dao.GroupDao;
 import org.limbo.doorkeeper.server.dal.dao.RoleDao;
-import org.limbo.doorkeeper.server.dal.entity.Group;
-import org.limbo.doorkeeper.server.dal.entity.Role;
-import org.limbo.doorkeeper.server.dal.entity.User;
+import org.limbo.doorkeeper.server.dal.entity.*;
+import org.limbo.doorkeeper.server.dal.mapper.ClientMapper;
+import org.limbo.doorkeeper.server.dal.mapper.RealmMapper;
 import org.limbo.doorkeeper.server.dal.mapper.UserMapper;
 import org.limbo.doorkeeper.server.support.ParamException;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
@@ -69,6 +70,15 @@ public class UserService {
     @Autowired
     private RoleDao roleDao;
 
+    @Autowired
+    private RealmMapper realmMapper;
+
+    @Autowired
+    private DoorkeeperService doorkeeperService;
+
+    @Autowired
+    private ClientMapper clientMapper;
+
     @Transactional
     public UserVO add(Long realmId, UserAddParam param) {
         User user = EnhancedBeanUtils.createAndCopy(param, User.class);
@@ -107,6 +117,13 @@ public class UserService {
         // 用户策略
         if (CollectionUtils.isNotEmpty(param.getPolicyIds())) {
             userPolicyService.batchSave(user.getUserId(), param.getPolicyIds());
+        }
+
+        // 如果是 doorkeeper 域下的用户 创建策略和权限
+        Realm doorkeeperRealm = realmMapper.getDoorkeeperRealm();
+        if (doorkeeperRealm.getRealmId().equals(realmId)) {
+            Client apiClient = clientMapper.getByName(doorkeeperRealm.getRealmId(), DoorkeeperConstants.API_CLIENT);
+            doorkeeperService.bindUser(user.getUserId(), user.getUsername(), null, apiClient.getRealmId(), apiClient.getClientId());
         }
 
         return EnhancedBeanUtils.createAndCopy(user, UserVO.class);

@@ -37,6 +37,8 @@ public interface DoorkeeperConstants {
     String CLIENT = "client";
 
     String CLIENT_ID = "clientId";
+
+    String API_CLIENT = "api";
     /**
      * 默认ID
      */

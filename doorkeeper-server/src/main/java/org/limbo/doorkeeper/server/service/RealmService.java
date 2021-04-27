@@ -20,10 +20,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.model.param.check.ResourceCheckParam;
 import org.limbo.doorkeeper.api.model.param.realm.RealmUpdateParam;
 import org.limbo.doorkeeper.api.model.param.resource.RealmAddParam;
 import org.limbo.doorkeeper.api.model.vo.RealmVO;
+import org.limbo.doorkeeper.api.model.vo.ResourceVO;
 import org.limbo.doorkeeper.api.model.vo.check.ResourceCheckResult;
 import org.limbo.doorkeeper.server.dal.entity.Client;
 import org.limbo.doorkeeper.server.dal.entity.Realm;
@@ -81,7 +83,7 @@ public class RealmService {
         }
 
         // 初始化realm数据
-        doorkeeperService.createRealmClient(userId, realm.getRealmId(), realm.getName(), true);
+        doorkeeperService.createRealmResource(userId, realm.getRealmId(), realm.getName());
 
         return EnhancedBeanUtils.createAndCopy(realm, RealmVO.class);
     }
@@ -98,25 +100,20 @@ public class RealmService {
         }
 
         Realm doorkeeperRealm = realmMapper.getDoorkeeperRealm();
-
+        Client apiClient = clientMapper.getByName(doorkeeperRealm.getRealmId(), DoorkeeperConstants.API_CLIENT);
         // 普通用户，查看绑定的realm 资源
-        List<Client> clients = clientMapper.selectList(Wrappers.<Client>lambdaQuery()
-                .select(Client::getClientId, Client::getName)
-                .eq(Client::getRealmId, doorkeeperRealm.getRealmId())
-        );
-        List<String> realmNames = new ArrayList<>();
-        for (Client client : clients) {
-            ResourceCheckParam checkParam = new ResourceCheckParam();
-            checkParam.setClientId(client.getClientId());
-            checkParam.setTags(Collections.singletonList("type=realmOwn"));
-            ResourceCheckResult check = resourceChecker.check(userId, true, checkParam);
-            if (CollectionUtils.isNotEmpty(check.getResources())) {
-                realmNames.add(client.getName());
-            }
+        ResourceCheckParam checkParam = new ResourceCheckParam();
+        checkParam.setClientId(apiClient.getClientId());
+        checkParam.setTags(Collections.singletonList("type=realmOwn"));
+        ResourceCheckResult check = resourceChecker.check(userId, true, checkParam);
+        if (CollectionUtils.isEmpty(check.getResources())) {
+            return new ArrayList<>();
         }
 
-        if (CollectionUtils.isEmpty(realmNames)) {
-            return new ArrayList<>();
+        List<String> realmNames = new ArrayList<>();
+        for (ResourceVO resource : check.getResources()) {
+            String[] sp = resource.getName().split("-");
+            realmNames.add(sp[0]);
         }
 
         List<Realm> realms = realmMapper.selectList(realmSelect

@@ -33,12 +33,10 @@ import org.limbo.doorkeeper.api.model.param.policy.PolicyAddParam;
 import org.limbo.doorkeeper.api.model.param.policy.PolicyRoleAddParam;
 import org.limbo.doorkeeper.api.model.param.policy.PolicyUserAddParam;
 import org.limbo.doorkeeper.api.model.param.resource.ResourceAddParam;
+import org.limbo.doorkeeper.api.model.param.resource.ResourceQueryParam;
 import org.limbo.doorkeeper.api.model.param.role.RoleAddParam;
 import org.limbo.doorkeeper.api.model.param.user.UserRoleBatchUpdateParam;
-import org.limbo.doorkeeper.api.model.vo.PermissionPolicyVO;
-import org.limbo.doorkeeper.api.model.vo.PermissionResourceVO;
-import org.limbo.doorkeeper.api.model.vo.PermissionVO;
-import org.limbo.doorkeeper.api.model.vo.RoleVO;
+import org.limbo.doorkeeper.api.model.vo.*;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyRoleVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 import org.limbo.doorkeeper.server.dal.entity.*;
@@ -59,6 +57,7 @@ import org.springframework.util.ResourceUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -143,9 +142,16 @@ public class DoorkeeperService {
         userRoleBatchUpdateParam.setType(BatchMethod.SAVE);
         userRoleBatchUpdateParam.setRoleIds(Collections.singletonList(realmAdminRole.getRoleId()));
         userRoleService.batchUpdate(admin.getUserId(), userRoleBatchUpdateParam);
-        // 其他数据
-        Client realmClient = createRealmClient(admin.getUserId(), realm.getRealmId(), realm.getName(), false);
-        createClientResource(admin.getUserId(), realm.getRealmId(), realmClient.getClientId(), realmClient.getName(), false);
+        // 创建api client
+        Client apiClient = new Client();
+        apiClient.setRealmId(realm.getRealmId());
+        apiClient.setName(DoorkeeperConstants.API_CLIENT);
+        apiClient.setDescription("manager doorkeeper permission");
+        apiClient.setIsEnabled(true);
+        clientMapper.insert(apiClient);
+        // 资源数据
+        createRealmResource(admin.getUserId(), realm.getRealmId(), realm.getName());
+        createClientResource(admin.getUserId(), realm.getRealmId(), apiClient.getClientId(), apiClient.getName());
     }
 
     /**
@@ -156,15 +162,9 @@ public class DoorkeeperService {
      * @param realmName 新建的realm名称
      */
     @Transactional
-    public Client createRealmClient(Long userId, Long realmId, String realmName, boolean bind) {
+    public void createRealmResource(Long userId, Long realmId, String realmName) {
         Realm doorkeeperRealm = realmMapper.getDoorkeeperRealm();
-
-        Client client = new Client();
-        client.setRealmId(doorkeeperRealm.getRealmId());
-        client.setName(realmName);
-        client.setIsEnabled(true);
-        clientMapper.insert(client);
-
+        Client apiClient = clientMapper.getByName(doorkeeperRealm.getRealmId(), DoorkeeperConstants.API_CLIENT);
         // 域资源
         String resourceTemplate = getRealmResourceTemplate();
         resourceTemplate = resourceTemplate.replaceAll("\\$\\{realmId}", realmId.toString());
@@ -172,26 +172,26 @@ public class DoorkeeperService {
         List<ResourceAddParam> resourceAddParams = JacksonUtil.parseObject(resourceTemplate, new TypeReference<List<ResourceAddParam>>() {
         });
         for (ResourceAddParam resourceAddParam : resourceAddParams) {
-            resourceService.add(doorkeeperRealm.getRealmId(), client.getClientId(), resourceAddParam);
-        }
-
-        if (!bind) {
-            return client;
+            resourceService.add(doorkeeperRealm.getRealmId(), apiClient.getClientId(), resourceAddParam);
         }
 
         User user = userMapper.selectById(userId);
-        bindUserResource(user.getUserId(), user.getUsername(), new String[]{"realm-own"}, client.getRealmId(), client.getClientId());
-        return client;
+        bindUser(user.getUserId(), user.getUsername(), realmName + "-realm-own", apiClient.getRealmId(), apiClient.getClientId());
     }
 
     /**
      * 新建client 在doorkeeper 新建client对应 realmName的client下创建对应资源 并绑定给用户
+     *
+     * @param userId     创建者ID
+     * @param realmId    创建client的realmId
+     * @param clientId   创建的clientId
+     * @param clientName 创建的clientName
      */
     @Transactional
-    public void createClientResource(Long userId, Long realmId, Long clientId, String clientName, boolean bind) {
+    public void createClientResource(Long userId, Long realmId, Long clientId, String clientName) {
         Realm doorkeeperRealm = realmMapper.getDoorkeeperRealm();
+        Client apiClient = clientMapper.getByName(doorkeeperRealm.getRealmId(), DoorkeeperConstants.API_CLIENT);
         Realm realm = realmMapper.selectById(realmId);
-        Client doorkeeperClient = clientMapper.getByName(doorkeeperRealm.getRealmId(), realm.getName());
 
         // 资源
         String resourceTemplate = getClientResourceTemplate();
@@ -202,28 +202,24 @@ public class DoorkeeperService {
         List<ResourceAddParam> resourceAddParams = JacksonUtil.parseObject(resourceTemplate, new TypeReference<List<ResourceAddParam>>() {
         });
         for (ResourceAddParam resourceAddParam : resourceAddParams) {
-            resourceService.add(doorkeeperRealm.getRealmId(), doorkeeperClient.getClientId(), resourceAddParam);
-        }
-
-        if (!bind) {
-            return;
+            resourceService.add(doorkeeperRealm.getRealmId(), apiClient.getClientId(), resourceAddParam);
         }
 
         User user = userMapper.selectById(userId);
-        bindUserResource(user.getUserId(), user.getUsername(), new String[]{clientName + "-client-own"}, doorkeeperClient.getRealmId(), doorkeeperClient.getClientId());
+        bindUser(user.getUserId(), user.getUsername(), realm.getName() + "-" + clientName + "-client-own", apiClient.getRealmId(), apiClient.getClientId());
     }
 
     /**
-     * 给用户绑定资源
+     * 创建用户策略/权限
      *
-     * @param userId        用户ID
-     * @param userName      用户名称
-     * @param resourceNames 资源名称
-     * @param realmId       doorkeeper的realmId
-     * @param clientId      对应realm在doorkeeper域下client的id
+     * @param userId   用户ID
+     * @param username 用户名称
+     * @param name     需要绑定的资源名称
+     * @param realmId  doorkeeper realmId
+     * @param clientId doorkeeper api clientId
      */
-    public void bindUserResource(Long userId, String userName, String[] resourceNames, Long realmId, Long clientId) {
-        String uqName = userName + "-user";
+    public void bindUser(Long userId, String username, String name, Long realmId, Long clientId) {
+        String uqName = username + "-user";
         // 用户策略
         Wrapper<Policy> policyWrapper = Wrappers.<Policy>lambdaQuery()
                 .eq(Policy::getRealmId, realmId)
@@ -242,12 +238,15 @@ public class DoorkeeperService {
         }
 
         // 权限
-        List<Resource> resources = resourceMapper.selectList(Wrappers.<Resource>lambdaQuery()
-                .eq(Resource::getRealmId, realmId)
-                .eq(Resource::getClientId, clientId)
-                .in(Resource::getName, resourceNames)
-        );
-        List<Long> resourceIds = resources.stream().map(Resource::getResourceId).collect(Collectors.toList());
+        List<ResourceVO> resources = new ArrayList<>();
+        if (StringUtils.isNotBlank(name)) {
+            ResourceQueryParam resourceQueryParam = new ResourceQueryParam();
+            resourceQueryParam.setRealmId(realmId);
+            resourceQueryParam.setClientId(clientId);
+            resourceQueryParam.setNames(Collections.singletonList(name));
+            resources = resourceMapper.getVOS(resourceQueryParam);
+        }
+        List<Long> resourceIds = resources.stream().map(ResourceVO::getResourceId).collect(Collectors.toList());
 
         PermissionQueryParam permissionQueryParam = new PermissionQueryParam();
         permissionQueryParam.setRealmId(realmId);
@@ -361,6 +360,7 @@ public class DoorkeeperService {
 
     /**
      * 判断用户是否doorkeeper的管理员 校验是否为 doorkeeper域下的域管理员
+     *
      * @param userId 用户ID
      * @return 是否超级管理员
      */
