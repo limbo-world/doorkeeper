@@ -16,15 +16,22 @@
 
 package org.limbo.doorkeeper.server.service;
 
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.lang3.StringUtils;
+import org.limbo.doorkeeper.api.model.param.check.ResourceCheckParam;
 import org.limbo.doorkeeper.api.model.param.client.ClientAddParam;
 import org.limbo.doorkeeper.api.model.param.client.ClientQueryParam;
 import org.limbo.doorkeeper.api.model.param.client.ClientUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ClientVO;
+import org.limbo.doorkeeper.api.model.vo.ResourceVO;
+import org.limbo.doorkeeper.api.model.vo.check.ResourceCheckResult;
 import org.limbo.doorkeeper.server.dal.entity.Client;
+import org.limbo.doorkeeper.server.dal.entity.Realm;
 import org.limbo.doorkeeper.server.dal.mapper.ClientMapper;
+import org.limbo.doorkeeper.server.dal.mapper.RealmMapper;
 import org.limbo.doorkeeper.server.support.ParamException;
+import org.limbo.doorkeeper.server.support.auth.ResourceChecker;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +39,8 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -42,10 +51,16 @@ import java.util.List;
 public class ClientService {
 
     @Autowired
+    private RealmMapper realmMapper;
+
+    @Autowired
     private ClientMapper clientMapper;
 
     @Autowired
     private DoorkeeperService doorkeeperService;
+
+    @Autowired
+    private ResourceChecker resourceChecker;
 
     @Transactional
     public ClientVO add(Long realmId, Long userId, ClientAddParam param) {
@@ -67,14 +82,39 @@ public class ClientService {
      * user拥有哪些client
      */
     public List<ClientVO> userClients(Long realmId, Long userId, ClientQueryParam param) {
-        // todo 目前没有做用户和client的相关权限
-//        Set<Long> clientIds = userClients.stream().map(UserClient::getClientId).collect(Collectors.toSet());
+        List<String> clientNames = null;
+        // 判断是不是doorkeeper的REALM admin
+        if (!doorkeeperService.isSuperAdmin(userId)) {
+            clientNames = new ArrayList<>();
+
+            Realm realm = realmMapper.selectById(realmId);
+            Realm doorkeeperRealm = realmMapper.getDoorkeeperRealm();
+            // 获取realm在doorkeeper下对应的client
+            Client client = clientMapper.selectOne(Wrappers.<Client>lambdaQuery()
+                    .eq(Client::getRealmId, doorkeeperRealm.getRealmId())
+                    .eq(Client::getName, realm.getName())
+            );
+
+            ResourceCheckParam checkParam = new ResourceCheckParam();
+            checkParam.setClientId(client.getClientId());
+            checkParam.setTags(Collections.singletonList("type=clientOwn"));
+            ResourceCheckResult check = resourceChecker.check(userId, true, checkParam);
+            if (CollectionUtils.isEmpty(check.getResources())) {
+                return new ArrayList<>();
+            }
+
+            for (ResourceVO resource : check.getResources()) {
+                String[] split = resource.getName().split("-");
+                clientNames.add(split[0]);
+            }
+        }
+
         List<Client> clients = clientMapper.selectList(Wrappers.<Client>lambdaQuery()
-                        .eq(Client::getRealmId, realmId)
-                        .eq(StringUtils.isNotBlank(param.getName()), Client::getName, param.getName())
-                        .like(StringUtils.isNotBlank(param.getDimName()), Client::getName, param.getDimName())
-//                .in(Client::getClientId, new ArrayList<>())
-                        .orderByDesc(Client::getClientId)
+                .eq(Client::getRealmId, realmId)
+                .eq(StringUtils.isNotBlank(param.getName()), Client::getName, param.getName())
+                .like(StringUtils.isNotBlank(param.getDimName()), Client::getName, param.getDimName())
+                .in(clientNames != null, Client::getName, clientNames)
+                .orderByDesc(Client::getClientId)
         );
         return EnhancedBeanUtils.createAndCopyList(clients, ClientVO.class);
     }

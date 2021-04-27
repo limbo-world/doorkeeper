@@ -1,7 +1,6 @@
 [
   {
-    "name": "realm",
-    "description": "own this to join realm",
+    "name": "realm-own",
     "isEnabled": true,
     "uris": [
       {
@@ -20,29 +19,23 @@
         "uri": "/api/admin/realm/${realmId}/group/**",
         "method": "GET"
       }
-    ]
-  },
-  {
-    "name": "realm-all",
-    "isEnabled": true,
-    "uris": [
-      {
-        "uri": "/api/admin/realm/${realmId}/**",
-        "method": "ALL"
-      }
     ],
-    "tags": []
+    "tags": [
+      {
+        "k": "type",
+        "v": "realmOwn"
+      }
+    ]
   },
   {
     "name": "realm-manager",
     "isEnabled": true,
     "uris": [
       {
-        "uri": "/api/admin/realm/${realmId}",
+        "uri": "/api/admin/realm/${realmId}/**",
         "method": "ALL"
       }
-    ],
-    "tags": []
+    ]
   },
   {
     "name": "role-manager",
@@ -52,8 +45,7 @@
         "uri": "/api/admin/realm/${realmId}/role/**",
         "method": "ALL"
       }
-    ],
-    "tags": []
+    ]
   },
   {
     "name": "user-manager",
@@ -63,8 +55,7 @@
         "uri": "/api/admin/realm/${realmId}/user/**",
         "method": "ALL"
       }
-    ],
-    "tags": []
+    ]
   },
   {
     "name": "group-manager",
@@ -74,7 +65,6 @@
         "uri": "/api/admin/realm/${realmId}/group/**",
         "method": "ALL"
       }
-    ],
-    "tags": []
+    ]
   }
 ]

@@ -180,7 +180,7 @@ public class DoorkeeperService {
         }
 
         User user = userMapper.selectById(userId);
-        bindUserResource(user.getUserId(), user.getUsername(), new String[]{DoorkeeperConstants.REALM, "realm-all"}, client.getRealmId(), client.getClientId());
+        bindUserResource(user.getUserId(), user.getUsername(), new String[]{"realm-own"}, client.getRealmId(), client.getClientId());
         return client;
     }
 
@@ -210,7 +210,7 @@ public class DoorkeeperService {
         }
 
         User user = userMapper.selectById(userId);
-        bindUserResource(user.getUserId(), user.getUsername(), new String[]{clientName + "-client", clientName + "-client-all"}, doorkeeperClient.getRealmId(), doorkeeperClient.getClientId());
+        bindUserResource(user.getUserId(), user.getUsername(), new String[]{clientName + "-client-own"}, doorkeeperClient.getRealmId(), doorkeeperClient.getClientId());
     }
 
     /**

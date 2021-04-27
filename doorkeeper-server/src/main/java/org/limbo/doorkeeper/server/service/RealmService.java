@@ -20,14 +20,17 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.model.param.check.ResourceCheckParam;
 import org.limbo.doorkeeper.api.model.param.realm.RealmUpdateParam;
 import org.limbo.doorkeeper.api.model.param.resource.RealmAddParam;
 import org.limbo.doorkeeper.api.model.vo.RealmVO;
 import org.limbo.doorkeeper.api.model.vo.check.ResourceCheckResult;
-import org.limbo.doorkeeper.server.dal.entity.*;
-import org.limbo.doorkeeper.server.dal.mapper.*;
+import org.limbo.doorkeeper.server.dal.entity.Client;
+import org.limbo.doorkeeper.server.dal.entity.Realm;
+import org.limbo.doorkeeper.server.dal.entity.User;
+import org.limbo.doorkeeper.server.dal.mapper.ClientMapper;
+import org.limbo.doorkeeper.server.dal.mapper.RealmMapper;
+import org.limbo.doorkeeper.server.dal.mapper.UserMapper;
 import org.limbo.doorkeeper.server.support.ParamException;
 import org.limbo.doorkeeper.server.support.auth.ResourceChecker;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
@@ -88,13 +91,13 @@ public class RealmService {
      */
     public List<RealmVO> userRealms(Long userId) {
         LambdaQueryWrapper<Realm> realmSelect = Wrappers.<Realm>lambdaQuery().select(Realm::getRealmId, Realm::getName);
-
-        Realm doorkeeperRealm = realmMapper.getDoorkeeperRealm();
         // 判断是不是doorkeeper的REALM admin
         if (doorkeeperService.isSuperAdmin(userId)) {
             List<Realm> realms = realmMapper.selectList(realmSelect);
             return EnhancedBeanUtils.createAndCopyList(realms, RealmVO.class);
         }
+
+        Realm doorkeeperRealm = realmMapper.getDoorkeeperRealm();
 
         // 普通用户，查看绑定的realm 资源
         List<Client> clients = clientMapper.selectList(Wrappers.<Client>lambdaQuery()
@@ -105,7 +108,7 @@ public class RealmService {
         for (Client client : clients) {
             ResourceCheckParam checkParam = new ResourceCheckParam();
             checkParam.setClientId(client.getClientId());
-            checkParam.setNames(Collections.singletonList(DoorkeeperConstants.REALM));
+            checkParam.setTags(Collections.singletonList("type=realmOwn"));
             ResourceCheckResult check = resourceChecker.check(userId, true, checkParam);
             if (CollectionUtils.isNotEmpty(check.getResources())) {
                 realmNames.add(client.getName());
