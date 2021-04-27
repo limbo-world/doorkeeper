@@ -33,16 +33,11 @@ import org.limbo.doorkeeper.server.utils.JWTUtil;
 import org.limbo.doorkeeper.server.utils.JacksonUtil;
 import org.limbo.doorkeeper.server.utils.WebUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
-import java.util.Map;
 
 /**
  * @author Devil
@@ -96,16 +91,9 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         }
 
         // 判断uri权限
-        NativeWebRequest webRequest = new ServletWebRequest(request);
-        Map<String, String> uriTemplateVars = (Map<String, String>) webRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
-        String realmIdStr = uriTemplateVars.get(DoorkeeperConstants.REALM_ID);
-
-        Realm realm = realmMapper.selectById(Long.valueOf(realmIdStr));
-
-        // 获取对应的client
-        Client client = clientMapper.getByName(doorkeeperRealm.getRealmId(), realm.getName());
+        Client apiClient = clientMapper.getByName(doorkeeperRealm.getRealmId(), DoorkeeperConstants.API_CLIENT);
         ResourceCheckParam checkParam = new ResourceCheckParam()
-                .setClientId(client.getClientId())
+                .setClientId(apiClient.getClientId())
                 .setUris(Collections.singletonList(UriMethod.parse(request.getMethod()) + DoorkeeperConstants.KV_DELIMITER + request.getRequestURI()));
         ResourceCheckResult checkResult = resourceChecker.check(userId, true, checkParam);
 
