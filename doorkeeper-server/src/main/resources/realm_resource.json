@@ -4,7 +4,19 @@
     "isEnabled": true,
     "uris": [
       {
-        "uri": "/api/admin/realm/${realmId}/**",
+        "uri": "/api/admin/realm/${realmId}",
+        "method": "GET"
+      },
+      {
+        "uri": "/api/admin/realm/${realmId}/role/**",
+        "method": "GET"
+      },
+      {
+        "uri": "/api/admin/realm/${realmId}/user/**",
+        "method": "GET"
+      },
+      {
+        "uri": "/api/admin/realm/${realmId}/group/**",
         "method": "GET"
       }
     ],
