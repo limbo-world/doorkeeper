@@ -38,6 +38,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -159,6 +160,7 @@ public class PermissionService {
                     .set(param.getLogic() != null, Permission::getLogic, param.getLogic())
                     .set(param.getIntention() != null, Permission::getIntention, param.getIntention())
                     .set(param.getIsEnabled() != null, Permission::getIsEnabled, param.getIsEnabled())
+                    .set(Permission::getUpdateTime, new Date())
                     .eq(Permission::getRealmId, realmId)
                     .eq(Permission::getClientId, clientId)
                     .eq(Permission::getPermissionId, permissionId)

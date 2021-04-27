@@ -16,38 +16,52 @@
 
 package org.limbo.doorkeeper.server.service;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.fasterxml.jackson.core.type.TypeReference;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.*;
-import org.limbo.doorkeeper.api.model.param.group.*;
+import org.limbo.doorkeeper.api.model.param.InitParam;
+import org.limbo.doorkeeper.api.model.param.check.PolicyCheckerParam;
 import org.limbo.doorkeeper.api.model.param.permission.PermissionAddParam;
+import org.limbo.doorkeeper.api.model.param.permission.PermissionQueryParam;
+import org.limbo.doorkeeper.api.model.param.permission.PermissionUpdateParam;
 import org.limbo.doorkeeper.api.model.param.policy.PolicyAddParam;
 import org.limbo.doorkeeper.api.model.param.policy.PolicyRoleAddParam;
+import org.limbo.doorkeeper.api.model.param.policy.PolicyUserAddParam;
 import org.limbo.doorkeeper.api.model.param.resource.ResourceAddParam;
-import org.limbo.doorkeeper.api.model.param.resource.ResourceTagAddParam;
-import org.limbo.doorkeeper.api.model.param.resource.ResourceUriAddParam;
 import org.limbo.doorkeeper.api.model.param.role.RoleAddParam;
 import org.limbo.doorkeeper.api.model.param.user.UserRoleBatchUpdateParam;
-import org.limbo.doorkeeper.api.model.vo.GroupVO;
-import org.limbo.doorkeeper.api.model.vo.ResourceVO;
+import org.limbo.doorkeeper.api.model.vo.PermissionPolicyVO;
+import org.limbo.doorkeeper.api.model.vo.PermissionResourceVO;
+import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
+import org.limbo.doorkeeper.api.model.vo.policy.PolicyRoleVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
-import org.limbo.doorkeeper.server.dal.entity.Client;
-import org.limbo.doorkeeper.server.dal.entity.Realm;
-import org.limbo.doorkeeper.server.dal.entity.User;
-import org.limbo.doorkeeper.server.dal.mapper.ClientMapper;
-import org.limbo.doorkeeper.server.dal.mapper.RealmMapper;
-import org.limbo.doorkeeper.server.dal.mapper.UserMapper;
+import org.limbo.doorkeeper.server.dal.entity.*;
+import org.limbo.doorkeeper.server.dal.entity.policy.Policy;
+import org.limbo.doorkeeper.server.dal.mapper.*;
+import org.limbo.doorkeeper.server.dal.mapper.policy.PolicyMapper;
 import org.limbo.doorkeeper.server.service.policy.PolicyService;
 import org.limbo.doorkeeper.server.support.ParamException;
+import org.limbo.doorkeeper.server.support.auth.policies.PolicyCheckerFactory;
+import org.limbo.doorkeeper.server.utils.JacksonUtil;
 import org.limbo.doorkeeper.server.utils.MD5Utils;
 import org.limbo.doorkeeper.server.utils.UUIDUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ResourceUtils;
 
-import java.util.ArrayList;
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * doorkeeper资源等管理逻辑
@@ -55,6 +69,7 @@ import java.util.List;
  * @author Devil
  * @date 2021/1/10 10:39 上午
  */
+@Slf4j
 @Service
 public class DoorkeeperService {
 
@@ -77,22 +92,32 @@ public class DoorkeeperService {
     private PermissionService permissionService;
 
     @Autowired
-    private GroupService groupService;
-
-    @Autowired
-    private GroupRoleService groupRoleService;
-
-    @Autowired
-    private GroupUserService groupUserService;
-
-    @Autowired
     private UserMapper userMapper;
 
     @Autowired
     private UserRoleService userRoleService;
 
+    @Autowired
+    private ResourceMapper resourceMapper;
+
+    @Autowired
+    private PolicyMapper policyMapper;
+
+    @Autowired
+    private PermissionMapper permissionMapper;
+
+    @Autowired
+    private RoleMapper roleMapper;
+
+    @Autowired
+    private PolicyCheckerFactory policyCheckerFactory;
+
+    private String realmResource;
+
+    private String clientResource;
+
     @Transactional
-    public void initDoorkeeper() {
+    public void initDoorkeeper(InitParam param) {
         Realm realm = new Realm();
         realm.setName(DoorkeeperConstants.DOORKEEPER_REALM_NAME);
         realm.setSecret(UUIDUtils.get());
@@ -103,13 +128,13 @@ public class DoorkeeperService {
         }
 
         // 创建管理员账户
-        User user = new User();
-        user.setRealmId(realm.getRealmId());
-        user.setUsername(DoorkeeperConstants.ADMIN);
-        user.setNickname(DoorkeeperConstants.ADMIN);
-        user.setPassword(MD5Utils.md5WithSalt(DoorkeeperConstants.ADMIN));
-        user.setIsEnabled(true);
-        userMapper.insert(user);
+        User admin = new User();
+        admin.setRealmId(realm.getRealmId());
+        admin.setNickname(DoorkeeperConstants.ADMIN);
+        admin.setUsername(StringUtils.isBlank(param.getUsername()) ? DoorkeeperConstants.ADMIN : param.getUsername());
+        admin.setPassword(MD5Utils.md5WithSalt(StringUtils.isBlank(param.getPassword()) ? DoorkeeperConstants.ADMIN : param.getPassword()));
+        admin.setIsEnabled(true);
+        userMapper.insert(admin);
         // 创建doorkeeper超管角色
         RoleAddParam realmAdminRoleParam = createRole(DoorkeeperConstants.REALM_CLIENT_ID, DoorkeeperConstants.ADMIN, "");
         RoleVO realmAdminRole = roleService.add(realm.getRealmId(), realmAdminRoleParam);
@@ -117,25 +142,21 @@ public class DoorkeeperService {
         UserRoleBatchUpdateParam userRoleBatchUpdateParam = new UserRoleBatchUpdateParam();
         userRoleBatchUpdateParam.setType(BatchMethod.SAVE);
         userRoleBatchUpdateParam.setRoleIds(Collections.singletonList(realmAdminRole.getRoleId()));
-        userRoleService.batchUpdate(user.getUserId(), userRoleBatchUpdateParam);
-        // 创建realm组
-        GroupAddParam groupAddParam = new GroupAddParam();
-        groupAddParam.setName(DoorkeeperConstants.REALM);
-        groupAddParam.setParentId(DoorkeeperConstants.DEFAULT_ID);
-        groupService.add(realm.getRealmId(), groupAddParam);
+        userRoleService.batchUpdate(admin.getUserId(), userRoleBatchUpdateParam);
         // 其他数据
-        createRealmData(user.getUserId(), realm.getRealmId(), realm.getName());
+        Client realmClient = createRealmClient(admin.getUserId(), realm.getRealmId(), realm.getName(), false);
+        createClientResource(admin.getUserId(), realm.getRealmId(), realmClient.getClientId(), realmClient.getName(), false);
     }
 
     /**
-     * 新建域 需要创建对应的资源
+     * 新建域 在doorkeeper 域下面创建 realmName的client 并创建realm 资源 绑定给用户
      *
      * @param userId    创建者ID
      * @param realmId   新建的RealmId
      * @param realmName 新建的realm名称
      */
     @Transactional
-    public void createRealmData(Long userId, Long realmId, String realmName) {
+    public Client createRealmClient(Long userId, Long realmId, String realmName, boolean bind) {
         Realm doorkeeperRealm = realmMapper.getDoorkeeperRealm();
 
         Client client = new Client();
@@ -145,67 +166,110 @@ public class DoorkeeperService {
         clientMapper.insert(client);
 
         // 域资源
-        ResourceAddParam realmResourceParam = createRealmResource(realmId);
-        ResourceVO realmResource = resourceService.add(client.getRealmId(), client.getClientId(), realmResourceParam);
-        // 域管理员角色
-        RoleAddParam realmAdminRoleParam = createRole(client.getClientId(), DoorkeeperConstants.ADMIN, "");
-        RoleVO realmAdminRole = roleService.add(client.getRealmId(), realmAdminRoleParam);
-        // 域管理员策略
-        PolicyAddParam realmAdminPolicyParam = createRolePolicy(DoorkeeperConstants.ADMIN, realmAdminRole.getRoleId());
-        PolicyVO realmAdminPolicy = policyService.add(client.getRealmId(), client.getClientId(), realmAdminPolicyParam);
-        // 域管理员权限
-        PermissionAddParam realmAdminPermissionParam = createPermission(DoorkeeperConstants.ADMIN, realmResource.getResourceId(), realmAdminPolicy.getPolicyId());
-        permissionService.add(client.getRealmId(), client.getClientId(), realmAdminPermissionParam);
-        // 找到名为realm的用户组 在下面添加新增域 名称的用户组
-        GroupVO realmGroup = groupService.getDoorkeeperRealmGroup();
-        GroupAddParam groupAddParam = new GroupAddParam();
-        groupAddParam.setName(realmName);
-        groupAddParam.setParentId(realmGroup.getGroupId());
-        GroupVO group = groupService.add(doorkeeperRealm.getRealmId(), groupAddParam);
-        // 用户组绑定域管理员角色
-        GroupRoleBatchUpdateParam groupRoleBatchUpdateParam = new GroupRoleBatchUpdateParam();
-        groupRoleBatchUpdateParam.setType(BatchMethod.SAVE);
-        GroupRoleAddParam groupRoleAddParam = new GroupRoleAddParam();
-        groupRoleAddParam.setRoleId(realmAdminRole.getRoleId());
-        groupRoleBatchUpdateParam.setRoles(Collections.singletonList(groupRoleAddParam));
-        groupRoleService.batchUpdate(group.getGroupId(), groupRoleBatchUpdateParam);
-        // 用户加入用户组
-        GroupUserBatchUpdateParam doorkeeperRealmUserGroupParam = new GroupUserBatchUpdateParam();
-        doorkeeperRealmUserGroupParam.setType(BatchMethod.SAVE);
-        doorkeeperRealmUserGroupParam.setUserIds(Collections.singletonList(userId));
-        groupUserService.batchUpdate(group.getGroupId(), doorkeeperRealmUserGroupParam);
+        String resourceTemplate = getRealmResourceTemplate();
+        resourceTemplate = resourceTemplate.replaceAll("\\$\\{realmId}", realmId.toString());
+        resourceTemplate = resourceTemplate.replaceAll("\\$\\{realmName}", realmName);
+        List<ResourceAddParam> resourceAddParams = JacksonUtil.parseObject(resourceTemplate, new TypeReference<List<ResourceAddParam>>() {
+        });
+        for (ResourceAddParam resourceAddParam : resourceAddParams) {
+            resourceService.add(doorkeeperRealm.getRealmId(), client.getClientId(), resourceAddParam);
+        }
+
+        if (!bind) {
+            return client;
+        }
+
+        User user = userMapper.selectById(userId);
+        bindUserResource(user.getUserId(), user.getUsername(), new String[]{DoorkeeperConstants.REALM, "realm-all"}, client.getRealmId(), client.getClientId());
+        return client;
     }
 
     /**
-     * @param realmId 新建的域的id
+     * 新建client 在doorkeeper 新建client对应 realmName的client下创建对应资源 并绑定给用户
      */
-    private ResourceAddParam createRealmResource(Long realmId) {
-        ResourceAddParam resourceAddParam = new ResourceAddParam();
-        resourceAddParam.setName(DoorkeeperConstants.REALM);
-        resourceAddParam.setIsEnabled(true);
+    @Transactional
+    public void createClientResource(Long userId, Long realmId, Long clientId, String clientName, boolean bind) {
+        Realm doorkeeperRealm = realmMapper.getDoorkeeperRealm();
+        Realm realm = realmMapper.selectById(realmId);
+        Client doorkeeperClient = clientMapper.getByName(doorkeeperRealm.getRealmId(), realm.getName());
 
-        ResourceUriAddParam uriAddParam = new ResourceUriAddParam();
-        uriAddParam.setMethod(UriMethod.ALL);
-        uriAddParam.setUri("/api/admin/realm/" + realmId + "/**");
+        // 资源
+        String resourceTemplate = getClientResourceTemplate();
+        resourceTemplate = resourceTemplate.replaceAll("\\$\\{realmId}", realmId.toString());
+        resourceTemplate = resourceTemplate.replaceAll("\\$\\{realmName}", realm.getName());
+        resourceTemplate = resourceTemplate.replaceAll("\\$\\{clientId}", clientId.toString());
+        resourceTemplate = resourceTemplate.replaceAll("\\$\\{clientName}", clientName);
+        List<ResourceAddParam> resourceAddParams = JacksonUtil.parseObject(resourceTemplate, new TypeReference<List<ResourceAddParam>>() {
+        });
+        for (ResourceAddParam resourceAddParam : resourceAddParams) {
+            resourceService.add(doorkeeperRealm.getRealmId(), doorkeeperClient.getClientId(), resourceAddParam);
+        }
 
-        resourceAddParam.setUris(Collections.singletonList(uriAddParam));
+        if (!bind) {
+            return;
+        }
 
-        ResourceTagAddParam realmIdTag = new ResourceTagAddParam();
-        realmIdTag.setK(DoorkeeperConstants.REALM_ID);
-        realmIdTag.setV(realmId + "");
-
-        ResourceTagAddParam typeTag = new ResourceTagAddParam();
-        typeTag.setK(DoorkeeperConstants.TYPE);
-        typeTag.setV(DoorkeeperConstants.REALM);
-
-        List<ResourceTagAddParam> tags = new ArrayList<>();
-        tags.add(realmIdTag);
-        tags.add(typeTag);
-
-        resourceAddParam.setTags(tags);
-
-        return resourceAddParam;
+        User user = userMapper.selectById(userId);
+        bindUserResource(user.getUserId(), user.getUsername(), new String[]{clientName + "-client", clientName + "-client-all"}, doorkeeperClient.getRealmId(), doorkeeperClient.getClientId());
     }
+
+    /**
+     * 给用户绑定资源
+     *
+     * @param userId        用户ID
+     * @param userName      用户名称
+     * @param resourceNames 资源名称
+     * @param realmId       doorkeeper的realmId
+     * @param clientId      对应realm在doorkeeper域下client的id
+     */
+    public void bindUserResource(Long userId, String userName, String[] resourceNames, Long realmId, Long clientId) {
+        String uqName = userName + "-user";
+        // 用户策略
+        Wrapper<Policy> policyWrapper = Wrappers.<Policy>lambdaQuery()
+                .eq(Policy::getRealmId, realmId)
+                .eq(Policy::getClientId, clientId)
+                .eq(Policy::getName, uqName);
+
+        Policy policy = policyMapper.selectOne(policyWrapper);
+        if (policy == null) {
+            try {
+                PolicyAddParam policyParam = createUserPolicy(uqName, userId);
+                policyService.add(realmId, clientId, policyParam);
+            } catch (DuplicateKeyException e) {
+                // 重复了，不处理
+            }
+            policy = policyMapper.selectOne(policyWrapper);
+        }
+
+        // 权限
+        List<Resource> resources = resourceMapper.selectList(Wrappers.<Resource>lambdaQuery()
+                .eq(Resource::getRealmId, realmId)
+                .eq(Resource::getClientId, clientId)
+                .in(Resource::getName, resourceNames)
+        );
+        List<Long> resourceIds = resources.stream().map(Resource::getResourceId).collect(Collectors.toList());
+
+        PermissionQueryParam permissionQueryParam = new PermissionQueryParam();
+        permissionQueryParam.setRealmId(realmId);
+        permissionQueryParam.setClientId(clientId);
+        permissionQueryParam.setNames(Collections.singletonList(uqName));
+        List<PermissionVO> vos = permissionMapper.getVOS(permissionQueryParam);
+        if (CollectionUtils.isEmpty(vos)) {
+            PermissionAddParam realmAdminPermissionParam = createPermission(uqName, resourceIds, policy.getPolicyId());
+            permissionService.add(realmId, clientId, realmAdminPermissionParam);
+        } else {
+            PermissionUpdateParam permissionUpdateParam = new PermissionUpdateParam();
+            if (CollectionUtils.isNotEmpty(vos.get(0).getPolicies())) {
+                permissionUpdateParam.setPolicyIds(vos.get(0).getPolicies().stream().map(PermissionPolicyVO::getPolicyId).collect(Collectors.toList()));
+            }
+            if (CollectionUtils.isNotEmpty(vos.get(0).getResources())) {
+                resourceIds.addAll(vos.get(0).getResources().stream().map(PermissionResourceVO::getResourceId).collect(Collectors.toList()));
+            }
+            permissionUpdateParam.setResourceIds(resourceIds);
+            permissionService.update(realmId, clientId, vos.get(0).getPermissionId(), permissionUpdateParam);
+        }
+    }
+
 
     private RoleAddParam createRole(Long clientId, String name, String description) {
         RoleAddParam roleAddParam = new RoleAddParam();
@@ -231,15 +295,90 @@ public class DoorkeeperService {
         return policyAddParam;
     }
 
-    private PermissionAddParam createPermission(String name, Long resourceId, Long policyId) {
+    private PolicyAddParam createUserPolicy(String name, Long userId) {
+        PolicyAddParam policyAddParam = new PolicyAddParam();
+        policyAddParam.setName(name);
+        policyAddParam.setType(PolicyType.USER);
+        policyAddParam.setLogic(Logic.ALL);
+        policyAddParam.setIntention(Intention.ALLOW);
+        policyAddParam.setIsEnabled(Boolean.TRUE);
+
+        PolicyUserAddParam userAddParam = new PolicyUserAddParam();
+        userAddParam.setUserId(userId);
+
+        policyAddParam.setUsers(Collections.singletonList(userAddParam));
+        return policyAddParam;
+    }
+
+    private PermissionAddParam createPermission(String name, List<Long> resourceIds, Long policyId) {
         PermissionAddParam permissionAddParam = new PermissionAddParam();
         permissionAddParam.setName(name);
         permissionAddParam.setLogic(Logic.ALL);
         permissionAddParam.setIntention(Intention.ALLOW);
         permissionAddParam.setIsEnabled(Boolean.TRUE);
-        permissionAddParam.setResourceIds(Collections.singletonList(resourceId));
+        permissionAddParam.setResourceIds(resourceIds);
         permissionAddParam.setPolicyIds(Collections.singletonList(policyId));
         return permissionAddParam;
+    }
+
+    /**
+     * 获取 realm 资源模板
+     */
+    private String getRealmResourceTemplate() {
+        if (realmResource == null) {
+            synchronized (this) {
+                if (realmResource == null) {
+                    try {
+                        File file = ResourceUtils.getFile("classpath:realm_resource.json");
+                        realmResource = FileUtils.readFileToString(file, "utf-8");
+                    } catch (IOException e) {
+                        log.error("read realm_resource.json error", e);
+                    }
+                }
+            }
+        }
+        return realmResource;
+    }
+
+    /**
+     * 获取 client 资源模板
+     */
+    private String getClientResourceTemplate() {
+        if (clientResource == null) {
+            synchronized (this) {
+                if (clientResource == null) {
+                    try {
+                        File file = ResourceUtils.getFile("classpath:client_resource.json");
+                        clientResource = FileUtils.readFileToString(file, "utf-8");
+                    } catch (IOException e) {
+                        log.error("read client_resource.json error", e);
+                    }
+                }
+            }
+        }
+        return clientResource;
+    }
+
+    /**
+     * 判断用户是否doorkeeper的管理员 校验是否为 doorkeeper域下的域管理员
+     * @param userId 用户ID
+     * @return 是否超级管理员
+     */
+    public boolean isSuperAdmin(Long userId) {
+        Realm doorkeeperRealm = realmMapper.getDoorkeeperRealm();
+        User user = userMapper.selectById(userId);
+        Role doorkeeperAdmin = roleMapper.getByName(doorkeeperRealm.getRealmId(), DoorkeeperConstants.REALM_CLIENT_ID, DoorkeeperConstants.ADMIN);
+        PolicyRoleVO policyRoleVO = new PolicyRoleVO();
+        policyRoleVO.setRoleId(doorkeeperAdmin.getRoleId());
+        policyRoleVO.setIsEnabled(doorkeeperAdmin.getIsEnabled());
+        PolicyVO adminPolicy = new PolicyVO();
+        adminPolicy.setRealmId(doorkeeperRealm.getRealmId());
+        adminPolicy.setLogic(Logic.ALL.getValue());
+        adminPolicy.setType(PolicyType.ROLE.getValue());
+        adminPolicy.setIntention(Intention.ALLOW.getValue());
+        adminPolicy.setRoles(Collections.singletonList(policyRoleVO));
+        Intention policyCheckIntention = policyCheckerFactory.newPolicyChecker(user, adminPolicy).check(new PolicyCheckerParam());
+        return Intention.ALLOW == policyCheckIntention;
     }
 
 }

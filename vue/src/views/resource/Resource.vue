@@ -54,10 +54,10 @@
         <el-main>
             <el-table :data="resources" size="mini" height="300" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="50"></el-table-column>
-                <el-table-column prop="resourceId" label="ID"></el-table-column>
+                <el-table-column prop="resourceId" label="ID" width="150"></el-table-column>
                 <el-table-column prop="name" label="名称"></el-table-column>
                 <el-table-column prop="description" label="描述"></el-table-column>
-                <el-table-column label="是否启用">
+                <el-table-column label="是否启用" width="100">
                     <template slot-scope="scope">
                         {{ scope.row.isEnabled ? "已启用" : "未启用" }}
                     </template>

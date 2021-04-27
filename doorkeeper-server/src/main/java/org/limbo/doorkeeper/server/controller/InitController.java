@@ -16,9 +16,12 @@
 
 package org.limbo.doorkeeper.server.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.Response;
+import org.limbo.doorkeeper.api.model.param.InitParam;
 import org.limbo.doorkeeper.server.service.DoorkeeperService;
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Devil
  * @date 2021/2/1 5:04 下午
  */
+@Tag(name = "项目初始化")
 @Slf4j
 @RestController
 @RequestMapping("/api/init")
@@ -37,8 +41,8 @@ public class InitController {
     private DoorkeeperService doorkeeperService;
 
     @GetMapping
-    public Response<String> init() {
-        doorkeeperService.initDoorkeeper();
+    public Response<String> init(@ParameterObject InitParam initParam) {
+        doorkeeperService.initDoorkeeper(initParam);
         return Response.success();
     }
 

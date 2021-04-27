@@ -44,11 +44,11 @@ public class Response<T> implements Serializable {
     private T data;
 
     public Response(T data) {
-        this(ResponseCode.OK, null, data);
+        this(ResponseCode.OK, "success", data);
     }
 
     public Response(ResponseCode code, T data) {
-        this(code.code(), null, data);
+        this(code.code(), "success", data);
     }
 
     public Response(ResponseCode code, String msg) {

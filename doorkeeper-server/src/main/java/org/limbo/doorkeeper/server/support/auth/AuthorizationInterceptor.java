@@ -17,22 +17,18 @@
 package org.limbo.doorkeeper.server.support.auth;
 
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.constants.*;
+import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.api.constants.UriMethod;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.check.PolicyCheckerParam;
 import org.limbo.doorkeeper.api.model.param.check.ResourceCheckParam;
 import org.limbo.doorkeeper.api.model.vo.check.ResourceCheckResult;
-import org.limbo.doorkeeper.api.model.vo.policy.PolicyRoleVO;
-import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 import org.limbo.doorkeeper.server.dal.entity.Client;
 import org.limbo.doorkeeper.server.dal.entity.Realm;
-import org.limbo.doorkeeper.server.dal.entity.Role;
 import org.limbo.doorkeeper.server.dal.entity.User;
 import org.limbo.doorkeeper.server.dal.mapper.ClientMapper;
 import org.limbo.doorkeeper.server.dal.mapper.RealmMapper;
-import org.limbo.doorkeeper.server.dal.mapper.RoleMapper;
 import org.limbo.doorkeeper.server.dal.mapper.UserMapper;
-import org.limbo.doorkeeper.server.support.auth.policies.PolicyCheckerFactory;
+import org.limbo.doorkeeper.server.service.DoorkeeperService;
 import org.limbo.doorkeeper.server.utils.JWTUtil;
 import org.limbo.doorkeeper.server.utils.JacksonUtil;
 import org.limbo.doorkeeper.server.utils.WebUtil;
@@ -62,16 +58,13 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     private RealmMapper realmMapper;
 
     @Autowired
-    private RoleMapper roleMapper;
-
-    @Autowired
     private ClientMapper clientMapper;
 
     @Autowired
     private ResourceChecker resourceChecker;
 
     @Autowired
-    private PolicyCheckerFactory policyCheckerFactory;
+    private DoorkeeperService doorkeeperService;
 
     /**
      * 校验管理端权限 匹配 /admin/realm/**
@@ -98,7 +91,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         }
 
         // 超级管理员认证
-        if (isSuperAdmin(doorkeeperRealm.getRealmId(), user)) {
+        if (doorkeeperService.isSuperAdmin(userId)) {
             return true;
         }
 
@@ -122,27 +115,6 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
         }
 
         return true;
-    }
-
-    /**
-     * 判断用户是否doorkeeper的管理员 校验是否为 doorkeeper域下的域管理员
-     * @param realmId doorkeeper realmId
-     * @param user 用户
-     * @return 是否超级管理员
-     */
-    public boolean isSuperAdmin(Long realmId, User user) {
-        Role doorkeeperAdmin = roleMapper.getByName(realmId, DoorkeeperConstants.REALM_CLIENT_ID, DoorkeeperConstants.ADMIN);
-        PolicyRoleVO policyRoleVO = new PolicyRoleVO();
-        policyRoleVO.setRoleId(doorkeeperAdmin.getRoleId());
-        policyRoleVO.setIsEnabled(doorkeeperAdmin.getIsEnabled());
-        PolicyVO adminPolicy = new PolicyVO();
-        adminPolicy.setRealmId(realmId);
-        adminPolicy.setLogic(Logic.ALL.getValue());
-        adminPolicy.setType(PolicyType.ROLE.getValue());
-        adminPolicy.setIntention(Intention.ALLOW.getValue());
-        adminPolicy.setRoles(Collections.singletonList(policyRoleVO));
-        Intention policyCheckIntention = policyCheckerFactory.newPolicyChecker(user, adminPolicy).check(new PolicyCheckerParam());
-        return Intention.ALLOW == policyCheckIntention;
     }
 
 }

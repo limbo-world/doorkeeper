@@ -58,7 +58,7 @@ public class ClientService {
         }
 
         // 初始化client数据
-//        doorkeeperService.creatClientData(userId, realmId, client.getClientId(), client.getName());
+        doorkeeperService.createClientResource(userId, realmId, client.getClientId(), client.getName(), true);
 
         return EnhancedBeanUtils.createAndCopy(client, ClientVO.class);
     }
@@ -70,11 +70,11 @@ public class ClientService {
         // todo 目前没有做用户和client的相关权限
 //        Set<Long> clientIds = userClients.stream().map(UserClient::getClientId).collect(Collectors.toSet());
         List<Client> clients = clientMapper.selectList(Wrappers.<Client>lambdaQuery()
-                .eq(Client::getRealmId, realmId)
-                .eq(StringUtils.isNotBlank(param.getName()), Client::getName, param.getName())
-                .like(StringUtils.isNotBlank(param.getDimName()), Client::getName, param.getDimName())
+                        .eq(Client::getRealmId, realmId)
+                        .eq(StringUtils.isNotBlank(param.getName()), Client::getName, param.getName())
+                        .like(StringUtils.isNotBlank(param.getDimName()), Client::getName, param.getDimName())
 //                .in(Client::getClientId, new ArrayList<>())
-                .orderByDesc(Client::getClientId)
+                        .orderByDesc(Client::getClientId)
         );
         return EnhancedBeanUtils.createAndCopyList(clients, ClientVO.class);
     }

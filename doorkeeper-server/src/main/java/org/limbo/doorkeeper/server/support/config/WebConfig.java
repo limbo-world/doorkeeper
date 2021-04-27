@@ -94,7 +94,9 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/api/login/**");
 
         registry.addInterceptor(authenticationInterceptor())
-                .addPathPatterns("/api/admin/realm/*/**");
+                .addPathPatterns("/api/admin/realm/**")
+                .excludePathPatterns("/api/admin/realm")
+                .excludePathPatterns("/api/admin/realm/*/client"); // realm client 列表/新增接口 直接开放
     }
 
 }

@@ -20,14 +20,16 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.api.model.param.check.ResourceCheckParam;
 import org.limbo.doorkeeper.api.model.param.realm.RealmUpdateParam;
 import org.limbo.doorkeeper.api.model.param.resource.RealmAddParam;
-import org.limbo.doorkeeper.api.model.vo.GroupVO;
 import org.limbo.doorkeeper.api.model.vo.RealmVO;
-import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.api.model.vo.check.ResourceCheckResult;
 import org.limbo.doorkeeper.server.dal.entity.*;
 import org.limbo.doorkeeper.server.dal.mapper.*;
 import org.limbo.doorkeeper.server.support.ParamException;
+import org.limbo.doorkeeper.server.support.auth.ResourceChecker;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.JWTUtil;
 import org.limbo.doorkeeper.server.utils.UUIDUtils;
@@ -38,8 +40,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Devil
@@ -55,22 +57,13 @@ public class RealmService {
     private DoorkeeperService doorkeeperService;
 
     @Autowired
-    private RoleMapper roleMapper;
-
-    @Autowired
-    private UserRoleMapper userRoleMapper;
-
-    @Autowired
     private UserMapper userMapper;
 
     @Autowired
-    private GroupMapper groupMapper;
+    private ClientMapper clientMapper;
 
     @Autowired
-    private GroupService groupService;
-
-    @Autowired
-    private GroupUserMapper groupUserMapper;
+    private ResourceChecker resourceChecker;
 
     @Transactional
     public RealmVO add(Long userId, RealmAddParam param) {
@@ -85,7 +78,7 @@ public class RealmService {
         }
 
         // 初始化realm数据
-        doorkeeperService.createRealmData(userId, realm.getRealmId(), realm.getName());
+        doorkeeperService.createRealmClient(userId, realm.getRealmId(), realm.getName(), true);
 
         return EnhancedBeanUtils.createAndCopy(realm, RealmVO.class);
     }
@@ -97,55 +90,36 @@ public class RealmService {
         LambdaQueryWrapper<Realm> realmSelect = Wrappers.<Realm>lambdaQuery().select(Realm::getRealmId, Realm::getName);
 
         Realm doorkeeperRealm = realmMapper.getDoorkeeperRealm();
-
         // 判断是不是doorkeeper的REALM admin
-        Role doorkeeperAdmin = roleMapper.getByName(doorkeeperRealm.getRealmId(), DoorkeeperConstants.REALM_CLIENT_ID, DoorkeeperConstants.ADMIN);
-        if (doorkeeperAdmin != null) {
-            UserRole userRole = userRoleMapper.selectOne(Wrappers.<UserRole>lambdaQuery()
-                    .eq(UserRole::getUserId, userId)
-                    .eq(UserRole::getRoleId, doorkeeperAdmin.getRoleId())
-            );
-            if (userRole != null) {
-                List<Realm> realms = realmMapper.selectList(realmSelect);
-                return EnhancedBeanUtils.createAndCopyList(realms, RealmVO.class);
-            }
+        if (doorkeeperService.isSuperAdmin(userId)) {
+            List<Realm> realms = realmMapper.selectList(realmSelect);
+            return EnhancedBeanUtils.createAndCopyList(realms, RealmVO.class);
         }
 
-        // 用户加入哪些组了 就显示哪些realm
-        GroupVO realmGroup = groupService.getDoorkeeperRealmGroup();
-
-        List<Group> groups = groupMapper.selectList(Wrappers.<Group>lambdaQuery()
-                .eq(Group::getRealmId, doorkeeperRealm.getRealmId())
-                .eq(Group::getParentId, realmGroup.getGroupId())
+        // 普通用户，查看绑定的realm 资源
+        List<Client> clients = clientMapper.selectList(Wrappers.<Client>lambdaQuery()
+                .select(Client::getClientId, Client::getName)
+                .eq(Client::getRealmId, doorkeeperRealm.getRealmId())
         );
-
-        if (CollectionUtils.isEmpty(groups)) {
-            return new ArrayList<>();
-        }
-
-        List<GroupUser> groupUsers = groupUserMapper.selectList(Wrappers.<GroupUser>lambdaQuery()
-                .eq(GroupUser::getUserId, userId)
-                .in(GroupUser::getGroupId, groups.stream().map(Group::getGroupId).collect(Collectors.toList()))
-        );
-
-        if (CollectionUtils.isEmpty(groupUsers)) {
-            return new ArrayList<>();
-        }
-
-        // 找到组名
         List<String> realmNames = new ArrayList<>();
-        for (GroupUser groupUser : groupUsers) {
-            for (Group group : groups) {
-                if (groupUser.getGroupId().equals(group.getGroupId())) {
-                    realmNames.add(group.getName());
-                    break;
-                }
+        for (Client client : clients) {
+            ResourceCheckParam checkParam = new ResourceCheckParam();
+            checkParam.setClientId(client.getClientId());
+            checkParam.setNames(Collections.singletonList(DoorkeeperConstants.REALM));
+            ResourceCheckResult check = resourceChecker.check(userId, true, checkParam);
+            if (CollectionUtils.isNotEmpty(check.getResources())) {
+                realmNames.add(client.getName());
             }
+        }
+
+        if (CollectionUtils.isEmpty(realmNames)) {
+            return new ArrayList<>();
         }
 
         List<Realm> realms = realmMapper.selectList(realmSelect
                 .in(Realm::getName, realmNames)
         );
+
         return EnhancedBeanUtils.createAndCopyList(realms, RealmVO.class);
     }
 
@@ -160,6 +134,7 @@ public class RealmService {
                 .eq(Realm::getRealmId, realmId)
         );
     }
+
 
     public Realm getRealmByToken(String token) {
         Long userId = JWTUtil.getUserId(token);

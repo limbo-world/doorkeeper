@@ -1,0 +1,69 @@
+[
+  {
+    "name": "${clientName}-client",
+    "description": "own this to join client",
+    "isEnabled": true,
+    "uris": [
+      {
+        "uri": "/api/admin/realm/${realmId}/client/${clientId}/**",
+        "method": "GET"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "name": "${clientName}-client-all",
+    "isEnabled": true,
+    "uris": [
+      {
+        "uri": "/api/admin/realm/${realmId}/client/${clientId}/**",
+        "method": "ALL"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "name": "${clientName}-client-manager",
+    "isEnabled": true,
+    "uris": [
+      {
+        "uri": "/api/admin/realm/${realmId}/client/${clientId}",
+        "method": "ALL"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "name": "${clientName}-resource-manager",
+    "isEnabled": true,
+    "uris": [
+      {
+        "uri": "/api/admin/realm/${realmId}/client/${clientId}/resource/**",
+        "method": "ALL"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "name": "${clientName}-policy-manager",
+    "isEnabled": true,
+    "uris": [
+      {
+        "uri": "/api/admin/realm/${realmId}/client/${clientId}/policy/**",
+        "method": "ALL"
+      }
+    ],
+    "tags": []
+  },
+  {
+    "name": "${clientName}-permission-manager",
+    "isEnabled": true,
+    "uris": [
+      {
+        "uri": "/api/admin/realm/${realmId}/client/${clientId}/permission/**",
+        "method": "ALL"
+      }
+    ],
+    "tags": []
+  }
+]
