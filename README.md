@@ -10,6 +10,7 @@
     - [分配域](#%E5%88%86%E9%85%8D%E5%9F%9F)
     - [使用案例](#%E4%BD%BF%E7%94%A8%E6%A1%88%E4%BE%8B)
     - [第三方接入](#%E7%AC%AC%E4%B8%89%E6%96%B9%E6%8E%A5%E5%85%A5)
+    - [管理端权限分配](#%E7%AE%A1%E7%90%86%E7%AB%AF%E6%9D%83%E9%99%90%E5%88%86%E9%85%8D)
 - [安装教程](#%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B)
     - [后端服务](#%E5%90%8E%E7%AB%AF%E6%9C%8D%E5%8A%A1)
     - [前端服务](#%E5%89%8D%E7%AB%AF%E6%9C%8D%E5%8A%A1)
@@ -126,6 +127,15 @@ http://host:port/api-docs.html
 请求接口时，额外带上Header
 Authorization:   登录后获取到的token
 ```
+
+### 管理端权限分配
+ 
+ doorkeeper的域下，会有个名为`api`的client用于管理系统的访问。用户可以根据接口文档，自行进行权限的配置。注意注意的是 realm 和 client 的获取。
+ 目前，系统判断doorkeeper用户是否拥有某个 realm 是通过用户是否可以访问带有标签`type=realmOwn`和`realmId=xxx`的资源，所以需要有这个资源的定义和分配。
+ 其次，系统判断doorkeeper用户是否拥有某个 client 是通过资源标签`type=clientOwn`和`clientId=xxx`。最后一点是，如果绑定doorkeeper域角色admin则可以理解为超级管理员，有任何平台资源访问权限。
+
+ > 管理端处理逻辑在 DoorkeeperService 可以按照需要进行重写
+  
 
 # 安装教程
 

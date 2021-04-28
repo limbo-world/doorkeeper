@@ -16,38 +16,19 @@
 
 package org.limbo.doorkeeper.server.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.api.model.param.check.ResourceCheckParam;
 import org.limbo.doorkeeper.api.model.param.realm.RealmUpdateParam;
-import org.limbo.doorkeeper.api.model.param.resource.RealmAddParam;
 import org.limbo.doorkeeper.api.model.vo.RealmVO;
-import org.limbo.doorkeeper.api.model.vo.ResourceTagVO;
-import org.limbo.doorkeeper.api.model.vo.ResourceVO;
-import org.limbo.doorkeeper.api.model.vo.check.ResourceCheckResult;
-import org.limbo.doorkeeper.server.dal.entity.Client;
 import org.limbo.doorkeeper.server.dal.entity.Realm;
 import org.limbo.doorkeeper.server.dal.entity.User;
-import org.limbo.doorkeeper.server.dal.mapper.ClientMapper;
 import org.limbo.doorkeeper.server.dal.mapper.RealmMapper;
 import org.limbo.doorkeeper.server.dal.mapper.UserMapper;
-import org.limbo.doorkeeper.server.support.ParamException;
-import org.limbo.doorkeeper.server.support.auth.ResourceChecker;
 import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.JWTUtil;
-import org.limbo.doorkeeper.server.utils.UUIDUtils;
 import org.limbo.doorkeeper.server.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @author Devil
@@ -60,76 +41,7 @@ public class RealmService {
     private RealmMapper realmMapper;
 
     @Autowired
-    private DoorkeeperService doorkeeperService;
-
-    @Autowired
     private UserMapper userMapper;
-
-    @Autowired
-    private ClientMapper clientMapper;
-
-    @Autowired
-    private ResourceChecker resourceChecker;
-
-    @Transactional
-    public RealmVO add(Long userId, RealmAddParam param) {
-        Realm realm = EnhancedBeanUtils.createAndCopy(param, Realm.class);
-        if (StringUtils.isBlank(param.getSecret())) {
-            realm.setSecret(UUIDUtils.get());
-        }
-        try {
-            realmMapper.insert(realm);
-        } catch (DuplicateKeyException e) {
-            throw new ParamException("域已存在");
-        }
-
-        // 初始化realm数据
-        doorkeeperService.createRealmResource(userId, realm.getRealmId(), realm.getName());
-
-        return EnhancedBeanUtils.createAndCopy(realm, RealmVO.class);
-    }
-
-    /**
-     * user拥有哪些realm
-     */
-    public List<RealmVO> userRealms(Long userId) {
-        LambdaQueryWrapper<Realm> realmSelect = Wrappers.<Realm>lambdaQuery().select(Realm::getRealmId, Realm::getName);
-        // 判断是不是doorkeeper的REALM admin
-        if (doorkeeperService.isSuperAdmin(userId)) {
-            List<Realm> realms = realmMapper.selectList(realmSelect);
-            return EnhancedBeanUtils.createAndCopyList(realms, RealmVO.class);
-        }
-
-        Realm doorkeeperRealm = realmMapper.getDoorkeeperRealm();
-        Client apiClient = clientMapper.getByName(doorkeeperRealm.getRealmId(), DoorkeeperConstants.API_CLIENT);
-        // 普通用户，查看绑定的realm 资源
-        ResourceCheckParam checkParam = new ResourceCheckParam();
-        checkParam.setClientId(apiClient.getClientId());
-        checkParam.setTags(Collections.singletonList("type=realmOwn"));
-        ResourceCheckResult check = resourceChecker.check(userId, true, checkParam);
-        if (CollectionUtils.isEmpty(check.getResources())) {
-            return new ArrayList<>();
-        }
-
-        List<Long> realmIds = new ArrayList<>();
-        for (ResourceVO resource : check.getResources()) {
-            if (CollectionUtils.isEmpty(resource.getTags())) {
-                continue;
-            }
-            for (ResourceTagVO tag : resource.getTags()) {
-                if (DoorkeeperConstants.REALM_ID.equals(tag.getK())) {
-                    realmIds.add(Long.valueOf(tag.getV()));
-                    break;
-                }
-            }
-        }
-
-        List<Realm> realms = realmMapper.selectList(realmSelect
-                .in(Realm::getRealmId, realmIds)
-        );
-
-        return EnhancedBeanUtils.createAndCopyList(realms, RealmVO.class);
-    }
 
     public RealmVO get(Long realmId) {
         Realm realm = realmMapper.selectById(realmId);

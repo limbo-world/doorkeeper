@@ -20,13 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.constants.UriMethod;
 import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.check.ResourceCheckParam;
-import org.limbo.doorkeeper.api.model.vo.check.ResourceCheckResult;
-import org.limbo.doorkeeper.server.dal.entity.Client;
-import org.limbo.doorkeeper.server.dal.entity.Realm;
 import org.limbo.doorkeeper.server.dal.entity.User;
-import org.limbo.doorkeeper.server.dal.mapper.ClientMapper;
-import org.limbo.doorkeeper.server.dal.mapper.RealmMapper;
 import org.limbo.doorkeeper.server.dal.mapper.UserMapper;
 import org.limbo.doorkeeper.server.service.DoorkeeperService;
 import org.limbo.doorkeeper.server.utils.JWTUtil;
@@ -37,7 +31,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Collections;
 
 /**
  * @author Devil
@@ -48,15 +41,6 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
     @Autowired
     private UserMapper userMapper;
-
-    @Autowired
-    private RealmMapper realmMapper;
-
-    @Autowired
-    private ClientMapper clientMapper;
-
-    @Autowired
-    private ResourceChecker resourceChecker;
 
     @Autowired
     private DoorkeeperService doorkeeperService;
@@ -77,27 +61,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        Realm doorkeeperRealm = realmMapper.getDoorkeeperRealm();
-
-        // 判断用户是否属于doorkeeper域或公有域
-        if (!doorkeeperRealm.getRealmId().equals(user.getRealmId())) {
-            WebUtil.writeToResponse(response, JacksonUtil.toJSONString(Response.unauthorized(AuthorizationException.msg)));
-            return false;
-        }
-
-        // 超级管理员认证
-        if (doorkeeperService.isSuperAdmin(userId)) {
-            return true;
-        }
-
-        // 判断uri权限
-        Client apiClient = clientMapper.getByName(doorkeeperRealm.getRealmId(), DoorkeeperConstants.API_CLIENT);
-        ResourceCheckParam checkParam = new ResourceCheckParam()
-                .setClientId(apiClient.getClientId())
-                .setUris(Collections.singletonList(UriMethod.parse(request.getMethod()) + DoorkeeperConstants.KV_DELIMITER + request.getRequestURI()));
-        ResourceCheckResult checkResult = resourceChecker.check(userId, true, checkParam);
-
-        if (checkResult.getResources().size() <= 0) {
+        if (!doorkeeperService.hasUriPermission(user, request.getRequestURI(), UriMethod.parse(request.getMethod()))) {
             WebUtil.writeToResponse(response, JacksonUtil.toJSONString(Response.unauthorized(AuthorizationException.msg)));
             return false;
         }

@@ -27,6 +27,7 @@ import org.limbo.doorkeeper.api.model.vo.ClientVO;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.server.controller.BaseController;
 import org.limbo.doorkeeper.server.service.ClientService;
+import org.limbo.doorkeeper.server.service.DoorkeeperService;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -48,16 +49,19 @@ public class AdminClientController extends BaseController {
     @Autowired
     private ClientService clientService;
 
+    @Autowired
+    private DoorkeeperService doorkeeperService;
+
     @Operation(summary = "新建委托方")
     @PostMapping
     public Response<ClientVO> add(@RequestBody @Validated ClientAddParam param) {
-        return Response.success(clientService.add(getRealmId(), getUser().getUserId(), param));
+        return Response.success(doorkeeperService.addClient(getRealmId(), getUser().getUserId(), param));
     }
 
     @Operation(summary = "查询账户拥有的委托方")
     @GetMapping
     public Response<List<ClientVO>> userClients(@ParameterObject ClientQueryParam param) {
-        return Response.success(clientService.userClients(getRealmId(), getUser().getUserId(), param));
+        return Response.success(doorkeeperService.userClients(getRealmId(), getUser().getUserId(), param));
     }
 
     @Operation(summary = "查询委托方")

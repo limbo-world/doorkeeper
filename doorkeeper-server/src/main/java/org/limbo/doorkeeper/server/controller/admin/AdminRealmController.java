@@ -25,6 +25,7 @@ import org.limbo.doorkeeper.api.model.param.resource.RealmAddParam;
 import org.limbo.doorkeeper.api.model.vo.RealmVO;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.server.controller.BaseController;
+import org.limbo.doorkeeper.server.service.DoorkeeperService;
 import org.limbo.doorkeeper.server.service.RealmService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -46,16 +47,19 @@ public class AdminRealmController extends BaseController {
     @Autowired
     private RealmService realmService;
 
+    @Autowired
+    private DoorkeeperService doorkeeperService;
+
     @Operation(summary = "新建域")
     @PostMapping
     public Response<RealmVO> add(@RequestBody @Validated RealmAddParam param) {
-        return Response.success(realmService.add(getUser().getUserId(), param));
+        return Response.success(doorkeeperService.addRealm(getUser().getUserId(), param));
     }
 
     @Operation(summary = "查询账户拥有的域")
     @GetMapping
     public Response<List<RealmVO>> userRealms() {
-        return Response.success(realmService.userRealms(getUser().getUserId()));
+        return Response.success(doorkeeperService.userRealms(getUser().getUserId()));
     }
 
     @Operation(summary = "域详情")

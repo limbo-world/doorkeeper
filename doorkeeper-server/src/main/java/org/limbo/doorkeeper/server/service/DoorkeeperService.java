@@ -17,6 +17,7 @@
 package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
@@ -26,26 +27,36 @@ import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.*;
 import org.limbo.doorkeeper.api.model.param.InitParam;
 import org.limbo.doorkeeper.api.model.param.check.PolicyCheckerParam;
+import org.limbo.doorkeeper.api.model.param.check.ResourceCheckParam;
+import org.limbo.doorkeeper.api.model.param.client.ClientAddParam;
+import org.limbo.doorkeeper.api.model.param.client.ClientQueryParam;
 import org.limbo.doorkeeper.api.model.param.permission.PermissionAddParam;
 import org.limbo.doorkeeper.api.model.param.permission.PermissionQueryParam;
 import org.limbo.doorkeeper.api.model.param.permission.PermissionUpdateParam;
 import org.limbo.doorkeeper.api.model.param.policy.PolicyAddParam;
 import org.limbo.doorkeeper.api.model.param.policy.PolicyRoleAddParam;
 import org.limbo.doorkeeper.api.model.param.policy.PolicyUserAddParam;
+import org.limbo.doorkeeper.api.model.param.resource.RealmAddParam;
 import org.limbo.doorkeeper.api.model.param.resource.ResourceAddParam;
 import org.limbo.doorkeeper.api.model.param.resource.ResourceQueryParam;
 import org.limbo.doorkeeper.api.model.param.role.RoleAddParam;
 import org.limbo.doorkeeper.api.model.param.user.UserRoleBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.*;
+import org.limbo.doorkeeper.api.model.vo.check.ResourceCheckResult;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyRoleVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
-import org.limbo.doorkeeper.server.dal.entity.*;
+import org.limbo.doorkeeper.server.dal.entity.Client;
+import org.limbo.doorkeeper.server.dal.entity.Realm;
+import org.limbo.doorkeeper.server.dal.entity.Role;
+import org.limbo.doorkeeper.server.dal.entity.User;
 import org.limbo.doorkeeper.server.dal.entity.policy.Policy;
 import org.limbo.doorkeeper.server.dal.mapper.*;
 import org.limbo.doorkeeper.server.dal.mapper.policy.PolicyMapper;
 import org.limbo.doorkeeper.server.service.policy.PolicyService;
 import org.limbo.doorkeeper.server.support.ParamException;
+import org.limbo.doorkeeper.server.support.auth.ResourceChecker;
 import org.limbo.doorkeeper.server.support.auth.policies.PolicyCheckerFactory;
+import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.utils.JacksonUtil;
 import org.limbo.doorkeeper.server.utils.MD5Utils;
 import org.limbo.doorkeeper.server.utils.UUIDUtils;
@@ -109,12 +120,18 @@ public class DoorkeeperService {
     private RoleMapper roleMapper;
 
     @Autowired
+    private ResourceChecker resourceChecker;
+
+    @Autowired
     private PolicyCheckerFactory policyCheckerFactory;
 
     private String realmResource;
 
     private String clientResource;
 
+    /**
+     * 系统数据初始化
+     */
     @Transactional
     public void initDoorkeeper(InitParam param) {
         Realm realm = new Realm();
@@ -152,6 +169,126 @@ public class DoorkeeperService {
         // 资源数据
         createRealmResource(admin.getUserId(), realm.getRealmId(), realm.getName());
         createClientResource(admin.getUserId(), realm.getRealmId(), apiClient.getClientId(), apiClient.getName());
+    }
+
+    @Transactional
+    public RealmVO addRealm(Long userId, RealmAddParam param) {
+        Realm realm = EnhancedBeanUtils.createAndCopy(param, Realm.class);
+        if (StringUtils.isBlank(param.getSecret())) {
+            realm.setSecret(UUIDUtils.get());
+        }
+        try {
+            realmMapper.insert(realm);
+        } catch (DuplicateKeyException e) {
+            throw new ParamException("域已存在");
+        }
+
+        // 初始化realm数据
+        createRealmResource(userId, realm.getRealmId(), realm.getName());
+
+        return EnhancedBeanUtils.createAndCopy(realm, RealmVO.class);
+    }
+
+    /**
+     * user拥有哪些realm
+     */
+    public List<RealmVO> userRealms(Long userId) {
+        LambdaQueryWrapper<Realm> realmSelect = Wrappers.<Realm>lambdaQuery().select(Realm::getRealmId, Realm::getName);
+        // 判断是不是doorkeeper的REALM admin
+        if (isSuperAdmin(userId)) {
+            List<Realm> realms = realmMapper.selectList(realmSelect);
+            return EnhancedBeanUtils.createAndCopyList(realms, RealmVO.class);
+        }
+
+        Realm doorkeeperRealm = realmMapper.getDoorkeeperRealm();
+        Client apiClient = clientMapper.getByName(doorkeeperRealm.getRealmId(), DoorkeeperConstants.API_CLIENT);
+        // 普通用户，查看绑定的realm 资源
+        ResourceCheckParam checkParam = new ResourceCheckParam();
+        checkParam.setClientId(apiClient.getClientId());
+        checkParam.setTags(Collections.singletonList("type=realmOwn"));
+        ResourceCheckResult check = resourceChecker.check(userId, true, checkParam);
+        if (CollectionUtils.isEmpty(check.getResources())) {
+            return new ArrayList<>();
+        }
+
+        List<Long> realmIds = new ArrayList<>();
+        for (ResourceVO resource : check.getResources()) {
+            if (CollectionUtils.isEmpty(resource.getTags())) {
+                continue;
+            }
+            for (ResourceTagVO tag : resource.getTags()) {
+                if (DoorkeeperConstants.REALM_ID.equals(tag.getK())) {
+                    realmIds.add(Long.valueOf(tag.getV()));
+                    break;
+                }
+            }
+        }
+
+        List<Realm> realms = realmMapper.selectList(realmSelect
+                .in(Realm::getRealmId, realmIds)
+        );
+
+        return EnhancedBeanUtils.createAndCopyList(realms, RealmVO.class);
+    }
+
+    @Transactional
+    public ClientVO addClient(Long realmId, Long userId, ClientAddParam param) {
+        Client client = EnhancedBeanUtils.createAndCopy(param, Client.class);
+        client.setRealmId(realmId);
+        try {
+            clientMapper.insert(client);
+        } catch (DuplicateKeyException e) {
+            throw new ParamException("委托方已存在");
+        }
+
+        // 初始化client数据
+        createClientResource(userId, realmId, client.getClientId(), client.getName());
+
+        return EnhancedBeanUtils.createAndCopy(client, ClientVO.class);
+    }
+
+    /**
+     * user拥有哪些client
+     */
+    public List<ClientVO> userClients(Long realmId, Long userId, ClientQueryParam param) {
+        List<Long> clientIds = null;
+        // 判断是不是doorkeeper的REALM admin
+        if (!isSuperAdmin(userId)) {
+            clientIds = new ArrayList<>();
+
+            Realm doorkeeperRealm = realmMapper.getDoorkeeperRealm();
+            // 获取realm在doorkeeper下对应的client
+            Client apiClient = clientMapper.getByName(doorkeeperRealm.getRealmId(), DoorkeeperConstants.API_CLIENT);
+
+            ResourceCheckParam checkParam = new ResourceCheckParam();
+            checkParam.setClientId(apiClient.getClientId());
+            checkParam.setTags(Collections.singletonList("type=clientOwn"));
+            ResourceCheckResult check = resourceChecker.check(userId, true, checkParam);
+            if (CollectionUtils.isEmpty(check.getResources())) {
+                return new ArrayList<>();
+            }
+
+            for (ResourceVO resource : check.getResources()) {
+                if (CollectionUtils.isEmpty(resource.getTags())) {
+                    continue;
+                }
+                for (ResourceTagVO tag : resource.getTags()) {
+                    if (DoorkeeperConstants.CLIENT_ID.equals(tag.getK())) {
+                        clientIds.add(Long.valueOf(tag.getV()));
+                        break;
+                    }
+                }
+            }
+        }
+
+        List<Client> clients = clientMapper.selectList(Wrappers.<Client>lambdaQuery()
+                .eq(Client::getRealmId, realmId)
+                .eq(StringUtils.isNotBlank(param.getName()), Client::getName, param.getName())
+                .like(StringUtils.isNotBlank(param.getDimName()), Client::getName, param.getDimName())
+                .in(clientIds != null, Client::getClientId, clientIds)
+                .orderByDesc(Client::getClientId)
+        );
+        return EnhancedBeanUtils.createAndCopyList(clients, ClientVO.class);
     }
 
     /**
@@ -385,6 +522,35 @@ public class DoorkeeperService {
         adminPolicy.setRoles(Collections.singletonList(policyRoleVO));
         Intention policyCheckIntention = policyCheckerFactory.newPolicyChecker(user, adminPolicy).check(new PolicyCheckerParam());
         return Intention.ALLOW == policyCheckIntention;
+    }
+
+    /**
+     * 是否有路径访问权限
+     */
+    public boolean hasUriPermission(User user, String path, UriMethod method) {
+        Realm doorkeeperRealm = realmMapper.getDoorkeeperRealm();
+
+        // 判断用户是否属于doorkeeper域或公有域
+        if (!doorkeeperRealm.getRealmId().equals(user.getRealmId())) {
+            return false;
+        }
+
+        // 超级管理员认证
+        if (isSuperAdmin(user.getUserId())) {
+            return true;
+        }
+
+        // 判断uri权限
+        Client apiClient = clientMapper.getByName(doorkeeperRealm.getRealmId(), DoorkeeperConstants.API_CLIENT);
+        ResourceCheckParam checkParam = new ResourceCheckParam()
+                .setClientId(apiClient.getClientId())
+                .setUris(Collections.singletonList(method + DoorkeeperConstants.KV_DELIMITER + path));
+        ResourceCheckResult checkResult = resourceChecker.check(user.getUserId(), true, checkParam);
+
+        if (checkResult.getResources().size() <= 0) {
+            return false;
+        }
+        return true;
     }
 
 }
