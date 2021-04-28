@@ -111,21 +111,21 @@ public class RealmService {
             return new ArrayList<>();
         }
 
-        List<String> realmNames = new ArrayList<>();
+        List<Long> realmIds = new ArrayList<>();
         for (ResourceVO resource : check.getResources()) {
             if (CollectionUtils.isEmpty(resource.getTags())) {
                 continue;
             }
             for (ResourceTagVO tag : resource.getTags()) {
                 if (DoorkeeperConstants.REALM_ID.equals(tag.getK())) {
-                    realmNames.add(tag.getV());
+                    realmIds.add(Long.valueOf(tag.getV()));
                     break;
                 }
             }
         }
 
         List<Realm> realms = realmMapper.selectList(realmSelect
-                .in(Realm::getName, realmNames)
+                .in(Realm::getRealmId, realmIds)
         );
 
         return EnhancedBeanUtils.createAndCopyList(realms, RealmVO.class);
