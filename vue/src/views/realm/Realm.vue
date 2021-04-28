@@ -4,7 +4,6 @@
             <el-form :model="realm" label-width="120px" size="mini" class="edit-form" ref="editForm">
                 <el-form-item label="ID" required>
                     <span>{{realm.realmId}}</span>
-                    <el-input v-model="realm.name"></el-input>
                 </el-form-item>
                 <el-form-item label="名称" required>
                     <el-input v-model="realm.name"></el-input>
