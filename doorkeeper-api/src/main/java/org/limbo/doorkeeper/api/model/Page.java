@@ -16,6 +16,7 @@
 
 package org.limbo.doorkeeper.api.model;
 
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -55,16 +56,10 @@ public class Page<T> {
     public static final int MAX_SIZE = 1000;
 
     /**
-     * 排序字段
+     * 排序
      */
-    @Parameter(description = "排序字段")
-    private List<String> orderBy;
-
-    /**
-     * 排序字段的排序方式
-     */
-    @Parameter(description = "排序字段的排序方式")
-    private List<String> sort;
+    @Parameter(description = "排序")
+    protected List<OrderItem> orders = new ArrayList<>();
 
     /**
      * 总条数，总条数若为非负数，则不进行总数查询
