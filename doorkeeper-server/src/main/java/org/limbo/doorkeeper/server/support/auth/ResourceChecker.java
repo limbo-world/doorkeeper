@@ -228,8 +228,9 @@ public class ResourceChecker {
         param.setKvs(checkParam.getTags());
         param.setIsEnabled(true);
         param.setNeedAll(true);
-        param.setNeedTag(true);
-        param.setNeedUri(true);
+        param.setNeedTag(checkParam.getNeedTag());
+        param.setNeedUri(checkParam.getNeedUri());
+        param.setNeedParentId(checkParam.getNeedParentId());
         return resourceMapper.getVOS(param);
     }
 

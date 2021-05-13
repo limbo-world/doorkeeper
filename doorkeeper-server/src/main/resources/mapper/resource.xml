@@ -32,6 +32,9 @@
     <resultMap id="ResourceVO" type="org.limbo.doorkeeper.api.model.vo.ResourceVO" extends="BaseResult">
         <collection property="tags" columnPrefix="tag_" resultMap="ResourceTagVO" />
         <collection property="uris" columnPrefix="uri_" resultMap="ResourceUriVO" />
+        <collection property="parentIds" columnPrefix="association_" ofType="java.lang.Long">
+            <id column="parent_id" />
+        </collection>
     </resultMap>
 
     <resultMap id="ResourceTagVO" type="org.limbo.doorkeeper.api.model.vo.ResourceTagVO">
@@ -128,7 +131,7 @@
         select count(*)
         from resource r
         <where>
-            <include refid="queryCondition"></include>
+            <include refid="queryCondition" />
         </where>
     </select>
     <select id="getVOS" resultMap="ResourceVO">
@@ -139,16 +142,26 @@
         <if test="needUri == true">
             ,ru.resource_uri_id as uri_resource_uri_id, ru.resource_id as uri_resource_id, u.uri as uri_uri, u.method as uri_method
         </if>
+        <if test="needParentId == true">
+            ,ra.parent_id as association_parent_id
+        </if>
         from resource r
-        left join resource_tag rt on rt.resource_id = r.resource_id
-        left join resource_uri ru on ru.resource_id = r.resource_id
-        left join tag t on t.tag_id = rt.tag_id
-        left join uri u on u.uri_id = ru.uri_id
+        <if test="needTag == true">
+            left join resource_tag rt on rt.resource_id = r.resource_id
+            left join tag t on t.tag_id = rt.tag_id
+        </if>
+        <if test="needUri == true">
+            left join resource_uri ru on ru.resource_id = r.resource_id
+            left join uri u on u.uri_id = ru.uri_id
+        </if>
+        <if test="needParentId == true">
+            left join resource_association ra on ra.resource_id = r.resource_id
+        </if>
         where r.resource_id in (
             select * from (
                 select r.resource_id from resource r
                 <where>
-                    <include refid="queryCondition"></include>
+                    <include refid="queryCondition" />
                 </where>
                 <if test="needAll != true">
                     order by r.resource_id desc

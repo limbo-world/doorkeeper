@@ -266,6 +266,20 @@ CREATE TABLE `resource` (
 
 
 
+# Dump of table resource_association
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `resource_association`;
+
+CREATE TABLE `resource_association` (
+  `resource_association_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `resource_id` bigint(20) NOT NULL,
+  `parent_id` bigint(20) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`resource_association_id`),
+  UNIQUE KEY `uq_resource` (`resource_id`,`parent_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10000 DEFAULT CHARSET=utf8mb4;
+
+
 # Dump of table resource_tag
 # ------------------------------------------------------------
 

@@ -14,36 +14,26 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param.resource;
+package org.limbo.doorkeeper.server.dal.entity;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
-import java.util.List;
-
 /**
+ * 资源关联关系
+ *
  * @author Devil
- * @date 2021/1/5 4:48 下午
+ * @date 2021/5/13 4:44 下午
  */
 @Data
-public class ResourceUpdateParam {
+public class ResourceAssociation {
 
-    @Schema(description ="名称")
-    private String name;
+    @TableId(type = IdType.AUTO)
+    private Long resourceAssociationId;
 
-    @Schema(description ="描述")
-    private String description;
+    private Long resourceId;
 
-    @Schema(description ="是否启用")
-    private Boolean isEnabled;
-
-    @Schema(description ="资源uri")
-    private List<ResourceUriAddParam> uris;
-
-    @Schema(description ="资源标签")
-    private List<ResourceTagAddParam> tags;
-
-    @Schema(description ="父资源")
-    private List<Long> parentIds;
+    private Long parentId;
 
 }

@@ -70,6 +70,9 @@ public class ResourceService {
     @Autowired
     private UriMapper uriMapper;
 
+    @Autowired
+    private ResourceAssociationMapper resourceAssociationMapper;
+
     @Transactional
     public ResourceVO add(Long realmId, Long clientId, ResourceAddParam param) {
         Client client = clientMapper.getById(realmId, clientId);
@@ -88,16 +91,11 @@ public class ResourceService {
         batchSaveUri(resource.getResourceId(), resource.getRealmId(), resource.getClientId(), param.getUris());
         // 资源标签
         batchSaveTag(resource.getResourceId(), resource.getRealmId(), resource.getClientId(), param.getTags());
-        if (CollectionUtils.isNotEmpty(param.getPermissionIds())) {
-            List<PermissionResource> params = new ArrayList<>();
-            for (Long permissionId : param.getPermissionIds()) {
-                PermissionResource addParam = new PermissionResource();
-                addParam.setPermissionId(permissionId);
-                addParam.setResourceId(resource.getResourceId());
-                params.add(addParam);
-            }
-            permissionResourceService.batchSave(params);
-        }
+        // 绑定资源到权限上
+        bindPermissions(resource.getResourceId(), param.getPermissionIds());
+        // 绑定资源关系
+        bindResourceAssociation(resource.getResourceId(), param.getParentIds());
+
         return EnhancedBeanUtils.createAndCopy(resource, ResourceVO.class);
     }
 
@@ -125,12 +123,20 @@ public class ResourceService {
         );
         // 新增uri
         batchSaveUri(resource.getResourceId(), resource.getRealmId(), resource.getClientId(), param.getUris());
+
         // 删除tag
         resourceTagMapper.delete(Wrappers.<ResourceTag>lambdaQuery()
                 .eq(ResourceTag::getResourceId, resourceId)
         );
         // 新增tag
         batchSaveTag(resource.getResourceId(), resource.getRealmId(), resource.getClientId(), param.getTags());
+
+        // 删除资源关系
+        resourceAssociationMapper.delete(Wrappers.<ResourceAssociation>lambdaQuery()
+                .eq(ResourceAssociation::getResourceId, resourceId)
+        );
+        // 新增资源关系
+        bindResourceAssociation(resource.getResourceId(), param.getParentIds());
     }
 
     @Transactional
@@ -193,90 +199,127 @@ public class ResourceService {
     }
 
     private void batchSaveUri(Long resourceId, Long realmId, Long clientId, List<ResourceUriAddParam> params) {
-        if (CollectionUtils.isNotEmpty(params)) {
+        if (CollectionUtils.isEmpty(params)) {
+            return;
+        }
 
-            // 新增并获取uri
-            List<Uri> uris = new ArrayList<>();
-            HashSet<String> uriP = new HashSet<>();
-            for (ResourceUriAddParam uriParam : params) {
-                Uri uri = new Uri();
-                uri.setRealmId(realmId);
-                uri.setClientId(clientId);
-                uri.setMethod(uriParam.getMethod());
-                uri.setUri(uriParam.getUri().trim());
+        // 新增并获取uri
+        List<Uri> uris = new ArrayList<>();
+        HashSet<String> uriP = new HashSet<>();
+        for (ResourceUriAddParam uriParam : params) {
+            Uri uri = new Uri();
+            uri.setRealmId(realmId);
+            uri.setClientId(clientId);
+            uri.setMethod(uriParam.getMethod());
+            uri.setUri(uriParam.getUri().trim());
 
-                uris.add(uri);
-                uriP.add(uriParam.getUri().trim());
-            }
-            uriMapper.batchInsertIgnore(uris);
+            uris.add(uri);
+            uriP.add(uriParam.getUri().trim());
+        }
+        uriMapper.batchInsertIgnore(uris);
 
-            uris = uriMapper.selectList(Wrappers.<Uri>lambdaQuery()
-                    .eq(Uri::getRealmId, realmId)
-                    .eq(Uri::getClientId, clientId)
-                    .in(Uri::getUri, uriP)
-            );
+        uris = uriMapper.selectList(Wrappers.<Uri>lambdaQuery()
+                .eq(Uri::getRealmId, realmId)
+                .eq(Uri::getClientId, clientId)
+                .in(Uri::getUri, uriP)
+        );
 
-            List<ResourceUri> resourceUris = new ArrayList<>();
-            for (ResourceUriAddParam uriParam : params) {
-                for (Uri uri : uris) {
-                    if (uri.getUri().trim().equals(uriParam.getUri().trim()) && uri.getMethod() == uriParam.getMethod()) {
-                        ResourceUri resourceUri = new ResourceUri();
-                        resourceUri.setResourceId(resourceId);
-                        resourceUri.setUriId(uri.getUriId());
-                        resourceUris.add(resourceUri);
-                        break;
-                    }
+        List<ResourceUri> resourceUris = new ArrayList<>();
+        for (ResourceUriAddParam uriParam : params) {
+            for (Uri uri : uris) {
+                if (uri.getUri().trim().equals(uriParam.getUri().trim()) && uri.getMethod() == uriParam.getMethod()) {
+                    ResourceUri resourceUri = new ResourceUri();
+                    resourceUri.setResourceId(resourceId);
+                    resourceUri.setUriId(uri.getUriId());
+                    resourceUris.add(resourceUri);
+                    break;
                 }
             }
-
-            MyBatisPlusUtils.batchSave(resourceUris, ResourceUri.class);
-
         }
+
+        MyBatisPlusUtils.batchSave(resourceUris, ResourceUri.class);
     }
 
     private void batchSaveTag(Long resourceId, Long realmId, Long clientId, List<ResourceTagAddParam> params) {
-        if (CollectionUtils.isNotEmpty(params)) {
+        if (CollectionUtils.isEmpty(params)) {
+            return;
+        }
 
-            // 新增并获取标签
-            List<Tag> tags = new ArrayList<>();
-            HashSet<String> kvs = new HashSet<>();
-            for (ResourceTagAddParam tagParam : params) {
-                Tag tag = new Tag();
-                tag.setRealmId(realmId);
-                tag.setClientId(clientId);
-                tag.setK(tagParam.getK().trim());
-                tag.setV(tagParam.getV().trim());
-                String kv = tag.getK() + DoorkeeperConstants.KV_DELIMITER + tag.getV();
-                tag.setKv(kv);
+        // 新增并获取标签
+        List<Tag> tags = new ArrayList<>();
+        HashSet<String> kvs = new HashSet<>();
+        for (ResourceTagAddParam tagParam : params) {
+            Tag tag = new Tag();
+            tag.setRealmId(realmId);
+            tag.setClientId(clientId);
+            tag.setK(tagParam.getK().trim());
+            tag.setV(tagParam.getV().trim());
+            String kv = tag.getK() + DoorkeeperConstants.KV_DELIMITER + tag.getV();
+            tag.setKv(kv);
 
-                tags.add(tag);
-                kvs.add(kv);
-            }
-            tagMapper.batchInsertIgnore(tags);
+            tags.add(tag);
+            kvs.add(kv);
+        }
+        tagMapper.batchInsertIgnore(tags);
 
-            tags = tagMapper.selectList(Wrappers.<Tag>lambdaQuery()
-                    .eq(Tag::getRealmId, realmId)
-                    .eq(Tag::getClientId, clientId)
-                    .in(Tag::getKv, kvs)
-            );
+        tags = tagMapper.selectList(Wrappers.<Tag>lambdaQuery()
+                .eq(Tag::getRealmId, realmId)
+                .eq(Tag::getClientId, clientId)
+                .in(Tag::getKv, kvs)
+        );
 
-            List<ResourceTag> resourceTags = new ArrayList<>();
-            for (ResourceTagAddParam tagParam : params) {
-                for (Tag tag : tags) {
-                    if (tag.getK().trim().equals(tagParam.getK().trim()) && tag.getV().trim().equals(tagParam.getV().trim())) {
-                        ResourceTag resourceTag = new ResourceTag();
-                        resourceTag.setResourceId(resourceId);
-                        resourceTag.setTagId(tag.getTagId());
+        List<ResourceTag> resourceTags = new ArrayList<>();
+        for (ResourceTagAddParam tagParam : params) {
+            for (Tag tag : tags) {
+                if (tag.getK().trim().equals(tagParam.getK().trim()) && tag.getV().trim().equals(tagParam.getV().trim())) {
+                    ResourceTag resourceTag = new ResourceTag();
+                    resourceTag.setResourceId(resourceId);
+                    resourceTag.setTagId(tag.getTagId());
 
-                        resourceTags.add(resourceTag);
-                        break;
-                    }
+                    resourceTags.add(resourceTag);
+                    break;
                 }
             }
-
-            MyBatisPlusUtils.batchSave(resourceTags, ResourceTag.class);
         }
+
+        MyBatisPlusUtils.batchSave(resourceTags, ResourceTag.class);
     }
 
+
+    private void bindPermissions(Long resourceId, List<Long> permissionIds) {
+        if (CollectionUtils.isEmpty(permissionIds)) {
+            return;
+        }
+        List<PermissionResource> params = new ArrayList<>();
+        for (Long permissionId : permissionIds) {
+            PermissionResource addParam = new PermissionResource();
+            addParam.setPermissionId(permissionId);
+            addParam.setResourceId(resourceId);
+            params.add(addParam);
+        }
+        permissionResourceService.batchSave(params);
+    }
+
+    private void bindResourceAssociation(Long resourceId, List<Long> parentIds) {
+        if (CollectionUtils.isEmpty(parentIds)) {
+            return;
+        }
+        List<ResourceAssociation> params = new ArrayList<>();
+        for (Long parentId : parentIds) {
+            if (resourceId.equals(parentId)) {
+                // 防止出现自环
+                continue;
+            }
+            ResourceAssociation model = new ResourceAssociation();
+            model.setParentId(parentId);
+            model.setResourceId(resourceId);
+            params.add(model);
+        }
+        if (CollectionUtils.isEmpty(params)) {
+            return;
+        }
+        resourceAssociationMapper.batchInsertIgnore(params);
+
+    }
 
 }

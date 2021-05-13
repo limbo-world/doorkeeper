@@ -56,4 +56,7 @@ public class ResourceVO {
 
     @Schema(description ="资源标签")
     private List<ResourceTagVO> tags;
+
+    @Schema(description ="父资源")
+    private List<Long> parentIds;
 }

@@ -105,6 +105,7 @@ export default {
                 current: 1,
                 size: 10,
                 total: -1,
+                needParentId: true
             },
             resources: [],
             selectResources: [],

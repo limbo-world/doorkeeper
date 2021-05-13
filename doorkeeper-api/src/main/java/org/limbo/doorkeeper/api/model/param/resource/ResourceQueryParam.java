@@ -75,4 +75,7 @@ public class ResourceQueryParam extends Page<ResourceVO> {
     @Parameter(description = "是否返回uri")
     private Boolean needUri;
 
+    @Parameter(description = "是否返回父资源ID")
+    private Boolean needParentId;
+
 }

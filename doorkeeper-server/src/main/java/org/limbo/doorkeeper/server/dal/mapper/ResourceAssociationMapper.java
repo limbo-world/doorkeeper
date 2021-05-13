@@ -14,36 +14,20 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.api.model.param.resource;
+package org.limbo.doorkeeper.server.dal.mapper;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+import org.limbo.doorkeeper.server.dal.entity.ResourceAssociation;
 
 import java.util.List;
 
 /**
  * @author Devil
- * @date 2021/1/5 4:48 下午
+ * @date 2021/1/3 6:08 下午
  */
-@Data
-public class ResourceUpdateParam {
+public interface ResourceAssociationMapper extends BaseMapper<ResourceAssociation> {
 
-    @Schema(description ="名称")
-    private String name;
-
-    @Schema(description ="描述")
-    private String description;
-
-    @Schema(description ="是否启用")
-    private Boolean isEnabled;
-
-    @Schema(description ="资源uri")
-    private List<ResourceUriAddParam> uris;
-
-    @Schema(description ="资源标签")
-    private List<ResourceTagAddParam> tags;
-
-    @Schema(description ="父资源")
-    private List<Long> parentIds;
+    void batchInsertIgnore(@Param("resourceAssociations") List<ResourceAssociation> resourceAssociations);
 
 }

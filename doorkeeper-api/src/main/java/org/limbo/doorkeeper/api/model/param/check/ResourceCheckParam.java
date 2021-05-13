@@ -49,4 +49,13 @@ public class ResourceCheckParam {
     @Parameter(description = "进行权限校验时附带的参数 k=v")
     private List<String> params;
 
+    @Parameter(description = "是否返回标签")
+    private Boolean needTag;
+
+    @Parameter(description = "是否返回uri")
+    private Boolean needUri;
+
+    @Parameter(description = "是否返回父资源ID")
+    private Boolean needParentId;
+
 }
