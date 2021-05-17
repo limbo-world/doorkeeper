@@ -59,4 +59,7 @@ public class ResourceVO {
 
     @Schema(description ="父资源")
     private List<Long> parentIds;
+
+    @Schema(description ="子资源")
+    private List<Long> childIds;
 }

@@ -231,6 +231,7 @@ public class ResourceChecker {
         param.setNeedTag(checkParam.getNeedTag());
         param.setNeedUri(checkParam.getNeedUri());
         param.setNeedParentId(checkParam.getNeedParentId());
+        param.setNeedChildrenId(checkParam.getNeedChildrenId());
         return resourceMapper.getVOS(param);
     }
 

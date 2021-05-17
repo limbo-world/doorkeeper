@@ -177,6 +177,12 @@ public class ResourceService {
                 resourceUriMapper.delete(Wrappers.<ResourceUri>lambdaQuery()
                         .in(ResourceUri::getResourceId, resourceIds)
                 );
+                resourceAssociationMapper.delete(Wrappers.<ResourceAssociation>lambdaQuery()
+                        .in(ResourceAssociation::getResourceId, resourceIds)
+                );
+                resourceAssociationMapper.delete(Wrappers.<ResourceAssociation>lambdaQuery()
+                        .in(ResourceAssociation::getParentId, resourceIds)
+                );
                 break;
             default:
                 break;

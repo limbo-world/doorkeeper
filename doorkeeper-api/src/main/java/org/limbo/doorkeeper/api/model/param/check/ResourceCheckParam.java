@@ -58,4 +58,7 @@ public class ResourceCheckParam {
     @Parameter(description = "是否返回父资源ID")
     private Boolean needParentId;
 
+    @Parameter(description = "是否返回子资源ID")
+    private Boolean needChildrenId;
+
 }

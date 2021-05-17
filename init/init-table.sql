@@ -276,7 +276,8 @@ CREATE TABLE `resource_association` (
   `resource_id` bigint(20) NOT NULL,
   `parent_id` bigint(20) NOT NULL DEFAULT '0',
   PRIMARY KEY (`resource_association_id`),
-  UNIQUE KEY `uq_resource` (`resource_id`,`parent_id`)
+  UNIQUE KEY `uq_resource` (`resource_id`,`parent_id`),
+  KEY `idx_parent` (`parent_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10000 DEFAULT CHARSET=utf8mb4;
 
 
