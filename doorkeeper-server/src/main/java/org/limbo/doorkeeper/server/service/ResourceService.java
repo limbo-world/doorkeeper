@@ -94,7 +94,7 @@ public class ResourceService {
         // 绑定资源到权限上
         bindPermissions(resource.getResourceId(), param.getPermissionIds());
         // 绑定资源关系
-        bindResourceAssociation(resource.getResourceId(), param.getParentIds());
+        bindResourceAssociation(resource.getResourceId(), param.getParentIds(), param.getParentNames());
 
         return EnhancedBeanUtils.createAndCopy(resource, ResourceVO.class);
     }
@@ -136,7 +136,7 @@ public class ResourceService {
                 .eq(ResourceAssociation::getResourceId, resourceId)
         );
         // 新增资源关系
-        bindResourceAssociation(resource.getResourceId(), param.getParentIds());
+        bindResourceAssociation(resource.getResourceId(), param.getParentIds(), param.getParentNames());
     }
 
     @Transactional
@@ -300,10 +300,21 @@ public class ResourceService {
         permissionResourceService.batchSave(params);
     }
 
-    private void bindResourceAssociation(Long resourceId, List<Long> parentIds) {
+    private void bindResourceAssociation(Long resourceId, List<Long> parentIds, List<String> parentNames) {
         if (CollectionUtils.isEmpty(parentIds)) {
-            return;
+            parentIds = new ArrayList<>();
         }
+
+        // 找出 parentNames 的 资源ID
+        if (CollectionUtils.isNotEmpty(parentNames)) {
+            List<Resource> resources = resourceMapper.selectList(Wrappers.<Resource>lambdaQuery()
+                    .in(Resource::getName, parentNames)
+            );
+            if (CollectionUtils.isNotEmpty(resources)) {
+                parentIds.addAll(resources.stream().map(Resource::getResourceId).collect(Collectors.toList()));
+            }
+        }
+
         List<ResourceAssociation> params = new ArrayList<>();
         for (Long parentId : parentIds) {
             if (resourceId.equals(parentId)) {

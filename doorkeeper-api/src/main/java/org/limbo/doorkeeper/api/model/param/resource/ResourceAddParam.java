@@ -45,10 +45,14 @@ public class ResourceAddParam {
     @Schema(description ="资源标签")
     private List<ResourceTagAddParam> tags;
 
-    @Schema(description ="父资源")
+    @Schema(description ="父资源ID")
     private List<Long> parentIds;
+
+    @Schema(description ="父资源名称")
+    private List<String> parentNames;
 
     @Schema(description = "添加的权限，新增的时候同时在权限加入此资源")
     private List<Long> permissionIds;
+
 
 }
