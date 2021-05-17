@@ -206,6 +206,7 @@ public class DoorkeeperService {
         ResourceCheckParam checkParam = new ResourceCheckParam();
         checkParam.setClientId(apiClient.getClientId());
         checkParam.setTags(Collections.singletonList("type=realmOwn"));
+        checkParam.setNeedTag(true);
         ResourceCheckResult check = resourceChecker.check(userId, true, checkParam);
         if (CollectionUtils.isEmpty(check.getResources())) {
             return new ArrayList<>();
@@ -263,6 +264,7 @@ public class DoorkeeperService {
             ResourceCheckParam checkParam = new ResourceCheckParam();
             checkParam.setClientId(apiClient.getClientId());
             checkParam.setTags(Collections.singletonList("type=clientOwn"));
+            checkParam.setNeedTag(true);
             ResourceCheckResult check = resourceChecker.check(userId, true, checkParam);
             if (CollectionUtils.isEmpty(check.getResources())) {
                 return new ArrayList<>();
