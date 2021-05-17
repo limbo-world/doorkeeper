@@ -40,7 +40,7 @@ public class ResourceCheckParam {
     @Parameter(description = "资源名称列表, 精确查询")
     private List<String> names;
 
-    @Parameter(description = "标签 k=v")
+    @Parameter(description = "标签 k=v 同时满足才返回")
     private List<String> tags;
 
     @Parameter(description = "uri列表 method=uri 如 get=/api/test 或者 /api/test")

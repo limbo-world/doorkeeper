@@ -99,11 +99,10 @@
         <if test="kvs != null and kvs.size() > 0">
             and exists (select resource_tag_id from resource_tag rt where rt.resource_id = r.resource_id
                 and rt.tag_id in (
-                    select tag_id from tag where realm_id = #{realmId} and client_id = #{clientId} and kv in (
-                        <foreach collection="kvs" separator="," item="kv">
-                            #{kv}
+                    select tag_id from tag where realm_id = #{realmId} and client_id = #{clientId}
+                        <foreach collection="kvs" separator=" " item="kv">
+                            and kv = #{kv}
                         </foreach>
-                    )
                 )
             )
         </if>
