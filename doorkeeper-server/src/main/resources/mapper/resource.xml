@@ -32,11 +32,11 @@
     <resultMap id="ResourceVO" type="org.limbo.doorkeeper.api.model.vo.ResourceVO" extends="BaseResult">
         <collection property="tags" columnPrefix="tag_" resultMap="ResourceTagVO" />
         <collection property="uris" columnPrefix="uri_" resultMap="ResourceUriVO" />
-        <collection property="parentIds" columnPrefix="association_" ofType="java.lang.Long">
-            <id column="parent_id" />
+        <collection property="parentIds" columnPrefix="parent_" ofType="java.lang.Long">
+            <id column="id" />
         </collection>
-        <collection property="childIds" columnPrefix="association_" ofType="java.lang.Long">
-            <id column="child_id" />
+        <collection property="childIds" columnPrefix="child_" ofType="java.lang.Long">
+            <id column="id" />
         </collection>
     </resultMap>
 
@@ -145,10 +145,10 @@
             ,ru.resource_uri_id as uri_resource_uri_id, ru.resource_id as uri_resource_id, u.uri as uri_uri, u.method as uri_method
         </if>
         <if test="needParentId == true">
-            ,rap.parent_id as association_parent_id
+            ,rap.parent_id as parent_id
         </if>
         <if test="needChildrenId == true">
-            ,rac.resource_id as association_child_id
+            ,rac.resource_id as child_id
         </if>
         from resource r
         <if test="needTag == true">
@@ -160,7 +160,7 @@
             left join uri u on u.uri_id = ru.uri_id
         </if>
         <if test="needParentId == true">
-            left join resource_association rap on ra.resource_id = r.resource_id
+            left join resource_association rap on rap.resource_id = r.resource_id
         </if>
         <if test="needChildrenId == true">
             left join resource_association rac on rac.parent_id = r.resource_id

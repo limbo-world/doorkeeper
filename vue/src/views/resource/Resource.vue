@@ -104,8 +104,7 @@ export default {
             queryForm: {
                 current: 1,
                 size: 10,
-                total: -1,
-                needParentId: true
+                total: -1
             },
             resources: [],
             selectResources: [],
