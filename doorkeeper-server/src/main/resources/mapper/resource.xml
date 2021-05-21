@@ -96,15 +96,26 @@
             )
         </if>
         <!-- 标签相关 -->
-        <if test="kvs != null and kvs.size() > 0">
+        <if test="orKvs != null and orKvs.size() > 0">
             and exists (select resource_tag_id from resource_tag rt where rt.resource_id = r.resource_id
                 and rt.tag_id in (
                     select tag_id from tag where realm_id = #{realmId} and client_id = #{clientId}
-                        <foreach collection="kvs" separator=" " item="kv">
-                            and kv = #{kv}
+                    and kv in (
+                        <foreach collection="orKvs" separator="," item="kv">
+                            #{kv}
                         </foreach>
+                    )
                 )
             )
+        </if>
+        <if test="andKvs != null and andKvs.size() > 0">
+            <foreach collection="andKvs" separator=" " item="kv">
+                and exists (select resource_tag_id from resource_tag rt where rt.resource_id = r.resource_id
+                    and rt.tag_id = (
+                        select tag_id from tag where realm_id = #{realmId} and client_id = #{clientId} and kv = #{kv}
+                    )
+                )
+            </foreach>
         </if>
         <if test="k != null and k != ''">
             and exists (select resource_tag_id from resource_tag rt where rt.resource_id = r.resource_id

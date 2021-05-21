@@ -55,7 +55,10 @@ public class ResourceQueryParam extends Page<ResourceVO> {
     private String dimUri;
 
     @Parameter(description = "k=v形式，精确查询 同时满足才返回")
-    private List<String> kvs;
+    private List<String> andKvs;
+
+    @Parameter(description = "k=v形式，精确查询 满足其中一个就返回")
+    private List<String> orKvs;
 
     @Parameter(description = "标签名，精确查询")
     private String k;
