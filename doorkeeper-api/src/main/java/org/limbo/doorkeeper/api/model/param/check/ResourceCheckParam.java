@@ -43,6 +43,12 @@ public class ResourceCheckParam {
     @Parameter(description = "标签 k=v 同时满足才返回")
     private List<String> tags;
 
+    @Parameter(description = "标签 k=v 同时满足才返回")
+    private List<String> andTags;
+
+    @Parameter(description = "标签 k=v 满足一个就返回")
+    private List<String> orTags;
+
     @Parameter(description = "uri列表 method=uri 如 get=/api/test 或者 /api/test")
     private List<String> uris;
 

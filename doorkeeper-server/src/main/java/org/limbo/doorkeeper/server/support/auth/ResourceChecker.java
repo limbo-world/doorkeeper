@@ -225,7 +225,9 @@ public class ResourceChecker {
         param.setClientId(clientId);
         param.setResourceIds(resourceIds);
         param.setNames(checkParam.getNames());
-        param.setKvs(checkParam.getTags());
+        param.setAndKvs(checkParam.getTags());
+        param.setAndKvs(checkParam.getAndTags());
+        param.setOrKvs(checkParam.getOrTags());
         param.setIsEnabled(true);
         param.setNeedAll(true);
         param.setNeedTag(checkParam.getNeedTag());
