@@ -41,9 +41,6 @@ public class ResourceCheckParam {
     private List<String> names;
 
     @Parameter(description = "标签 k=v 同时满足才返回")
-    private List<String> tags;
-
-    @Parameter(description = "标签 k=v 同时满足才返回")
     private List<String> andTags;
 
     @Parameter(description = "标签 k=v 满足一个就返回")

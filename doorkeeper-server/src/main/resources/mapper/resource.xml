@@ -109,7 +109,7 @@
             )
         </if>
         <if test="andKvs != null and andKvs.size() > 0">
-            <foreach collection="andKvs" separator=" " item="kv">
+            <foreach collection="andKvs" item="kv">
                 and exists (select resource_tag_id from resource_tag rt where rt.resource_id = r.resource_id
                     and rt.tag_id = (
                         select tag_id from tag where realm_id = #{realmId} and client_id = #{clientId} and kv = #{kv}

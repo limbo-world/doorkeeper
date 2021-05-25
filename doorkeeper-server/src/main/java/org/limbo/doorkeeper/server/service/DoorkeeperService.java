@@ -205,7 +205,7 @@ public class DoorkeeperService {
         // 普通用户，查看绑定的realm 资源
         ResourceCheckParam checkParam = new ResourceCheckParam();
         checkParam.setClientId(apiClient.getClientId());
-        checkParam.setTags(Collections.singletonList("type=realmOwn"));
+        checkParam.setOrTags(Collections.singletonList("type=realmOwn"));
         checkParam.setNeedTag(true);
         ResourceCheckResult check = resourceChecker.check(userId, true, checkParam);
         if (CollectionUtils.isEmpty(check.getResources())) {
@@ -263,7 +263,7 @@ public class DoorkeeperService {
 
             ResourceCheckParam checkParam = new ResourceCheckParam();
             checkParam.setClientId(apiClient.getClientId());
-            checkParam.setTags(Collections.singletonList("type=clientOwn"));
+            checkParam.setOrTags(Collections.singletonList("type=clientOwn"));
             checkParam.setNeedTag(true);
             ResourceCheckResult check = resourceChecker.check(userId, true, checkParam);
             if (CollectionUtils.isEmpty(check.getResources())) {
