@@ -48,7 +48,7 @@ import java.util.List;
  * @author Devil
  * @date 2021/1/18 2:30 下午
  */
-@Tag(name = "用户资源")
+@Tag(name = "用户校验")
 @Slf4j
 @RestController
 @RequestMapping("/api/admin/realm/{realmId}/user/{userId}")
@@ -64,7 +64,7 @@ public class AdminUserCheckController extends BaseController {
     private GroupChecker groupChecker;
 
     @Operation(summary = "用户是否可以访问的资源")
-    @GetMapping("/resource")
+    @GetMapping("/check-resource")
     public Response<List<ResourceVO>> checkResource(@Validated @NotNull(message = "未提交用户ID") @PathVariable("userId") Long userId,
                                                     @ParameterObject @Validated ResourceCheckParam param) {
         ResourceCheckResult check = resourceChecker.check(userId, true, param);
@@ -72,14 +72,14 @@ public class AdminUserCheckController extends BaseController {
     }
 
     @Operation(summary = "检查用户拥有的角色")
-    @GetMapping("/role")
+    @GetMapping("/check-role")
     public Response<List<RoleVO>> checkRole(@ParameterObject @Validated RoleCheckParam param) {
         RoleCheckResult result = roleChecker.check(getUser().getUserId(), param);
         return Response.success(result.getRoles());
     }
 
     @Operation(summary = "检查用户所在的组")
-    @GetMapping("/group")
+    @GetMapping("/check-group")
     public Response<List<GroupVO>> checkGroup(@ParameterObject @Validated GroupCheckParam param) {
         GroupCheckResult result = groupChecker.check(getUser().getUserId(), param);
         return Response.success(result.getGroups());
