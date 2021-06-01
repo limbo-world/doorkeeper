@@ -17,12 +17,12 @@
 package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import org.limbo.doorkeeper.api.model.param.role.RoleCombineBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.batch.RoleCombineBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.RoleCombineVO;
-import org.limbo.doorkeeper.server.dal.entity.RoleCombine;
-import org.limbo.doorkeeper.server.dal.mapper.RoleCombineMapper;
-import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
-import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
+import org.limbo.doorkeeper.server.infrastructure.po.RoleCombinePO;
+import org.limbo.doorkeeper.server.infrastructure.mapper.RoleCombineMapper;
+import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.infrastructure.utils.MyBatisPlusUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,8 +41,8 @@ public class RoleCombineService {
     private RoleCombineMapper roleCombineMapper;
 
     public List<RoleCombineVO> list(Long realmId, Long parentId) {
-        List<RoleCombine> roleCombines = roleCombineMapper.selectList(Wrappers.<RoleCombine>lambdaQuery()
-                .eq(RoleCombine::getParentId, parentId)
+        List<RoleCombinePO> roleCombines = roleCombineMapper.selectList(Wrappers.<RoleCombinePO>lambdaQuery()
+                .eq(RoleCombinePO::getParentId, parentId)
         );
         return EnhancedBeanUtils.createAndCopyList(roleCombines, RoleCombineVO.class);
     }
@@ -51,19 +51,19 @@ public class RoleCombineService {
     public void batchUpdate(Long realmId, Long parentId, RoleCombineBatchUpdateParam param) {
         switch (param.getType()) {
             case SAVE: // 新增
-                List<RoleCombine> roleCombines = new ArrayList<>();
+                List<RoleCombinePO> roleCombines = new ArrayList<>();
                 for (Long roleId : param.getRoleIds()) {
-                    RoleCombine roleCombine = new RoleCombine();
+                    RoleCombinePO roleCombine = new RoleCombinePO();
                     roleCombine.setParentId(parentId);
                     roleCombine.setRoleId(roleId);
                     roleCombines.add(roleCombine);
                 }
-                MyBatisPlusUtils.batchSave(roleCombines, RoleCombine.class);
+                MyBatisPlusUtils.batchSave(roleCombines, RoleCombinePO.class);
                 break;
             case DELETE: // 删除
-                roleCombineMapper.delete(Wrappers.<RoleCombine>lambdaQuery()
-                        .eq(RoleCombine::getParentId, parentId)
-                        .in(RoleCombine::getRoleId, param.getRoleIds())
+                roleCombineMapper.delete(Wrappers.<RoleCombinePO>lambdaQuery()
+                        .eq(RoleCombinePO::getParentId, parentId)
+                        .in(RoleCombinePO::getRoleId, param.getRoleIds())
                 );
                 break;
             default:

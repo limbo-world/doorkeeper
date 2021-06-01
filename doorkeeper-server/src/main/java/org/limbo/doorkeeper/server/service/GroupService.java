@@ -21,20 +21,24 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.BatchMethod;
 import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.api.model.param.group.*;
-import org.limbo.doorkeeper.api.model.param.policy.PolicyGroupAddParam;
+import org.limbo.doorkeeper.api.model.param.add.GroupAddParam;
+import org.limbo.doorkeeper.api.model.param.add.PolicyGroupAddParam;
+import org.limbo.doorkeeper.api.model.param.query.GroupQueryParam;
+import org.limbo.doorkeeper.api.model.param.batch.GroupRoleBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.update.GroupUpdateParam;
+import org.limbo.doorkeeper.api.model.param.batch.GroupUserBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
-import org.limbo.doorkeeper.server.dal.entity.*;
-import org.limbo.doorkeeper.server.dal.entity.policy.PolicyGroup;
-import org.limbo.doorkeeper.server.dal.mapper.GroupMapper;
-import org.limbo.doorkeeper.server.dal.mapper.GroupRoleMapper;
-import org.limbo.doorkeeper.server.dal.mapper.GroupUserMapper;
-import org.limbo.doorkeeper.server.dal.mapper.RealmMapper;
-import org.limbo.doorkeeper.server.dal.mapper.policy.PolicyGroupMapper;
-import org.limbo.doorkeeper.server.service.policy.PolicyGroupService;
-import org.limbo.doorkeeper.server.support.ParamException;
-import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
-import org.limbo.doorkeeper.server.utils.Verifies;
+import org.limbo.doorkeeper.server.infrastructure.po.*;
+import org.limbo.doorkeeper.server.infrastructure.po.PolicyGroupPO;
+import org.limbo.doorkeeper.server.infrastructure.mapper.GroupMapper;
+import org.limbo.doorkeeper.server.infrastructure.mapper.GroupRoleMapper;
+import org.limbo.doorkeeper.server.infrastructure.mapper.GroupUserMapper;
+import org.limbo.doorkeeper.server.infrastructure.mapper.RealmMapper;
+import org.limbo.doorkeeper.server.infrastructure.mapper.policy.PolicyGroupMapper;
+import org.limbo.doorkeeper.server.infrastructure.dao.PolicyGroupDao;
+import org.limbo.doorkeeper.server.infrastructure.exception.ParamException;
+import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.infrastructure.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -72,14 +76,14 @@ public class GroupService {
     private GroupRoleService groupRoleService;
 
     @Autowired
-    private PolicyGroupService policyGroupService;
+    private PolicyGroupDao policyGroupDao;
 
     @Transactional
     public GroupVO add(Long realmId, GroupAddParam param) {
         if (param.getParentId() == null) {
             param.setParentId(DoorkeeperConstants.DEFAULT_ID);
         }
-        Group group = EnhancedBeanUtils.createAndCopy(param, Group.class);
+        GroupPO group = EnhancedBeanUtils.createAndCopy(param, GroupPO.class);
         group.setRealmId(realmId);
         try {
             groupMapper.insert(group);
@@ -98,7 +102,7 @@ public class GroupService {
         if (CollectionUtils.isNotEmpty(param.getPolicies())) {
             for (PolicyGroupAddParam policy : param.getPolicies()) {
                 policy.setGroupId(group.getGroupId());
-                policyGroupService.batchSave(policy.getPolicyId(), Collections.singletonList(policy));
+                policyGroupDao.batchSave(policy.getPolicyId(), Collections.singletonList(policy));
             }
         }
         // 用户组角色
@@ -113,18 +117,18 @@ public class GroupService {
     }
 
     public List<GroupVO> list(Long realmId, GroupQueryParam param) {
-        List<Group> groups = groupMapper.selectList(Wrappers.<Group>lambdaQuery()
-                .eq(Group::getRealmId, realmId)
-                .eq(param.getParentId() != null, Group::getParentId, param.getParentId())
-                .eq(StringUtils.isNotBlank(param.getName()), Group::getName, param.getName())
+        List<GroupPO> groups = groupMapper.selectList(Wrappers.<GroupPO>lambdaQuery()
+                .eq(GroupPO::getRealmId, realmId)
+                .eq(param.getParentId() != null, GroupPO::getParentId, param.getParentId())
+                .eq(StringUtils.isNotBlank(param.getName()), GroupPO::getName, param.getName())
         );
         return EnhancedBeanUtils.createAndCopyList(groups, GroupVO.class);
     }
 
     public GroupVO getById(Long realmId, Long groupId) {
-        Group group = groupMapper.selectOne(Wrappers.<Group>lambdaQuery()
-                .eq(Group::getGroupId, groupId)
-                .eq(Group::getRealmId, realmId)
+        GroupPO group = groupMapper.selectOne(Wrappers.<GroupPO>lambdaQuery()
+                .eq(GroupPO::getGroupId, groupId)
+                .eq(GroupPO::getRealmId, realmId)
         );
         return EnhancedBeanUtils.createAndCopy(group, GroupVO.class);
     }
@@ -133,42 +137,27 @@ public class GroupService {
         if (parentId == null) {
             parentId = DoorkeeperConstants.DEFAULT_ID;
         }
-        Group group = groupMapper.selectOne(Wrappers.<Group>lambdaQuery()
-                .eq(Group::getRealmId, realmId)
-                .eq(Group::getParentId, parentId)
-                .eq(Group::getName, name)
-        );
-        return EnhancedBeanUtils.createAndCopy(group, GroupVO.class);
-    }
-
-    /**
-     * 获取doorkeeper下名为realm的用户组
-     */
-    public GroupVO getDoorkeeperRealmGroup() {
-        Realm doorkeeperRealm = realmMapper.getDoorkeeperRealm();
-
-        Group group = groupMapper.selectOne(Wrappers.<Group>lambdaQuery()
-                .eq(Group::getRealmId, doorkeeperRealm.getRealmId())
-                .eq(Group::getParentId, DoorkeeperConstants.DEFAULT_ID)
-                .eq(Group::getName, DoorkeeperConstants.REALM)
+        GroupPO group = groupMapper.selectOne(Wrappers.<GroupPO>lambdaQuery()
+                .eq(GroupPO::getRealmId, realmId)
+                .eq(GroupPO::getParentId, parentId)
+                .eq(GroupPO::getName, name)
         );
         return EnhancedBeanUtils.createAndCopy(group, GroupVO.class);
     }
 
     @Transactional
     public void update(Long realmId, Long groupId, GroupUpdateParam param) {
-        Group group = groupMapper.selectById(groupId);
+        GroupPO group = groupMapper.selectById(groupId);
         Verifies.notNull(group, "用户组不存在");
 
         try {
-            groupMapper.update(null, Wrappers.<Group>lambdaUpdate()
-                    .set(StringUtils.isNotBlank(param.getName()) && !group.getName().equals(param.getName()),
-                            Group::getName, param.getName())
-                    .set(param.getDescription() != null, Group::getDescription, param.getDescription())
-                    .set(param.getIsDefault() != null, Group::getIsDefault, param.getIsDefault())
-                    .set(param.getParentId() != null, Group::getParentId, param.getParentId())
-                    .eq(Group::getGroupId, groupId)
-                    .eq(Group::getRealmId, realmId)
+            groupMapper.update(null, Wrappers.<GroupPO>lambdaUpdate()
+                    .set(StringUtils.isNotBlank(param.getName()), GroupPO::getName, param.getName())
+                    .set(param.getDescription() != null, GroupPO::getDescription, param.getDescription())
+                    .set(param.getIsDefault() != null, GroupPO::getIsDefault, param.getIsDefault())
+                    .set(param.getParentId() != null, GroupPO::getParentId, param.getParentId())
+                    .eq(GroupPO::getGroupId, groupId)
+                    .eq(GroupPO::getRealmId, realmId)
             );
         } catch (DuplicateKeyException e) {
             throw new ParamException("用户组已存在");
@@ -177,29 +166,29 @@ public class GroupService {
 
     @Transactional
     public void delete(Long realmId, Long groupId) {
-        Integer num = groupMapper.selectCount(Wrappers.<Group>lambdaQuery()
-                .eq(Group::getGroupId, groupId)
-                .eq(Group::getRealmId, realmId)
+        Integer num = groupMapper.selectCount(Wrappers.<GroupPO>lambdaQuery()
+                .eq(GroupPO::getGroupId, groupId)
+                .eq(GroupPO::getRealmId, realmId)
         );
         if (num <= 0) {
             return;
         }
         // 如果还有子节点，需要先删除子节点
-        num = groupMapper.selectCount(Wrappers.<Group>lambdaQuery()
-                .eq(Group::getParentId, groupId)
-                .eq(Group::getRealmId, realmId)
+        num = groupMapper.selectCount(Wrappers.<GroupPO>lambdaQuery()
+                .eq(GroupPO::getParentId, groupId)
+                .eq(GroupPO::getRealmId, realmId)
         );
         Verifies.verify(num <= 0, "用户组还有子节点，请先删除");
 
         groupMapper.deleteById(groupId);
-        groupRoleMapper.delete(Wrappers.<GroupRole>lambdaQuery()
-                .eq(GroupRole::getGroupId, groupId)
+        groupRoleMapper.delete(Wrappers.<GroupRolePO>lambdaQuery()
+                .eq(GroupRolePO::getGroupId, groupId)
         );
-        groupUserMapper.delete(Wrappers.<GroupUser>lambdaQuery()
-                .eq(GroupUser::getGroupId, groupId)
+        groupUserMapper.delete(Wrappers.<GroupUserPO>lambdaQuery()
+                .eq(GroupUserPO::getGroupId, groupId)
         );
-        policyGroupMapper.delete(Wrappers.<PolicyGroup>lambdaQuery()
-                .eq(PolicyGroup::getGroupId, groupId)
+        policyGroupMapper.delete(Wrappers.<PolicyGroupPO>lambdaQuery()
+                .eq(PolicyGroupPO::getGroupId, groupId)
         );
     }
 }

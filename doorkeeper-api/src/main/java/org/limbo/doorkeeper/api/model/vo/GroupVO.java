@@ -56,8 +56,6 @@ public class GroupVO {
 
     private List<GroupRoleVO> roles;
 
-    private List<Long> groupIds;
-
     @Schema(description ="用户组用户ID")
     private Long groupUserId;
 

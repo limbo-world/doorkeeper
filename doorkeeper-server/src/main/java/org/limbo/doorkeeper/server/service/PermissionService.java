@@ -19,20 +19,25 @@ package org.limbo.doorkeeper.server.service;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.limbo.doorkeeper.api.model.Page;
-import org.limbo.doorkeeper.api.model.param.permission.PermissionAddParam;
-import org.limbo.doorkeeper.api.model.param.permission.PermissionBatchUpdateParam;
-import org.limbo.doorkeeper.api.model.param.permission.PermissionQueryParam;
-import org.limbo.doorkeeper.api.model.param.permission.PermissionUpdateParam;
+import org.limbo.doorkeeper.api.model.param.add.PermissionAddParam;
+import org.limbo.doorkeeper.api.model.param.query.PermissionQueryParam;
+import org.limbo.doorkeeper.api.model.param.batch.PermissionBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.update.PermissionUpdateParam;
+import org.limbo.doorkeeper.api.model.vo.PageVO;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
-import org.limbo.doorkeeper.server.dal.entity.*;
-import org.limbo.doorkeeper.server.dal.mapper.ClientMapper;
-import org.limbo.doorkeeper.server.dal.mapper.PermissionMapper;
-import org.limbo.doorkeeper.server.dal.mapper.PermissionPolicyMapper;
-import org.limbo.doorkeeper.server.dal.mapper.PermissionResourceMapper;
-import org.limbo.doorkeeper.server.support.ParamException;
-import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
-import org.limbo.doorkeeper.server.utils.Verifies;
+import org.limbo.doorkeeper.server.infrastructure.dao.PermissionPolicyDao;
+import org.limbo.doorkeeper.server.infrastructure.dao.PermissionResourceDao;
+import org.limbo.doorkeeper.server.infrastructure.po.ClientPO;
+import org.limbo.doorkeeper.server.infrastructure.po.PermissionPO;
+import org.limbo.doorkeeper.server.infrastructure.po.PermissionPolicyPO;
+import org.limbo.doorkeeper.server.infrastructure.po.PermissionResourcePO;
+import org.limbo.doorkeeper.server.infrastructure.mapper.ClientMapper;
+import org.limbo.doorkeeper.server.infrastructure.mapper.PermissionMapper;
+import org.limbo.doorkeeper.server.infrastructure.mapper.PermissionPolicyMapper;
+import org.limbo.doorkeeper.server.infrastructure.mapper.PermissionResourceMapper;
+import org.limbo.doorkeeper.server.infrastructure.exception.ParamException;
+import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.infrastructure.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -56,10 +61,10 @@ public class PermissionService {
     private ClientMapper clientMapper;
 
     @Autowired
-    private PermissionPolicyService permissionPolicyService;
+    private PermissionPolicyDao permissionPolicyDao;
 
     @Autowired
-    private PermissionResourceService permissionResourceService;
+    private PermissionResourceDao permissionResourceDao;
 
     @Autowired
     private PermissionPolicyMapper permissionPolicyMapper;
@@ -72,21 +77,18 @@ public class PermissionService {
         Verifies.notNull(param.getLogic(), "判断逻辑不存在");
         Verifies.notNull(param.getIntention(), "执行逻辑不存在");
 
-        Client client = clientMapper.selectOne(Wrappers.<Client>lambdaQuery()
-                .eq(Client::getRealmId, realmId)
-                .eq(Client::getClientId, clientId)
-        );
+        ClientPO client = clientMapper.getById(realmId, clientId);
         Verifies.notNull(client, "委托方不存在");
 
-        Permission permission = EnhancedBeanUtils.createAndCopy(param, Permission.class);
+        PermissionPO permission = EnhancedBeanUtils.createAndCopy(param, PermissionPO.class);
         permission.setRealmId(client.getRealmId());
         permission.setClientId(client.getClientId());
 
         permissionMapper.insert(permission);
 
-        permissionResourceService.update(permission.getPermissionId(), param.getResourceIds());
+        permissionResourceDao.update(permission.getPermissionId(), param.getResourceIds());
 
-        permissionPolicyService.update(permission.getPermissionId(), param.getPolicyIds());
+        permissionPolicyDao.update(permission.getPermissionId(), param.getPolicyIds());
 
         return EnhancedBeanUtils.createAndCopy(permission, PermissionVO.class);
     }
@@ -98,33 +100,33 @@ public class PermissionService {
                 if (CollectionUtils.isEmpty(param.getPermissionIds())) {
                     return;
                 }
-                permissionMapper.update(null, Wrappers.<Permission>lambdaUpdate()
-                        .set(param.getIsEnabled() != null, Permission::getIsEnabled, param.getIsEnabled())
-                        .in(Permission::getPermissionId, param.getPermissionIds())
-                        .eq(Permission::getRealmId, realmId)
-                        .eq(Permission::getClientId, clientId)
+                permissionMapper.update(null, Wrappers.<PermissionPO>lambdaUpdate()
+                        .set(param.getIsEnabled() != null, PermissionPO::getIsEnabled, param.getIsEnabled())
+                        .in(PermissionPO::getPermissionId, param.getPermissionIds())
+                        .eq(PermissionPO::getRealmId, realmId)
+                        .eq(PermissionPO::getClientId, clientId)
                 );
                 break;
             case DELETE:
                 if (CollectionUtils.isEmpty(param.getPermissionIds())) {
                     return;
                 }
-                List<Permission> permissions = permissionMapper.selectList(Wrappers.<Permission>lambdaQuery()
-                        .select(Permission::getPermissionId)
-                        .eq(Permission::getRealmId, realmId)
-                        .eq(Permission::getClientId, clientId)
-                        .in(Permission::getPermissionId, param.getPermissionIds())
+                List<PermissionPO> permissions = permissionMapper.selectList(Wrappers.<PermissionPO>lambdaQuery()
+                        .select(PermissionPO::getPermissionId)
+                        .eq(PermissionPO::getRealmId, realmId)
+                        .eq(PermissionPO::getClientId, clientId)
+                        .in(PermissionPO::getPermissionId, param.getPermissionIds())
                 );
                 if (CollectionUtils.isEmpty(permissions)) {
                     return;
                 }
-                List<Long> permissionIds = permissions.stream().map(Permission::getPermissionId).collect(Collectors.toList());
+                List<Long> permissionIds = permissions.stream().map(PermissionPO::getPermissionId).collect(Collectors.toList());
                 permissionMapper.deleteBatchIds(permissionIds);
-                permissionResourceMapper.delete(Wrappers.<PermissionResource>lambdaQuery()
-                        .in(PermissionResource::getPermissionId, permissionIds)
+                permissionResourceMapper.delete(Wrappers.<PermissionResourcePO>lambdaQuery()
+                        .in(PermissionResourcePO::getPermissionId, permissionIds)
                 );
-                permissionPolicyMapper.delete(Wrappers.<PermissionPolicy>lambdaQuery()
-                        .in(PermissionPolicy::getPermissionId, permissionIds)
+                permissionPolicyMapper.delete(Wrappers.<PermissionPolicyPO>lambdaQuery()
+                        .in(PermissionPolicyPO::getPermissionId, permissionIds)
                 );
                 break;
             default:
@@ -132,15 +134,17 @@ public class PermissionService {
         }
     }
 
-    public Page<PermissionVO> page(Long realmId, Long clientId, PermissionQueryParam param) {
+    public PageVO<PermissionVO> page(Long realmId, Long clientId, PermissionQueryParam param) {
         param.setRealmId(realmId);
         param.setClientId(clientId);
         long count = permissionMapper.voCount(param);
-        param.setTotal(count);
+
+        PageVO<PermissionVO> result = PageVO.convertByPage(param);
+        result.setTotal(count);
         if (count > 0) {
-            param.setData(permissionMapper.getVOS(param));
+            result.setData(permissionMapper.getVOS(param));
         }
-        return param;
+        return result;
     }
 
     public PermissionVO get(Long realmId, Long clientId, Long permissionId) {
@@ -149,29 +153,28 @@ public class PermissionService {
 
     @Transactional
     public void update(Long realmId, Long clientId, Long permissionId, PermissionUpdateParam param) {
-        Permission permission = permissionMapper.getById(realmId, clientId, permissionId);
+        PermissionPO permission = permissionMapper.getById(realmId, clientId, permissionId);
         Verifies.notNull(permission, "权限不存在");
 
         try {
-            permissionMapper.update(null, Wrappers.<Permission>lambdaUpdate()
-                    .set(StringUtils.isNotBlank(param.getName()) && !permission.getName().equals(param.getName()),
-                            Permission::getName, param.getName())
-                    .set(param.getDescription() != null, Permission::getDescription, param.getDescription())
-                    .set(param.getLogic() != null, Permission::getLogic, param.getLogic())
-                    .set(param.getIntention() != null, Permission::getIntention, param.getIntention())
-                    .set(param.getIsEnabled() != null, Permission::getIsEnabled, param.getIsEnabled())
-                    .set(Permission::getUpdateTime, new Date())
-                    .eq(Permission::getRealmId, realmId)
-                    .eq(Permission::getClientId, clientId)
-                    .eq(Permission::getPermissionId, permissionId)
+            permissionMapper.update(null, Wrappers.<PermissionPO>lambdaUpdate()
+                    .set(StringUtils.isNotBlank(param.getName()), PermissionPO::getName, param.getName())
+                    .set(param.getDescription() != null, PermissionPO::getDescription, param.getDescription())
+                    .set(param.getLogic() != null, PermissionPO::getLogic, param.getLogic())
+                    .set(param.getIntention() != null, PermissionPO::getIntention, param.getIntention())
+                    .set(param.getIsEnabled() != null, PermissionPO::getIsEnabled, param.getIsEnabled())
+                    .set(PermissionPO::getUpdateTime, new Date())
+                    .eq(PermissionPO::getRealmId, realmId)
+                    .eq(PermissionPO::getClientId, clientId)
+                    .eq(PermissionPO::getPermissionId, permissionId)
             );
         } catch (DuplicateKeyException e) {
             throw new ParamException("权限已存在");
         }
 
-        permissionResourceService.update(permissionId, param.getResourceIds());
+        permissionResourceDao.update(permissionId, param.getResourceIds());
 
-        permissionPolicyService.update(permissionId, param.getPolicyIds());
+        permissionPolicyDao.update(permissionId, param.getPolicyIds());
 
     }
 

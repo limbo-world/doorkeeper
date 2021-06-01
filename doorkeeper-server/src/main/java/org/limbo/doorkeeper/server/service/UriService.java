@@ -18,11 +18,11 @@ package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import org.limbo.doorkeeper.api.model.param.UriQueryParam;
+import org.limbo.doorkeeper.api.model.param.query.UriQueryParam;
 import org.limbo.doorkeeper.api.model.vo.UriVO;
-import org.limbo.doorkeeper.server.dal.entity.Uri;
-import org.limbo.doorkeeper.server.dal.mapper.UriMapper;
-import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.infrastructure.po.UriPO;
+import org.limbo.doorkeeper.server.infrastructure.mapper.UriMapper;
+import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,12 +39,12 @@ public class UriService {
     private UriMapper uriMapper;
 
     public List<UriVO> list(Long realmId, Long clientId, UriQueryParam param) {
-        List<Uri> uris = uriMapper.selectList(Wrappers.<Uri>lambdaQuery()
-                .eq(Uri::getRealmId, realmId)
-                .eq(Uri::getClientId, clientId)
-                .eq(param.getMethod() != null, Uri::getMethod, param.getMethod())
-                .eq(StringUtils.isNotBlank(param.getUri()), Uri::getUri, param.getUri())
-                .like(StringUtils.isNotBlank(param.getDimUri()), Uri::getUri, param.getDimUri())
+        List<UriPO> uris = uriMapper.selectList(Wrappers.<UriPO>lambdaQuery()
+                .eq(UriPO::getRealmId, realmId)
+                .eq(UriPO::getClientId, clientId)
+                .eq(param.getMethod() != null, UriPO::getMethod, param.getMethod())
+                .eq(StringUtils.isNotBlank(param.getUri()), UriPO::getUri, param.getUri())
+                .like(StringUtils.isNotBlank(param.getDimUri()), UriPO::getUri, param.getDimUri())
         );
         return EnhancedBeanUtils.createAndCopyList(uris, UriVO.class);
     }

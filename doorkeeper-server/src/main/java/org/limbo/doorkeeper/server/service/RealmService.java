@@ -18,15 +18,15 @@ package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.lang3.StringUtils;
-import org.limbo.doorkeeper.api.model.param.realm.RealmUpdateParam;
+import org.limbo.doorkeeper.api.model.param.update.RealmUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.RealmVO;
-import org.limbo.doorkeeper.server.dal.entity.Realm;
-import org.limbo.doorkeeper.server.dal.entity.User;
-import org.limbo.doorkeeper.server.dal.mapper.RealmMapper;
-import org.limbo.doorkeeper.server.dal.mapper.UserMapper;
-import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
-import org.limbo.doorkeeper.server.utils.JWTUtil;
-import org.limbo.doorkeeper.server.utils.Verifies;
+import org.limbo.doorkeeper.server.infrastructure.po.RealmPO;
+import org.limbo.doorkeeper.server.infrastructure.po.UserPO;
+import org.limbo.doorkeeper.server.infrastructure.mapper.RealmMapper;
+import org.limbo.doorkeeper.server.infrastructure.mapper.UserMapper;
+import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.infrastructure.utils.JWTUtil;
+import org.limbo.doorkeeper.server.infrastructure.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,21 +44,21 @@ public class RealmService {
     private UserMapper userMapper;
 
     public RealmVO get(Long realmId) {
-        Realm realm = realmMapper.selectById(realmId);
+        RealmPO realm = realmMapper.selectById(realmId);
         return EnhancedBeanUtils.createAndCopy(realm, RealmVO.class);
     }
 
     public void update(Long realmId, RealmUpdateParam param) {
-        realmMapper.update(null, Wrappers.<Realm>lambdaUpdate()
-                .set(StringUtils.isNotBlank(param.getSecret()), Realm::getSecret, param.getSecret())
-                .eq(Realm::getRealmId, realmId)
+        realmMapper.update(null, Wrappers.<RealmPO>lambdaUpdate()
+                .set(StringUtils.isNotBlank(param.getSecret()), RealmPO::getSecret, param.getSecret())
+                .eq(RealmPO::getRealmId, realmId)
         );
     }
 
 
-    public Realm getRealmByToken(String token) {
+    public RealmPO getRealmByToken(String token) {
         Long userId = JWTUtil.getUserId(token);
-        User user;
+        UserPO user;
         if (userId != null) {
             user = userMapper.selectById(userId);
         } else {
@@ -69,7 +69,7 @@ public class RealmService {
         Verifies.notNull(user, "用户不存在");
         Verifies.verify(user.getIsEnabled(), "用户未启用");
 
-        Realm realm = realmMapper.selectById(user.getRealmId());
+        RealmPO realm = realmMapper.selectById(user.getRealmId());
         Verifies.notNull(realm, "realm不存在");
         return realm;
     }

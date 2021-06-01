@@ -18,13 +18,13 @@ package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.lang3.StringUtils;
-import org.limbo.doorkeeper.api.model.param.client.ClientUpdateParam;
+import org.limbo.doorkeeper.api.model.param.update.ClientUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ClientVO;
-import org.limbo.doorkeeper.server.dal.entity.Client;
-import org.limbo.doorkeeper.server.dal.mapper.ClientMapper;
-import org.limbo.doorkeeper.server.support.ParamException;
-import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
-import org.limbo.doorkeeper.server.utils.Verifies;
+import org.limbo.doorkeeper.server.infrastructure.po.ClientPO;
+import org.limbo.doorkeeper.server.infrastructure.mapper.ClientMapper;
+import org.limbo.doorkeeper.server.infrastructure.exception.ParamException;
+import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.infrastructure.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -41,23 +41,22 @@ public class ClientService {
     private ClientMapper clientMapper;
 
     public ClientVO get(Long realmId, Long clientId) {
-        Client client = clientMapper.getById(realmId, clientId);
+        ClientPO client = clientMapper.getById(realmId, clientId);
         Verifies.notNull(client, "委托方不存在");
         return EnhancedBeanUtils.createAndCopy(client, ClientVO.class);
     }
 
     @Transactional
     public void update(Long realmId, Long clientId, ClientUpdateParam param) {
-        Client client = clientMapper.getById(realmId, clientId);
+        ClientPO client = clientMapper.getById(realmId, clientId);
         Verifies.notNull(client, "委托方不存在");
 
         try {
-            clientMapper.update(null, Wrappers.<Client>lambdaUpdate()
-                    .set(StringUtils.isNotBlank(param.getName()) && !client.getName().equals(param.getName()),
-                            Client::getName, param.getName())
-                    .set(param.getDescription() != null, Client::getDescription, param.getDescription())
-                    .set(param.getIsEnabled() != null, Client::getIsEnabled, param.getIsEnabled())
-                    .eq(Client::getClientId, clientId)
+            clientMapper.update(null, Wrappers.<ClientPO>lambdaUpdate()
+                    .set(StringUtils.isNotBlank(param.getName()), ClientPO::getName, param.getName())
+                    .set(param.getDescription() != null, ClientPO::getDescription, param.getDescription())
+                    .set(param.getIsEnabled() != null, ClientPO::getIsEnabled, param.getIsEnabled())
+                    .eq(ClientPO::getClientId, clientId)
             );
         } catch (DuplicateKeyException e) {
             throw new ParamException("名称已存在");

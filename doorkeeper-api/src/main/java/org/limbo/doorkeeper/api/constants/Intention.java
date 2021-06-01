@@ -50,4 +50,8 @@ public enum Intention implements IEnum<String> {
         }
         return null;
     }
+
+    public boolean allow() {
+        return Intention.ALLOW == this;
+    }
 }

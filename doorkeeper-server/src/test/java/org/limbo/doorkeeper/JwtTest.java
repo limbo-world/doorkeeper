@@ -22,7 +22,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
-import org.limbo.doorkeeper.server.utils.JacksonUtil;
+import org.limbo.doorkeeper.server.infrastructure.utils.JacksonUtil;
 
 import java.util.Date;
 

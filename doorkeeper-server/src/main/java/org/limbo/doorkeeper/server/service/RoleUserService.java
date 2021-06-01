@@ -17,12 +17,12 @@
 package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import org.limbo.doorkeeper.api.model.param.role.RoleUserBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.batch.RoleUserBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.UserRoleVO;
-import org.limbo.doorkeeper.server.dal.entity.UserRole;
-import org.limbo.doorkeeper.server.dal.mapper.UserRoleMapper;
-import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
-import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
+import org.limbo.doorkeeper.server.infrastructure.po.UserRolePO;
+import org.limbo.doorkeeper.server.infrastructure.mapper.UserRoleMapper;
+import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.infrastructure.utils.MyBatisPlusUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,8 +41,8 @@ public class RoleUserService {
     private UserRoleMapper userRoleMapper;
 
     public List<UserRoleVO> list(Long realmId, Long roleId) {
-        List<UserRole> userRoles = userRoleMapper.selectList(Wrappers.<UserRole>lambdaQuery()
-                .eq(UserRole::getRoleId, roleId)
+        List<UserRolePO> userRoles = userRoleMapper.selectList(Wrappers.<UserRolePO>lambdaQuery()
+                .eq(UserRolePO::getRoleId, roleId)
         );
         return EnhancedBeanUtils.createAndCopyList(userRoles, UserRoleVO.class);
     }
@@ -51,19 +51,19 @@ public class RoleUserService {
     public void batchUpdate(Long roleId, RoleUserBatchUpdateParam param) {
         switch (param.getType()) {
             case SAVE: // 新增
-                List<UserRole> userRoles = new ArrayList<>();
+                List<UserRolePO> userRoles = new ArrayList<>();
                 for (Long userId : param.getUserIds()) {
-                    UserRole userRole = new UserRole();
+                    UserRolePO userRole = new UserRolePO();
                     userRole.setUserId(userId);
                     userRole.setRoleId(roleId);
                     userRoles.add(userRole);
                 }
-                MyBatisPlusUtils.batchSave(userRoles, UserRole.class);
+                MyBatisPlusUtils.batchSave(userRoles, UserRolePO.class);
                 break;
             case DELETE: // 删除
-                userRoleMapper.delete(Wrappers.<UserRole>lambdaQuery()
-                        .eq(UserRole::getRoleId, roleId)
-                        .in(UserRole::getUserId, param.getUserIds())
+                userRoleMapper.delete(Wrappers.<UserRolePO>lambdaQuery()
+                        .eq(UserRolePO::getRoleId, roleId)
+                        .in(UserRolePO::getUserId, param.getUserIds())
                 );
                 break;
             default:

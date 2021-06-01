@@ -55,4 +55,27 @@ public enum Logic implements IEnum<String> {
         }
         return null;
     }
+
+    /**
+     * 检测是否满足条件
+     *
+     * @param all       全部待检测条件数量
+     * @param satisfied 满足条件的数量
+     */
+    public static boolean isSatisfied(Logic logic, int all, int satisfied) {
+        if (all == 0) {
+            return false;
+        }
+        switch (logic) {
+            case ALL:
+                return all == satisfied;
+            case ONE:
+                return satisfied > 0;
+            case MORE:
+                return satisfied > all - satisfied;
+            default:
+                throw new IllegalArgumentException("无效的判断逻辑");
+        }
+    }
+
 }

@@ -19,13 +19,13 @@ package org.limbo.doorkeeper.server.service;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
-import org.limbo.doorkeeper.api.model.param.group.GroupRoleAddParam;
-import org.limbo.doorkeeper.api.model.param.group.GroupRoleBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.add.GroupRoleAddParam;
+import org.limbo.doorkeeper.api.model.param.batch.GroupRoleBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.GroupRoleVO;
-import org.limbo.doorkeeper.server.dal.entity.GroupRole;
-import org.limbo.doorkeeper.server.dal.mapper.GroupRoleMapper;
-import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
-import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
+import org.limbo.doorkeeper.server.infrastructure.po.GroupRolePO;
+import org.limbo.doorkeeper.server.infrastructure.mapper.GroupRoleMapper;
+import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.infrastructure.utils.MyBatisPlusUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,8 +44,8 @@ public class GroupRoleService {
     private GroupRoleMapper groupRoleMapper;
 
     public List<GroupRoleVO> list(Long realmId, Long groupId) {
-        List<GroupRole> groupRoles = groupRoleMapper.selectList(Wrappers.<GroupRole>lambdaQuery()
-                .eq(GroupRole::getGroupId, groupId)
+        List<GroupRolePO> groupRoles = groupRoleMapper.selectList(Wrappers.<GroupRolePO>lambdaQuery()
+                .eq(GroupRolePO::getGroupId, groupId)
         );
         return EnhancedBeanUtils.createAndCopyList(groupRoles, GroupRoleVO.class);
     }
@@ -57,9 +57,9 @@ public class GroupRoleService {
                 if (CollectionUtils.isEmpty(param.getRoles())) {
                     return;
                 }
-                List<GroupRole> addGroupRoles = new ArrayList<>();
+                List<GroupRolePO> addGroupRoles = new ArrayList<>();
                 for (GroupRoleAddParam role : param.getRoles()) {
-                    GroupRole groupRole = new GroupRole();
+                    GroupRolePO groupRole = new GroupRolePO();
                     groupRole.setGroupId(groupId);
                     groupRole.setRoleId(role.getRoleId());
                     groupRole.setIsExtend(role.getIsExtend());
@@ -71,24 +71,24 @@ public class GroupRoleService {
                 if (CollectionUtils.isEmpty(param.getRoleIds())) {
                     return;
                 }
-                groupRoleMapper.delete(Wrappers.<GroupRole>lambdaQuery()
-                        .eq(GroupRole::getGroupId, groupId)
-                        .in(GroupRole::getRoleId, param.getRoleIds())
+                groupRoleMapper.delete(Wrappers.<GroupRolePO>lambdaQuery()
+                        .eq(GroupRolePO::getGroupId, groupId)
+                        .in(GroupRolePO::getRoleId, param.getRoleIds())
                 );
                 break;
             case UPDATE: // 更新
                 if (CollectionUtils.isEmpty(param.getRoles())) {
                     return;
                 }
-                List<Wrapper<GroupRole>> updateWrappers = new ArrayList<>();
+                List<Wrapper<GroupRolePO>> updateWrappers = new ArrayList<>();
                 for (GroupRoleAddParam role : param.getRoles()) {
-                    updateWrappers.add(Wrappers.<GroupRole>lambdaUpdate()
-                            .set(GroupRole::getIsExtend, role.getIsExtend())
-                            .eq(GroupRole::getGroupId, groupId)
-                            .eq(GroupRole::getRoleId, role.getRoleId())
+                    updateWrappers.add(Wrappers.<GroupRolePO>lambdaUpdate()
+                            .set(GroupRolePO::getIsExtend, role.getIsExtend())
+                            .eq(GroupRolePO::getGroupId, groupId)
+                            .eq(GroupRolePO::getRoleId, role.getRoleId())
                     );
                 }
-                MyBatisPlusUtils.batchUpdate(updateWrappers, GroupRole.class);
+                MyBatisPlusUtils.batchUpdate(updateWrappers, GroupRolePO.class);
                 break;
             default:
                 break;

@@ -17,7 +17,7 @@
 
 package org.limbo.doorkeeper.server;
 
-import org.limbo.doorkeeper.server.support.config.WebConfig;
+import org.limbo.doorkeeper.server.infrastructure.config.WebConfig;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableTransactionManagement
-@MapperScan("org.limbo.doorkeeper.server.dal.mapper")
+@MapperScan("org.limbo.doorkeeper.server.infrastructure.mapper")
 @Import({WebConfig.class})
 public class DoorkeeperApplication {
 

@@ -19,13 +19,12 @@ package org.limbo.doorkeeper.server.service;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.limbo.doorkeeper.api.model.param.group.GroupUserBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.batch.GroupUserBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.GroupUserVO;
-import org.limbo.doorkeeper.server.dal.entity.GroupUser;
-import org.limbo.doorkeeper.server.dal.mapper.GroupMapper;
-import org.limbo.doorkeeper.server.dal.mapper.GroupUserMapper;
-import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
-import org.limbo.doorkeeper.server.utils.Verifies;
+import org.limbo.doorkeeper.server.infrastructure.po.GroupUserPO;
+import org.limbo.doorkeeper.server.infrastructure.mapper.GroupUserMapper;
+import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.infrastructure.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,12 +42,9 @@ public class GroupUserService {
     @Autowired
     private GroupUserMapper groupUserMapper;
 
-    @Autowired
-    private GroupMapper groupMapper;
-
     public List<GroupUserVO> list(Long realmId, Long groupId) {
-        List<GroupUser> groupUsers = groupUserMapper.selectList(Wrappers.<GroupUser>lambdaQuery()
-                .eq(GroupUser::getGroupId, groupId)
+        List<GroupUserPO> groupUsers = groupUserMapper.selectList(Wrappers.<GroupUserPO>lambdaQuery()
+                .eq(GroupUserPO::getGroupId, groupId)
         );
         return EnhancedBeanUtils.createAndCopyList(groupUsers, GroupUserVO.class);
     }
@@ -61,9 +57,9 @@ public class GroupUserService {
 
         switch (param.getType()) {
             case SAVE: // 新增
-                List<GroupUser> groupUsers = new ArrayList<>();
+                List<GroupUserPO> groupUsers = new ArrayList<>();
                 for (Long userId : param.getUserIds()) {
-                    GroupUser groupUser = new GroupUser();
+                    GroupUserPO groupUser = new GroupUserPO();
                     groupUser.setGroupId(groupId);
                     groupUser.setUserId(userId);
                     groupUser.setExtend(StringUtils.isBlank(param.getExtend()) ? "" : param.getExtend());
@@ -73,17 +69,17 @@ public class GroupUserService {
                 break;
             case UPDATE:
                 for (Long userId : param.getUserIds()) {
-                    groupUserMapper.update(null, Wrappers.<GroupUser>lambdaUpdate()
-                            .set(GroupUser::getExtend, param.getExtend())
-                            .eq(GroupUser::getGroupId, groupId)
-                            .eq(GroupUser::getUserId, userId)
+                    groupUserMapper.update(null, Wrappers.<GroupUserPO>lambdaUpdate()
+                            .set(GroupUserPO::getExtend, param.getExtend())
+                            .eq(GroupUserPO::getGroupId, groupId)
+                            .eq(GroupUserPO::getUserId, userId)
                     );
                 }
                 break;
             case DELETE: // 删除
-                groupUserMapper.delete(Wrappers.<GroupUser>lambdaQuery()
-                        .eq(GroupUser::getGroupId, groupId)
-                        .in(GroupUser::getUserId, param.getUserIds())
+                groupUserMapper.delete(Wrappers.<GroupUserPO>lambdaQuery()
+                        .eq(GroupUserPO::getGroupId, groupId)
+                        .in(GroupUserPO::getUserId, param.getUserIds())
                 );
                 break;
             default:
@@ -93,8 +89,8 @@ public class GroupUserService {
 
     public List<GroupUserVO> getByUser(Long userId) {
         Verifies.notNull(userId, "用户ID不能为空");
-        List<GroupUser> groupUsers = groupUserMapper.selectList(Wrappers.<GroupUser>lambdaQuery()
-                .eq(GroupUser::getUserId, userId)
+        List<GroupUserPO> groupUsers = groupUserMapper.selectList(Wrappers.<GroupUserPO>lambdaQuery()
+                .eq(GroupUserPO::getUserId, userId)
         );
         return EnhancedBeanUtils.createAndCopyList(groupUsers, GroupUserVO.class);
     }
@@ -102,9 +98,9 @@ public class GroupUserService {
     public GroupUserVO getByUserAndGroup(Long userId, Long groupId) {
         Verifies.notNull(userId, "用户ID不能为空");
         Verifies.notNull(groupId, "用户组ID不能为空");
-        GroupUser groupUser = groupUserMapper.selectOne(Wrappers.<GroupUser>lambdaQuery()
-                .eq(GroupUser::getUserId, userId)
-                .eq(GroupUser::getGroupId, groupId)
+        GroupUserPO groupUser = groupUserMapper.selectOne(Wrappers.<GroupUserPO>lambdaQuery()
+                .eq(GroupUserPO::getUserId, userId)
+                .eq(GroupUserPO::getGroupId, groupId)
         );
         return EnhancedBeanUtils.createAndCopy(groupUser, GroupUserVO.class);
     }

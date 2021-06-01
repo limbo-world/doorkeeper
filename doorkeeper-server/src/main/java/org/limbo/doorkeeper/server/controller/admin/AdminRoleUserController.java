@@ -19,8 +19,8 @@ package org.limbo.doorkeeper.server.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.role.RoleUserBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.vo.ResponseVO;
+import org.limbo.doorkeeper.api.model.param.batch.RoleUserBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.UserRoleVO;
 import org.limbo.doorkeeper.server.controller.BaseController;
 import org.limbo.doorkeeper.server.service.RoleUserService;
@@ -47,16 +47,16 @@ public class AdminRoleUserController extends BaseController {
 
     @Operation(summary = "查询角色绑定的用户列表")
     @GetMapping("/{roleId}/user")
-    public Response<List<UserRoleVO>> list(@Validated @NotNull(message = "未提交角色ID") @PathVariable("roleId") Long roleId) {
-        return Response.success(roleUserService.list(getRealmId(), roleId));
+    public ResponseVO<List<UserRoleVO>> list(@Validated @NotNull(message = "未提交角色ID") @PathVariable("roleId") Long roleId) {
+        return ResponseVO.success(roleUserService.list(getRealmId(), roleId));
     }
 
     @Operation(summary = "批量修改角色用户")
     @PostMapping("/{roleId}/user/batch")
-    public Response<Void> batch(@Validated @NotNull(message = "未提交角色ID") @PathVariable("roleId") Long roleId,
-                                @RequestBody @Validated RoleUserBatchUpdateParam param) {
+    public ResponseVO<Void> batch(@Validated @NotNull(message = "未提交角色ID") @PathVariable("roleId") Long roleId,
+                                  @RequestBody @Validated RoleUserBatchUpdateParam param) {
         roleUserService.batchUpdate(roleId, param);
-        return Response.success();
+        return ResponseVO.success();
     }
 
 }

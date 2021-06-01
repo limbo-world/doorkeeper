@@ -16,9 +16,9 @@
   -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="org.limbo.doorkeeper.server.dal.mapper.ResourceAssociationMapper" >
+<mapper namespace="org.limbo.doorkeeper.server.infrastructure.mapper.ResourceAssociationMapper" >
 
-    <insert id="batchInsertIgnore" parameterType="org.limbo.doorkeeper.server.dal.entity.ResourceAssociation">
+    <insert id="batchInsertIgnore" parameterType="org.limbo.doorkeeper.server.infrastructure.po.ResourceAssociationPO">
         INSERT ignore INTO resource_association (
             resource_id, parent_id
         ) VALUES

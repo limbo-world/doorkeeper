@@ -20,16 +20,17 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.limbo.doorkeeper.api.model.param.check.GroupCheckParam;
+import org.limbo.doorkeeper.api.model.param.query.GroupCheckParam;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
 import org.limbo.doorkeeper.api.model.vo.check.GroupCheckResult;
-import org.limbo.doorkeeper.server.dal.entity.Group;
-import org.limbo.doorkeeper.server.dal.entity.GroupUser;
-import org.limbo.doorkeeper.server.dal.entity.User;
-import org.limbo.doorkeeper.server.dal.mapper.GroupMapper;
-import org.limbo.doorkeeper.server.dal.mapper.GroupUserMapper;
-import org.limbo.doorkeeper.server.dal.mapper.UserMapper;
-import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.infrastructure.po.GroupPO;
+import org.limbo.doorkeeper.server.infrastructure.po.GroupUserPO;
+import org.limbo.doorkeeper.server.infrastructure.po.UserPO;
+import org.limbo.doorkeeper.server.infrastructure.mapper.GroupMapper;
+import org.limbo.doorkeeper.server.infrastructure.mapper.GroupUserMapper;
+import org.limbo.doorkeeper.server.infrastructure.mapper.UserMapper;
+import org.limbo.doorkeeper.server.infrastructure.exception.AuthorizationException;
+import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -63,7 +64,7 @@ public class GroupChecker {
         GroupCheckResult result = new GroupCheckResult();
         result.setGroups(new ArrayList<>());
 
-        User user = userMapper.selectById(userId);
+        UserPO user = userMapper.selectById(userId);
         if (user == null) {
             throw new AuthorizationException("无法找到用户，Id=" + userId);
         }
@@ -73,9 +74,9 @@ public class GroupChecker {
         user.setPassword(null);
 
         // 获取用户用户组
-        List<GroupUser> userGroups = groupUserMapper.selectList(Wrappers.<GroupUser>lambdaQuery()
-                .eq(GroupUser::getUserId, userId)
-                .in(CollectionUtils.isNotEmpty(checkParam.getGroupIds()), GroupUser::getGroupId, checkParam.getGroupIds())
+        List<GroupUserPO> userGroups = groupUserMapper.selectList(Wrappers.<GroupUserPO>lambdaQuery()
+                .eq(GroupUserPO::getUserId, userId)
+                .in(CollectionUtils.isNotEmpty(checkParam.getGroupIds()), GroupUserPO::getGroupId, checkParam.getGroupIds())
         );
 
         if (CollectionUtils.isEmpty(userGroups)) {
@@ -83,13 +84,13 @@ public class GroupChecker {
         }
 
         // 获取用户组
-        List<Long> groupIds = userGroups.stream().map(GroupUser::getGroupId).collect(Collectors.toList());
-        List<Group> groups = groupMapper.selectList(Wrappers.<Group>lambdaQuery()
-                .eq(Group::getRealmId, user.getRealmId())
-                .in(Group::getGroupId, groupIds)
-                .eq(StringUtils.isNotBlank(checkParam.getName()), Group::getName, checkParam.getName())
-                .like(StringUtils.isNotBlank(checkParam.getDimName()), Group::getName, checkParam.getDimName())
-                .in(CollectionUtils.isNotEmpty(checkParam.getNames()), Group::getName, checkParam.getNames())
+        List<Long> groupIds = userGroups.stream().map(GroupUserPO::getGroupId).collect(Collectors.toList());
+        List<GroupPO> groups = groupMapper.selectList(Wrappers.<GroupPO>lambdaQuery()
+                .eq(GroupPO::getRealmId, user.getRealmId())
+                .in(GroupPO::getGroupId, groupIds)
+                .eq(StringUtils.isNotBlank(checkParam.getName()), GroupPO::getName, checkParam.getName())
+                .like(StringUtils.isNotBlank(checkParam.getDimName()), GroupPO::getName, checkParam.getDimName())
+                .in(CollectionUtils.isNotEmpty(checkParam.getNames()), GroupPO::getName, checkParam.getNames())
 
         );
         if (CollectionUtils.isEmpty(groups)) {
@@ -99,7 +100,7 @@ public class GroupChecker {
         // 合并数据
         List<GroupVO> groupVOS = EnhancedBeanUtils.createAndCopyList(groups, GroupVO.class);
         for (GroupVO groupVO : groupVOS) {
-            for (GroupUser userGroup : userGroups) {
+            for (GroupUserPO userGroup : userGroups) {
                 if (groupVO.getGroupId().equals(userGroup.getGroupId())) {
                     groupVO.setGroupUserId(userGroup.getGroupUserId());
                     groupVO.setUserId(userGroup.getUserId());

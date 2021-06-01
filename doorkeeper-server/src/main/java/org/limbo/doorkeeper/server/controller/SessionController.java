@@ -19,8 +19,8 @@ package org.limbo.doorkeeper.server.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.user.PasswordUpdateParam;
+import org.limbo.doorkeeper.api.model.vo.ResponseVO;
+import org.limbo.doorkeeper.api.model.param.update.PasswordUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.AccountGrantVO;
 import org.limbo.doorkeeper.api.model.vo.UserVO;
 import org.limbo.doorkeeper.server.service.LoginService;
@@ -46,35 +46,35 @@ public class SessionController extends BaseController {
 
     @Operation(summary = "用于校验会话是否过期")
     @GetMapping("/check")
-    public Response<Void> check() {
-        return Response.success();
+    public ResponseVO<Void> check() {
+        return ResponseVO.success();
     }
 
     @Operation(summary = "获取用户信息")
     @GetMapping("/user-info")
-    public Response<UserVO> userInfo() {
-        return Response.success(getUser());
+    public ResponseVO<UserVO> userInfo() {
+        return ResponseVO.success(getUser());
     }
 
     @Operation(summary = "刷新token过期时间")
     @GetMapping("/refresh")
-    public Response<String> refresh() {
-        return Response.success(loginService.refreshToken(getToken()));
+    public ResponseVO<String> refresh() {
+        return ResponseVO.success(loginService.refreshToken(getToken()));
     }
 
     @Operation(summary = "修改密码")
     @PutMapping("/change-password")
-    public Response<String> changePassword(@RequestBody PasswordUpdateParam param) {
+    public ResponseVO<String> changePassword(@RequestBody PasswordUpdateParam param) {
         UserVO user = getUser();
         userService.changePassword(user.getRealmId(), user.getUserId(), param);
-        return Response.success();
+        return ResponseVO.success();
     }
 
     @Operation(summary = "获取当前项目页面权限信息")
     @GetMapping("/grant-info")
-    public Response<AccountGrantVO> getGrantInfo() {
+    public ResponseVO<AccountGrantVO> getGrantInfo() {
         // 拿到用户管理端权限
-        return Response.success();
+        return ResponseVO.success();
     }
 
 }

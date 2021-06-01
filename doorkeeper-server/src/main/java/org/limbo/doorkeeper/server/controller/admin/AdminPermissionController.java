@@ -19,13 +19,13 @@ package org.limbo.doorkeeper.server.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.Page;
-import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.permission.PermissionAddParam;
-import org.limbo.doorkeeper.api.model.param.permission.PermissionBatchUpdateParam;
-import org.limbo.doorkeeper.api.model.param.permission.PermissionQueryParam;
-import org.limbo.doorkeeper.api.model.param.permission.PermissionUpdateParam;
+import org.limbo.doorkeeper.api.model.param.add.PermissionAddParam;
+import org.limbo.doorkeeper.api.model.param.query.PermissionQueryParam;
+import org.limbo.doorkeeper.api.model.param.batch.PermissionBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.update.PermissionUpdateParam;
+import org.limbo.doorkeeper.api.model.vo.PageVO;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
+import org.limbo.doorkeeper.api.model.vo.ResponseVO;
 import org.limbo.doorkeeper.server.controller.BaseController;
 import org.limbo.doorkeeper.server.service.PermissionService;
 import org.springdoc.api.annotations.ParameterObject;
@@ -50,34 +50,34 @@ public class AdminPermissionController extends BaseController {
 
     @Operation(summary = "新建权限")
     @PostMapping
-    public Response<PermissionVO> add(@RequestBody @Validated PermissionAddParam param) {
-        return Response.success(permissionService.add(getRealmId(), getClientId(), param));
+    public ResponseVO<PermissionVO> add(@RequestBody @Validated PermissionAddParam param) {
+        return ResponseVO.success(permissionService.add(getRealmId(), getClientId(), param));
     }
 
     @Operation(summary = "批量修改权限")
     @PostMapping("/batch")
-    public Response<Void> batch(@RequestBody @Validated PermissionBatchUpdateParam param) {
+    public ResponseVO<Void> batch(@RequestBody @Validated PermissionBatchUpdateParam param) {
         permissionService.batchUpdate(getRealmId(), getClientId(), param);
-        return Response.success();
+        return ResponseVO.success();
     }
 
     @Operation(summary = "分页查询权限")
     @GetMapping
-    public Response<Page<PermissionVO>> page(@ParameterObject PermissionQueryParam param) {
-        return Response.success(permissionService.page(getRealmId(), getClientId(), param));
+    public ResponseVO<PageVO<PermissionVO>> page(@ParameterObject PermissionQueryParam param) {
+        return ResponseVO.success(permissionService.page(getRealmId(), getClientId(), param));
     }
 
     @Operation(summary = "查询权限")
     @GetMapping("/{permissionId}")
-    public Response<PermissionVO> get(@Validated @NotNull(message = "未提交权限ID") @PathVariable("permissionId") Long permissionId) {
-        return Response.success(permissionService.get(getRealmId(), getClientId(), permissionId));
+    public ResponseVO<PermissionVO> get(@Validated @NotNull(message = "未提交权限ID") @PathVariable("permissionId") Long permissionId) {
+        return ResponseVO.success(permissionService.get(getRealmId(), getClientId(), permissionId));
     }
 
     @Operation(summary = "更新权限")
     @PutMapping("/{permissionId}")
-    public Response<Void> update(@Validated @NotNull(message = "未提交权限ID") @PathVariable("permissionId") Long permissionId,
+    public ResponseVO<Void> update(@Validated @NotNull(message = "未提交权限ID") @PathVariable("permissionId") Long permissionId,
                                    @Validated @RequestBody PermissionUpdateParam param) {
         permissionService.update(getRealmId(), getClientId(), permissionId, param);
-        return Response.success();
+        return ResponseVO.success();
     }
 }

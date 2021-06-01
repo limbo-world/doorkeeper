@@ -21,14 +21,14 @@ import com.auth0.jwt.algorithms.Algorithm;
 import org.apache.commons.lang3.time.DateUtils;
 import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.model.param.LoginParam;
-import org.limbo.doorkeeper.server.dal.entity.Realm;
-import org.limbo.doorkeeper.server.dal.entity.User;
-import org.limbo.doorkeeper.server.dal.mapper.RealmMapper;
-import org.limbo.doorkeeper.server.dal.mapper.UserMapper;
-import org.limbo.doorkeeper.server.support.session.exception.AuthenticationException;
-import org.limbo.doorkeeper.server.utils.JWTUtil;
-import org.limbo.doorkeeper.server.utils.MD5Utils;
-import org.limbo.doorkeeper.server.utils.Verifies;
+import org.limbo.doorkeeper.server.infrastructure.po.RealmPO;
+import org.limbo.doorkeeper.server.infrastructure.po.UserPO;
+import org.limbo.doorkeeper.server.infrastructure.mapper.RealmMapper;
+import org.limbo.doorkeeper.server.infrastructure.mapper.UserMapper;
+import org.limbo.doorkeeper.server.infrastructure.exception.AuthenticationException;
+import org.limbo.doorkeeper.server.infrastructure.utils.JWTUtil;
+import org.limbo.doorkeeper.server.infrastructure.utils.MD5Utils;
+import org.limbo.doorkeeper.server.infrastructure.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,8 +51,8 @@ public class LoginService {
     private RealmService realmService;
 
     public String login(LoginParam param) {
-        User user;
-        Realm realm;
+        UserPO user;
+        RealmPO realm;
         // 不填realm 默认登录 doorkeeper
         if (param.getRealmId() == null) {
             realm = realmMapper.getDoorkeeperRealm();
@@ -84,8 +84,13 @@ public class LoginService {
                 .sign(Algorithm.HMAC256(secret));
     }
 
+    /**
+     * 根据token返回一个重置过期时间新的token（旧的token也还能使用）
+     * @param token
+     * @return
+     */
     public String refreshToken(String token) {
-        Realm realm;
+        RealmPO realm;
         try {
             realm = realmService.getRealmByToken(token);
         } catch (Exception e) {

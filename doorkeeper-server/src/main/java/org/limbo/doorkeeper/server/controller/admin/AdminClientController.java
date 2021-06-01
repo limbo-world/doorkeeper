@@ -19,10 +19,10 @@ package org.limbo.doorkeeper.server.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.client.ClientAddParam;
-import org.limbo.doorkeeper.api.model.param.client.ClientQueryParam;
-import org.limbo.doorkeeper.api.model.param.client.ClientUpdateParam;
+import org.limbo.doorkeeper.api.model.vo.ResponseVO;
+import org.limbo.doorkeeper.api.model.param.add.ClientAddParam;
+import org.limbo.doorkeeper.api.model.param.query.ClientQueryParam;
+import org.limbo.doorkeeper.api.model.param.update.ClientUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ClientVO;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.server.controller.BaseController;
@@ -54,28 +54,28 @@ public class AdminClientController extends BaseController {
 
     @Operation(summary = "新建委托方")
     @PostMapping
-    public Response<ClientVO> add(@RequestBody @Validated ClientAddParam param) {
-        return Response.success(doorkeeperService.addClient(getRealmId(), getUser().getUserId(), param));
+    public ResponseVO<ClientVO> add(@RequestBody @Validated ClientAddParam param) {
+        return ResponseVO.success(doorkeeperService.addClient(getRealmId(), getUser().getUserId(), param));
     }
 
     @Operation(summary = "查询账户拥有的委托方")
     @GetMapping
-    public Response<List<ClientVO>> userClients(@ParameterObject ClientQueryParam param) {
-        return Response.success(doorkeeperService.userClients(getRealmId(), getUser().getUserId(), param));
+    public ResponseVO<List<ClientVO>> userClients(@ParameterObject ClientQueryParam param) {
+        return ResponseVO.success(doorkeeperService.userClients(getRealmId(), getUser().getUserId(), param));
     }
 
     @Operation(summary = "查询委托方")
     @GetMapping("/{clientId}")
-    public Response<ClientVO> get(@Validated @NotNull(message = "未提交委托方ID") @PathVariable("clientId") Long clientId) {
-        return Response.success(clientService.get(getRealmId(), clientId));
+    public ResponseVO<ClientVO> get(@Validated @NotNull(message = "未提交委托方ID") @PathVariable("clientId") Long clientId) {
+        return ResponseVO.success(clientService.get(getRealmId(), clientId));
     }
 
     @Operation(summary = "更新委托方")
     @PutMapping("/{clientId}")
-    public Response<RoleVO> update(@Validated @NotNull(message = "未提交委托方ID") @PathVariable("clientId") Long clientId,
-                                   @Validated @RequestBody ClientUpdateParam param) {
+    public ResponseVO<RoleVO> update(@Validated @NotNull(message = "未提交委托方ID") @PathVariable("clientId") Long clientId,
+                                     @Validated @RequestBody ClientUpdateParam param) {
         clientService.update(getRealmId(), clientId, param);
-        return Response.success();
+        return ResponseVO.success();
     }
 
 }

@@ -23,20 +23,26 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.BatchMethod;
 import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.api.model.Page;
-import org.limbo.doorkeeper.api.model.param.user.*;
+import org.limbo.doorkeeper.api.model.param.add.UserAddParam;
+import org.limbo.doorkeeper.api.model.param.query.UserQueryParam;
+import org.limbo.doorkeeper.api.model.param.update.PasswordUpdateParam;
+import org.limbo.doorkeeper.api.model.param.batch.UserRoleBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.update.UserUpdateParam;
+import org.limbo.doorkeeper.api.model.vo.PageVO;
 import org.limbo.doorkeeper.api.model.vo.UserVO;
-import org.limbo.doorkeeper.server.dal.dao.GroupDao;
-import org.limbo.doorkeeper.server.dal.dao.RoleDao;
-import org.limbo.doorkeeper.server.dal.entity.*;
-import org.limbo.doorkeeper.server.dal.mapper.ClientMapper;
-import org.limbo.doorkeeper.server.dal.mapper.RealmMapper;
-import org.limbo.doorkeeper.server.dal.mapper.UserMapper;
-import org.limbo.doorkeeper.server.support.ParamException;
-import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
-import org.limbo.doorkeeper.server.utils.MD5Utils;
-import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
-import org.limbo.doorkeeper.server.utils.Verifies;
+import org.limbo.doorkeeper.server.infrastructure.dao.GroupDao;
+import org.limbo.doorkeeper.server.infrastructure.dao.RoleDao;
+import org.limbo.doorkeeper.server.infrastructure.dao.UserGroupDao;
+import org.limbo.doorkeeper.server.infrastructure.dao.UserPolicyDao;
+import org.limbo.doorkeeper.server.infrastructure.po.*;
+import org.limbo.doorkeeper.server.infrastructure.mapper.ClientMapper;
+import org.limbo.doorkeeper.server.infrastructure.mapper.RealmMapper;
+import org.limbo.doorkeeper.server.infrastructure.mapper.UserMapper;
+import org.limbo.doorkeeper.server.infrastructure.exception.ParamException;
+import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.infrastructure.utils.MD5Utils;
+import org.limbo.doorkeeper.server.infrastructure.utils.MyBatisPlusUtils;
+import org.limbo.doorkeeper.server.infrastructure.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -56,13 +62,13 @@ public class UserService {
     private UserMapper userMapper;
 
     @Autowired
-    private UserGroupService userGroupService;
+    private UserGroupDao userGroupDao;
 
     @Autowired
     private UserRoleService userRoleService;
 
     @Autowired
-    private UserPolicyService userPolicyService;
+    private UserPolicyDao userPolicyDao;
 
     @Autowired
     private GroupDao groupDao;
@@ -81,7 +87,7 @@ public class UserService {
 
     @Transactional
     public UserVO add(Long realmId, UserAddParam param) {
-        User user = EnhancedBeanUtils.createAndCopy(param, User.class);
+        UserPO user = EnhancedBeanUtils.createAndCopy(param, UserPO.class);
         user.setRealmId(realmId);
         user.setPassword(MD5Utils.md5WithSalt(param.getPassword()));
         try {
@@ -92,18 +98,18 @@ public class UserService {
         user.setPassword(null);
 
         // 用户组 参数添加 默认添加
-        List<Group> defaultGroup = groupDao.getDefaultGroup(realmId);
-        List<Long> groupIds = defaultGroup.stream().map(Group::getGroupId).collect(Collectors.toList());
+        List<GroupPO> defaultGroup = groupDao.getDefaultGroup(realmId);
+        List<Long> groupIds = defaultGroup.stream().map(GroupPO::getGroupId).collect(Collectors.toList());
         if (CollectionUtils.isNotEmpty(param.getGroupIds())) {
             groupIds.addAll(param.getGroupIds());
         }
         if (CollectionUtils.isNotEmpty(groupIds)) {
-            userGroupService.batchSave(user.getUserId(), groupIds);
+            userGroupDao.batchSave(user.getUserId(), groupIds);
         }
 
         // 用户角色 参数添加 默认添加
-        List<Role> defaultRole = roleDao.getDefaultRole(realmId, null);
-        List<Long> roleIds = defaultRole.stream().map(Role::getRoleId).collect(Collectors.toList());
+        List<RolePO> defaultRole = roleDao.getDefaultRole(realmId, null);
+        List<Long> roleIds = defaultRole.stream().map(RolePO::getRoleId).collect(Collectors.toList());
         if (CollectionUtils.isNotEmpty(param.getRoleIds())) {
             roleIds.addAll(param.getRoleIds());
         }
@@ -116,55 +122,52 @@ public class UserService {
 
         // 用户策略
         if (CollectionUtils.isNotEmpty(param.getPolicyIds())) {
-            userPolicyService.batchSave(user.getUserId(), param.getPolicyIds());
+            userPolicyDao.batchSave(user.getUserId(), param.getPolicyIds());
         }
 
         // 如果是 doorkeeper 域下的用户 创建策略和权限
-        Realm doorkeeperRealm = realmMapper.getDoorkeeperRealm();
+        RealmPO doorkeeperRealm = realmMapper.getDoorkeeperRealm();
         if (doorkeeperRealm.getRealmId().equals(realmId)) {
-            Client apiClient = clientMapper.getByName(doorkeeperRealm.getRealmId(), DoorkeeperConstants.API_CLIENT);
+            ClientPO apiClient = clientMapper.getByName(doorkeeperRealm.getRealmId(), DoorkeeperConstants.API_CLIENT);
             doorkeeperService.bindUser(user.getUserId(), user.getUsername(), null, apiClient.getRealmId(), apiClient.getClientId());
         }
 
         return EnhancedBeanUtils.createAndCopy(user, UserVO.class);
     }
 
-    public Page<UserVO> page(Long realmId, UserQueryParam param) {
-        IPage<User> mpage = MyBatisPlusUtils.pageOf(param);
-        mpage = userMapper.selectPage(mpage, Wrappers.<User>lambdaQuery()
-                .eq(User::getRealmId, realmId)
-                .eq(StringUtils.isNotBlank(param.getUsername()), User::getUsername, param.getUsername())
-                .eq(StringUtils.isNotBlank(param.getNickname()), User::getNickname, param.getNickname())
+    public PageVO<UserVO> page(Long realmId, UserQueryParam param) {
+        IPage<UserPO> mpage = MyBatisPlusUtils.pageOf(param);
+        mpage = userMapper.selectPage(mpage, Wrappers.<UserPO>lambdaQuery()
+                .eq(UserPO::getRealmId, realmId)
+                .eq(StringUtils.isNotBlank(param.getUsername()), UserPO::getUsername, param.getUsername())
+                .eq(StringUtils.isNotBlank(param.getNickname()), UserPO::getNickname, param.getNickname())
                 .and(StringUtils.isNotBlank(param.getDimName()), wrapper -> wrapper
-                        .like(StringUtils.isNotBlank(param.getDimName()), User::getUsername, param.getDimName())
+                        .like(StringUtils.isNotBlank(param.getDimName()), UserPO::getUsername, param.getDimName())
                         .or()
-                        .like(StringUtils.isNotBlank(param.getDimName()), User::getNickname, param.getDimName())
-                ).orderByDesc(User::getUserId)
+                        .like(StringUtils.isNotBlank(param.getDimName()), UserPO::getNickname, param.getDimName())
+                ).orderByDesc(UserPO::getUserId)
         );
 
-        for (User user : mpage.getRecords()) {
-            user.setPassword(null);
-        }
-
-        param.setTotal(mpage.getTotal());
-        param.setData(EnhancedBeanUtils.createAndCopyList(mpage.getRecords(), UserVO.class));
-        return param;
+        PageVO<UserVO> result = PageVO.convertByPage(param);
+        result.setTotal(mpage.getTotal());
+        result.setData(EnhancedBeanUtils.createAndCopyList(mpage.getRecords(), UserVO.class));
+        return result;
     }
 
     public UserVO get(Long realmId, Long userId, String username) {
         if (userId == null && StringUtils.isBlank(username)) {
             throw new ParamException("未传递查询参数");
         }
-        User user;
+        UserPO user;
         if (userId != null) {
-            user = userMapper.selectOne(Wrappers.<User>lambdaQuery()
-                    .eq(User::getUserId, userId)
-                    .eq(User::getRealmId, realmId)
+            user = userMapper.selectOne(Wrappers.<UserPO>lambdaQuery()
+                    .eq(UserPO::getUserId, userId)
+                    .eq(UserPO::getRealmId, realmId)
             );
         } else {
-            user = userMapper.selectOne(Wrappers.<User>lambdaQuery()
-                    .eq(User::getUsername, username)
-                    .eq(User::getRealmId, realmId)
+            user = userMapper.selectOne(Wrappers.<UserPO>lambdaQuery()
+                    .eq(UserPO::getUsername, username)
+                    .eq(UserPO::getRealmId, realmId)
             );
         }
         if (user == null) {
@@ -176,19 +179,19 @@ public class UserService {
 
     @Transactional
     public void update(Long realmId, Long userId, UserUpdateParam param) {
-        LambdaUpdateWrapper<User> updateWrapper = Wrappers.<User>lambdaUpdate()
-                .set(StringUtils.isNotBlank(param.getNickname()), User::getNickname, param.getNickname())
-                .set(param.getDescription() != null, User::getDescription, param.getDescription())
-                .set(param.getIsEnabled() != null, User::getIsEnabled, param.getIsEnabled())
-                .set(param.getEmail() != null, User::getEmail, param.getEmail())
-                .set(param.getPhone() != null, User::getPhone, param.getPhone())
-                .set(param.getExtend() != null, User::getExtend, param.getExtend())
-                .eq(User::getUserId, userId)
-                .eq(User::getRealmId, realmId);
+        LambdaUpdateWrapper<UserPO> updateWrapper = Wrappers.<UserPO>lambdaUpdate()
+                .set(StringUtils.isNotBlank(param.getNickname()), UserPO::getNickname, param.getNickname())
+                .set(param.getDescription() != null, UserPO::getDescription, param.getDescription())
+                .set(param.getIsEnabled() != null, UserPO::getIsEnabled, param.getIsEnabled())
+                .set(param.getEmail() != null, UserPO::getEmail, param.getEmail())
+                .set(param.getPhone() != null, UserPO::getPhone, param.getPhone())
+                .set(param.getExtend() != null, UserPO::getExtend, param.getExtend())
+                .eq(UserPO::getUserId, userId)
+                .eq(UserPO::getRealmId, realmId);
 
         // 判断是否需要更新密码
         if (StringUtils.isNotBlank(param.getPassword())) {
-            updateWrapper.set(User::getPassword, MD5Utils.md5WithSalt(param.getPassword()));
+            updateWrapper.set(UserPO::getPassword, MD5Utils.md5WithSalt(param.getPassword()));
         }
         userMapper.update(null, updateWrapper);
     }
@@ -198,13 +201,13 @@ public class UserService {
         if (StringUtils.isBlank(param.getNewPassword())) {
             return;
         }
-        User user = userMapper.getById(realmId, userId);
+        UserPO user = userMapper.getById(realmId, userId);
         Verifies.notNull(user, "用户不存在");
         Verifies.verify(MD5Utils.verify(param.getOldPassword(), user.getPassword()), "密码错误");
-        userMapper.update(null, Wrappers.<User>lambdaUpdate()
-                .set(User::getPassword, MD5Utils.md5WithSalt(param.getNewPassword()))
-                .eq(User::getUserId, userId)
-                .eq(User::getRealmId, realmId)
+        userMapper.update(null, Wrappers.<UserPO>lambdaUpdate()
+                .set(UserPO::getPassword, MD5Utils.md5WithSalt(param.getNewPassword()))
+                .eq(UserPO::getUserId, userId)
+                .eq(UserPO::getRealmId, realmId)
         );
     }
 

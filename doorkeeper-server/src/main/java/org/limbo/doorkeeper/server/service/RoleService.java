@@ -21,21 +21,27 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.BatchMethod;
-import org.limbo.doorkeeper.api.model.Page;
-import org.limbo.doorkeeper.api.model.param.role.*;
+import org.limbo.doorkeeper.api.model.param.add.RoleAddParam;
+import org.limbo.doorkeeper.api.model.param.query.RoleQueryParam;
+import org.limbo.doorkeeper.api.model.param.batch.RoleBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.update.RoleUpdateParam;
+import org.limbo.doorkeeper.api.model.param.batch.RoleUserBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.vo.PageVO;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
-import org.limbo.doorkeeper.server.dal.entity.GroupRole;
-import org.limbo.doorkeeper.server.dal.entity.Role;
-import org.limbo.doorkeeper.server.dal.entity.UserRole;
-import org.limbo.doorkeeper.server.dal.entity.policy.PolicyRole;
-import org.limbo.doorkeeper.server.dal.mapper.GroupRoleMapper;
-import org.limbo.doorkeeper.server.dal.mapper.RoleMapper;
-import org.limbo.doorkeeper.server.dal.mapper.UserRoleMapper;
-import org.limbo.doorkeeper.server.dal.mapper.policy.PolicyRoleMapper;
-import org.limbo.doorkeeper.server.support.ParamException;
-import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
-import org.limbo.doorkeeper.server.utils.MyBatisPlusUtils;
-import org.limbo.doorkeeper.server.utils.Verifies;
+import org.limbo.doorkeeper.server.infrastructure.dao.RoleGroupDao;
+import org.limbo.doorkeeper.server.infrastructure.dao.RolePolicyDao;
+import org.limbo.doorkeeper.server.infrastructure.po.GroupRolePO;
+import org.limbo.doorkeeper.server.infrastructure.po.RolePO;
+import org.limbo.doorkeeper.server.infrastructure.po.UserRolePO;
+import org.limbo.doorkeeper.server.infrastructure.po.PolicyRolePO;
+import org.limbo.doorkeeper.server.infrastructure.mapper.GroupRoleMapper;
+import org.limbo.doorkeeper.server.infrastructure.mapper.RoleMapper;
+import org.limbo.doorkeeper.server.infrastructure.mapper.UserRoleMapper;
+import org.limbo.doorkeeper.server.infrastructure.mapper.policy.PolicyRoleMapper;
+import org.limbo.doorkeeper.server.infrastructure.exception.ParamException;
+import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.infrastructure.utils.MyBatisPlusUtils;
+import org.limbo.doorkeeper.server.infrastructure.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -64,17 +70,17 @@ public class RoleService {
     private UserRoleMapper userRoleMapper;
 
     @Autowired
-    private RoleGroupService roleGroupService;
+    private RoleGroupDao roleGroupDao;
 
     @Autowired
     private RoleUserService roleUserService;
 
     @Autowired
-    private RolePolicyService rolePolicyService;
+    private RolePolicyDao rolePolicyDao;
 
     @Transactional
     public RoleVO add(Long realmId, RoleAddParam param) {
-        Role role = EnhancedBeanUtils.createAndCopy(param, Role.class);
+        RolePO role = EnhancedBeanUtils.createAndCopy(param, RolePO.class);
         role.setRealmId(realmId);
         try {
             roleMapper.insert(role);
@@ -83,7 +89,7 @@ public class RoleService {
         }
 
         if (CollectionUtils.isNotEmpty(param.getGroups())) {
-            roleGroupService.batchSave(role.getRoleId(), param.getGroups());
+            roleGroupDao.batchSave(role.getRoleId(), param.getGroups());
         }
 
         if (CollectionUtils.isNotEmpty(param.getUserIds())) {
@@ -94,46 +100,46 @@ public class RoleService {
         }
 
         if (CollectionUtils.isNotEmpty(param.getPolicyIds())) {
-            rolePolicyService.batchSave(role.getRoleId(), param.getPolicyIds());
+            rolePolicyDao.batchSave(role.getRoleId(), param.getPolicyIds());
         }
 
         return EnhancedBeanUtils.createAndCopy(role, RoleVO.class);
     }
 
-    public Page<RoleVO> page(Long realmId, RoleQueryParam param) {
-        IPage<Role> mpage = MyBatisPlusUtils.pageOf(param);
-        mpage = roleMapper.selectPage(mpage, Wrappers.<Role>lambdaQuery()
-                .eq(Role::getRealmId, realmId)
-                .eq(Role::getClientId, param.getClientId())
-                .eq(param.getIsEnabled() != null, Role::getIsEnabled, param.getIsEnabled())
-                .eq(param.getIsDefault() != null, Role::getIsDefault, param.getIsDefault())
-                .eq(StringUtils.isNotBlank(param.getName()), Role::getName, param.getName())
-                .like(StringUtils.isNotBlank(param.getDimName()), Role::getName, param.getDimName())
+    public PageVO<RoleVO> page(Long realmId, RoleQueryParam param) {
+        IPage<RolePO> mpage = MyBatisPlusUtils.pageOf(param);
+        mpage = roleMapper.selectPage(mpage, Wrappers.<RolePO>lambdaQuery()
+                .eq(RolePO::getRealmId, realmId)
+                .eq(RolePO::getClientId, param.getClientId())
+                .eq(param.getIsEnabled() != null, RolePO::getIsEnabled, param.getIsEnabled())
+                .eq(param.getIsDefault() != null, RolePO::getIsDefault, param.getIsDefault())
+                .eq(StringUtils.isNotBlank(param.getName()), RolePO::getName, param.getName())
+                .like(StringUtils.isNotBlank(param.getDimName()), RolePO::getName, param.getDimName())
         );
 
-        param.setTotal(mpage.getTotal());
-        param.setData(EnhancedBeanUtils.createAndCopyList(mpage.getRecords(), RoleVO.class));
-        return param;
+        PageVO<RoleVO> result = PageVO.convertByPage(param);
+        result.setTotal(mpage.getTotal());
+        result.setData(EnhancedBeanUtils.createAndCopyList(mpage.getRecords(), RoleVO.class));
+        return result;
     }
 
     public RoleVO get(Long realmId, Long roleId) {
-        Role role = roleMapper.getById(realmId, roleId);
+        RolePO role = roleMapper.getById(realmId, roleId);
         Verifies.notNull(role, "角色不存在");
         return EnhancedBeanUtils.createAndCopy(role, RoleVO.class);
     }
 
     public void update(Long realmId, Long roleId, RoleUpdateParam param) {
-        Role role = roleMapper.getById(realmId, roleId);
+        RolePO role = roleMapper.getById(realmId, roleId);
         Verifies.notNull(role, "角色不存在");
 
         try {
-            roleMapper.update(null, Wrappers.<Role>lambdaUpdate()
-                    .set(StringUtils.isNotBlank(param.getName()) && !role.getName().equals(param.getName()),
-                            Role::getName, param.getName())
-                    .set(param.getDescription() != null, Role::getDescription, param.getDescription())
-                    .set(param.getIsDefault() != null, Role::getIsDefault, param.getIsDefault())
-                    .set(param.getIsEnabled() != null, Role::getIsEnabled, param.getIsEnabled())
-                    .eq(Role::getRoleId, roleId)
+            roleMapper.update(null, Wrappers.<RolePO>lambdaUpdate()
+                    .set(StringUtils.isNotBlank(param.getName()), RolePO::getName, param.getName())
+                    .set(param.getDescription() != null, RolePO::getDescription, param.getDescription())
+                    .set(param.getIsDefault() != null, RolePO::getIsDefault, param.getIsDefault())
+                    .set(param.getIsEnabled() != null, RolePO::getIsEnabled, param.getIsEnabled())
+                    .eq(RolePO::getRoleId, roleId)
             );
         } catch (DuplicateKeyException e) {
             throw new ParamException("角色已存在");
@@ -147,24 +153,24 @@ public class RoleService {
                 if (CollectionUtils.isEmpty(param.getRoleIds())) {
                     return;
                 }
-                List<Role> roles = roleMapper.selectList(Wrappers.<Role>lambdaQuery()
-                        .select(Role::getRoleId)
-                        .eq(Role::getRealmId, realmId)
-                        .in(Role::getRoleId, param.getRoleIds())
+                List<RolePO> roles = roleMapper.selectList(Wrappers.<RolePO>lambdaQuery()
+                        .select(RolePO::getRoleId)
+                        .eq(RolePO::getRealmId, realmId)
+                        .in(RolePO::getRoleId, param.getRoleIds())
                 );
                 if (CollectionUtils.isEmpty(roles)) {
                     return;
                 }
-                List<Long> roleIds = roles.stream().map(Role::getRoleId).collect(Collectors.toList());
+                List<Long> roleIds = roles.stream().map(RolePO::getRoleId).collect(Collectors.toList());
                 roleMapper.deleteBatchIds(roleIds);
-                groupRoleMapper.delete(Wrappers.<GroupRole>lambdaQuery()
-                        .in(GroupRole::getRoleId, roleIds)
+                groupRoleMapper.delete(Wrappers.<GroupRolePO>lambdaQuery()
+                        .in(GroupRolePO::getRoleId, roleIds)
                 );
-                policyRoleMapper.delete(Wrappers.<PolicyRole>lambdaQuery()
-                        .in(PolicyRole::getRoleId, roleIds)
+                policyRoleMapper.delete(Wrappers.<PolicyRolePO>lambdaQuery()
+                        .in(PolicyRolePO::getRoleId, roleIds)
                 );
-                userRoleMapper.delete(Wrappers.<UserRole>lambdaQuery()
-                        .in(UserRole::getRoleId, roleIds)
+                userRoleMapper.delete(Wrappers.<UserRolePO>lambdaQuery()
+                        .in(UserRolePO::getRoleId, roleIds)
                 );
                 break;
             default:

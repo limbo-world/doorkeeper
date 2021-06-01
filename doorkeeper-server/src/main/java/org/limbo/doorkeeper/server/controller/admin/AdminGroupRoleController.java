@@ -19,8 +19,8 @@ package org.limbo.doorkeeper.server.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.group.GroupRoleBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.vo.ResponseVO;
+import org.limbo.doorkeeper.api.model.param.batch.GroupRoleBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.GroupRoleVO;
 import org.limbo.doorkeeper.server.controller.BaseController;
 import org.limbo.doorkeeper.server.service.GroupRoleService;
@@ -46,16 +46,16 @@ public class AdminGroupRoleController extends BaseController {
 
     @Operation(summary = "查询用户组角色列表")
     @GetMapping("/{groupId}/role")
-    public Response<List<GroupRoleVO>> listRole(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId) {
-        return Response.success(groupRoleService.list(getRealmId(), groupId));
+    public ResponseVO<List<GroupRoleVO>> listRole(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId) {
+        return ResponseVO.success(groupRoleService.list(getRealmId(), groupId));
     }
 
     @Operation(summary = "批量修改用户组角色")
     @PostMapping("/{groupId}/role/batch")
-    public Response<Void> batchRole(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId,
-                                @RequestBody @Validated GroupRoleBatchUpdateParam param) {
+    public ResponseVO<Void> batchRole(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId,
+                                      @RequestBody @Validated GroupRoleBatchUpdateParam param) {
         groupRoleService.batchUpdate(groupId, param);
-        return Response.success();
+        return ResponseVO.success();
     }
 
 }

@@ -19,10 +19,10 @@ package org.limbo.doorkeeper.server.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.check.GroupCheckParam;
-import org.limbo.doorkeeper.api.model.param.check.ResourceCheckParam;
-import org.limbo.doorkeeper.api.model.param.check.RoleCheckParam;
+import org.limbo.doorkeeper.api.model.vo.ResponseVO;
+import org.limbo.doorkeeper.api.model.param.query.GroupCheckParam;
+import org.limbo.doorkeeper.api.model.param.query.ResourceCheckParam;
+import org.limbo.doorkeeper.api.model.param.query.RoleCheckParam;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
 import org.limbo.doorkeeper.api.model.vo.ResourceVO;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
@@ -62,23 +62,23 @@ public class AuthorizationController extends BaseController {
 
     @Operation(summary = "检查用户是否可以访问对应的资源")
     @GetMapping("/resource")
-    public Response<List<ResourceVO>> checkResource(@ParameterObject @Validated ResourceCheckParam param) {
-        ResourceCheckResult result = resourceChecker.check(getUser().getUserId(), true, param);
-        return Response.success(result.getResources());
+    public ResponseVO<List<ResourceVO>> checkResource(@ParameterObject @Validated ResourceCheckParam param) {
+        ResourceCheckResult result = resourceChecker.check(getUser().getUserId(), param);
+        return ResponseVO.success(result.getResources());
     }
 
     @Operation(summary = "检查用户拥有的角色")
     @GetMapping("/role")
-    public Response<List<RoleVO>> checkRole(@ParameterObject @Validated RoleCheckParam param) {
+    public ResponseVO<List<RoleVO>> checkRole(@ParameterObject @Validated RoleCheckParam param) {
         RoleCheckResult result = roleChecker.check(getUser().getUserId(), param);
-        return Response.success(result.getRoles());
+        return ResponseVO.success(result.getRoles());
     }
 
     @Operation(summary = "检查用户所在的组")
     @GetMapping("/group")
-    public Response<List<GroupVO>> checkGroup(@ParameterObject @Validated GroupCheckParam param) {
+    public ResponseVO<List<GroupVO>> checkGroup(@ParameterObject @Validated GroupCheckParam param) {
         GroupCheckResult result = groupChecker.check(getUser().getUserId(), param);
-        return Response.success(result.getGroups());
+        return ResponseVO.success(result.getGroups());
     }
 
 }

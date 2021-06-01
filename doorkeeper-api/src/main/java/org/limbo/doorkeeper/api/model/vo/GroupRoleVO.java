@@ -35,7 +35,7 @@ public class GroupRoleVO {
     @Schema(description ="角色ID")
     private Long roleId;
 
-    @Schema(description = "是否向下延伸，true的情况下，会把角色传递给子用户组的用户")
+    @Schema(description = "是否向下延伸，true的情况下，子用户组会继承其角色")
     private Boolean isExtend;
 
 }

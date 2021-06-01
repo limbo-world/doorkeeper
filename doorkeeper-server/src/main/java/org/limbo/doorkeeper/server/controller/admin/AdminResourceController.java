@@ -19,12 +19,12 @@ package org.limbo.doorkeeper.server.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.Page;
-import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.resource.ResourceAddParam;
-import org.limbo.doorkeeper.api.model.param.resource.ResourceBatchUpdateParam;
-import org.limbo.doorkeeper.api.model.param.resource.ResourceQueryParam;
-import org.limbo.doorkeeper.api.model.param.resource.ResourceUpdateParam;
+import org.limbo.doorkeeper.api.model.vo.PageVO;
+import org.limbo.doorkeeper.api.model.vo.ResponseVO;
+import org.limbo.doorkeeper.api.model.param.add.ResourceAddParam;
+import org.limbo.doorkeeper.api.model.param.batch.ResourceBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.query.ResourceQueryParam;
+import org.limbo.doorkeeper.api.model.param.update.ResourceUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ResourceVO;
 import org.limbo.doorkeeper.server.controller.BaseController;
 import org.limbo.doorkeeper.server.service.ResourceService;
@@ -50,34 +50,34 @@ public class AdminResourceController extends BaseController {
 
     @Operation(summary = "新建资源")
     @PostMapping
-    public Response<ResourceVO> add(@RequestBody @Validated ResourceAddParam param) {
-        return Response.success(resourceService.add(getRealmId(), getClientId(), param));
+    public ResponseVO<ResourceVO> add(@RequestBody @Validated ResourceAddParam param) {
+        return ResponseVO.success(resourceService.add(getRealmId(), getClientId(), param));
     }
 
     @Operation(summary = "批量操作资源")
     @PostMapping("/batch")
-    public Response<Void> batch(@RequestBody @Validated ResourceBatchUpdateParam param) {
+    public ResponseVO<Void> batch(@RequestBody @Validated ResourceBatchUpdateParam param) {
         resourceService.batchUpdate(getRealmId(), getClientId(), param);
-        return Response.success();
+        return ResponseVO.success();
     }
 
     @Operation(summary = "分页查询资源")
     @GetMapping
-    public Response<Page<ResourceVO>> page(@ParameterObject ResourceQueryParam param) {
-        return Response.success(resourceService.page(getRealmId(), getClientId(), param));
+    public ResponseVO<PageVO<ResourceVO>> page(@ParameterObject ResourceQueryParam param) {
+        return ResponseVO.success(resourceService.page(getRealmId(), getClientId(), param));
     }
 
     @Operation(summary = "查询资源")
     @GetMapping("/{resourceId}")
-    public Response<ResourceVO> get(@Validated @NotNull(message = "未提交资源ID") @PathVariable("resourceId") Long resourceId) {
-        return Response.success(resourceService.get(getRealmId(), getClientId(), resourceId));
+    public ResponseVO<ResourceVO> get(@Validated @NotNull(message = "未提交资源ID") @PathVariable("resourceId") Long resourceId) {
+        return ResponseVO.success(resourceService.get(getRealmId(), getClientId(), resourceId));
     }
 
     @Operation(summary = "更新资源")
     @PutMapping("/{resourceId}")
-    public Response<Void> update(@Validated @NotNull(message = "未提交资源ID") @PathVariable("resourceId") Long resourceId,
+    public ResponseVO<Void> update(@Validated @NotNull(message = "未提交资源ID") @PathVariable("resourceId") Long resourceId,
                                    @Validated @RequestBody ResourceUpdateParam param) {
         resourceService.update(getRealmId(), getClientId(), resourceId, param);
-        return Response.success();
+        return ResponseVO.success();
     }
 }

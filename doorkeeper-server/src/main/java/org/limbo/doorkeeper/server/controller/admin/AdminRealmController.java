@@ -19,9 +19,9 @@ package org.limbo.doorkeeper.server.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.realm.RealmUpdateParam;
-import org.limbo.doorkeeper.api.model.param.resource.RealmAddParam;
+import org.limbo.doorkeeper.api.model.vo.ResponseVO;
+import org.limbo.doorkeeper.api.model.param.update.RealmUpdateParam;
+import org.limbo.doorkeeper.api.model.param.add.RealmAddParam;
 import org.limbo.doorkeeper.api.model.vo.RealmVO;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.server.controller.BaseController;
@@ -52,28 +52,28 @@ public class AdminRealmController extends BaseController {
 
     @Operation(summary = "新建域")
     @PostMapping
-    public Response<RealmVO> add(@RequestBody @Validated RealmAddParam param) {
-        return Response.success(doorkeeperService.addRealm(getUser().getUserId(), param));
+    public ResponseVO<RealmVO> add(@RequestBody @Validated RealmAddParam param) {
+        return ResponseVO.success(doorkeeperService.addRealm(getUser().getUserId(), param));
     }
 
     @Operation(summary = "查询账户拥有的域")
     @GetMapping
-    public Response<List<RealmVO>> userRealms() {
-        return Response.success(doorkeeperService.userRealms(getUser().getUserId()));
+    public ResponseVO<List<RealmVO>> userRealms() {
+        return ResponseVO.success(doorkeeperService.userRealms(getUser().getUserId()));
     }
 
     @Operation(summary = "域详情")
     @GetMapping("/{realmId}")
-    public Response<RealmVO> get(@Validated @NotNull(message = "未提交域ID") @PathVariable("realmId") Long realmId) {
-        return Response.success(realmService.get(realmId));
+    public ResponseVO<RealmVO> get(@Validated @NotNull(message = "未提交域ID") @PathVariable("realmId") Long realmId) {
+        return ResponseVO.success(realmService.get(realmId));
     }
 
     @Operation(summary = "更新域")
     @PutMapping("/{realmId}")
-    public Response<RoleVO> update(@Validated @NotNull(message = "未提交域ID") @PathVariable("realmId") Long realmId,
-                                   @Validated @RequestBody RealmUpdateParam param) {
+    public ResponseVO<RoleVO> update(@Validated @NotNull(message = "未提交域ID") @PathVariable("realmId") Long realmId,
+                                     @Validated @RequestBody RealmUpdateParam param) {
         realmService.update(realmId, param);
-        return Response.success();
+        return ResponseVO.success();
     }
 
 }

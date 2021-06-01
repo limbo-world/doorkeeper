@@ -20,15 +20,16 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.limbo.doorkeeper.api.model.param.check.RoleCheckParam;
+import org.limbo.doorkeeper.api.model.param.query.RoleCheckParam;
 import org.limbo.doorkeeper.api.model.vo.GroupRoleVO;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.api.model.vo.check.RoleCheckResult;
-import org.limbo.doorkeeper.server.dal.entity.*;
-import org.limbo.doorkeeper.server.dal.mapper.*;
-import org.limbo.doorkeeper.server.support.GroupTool;
-import org.limbo.doorkeeper.server.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.domain.GroupTreeDO;
+import org.limbo.doorkeeper.server.infrastructure.exception.AuthorizationException;
+import org.limbo.doorkeeper.server.infrastructure.mapper.*;
+import org.limbo.doorkeeper.server.infrastructure.po.*;
+import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -73,37 +74,36 @@ public class RoleChecker {
         RoleCheckResult result = new RoleCheckResult();
         result.setRoles(new ArrayList<>());
 
-        User user = userMapper.selectById(userId);
+        UserPO user = userMapper.selectById(userId);
         if (user == null) {
             throw new AuthorizationException("无法找到用户，Id=" + userId);
         }
         if (!user.getIsEnabled()) {
             return result;
         }
-        user.setPassword(null);
 
         // 根据查询条件获取角色id
-        List<Role> roles = roleMapper.selectList(Wrappers.<Role>lambdaQuery()
-                .select(Role::getRoleId)
-                .eq(Role::getRealmId, user.getRealmId())
-                .eq(Role::getIsEnabled, true)
-                .in(CollectionUtils.isNotEmpty(checkParam.getRoleIds()), Role::getRoleId, checkParam.getRoleIds())
-                .eq(checkParam.getClientId() != null, Role::getClientId, checkParam.getClientId())
-                .eq(StringUtils.isNotBlank(checkParam.getName()), Role::getName, checkParam.getName())
-                .like(StringUtils.isNotBlank(checkParam.getDimName()), Role::getName, checkParam.getDimName())
-                .in(CollectionUtils.isNotEmpty(checkParam.getNames()), Role::getName, checkParam.getNames())
+        List<RolePO> roles = roleMapper.selectList(Wrappers.<RolePO>lambdaQuery()
+                .select(RolePO::getRoleId)
+                .eq(RolePO::getRealmId, user.getRealmId())
+                .eq(RolePO::getIsEnabled, true)
+                .in(CollectionUtils.isNotEmpty(checkParam.getRoleIds()), RolePO::getRoleId, checkParam.getRoleIds())
+                .eq(checkParam.getClientId() != null, RolePO::getClientId, checkParam.getClientId())
+                .eq(StringUtils.isNotBlank(checkParam.getName()), RolePO::getName, checkParam.getName())
+                .like(StringUtils.isNotBlank(checkParam.getDimName()), RolePO::getName, checkParam.getDimName())
+                .in(CollectionUtils.isNotEmpty(checkParam.getNames()), RolePO::getName, checkParam.getNames())
         );
 
         if (CollectionUtils.isEmpty(roles)) {
             return result;
         }
 
-        Set<Long> roleIds = roles.stream().map(Role::getRoleId).collect(Collectors.toSet());
+        Set<Long> roleIds = roles.stream().map(RolePO::getRoleId).collect(Collectors.toSet());
 
         // 获取用户角色
-        List<UserRole> userRoles = userRoleMapper.selectList(Wrappers.<UserRole>lambdaQuery()
-                .eq(UserRole::getUserId, userId)
-                .in(UserRole::getRoleId, roleIds)
+        List<UserRolePO> userRoles = userRoleMapper.selectList(Wrappers.<UserRolePO>lambdaQuery()
+                .eq(UserRolePO::getUserId, userId)
+                .in(UserRolePO::getRoleId, roleIds)
         );
 
         if (CollectionUtils.isEmpty(userRoles)) {
@@ -112,7 +112,7 @@ public class RoleChecker {
 
         // 用户拥有的角色ID
         Set<Long> userOwnedRoleIds = userRoles.stream()
-                .map(UserRole::getRoleId)
+                .map(UserRolePO::getRoleId)
                 .collect(Collectors.toSet());
 
         // 用户所在用户组的角色
@@ -134,30 +134,31 @@ public class RoleChecker {
 
     /**
      * 用户所在用户组的角色id
+     *
      * @param userId
      * @param realmId
      * @param checkedRoleIds 期望的角色id
      * @return
      */
-    private List<Long> getUserGroupRoleIds(Long userId, Long realmId, Collection<Long> checkedRoleIds) {
+    public List<Long> getUserGroupRoleIds(Long userId, Long realmId, Collection<Long> checkedRoleIds) {
         // 获取用户所在用户组
-        List<Group> groups = groupMapper.selectList(Wrappers.<Group>lambdaQuery()
-                .eq(Group::getRealmId, realmId)
+        List<GroupPO> groups = groupMapper.selectList(Wrappers.<GroupPO>lambdaQuery()
+                .eq(GroupPO::getRealmId, realmId)
         );
         if (CollectionUtils.isEmpty(groups)) {
             return new ArrayList<>();
         }
         // 获取用户组角色
-        List<GroupRole> groupRoles = groupRoleMapper.selectList(Wrappers.<GroupRole>lambdaQuery()
-                .in(GroupRole::getGroupId, groups.stream().map(Group::getGroupId).collect(Collectors.toSet()))
-                .in(GroupRole::getRoleId, checkedRoleIds)
+        List<GroupRolePO> groupRoles = groupRoleMapper.selectList(Wrappers.<GroupRolePO>lambdaQuery()
+                .in(GroupRolePO::getGroupId, groups.stream().map(GroupPO::getGroupId).collect(Collectors.toSet()))
+                .in(GroupRolePO::getRoleId, checkedRoleIds)
         );
         if (CollectionUtils.isEmpty(groupRoles)) {
             return new ArrayList<>();
         }
         // 获取用户用户组关系
-        List<GroupUser> groupUsers = groupUserMapper.selectList(Wrappers.<GroupUser>lambdaQuery()
-                .eq(GroupUser::getUserId, userId)
+        List<GroupUserPO> groupUsers = groupUserMapper.selectList(Wrappers.<GroupUserPO>lambdaQuery()
+                .eq(GroupUserPO::getUserId, userId)
         );
         if (CollectionUtils.isEmpty(groupUsers)) {
             return new ArrayList<>();
@@ -167,10 +168,10 @@ public class RoleChecker {
         List<GroupRoleVO> groupRoleVOS = EnhancedBeanUtils.createAndCopyList(groupRoles, GroupRoleVO.class);
 
         // 生成组织树
-        List<GroupVO> tree = GroupTool.organizeGroupTree(null, groupVOS);
+        GroupTreeDO groupTreeDO = GroupTreeDO.create(groupVOS);
         // 给树绑定角色
         for (GroupRoleVO groupRoleVO : groupRoleVOS) {
-            GroupVO group = GroupTool.findGroup(groupRoleVO.getGroupId(), tree);
+            GroupVO group = groupTreeDO.findFromTree(groupRoleVO.getGroupId());
             if (group == null) {
                 continue;
             }
@@ -185,8 +186,8 @@ public class RoleChecker {
         }
         // 获取用户组织角色
         List<Long> roleIds = new ArrayList<>();
-        for (GroupUser groupUser : groupUsers) {
-            GroupVO group = GroupTool.findGroup(groupUser.getGroupId(), tree);
+        for (GroupUserPO groupUser : groupUsers) {
+            GroupVO group = groupTreeDO.findFromTree(groupUser.getGroupId());
             if (group == null) {
                 continue;
             }
@@ -198,7 +199,6 @@ public class RoleChecker {
     }
 
     /**
-     *
      * 给当前用户组下所有子节点增加对应角色
      */
     private void extendGroupRole(GroupRoleVO groupRoleVO, List<GroupVO> children) {

@@ -19,7 +19,7 @@ package org.limbo.doorkeeper.server.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.Response;
+import org.limbo.doorkeeper.api.model.vo.ResponseVO;
 import org.limbo.doorkeeper.api.model.param.LoginParam;
 import org.limbo.doorkeeper.server.service.LoginService;
 import org.springdoc.api.annotations.ParameterObject;
@@ -44,8 +44,8 @@ public class LoginController {
 
     @GetMapping
     @Operation(summary = "登录")
-    public Response<String> login(@Validated @ParameterObject LoginParam param) {
-        return Response.success(loginService.login(param));
+    public ResponseVO<String> login(@Validated @ParameterObject LoginParam param) {
+        return ResponseVO.success(loginService.login(param));
     }
 
 }

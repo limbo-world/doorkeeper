@@ -19,14 +19,14 @@ package org.limbo.doorkeeper.server.controller;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.vo.UserVO;
 import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.server.dal.mapper.RealmMapper;
-import org.limbo.doorkeeper.server.dal.mapper.UserMapper;
-import org.limbo.doorkeeper.server.dal.entity.Realm;
+import org.limbo.doorkeeper.server.infrastructure.mapper.RealmMapper;
+import org.limbo.doorkeeper.server.infrastructure.mapper.UserMapper;
+import org.limbo.doorkeeper.server.infrastructure.po.RealmPO;
 import org.limbo.doorkeeper.server.service.RealmService;
 import org.limbo.doorkeeper.server.service.UserService;
-import org.limbo.doorkeeper.server.support.session.exception.AuthenticationException;
-import org.limbo.doorkeeper.server.utils.JWTUtil;
-import org.limbo.doorkeeper.server.utils.Verifies;
+import org.limbo.doorkeeper.server.infrastructure.exception.AuthenticationException;
+import org.limbo.doorkeeper.server.infrastructure.utils.JWTUtil;
+import org.limbo.doorkeeper.server.infrastructure.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestAttributes;
@@ -68,7 +68,7 @@ public class BaseController {
     protected UserVO getUser() {
         String token = getToken();
         try {
-            Realm realm = realmService.getRealmByToken(token);
+            RealmPO realm = realmService.getRealmByToken(token);
             JWTUtil.verifyToken(token, realm.getSecret());
             return userService.get(realm.getRealmId(), JWTUtil.getUserId(token), JWTUtil.getUsername(token));
         } catch (Exception e) {

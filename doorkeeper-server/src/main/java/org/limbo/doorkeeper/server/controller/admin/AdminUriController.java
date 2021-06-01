@@ -19,8 +19,8 @@ package org.limbo.doorkeeper.server.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.Response;
-import org.limbo.doorkeeper.api.model.param.UriQueryParam;
+import org.limbo.doorkeeper.api.model.vo.ResponseVO;
+import org.limbo.doorkeeper.api.model.param.query.UriQueryParam;
 import org.limbo.doorkeeper.api.model.vo.UriVO;
 import org.limbo.doorkeeper.server.controller.BaseController;
 import org.limbo.doorkeeper.server.service.UriService;
@@ -47,7 +47,7 @@ public class AdminUriController extends BaseController {
 
     @Operation(summary = "查询uri")
     @GetMapping
-    public Response<List<UriVO>> list(@ParameterObject UriQueryParam param) {
-        return Response.success(uriService.list(getRealmId(), getClientId(), param));
+    public ResponseVO<List<UriVO>> list(@ParameterObject UriQueryParam param) {
+        return ResponseVO.success(uriService.list(getRealmId(), getClientId(), param));
     }
 }

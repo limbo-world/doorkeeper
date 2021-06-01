@@ -19,7 +19,7 @@ package org.limbo.doorkeeper.server.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.Response;
+import org.limbo.doorkeeper.api.model.vo.ResponseVO;
 import org.limbo.doorkeeper.api.model.vo.GroupUserVO;
 import org.limbo.doorkeeper.server.controller.BaseController;
 import org.limbo.doorkeeper.server.service.GroupUserService;
@@ -48,15 +48,15 @@ public class AdminUserGroupController extends BaseController {
 
     @Operation(summary = "查询用户用户组")
     @GetMapping("/{userId}/group")
-    public Response<List<GroupUserVO>> list(@Validated @NotNull(message = "未提交用户ID") @PathVariable("userId") Long userId) {
-        return Response.success(groupUserService.getByUser(userId));
+    public ResponseVO<List<GroupUserVO>> list(@Validated @NotNull(message = "未提交用户ID") @PathVariable("userId") Long userId) {
+        return ResponseVO.success(groupUserService.getByUser(userId));
     }
 
     @Operation(summary = "查询用户用户组")
     @GetMapping("/{userId}/group/{groupId}")
-    public Response<GroupUserVO> get(@Validated @NotNull(message = "未提交用户ID") @PathVariable("userId") Long userId,
-                                          @Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId) {
-        return Response.success(groupUserService.getByUserAndGroup(userId, groupId));
+    public ResponseVO<GroupUserVO> get(@Validated @NotNull(message = "未提交用户ID") @PathVariable("userId") Long userId,
+                                       @Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId) {
+        return ResponseVO.success(groupUserService.getByUserAndGroup(userId, groupId));
     }
 
 }
