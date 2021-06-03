@@ -21,6 +21,7 @@ import org.limbo.doorkeeper.server.infrastructure.mapper.GroupRoleMapper;
 import org.limbo.doorkeeper.server.infrastructure.mapper.GroupUserMapper;
 import org.limbo.doorkeeper.server.infrastructure.mapper.UserRoleMapper;
 import org.limbo.doorkeeper.server.infrastructure.po.UserPO;
+import org.limbo.doorkeeper.server.infrastructure.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -44,6 +45,7 @@ public class PolicyCheckerFactory {
     private GroupRoleMapper groupRoleMapper;
 
     public PolicyChecker newPolicyChecker(UserPO user) {
+        Verifies.notNull(user, "校验用户不能为空");
         return new PolicyChecker(user, groupMapper, groupUserMapper, groupRoleMapper, userRoleMapper);
     }
 

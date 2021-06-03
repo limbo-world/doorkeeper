@@ -24,9 +24,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.BatchMethod;
 import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.model.param.add.UserAddParam;
+import org.limbo.doorkeeper.api.model.param.batch.UserRoleBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.query.UserQueryParam;
 import org.limbo.doorkeeper.api.model.param.update.PasswordUpdateParam;
-import org.limbo.doorkeeper.api.model.param.batch.UserRoleBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.update.UserUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.PageVO;
 import org.limbo.doorkeeper.api.model.vo.UserVO;
@@ -34,11 +34,13 @@ import org.limbo.doorkeeper.server.infrastructure.dao.GroupDao;
 import org.limbo.doorkeeper.server.infrastructure.dao.RoleDao;
 import org.limbo.doorkeeper.server.infrastructure.dao.UserGroupDao;
 import org.limbo.doorkeeper.server.infrastructure.dao.UserPolicyDao;
-import org.limbo.doorkeeper.server.infrastructure.po.*;
-import org.limbo.doorkeeper.server.infrastructure.mapper.ClientMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.RealmMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.UserMapper;
 import org.limbo.doorkeeper.server.infrastructure.exception.ParamException;
+import org.limbo.doorkeeper.server.infrastructure.mapper.ClientMapper;
+import org.limbo.doorkeeper.server.infrastructure.mapper.UserMapper;
+import org.limbo.doorkeeper.server.infrastructure.po.ClientPO;
+import org.limbo.doorkeeper.server.infrastructure.po.GroupPO;
+import org.limbo.doorkeeper.server.infrastructure.po.RolePO;
+import org.limbo.doorkeeper.server.infrastructure.po.UserPO;
 import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.infrastructure.utils.MD5Utils;
 import org.limbo.doorkeeper.server.infrastructure.utils.MyBatisPlusUtils;
@@ -75,9 +77,6 @@ public class UserService {
 
     @Autowired
     private RoleDao roleDao;
-
-    @Autowired
-    private RealmMapper realmMapper;
 
     @Autowired
     private DoorkeeperService doorkeeperService;
@@ -126,9 +125,8 @@ public class UserService {
         }
 
         // 如果是 doorkeeper 域下的用户 创建策略和权限
-        RealmPO doorkeeperRealm = realmMapper.getDoorkeeperRealm();
-        if (doorkeeperRealm.getRealmId().equals(realmId)) {
-            ClientPO apiClient = clientMapper.getByName(doorkeeperRealm.getRealmId(), DoorkeeperConstants.API_CLIENT);
+        if (doorkeeperService.getDoorkeeperRealmId().equals(realmId)) {
+            ClientPO apiClient = clientMapper.getByName(doorkeeperService.getDoorkeeperRealmId(), DoorkeeperConstants.API_CLIENT);
             doorkeeperService.bindUser(user.getUserId(), user.getUsername(), null, apiClient.getRealmId(), apiClient.getClientId());
         }
 

@@ -21,11 +21,11 @@ import com.auth0.jwt.algorithms.Algorithm;
 import org.apache.commons.lang3.time.DateUtils;
 import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.model.param.LoginParam;
-import org.limbo.doorkeeper.server.infrastructure.po.RealmPO;
-import org.limbo.doorkeeper.server.infrastructure.po.UserPO;
+import org.limbo.doorkeeper.server.infrastructure.exception.AuthenticationException;
 import org.limbo.doorkeeper.server.infrastructure.mapper.RealmMapper;
 import org.limbo.doorkeeper.server.infrastructure.mapper.UserMapper;
-import org.limbo.doorkeeper.server.infrastructure.exception.AuthenticationException;
+import org.limbo.doorkeeper.server.infrastructure.po.RealmPO;
+import org.limbo.doorkeeper.server.infrastructure.po.UserPO;
 import org.limbo.doorkeeper.server.infrastructure.utils.JWTUtil;
 import org.limbo.doorkeeper.server.infrastructure.utils.MD5Utils;
 import org.limbo.doorkeeper.server.infrastructure.utils.Verifies;
@@ -43,6 +43,7 @@ public class LoginService {
 
     @Autowired
     private UserMapper userMapper;
+
 
     @Autowired
     private RealmMapper realmMapper;
