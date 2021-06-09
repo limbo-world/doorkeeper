@@ -18,6 +18,7 @@ package org.limbo.doorkeeper;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import org.apache.commons.lang3.time.DateUtils;
@@ -32,7 +33,7 @@ import java.util.Date;
  */
 public class JwtTest {
 
-    @Test
+    @Test(expected = SignatureVerificationException.class)
     public void test(){
         String token = JWT.create()
                 .withExpiresAt(DateUtils.addHours(new Date(), 1))  //设置过期时间
@@ -45,10 +46,9 @@ public class JwtTest {
         DecodedJWT verify = jwtVerifier.verify(token);
 
         verify = jwtVerifier.verify("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzc3MiLCJhdWQiOiJ1c2VyMSIsImV4cCx6MTYxMDcxMTU2NH0.-rftBST3A8FOTnGhc7mKV5KK9OkG1pm74IPyuMZkegI");
-        System.out.println(11111);
     }
 
-    @Test
+    @Test(expected = SignatureVerificationException.class)
     public void testOther() {
         String token = JWT.create()
                 .withExpiresAt(DateUtils.addHours(new Date(), 1))  //设置过期时间

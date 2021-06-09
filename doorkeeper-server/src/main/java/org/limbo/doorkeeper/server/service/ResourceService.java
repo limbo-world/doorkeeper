@@ -214,6 +214,7 @@ public class ResourceService {
 
     /**
      * 同时保存uri数据和resource_uri关系
+     *
      * @param resourceId
      * @param realmId
      * @param clientId
@@ -247,17 +248,25 @@ public class ResourceService {
         );
 
         List<ResourceUriPO> resourceUris = new ArrayList<>();
-        for (UriPO uri : uris) {
-            ResourceUriPO resourceUri = new ResourceUriPO();
-            resourceUri.setResourceId(resourceId);
-            resourceUri.setUriId(uri.getUriId());
-            resourceUris.add(resourceUri);
+        for (ResourceUriAddParam uriParam : params) {
+            for (UriPO uri : uris) {
+                // 比如uri的方法是否一致 防止添加路径相同但是方法不同的数据
+                if (uri.getUri().trim().equals(uriParam.getUri().trim()) && uri.getMethod() == uriParam.getMethod()) {
+                    ResourceUriPO resourceUri = new ResourceUriPO();
+                    resourceUri.setResourceId(resourceId);
+                    resourceUri.setUriId(uri.getUriId());
+                    resourceUris.add(resourceUri);
+                    break;
+                }
+            }
         }
+
         MyBatisPlusUtils.batchSave(resourceUris, ResourceUriPO.class);
     }
 
     /**
      * 同时保存tag数据和resource_tag关系
+     *
      * @param resourceId
      * @param realmId
      * @param clientId
@@ -319,6 +328,7 @@ public class ResourceService {
 
     /**
      * 绑定资源关联关系
+     *
      * @param resourceId
      * @param parentIds
      * @param parentNames
