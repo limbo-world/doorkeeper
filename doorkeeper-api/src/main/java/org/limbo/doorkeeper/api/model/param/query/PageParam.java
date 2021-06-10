@@ -16,14 +16,12 @@
 
 package org.limbo.doorkeeper.api.model.param.query;
 
-import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.Data;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Positive;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -55,10 +53,16 @@ public class PageParam<T> {
     public static final int MAX_SIZE = 1000;
 
     /**
-     * 排序
+     * 排序字段
      */
-    @Parameter(description = "排序")
-    protected List<OrderItem> orders = new ArrayList<>();
+    @Parameter(description = "排序字段 和排序方式保持统一长度")
+    private List<String> orderBy;
+
+    /**
+     * 排序字段的排序方式
+     */
+    @Parameter(description = "排序方式, 和排序字段保持统一长度")
+    private List<String> sort;
 
     /**
      * 是否查询所有数据

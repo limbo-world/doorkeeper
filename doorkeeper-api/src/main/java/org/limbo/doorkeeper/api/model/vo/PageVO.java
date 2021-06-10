@@ -16,8 +16,6 @@
 
 package org.limbo.doorkeeper.api.model.vo;
 
-import com.baomidou.mybatisplus.core.metadata.OrderItem;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.limbo.doorkeeper.api.model.param.query.PageParam;
@@ -41,14 +39,8 @@ public class PageVO<T> {
     /**
      * 每页条数
      */
-    @Parameter(description = "每页条数")
+    @Schema(description = "每页条数")
     private int size = 20;
-
-    /**
-     * 排序
-     */
-    @Schema(description = "排序")
-    protected List<OrderItem> orders = new ArrayList<>();
 
     /**
      * 总条数
