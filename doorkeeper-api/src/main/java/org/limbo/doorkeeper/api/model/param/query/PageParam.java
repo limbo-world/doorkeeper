@@ -16,12 +16,14 @@
 
 package org.limbo.doorkeeper.api.model.param.query;
 
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.Data;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Positive;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -77,4 +79,18 @@ public class PageParam<T> {
         return size * (current - 1);
     }
 
+    public List<OrderItem> getOrders() {
+        List<OrderItem> orders = new ArrayList<>();
+        if (CollectionUtils.isEmpty(orderBy)) {
+            return orders;
+        }
+        for (int i = 0; i < orderBy.size(); i++) {
+            if (CollectionUtils.isNotEmpty(sort) && i < sort.size()) {
+                orders.add(new OrderItem(orderBy.get(i), sort.get(i)));
+            } else {
+                orders.add(new OrderItem(orderBy.get(i)));
+            }
+        }
+        return orders;
+    }
 }
