@@ -225,7 +225,10 @@ public class ResourceChecker {
      * @return 返回资源列表
      */
     private List<ResourceVO> findResources(Long realmId, Long clientId, ResourceCheckParam checkParam) {
-        List<Long> resourceIds = new ArrayList<>();
+        List<Long> resourceIds = checkParam.getResourceIds();
+        if (CollectionUtils.isEmpty(resourceIds)) {
+            resourceIds = new ArrayList<>();
+        }
         // 获取uri资源id
         if (CollectionUtils.isNotEmpty(checkParam.getUris())) {
             List<Long> uriIds = new ArrayList<>();
@@ -268,8 +271,7 @@ public class ResourceChecker {
             List<ResourceUriPO> resourceUris = resourceUriMapper.selectList(Wrappers.<ResourceUriPO>lambdaQuery()
                     .in(ResourceUriPO::getUriId, uriIds)
             );
-            resourceIds = resourceUris.stream().map(ResourceUriPO::getResourceId).collect(Collectors.toList());
-
+            resourceIds.addAll(resourceUris.stream().map(ResourceUriPO::getResourceId).collect(Collectors.toList()));
             // 如果匹配到的资源为空 则返回空
             if (CollectionUtils.isEmpty(resourceIds)) {
                 return new ArrayList<>();

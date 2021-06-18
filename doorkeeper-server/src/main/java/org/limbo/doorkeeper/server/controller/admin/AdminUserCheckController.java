@@ -73,15 +73,17 @@ public class AdminUserCheckController extends BaseController {
 
     @Operation(summary = "检查用户拥有的角色")
     @GetMapping("/check-role")
-    public ResponseVO<List<RoleVO>> checkRole(@ParameterObject @Validated RoleCheckParam param) {
-        RoleCheckResult result = roleChecker.check(getUser().getUserId(), param);
+    public ResponseVO<List<RoleVO>> checkRole(@Validated @NotNull(message = "未提交用户ID") @PathVariable("userId") Long userId,
+                                              @ParameterObject @Validated RoleCheckParam param) {
+        RoleCheckResult result = roleChecker.check(userId, param);
         return ResponseVO.success(result.getRoles());
     }
 
     @Operation(summary = "检查用户所在的组")
     @GetMapping("/check-group")
-    public ResponseVO<List<GroupVO>> checkGroup(@ParameterObject @Validated GroupCheckParam param) {
-        GroupCheckResult result = groupChecker.check(getUser().getUserId(), param);
+    public ResponseVO<List<GroupVO>> checkGroup(@Validated @NotNull(message = "未提交用户ID") @PathVariable("userId") Long userId,
+                                                @ParameterObject @Validated GroupCheckParam param) {
+        GroupCheckResult result = groupChecker.check(userId, param);
         return ResponseVO.success(result.getGroups());
     }
 

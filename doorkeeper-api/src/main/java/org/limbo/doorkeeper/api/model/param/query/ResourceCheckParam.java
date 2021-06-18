@@ -37,6 +37,9 @@ public class ResourceCheckParam {
     @Parameter(description = "进行权限校验时，资源所属委托方", required = true)
     private Long clientId;
 
+    @Parameter(description = "资源ID列表")
+    private List<Long> resourceIds;
+
     @Parameter(description = "资源名称列表, 精确查询")
     private List<String> names;
 
