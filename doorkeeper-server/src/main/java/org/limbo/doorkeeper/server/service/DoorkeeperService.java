@@ -105,13 +105,13 @@ public class DoorkeeperService {
     @Autowired
     private RoleChecker roleChecker;
 
-    private String realmResource;
+    private volatile String realmResource;
 
-    private String clientResource;
+    private volatile String clientResource;
     /**
      * doorkeeper域缓存对象 不能保证secret的变动
      */
-    private RealmPO doorkeeperRealm;
+    private volatile RealmPO doorkeeperRealm;
 
     /**
      * 系统数据初始化
