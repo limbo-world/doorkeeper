@@ -73,6 +73,12 @@ public class PageParam<T> {
     private Boolean needAll;
 
     /**
+     * 是否查询总数
+     */
+    @Parameter(description = "是否查询总数")
+    private boolean searchCount = true;
+
+    /**
      * 获取分页查询的偏移条数
      */
     public int getOffset() {

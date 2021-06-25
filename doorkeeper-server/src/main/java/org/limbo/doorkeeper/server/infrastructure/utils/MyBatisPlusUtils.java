@@ -59,9 +59,7 @@ public class MyBatisPlusUtils {
         Page<PO> page = new Page<>();
         page.setCurrent(ipage.getCurrent());
         page.setSize(ipage.getSize());
-        // 默认不查询count
-        page.setSearchCount(false);
-//        page.setTotal(page.isSearchCount() ? 0 : ipage.getTotal());
+        page.setSearchCount(ipage.isSearchCount());
 
         // todo 排序
 //        List<String> orderByList = ipage.getOrderBy();

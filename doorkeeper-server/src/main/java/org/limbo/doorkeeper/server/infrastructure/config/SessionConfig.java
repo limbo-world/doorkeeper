@@ -16,7 +16,7 @@
 //
 //package org.limbo.doorkeeper.server.infrastructure.config;
 //
-//import org.limbo.doorkeeper.server.support.session.RedisSessionDAO;
+//import org.limbo.doorkeeper.server.infrastructure.session.RedisSessionDAO;
 //import org.redisson.api.RedissonClient;
 //import org.springframework.context.annotation.Bean;
 //import org.springframework.context.annotation.Configuration;

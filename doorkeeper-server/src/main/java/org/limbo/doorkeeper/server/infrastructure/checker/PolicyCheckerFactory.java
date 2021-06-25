@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.support.auth;
+package org.limbo.doorkeeper.server.infrastructure.checker;
 
 import org.limbo.doorkeeper.server.infrastructure.mapper.GroupMapper;
 import org.limbo.doorkeeper.server.infrastructure.mapper.GroupRoleMapper;

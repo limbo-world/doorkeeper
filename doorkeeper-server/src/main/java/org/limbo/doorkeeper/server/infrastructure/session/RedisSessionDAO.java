@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.support.session;
+package org.limbo.doorkeeper.server.infrastructure.session;
 
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.vo.SessionUser;
