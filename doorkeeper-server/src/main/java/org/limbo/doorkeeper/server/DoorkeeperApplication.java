@@ -17,7 +17,7 @@
 
 package org.limbo.doorkeeper.server;
 
-import org.limbo.doorkeeper.server.infrastructure.config.WebConfig;
+import org.limbo.doorkeeper.server.adapter.http.config.WebConfig;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

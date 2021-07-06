@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.infrastructure.config;
+package org.limbo.doorkeeper.server.adapter.http.config;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.converter.Converter;
