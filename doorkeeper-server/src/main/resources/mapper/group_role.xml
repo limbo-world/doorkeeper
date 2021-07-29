@@ -20,10 +20,10 @@
 
     <insert id="batchInsertIgnore" parameterType="org.limbo.doorkeeper.server.infrastructure.po.GroupRolePO">
         INSERT ignore INTO group_role (
-        group_id, role_id
+            group_id, role_id, is_extend
         ) VALUES
         <foreach collection="groupRoles" separator="," item="groupRole">
-            ( #{groupRole.groupId}, #{groupRole.roleId} )
+            ( #{groupRole.groupId}, #{groupRole.roleId}, #{groupRole.isExtend} )
         </foreach>
     </insert>
 
