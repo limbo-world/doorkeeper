@@ -23,6 +23,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.*;
 import org.limbo.doorkeeper.api.model.param.InitParam;
@@ -33,13 +34,13 @@ import org.limbo.doorkeeper.api.model.param.update.PermissionUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.*;
 import org.limbo.doorkeeper.api.model.vo.check.ResourceCheckResult;
 import org.limbo.doorkeeper.api.model.vo.check.RoleCheckResult;
+import org.limbo.doorkeeper.server.infrastructure.checker.ResourceChecker;
+import org.limbo.doorkeeper.server.infrastructure.checker.RoleChecker;
 import org.limbo.doorkeeper.server.infrastructure.exception.ParamException;
 import org.limbo.doorkeeper.server.infrastructure.mapper.*;
 import org.limbo.doorkeeper.server.infrastructure.mapper.policy.PolicyMapper;
 import org.limbo.doorkeeper.server.infrastructure.po.*;
 import org.limbo.doorkeeper.server.infrastructure.utils.*;
-import org.limbo.doorkeeper.server.infrastructure.checker.ResourceChecker;
-import org.limbo.doorkeeper.server.infrastructure.checker.RoleChecker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -48,6 +49,8 @@ import org.springframework.util.ResourceUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -451,8 +454,8 @@ public class DoorkeeperService {
             synchronized (this) {
                 if (realmResource == null) {
                     try {
-                        File file = ResourceUtils.getFile("classpath:realm_resource.json");
-                        realmResource = FileUtils.readFileToString(file, "utf-8");
+                        InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("realm_resource.json");
+                        realmResource = IOUtils.toString(resourceAsStream, StandardCharsets.UTF_8);
                     } catch (IOException e) {
                         log.error("read realm_resource.json error", e);
                     }
@@ -470,8 +473,8 @@ public class DoorkeeperService {
             synchronized (this) {
                 if (clientResource == null) {
                     try {
-                        File file = ResourceUtils.getFile("classpath:client_resource.json");
-                        clientResource = FileUtils.readFileToString(file, "utf-8");
+                        InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("client_resource.json");
+                        clientResource = IOUtils.toString(resourceAsStream, StandardCharsets.UTF_8);
                     } catch (IOException e) {
                         log.error("read client_resource.json error", e);
                     }
