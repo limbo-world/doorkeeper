@@ -8,8 +8,11 @@
     <artifactId>doorkeeper</artifactId>
     <version>3.0.0</version>
     <modules>
-        <module>doorkeeper-server</module>
         <module>doorkeeper-api</module>
+        <module>doorkeeper-core</module>
+        <module>doorkeeper-server</module>
+        <module>doorkeeper-dao</module>
+        <module>doorkeeper-infrastructure</module>
     </modules>
 
     <packaging>pom</packaging>

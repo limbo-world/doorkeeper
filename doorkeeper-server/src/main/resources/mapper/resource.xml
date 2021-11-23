@@ -119,7 +119,7 @@
         </if>
         <if test="k != null and k != ''">
             and exists (select resource_tag_id from resource_tag rt where rt.resource_id = r.resource_id
-                and rt.tag_id = (select tag_id from tag where realm_id = #{realmId} and client_id = #{clientId} and k = #{k})
+                and rt.tag_id in (select tag_id from tag where realm_id = #{realmId} and client_id = #{clientId} and k = #{k})
             )
         </if>
         <if test="dimK != null and dimK != ''">
@@ -130,7 +130,7 @@
         </if>
         <if test="v != null and v != ''">
             and exists (select resource_tag_id from resource_tag rt where rt.resource_id = r.resource_id
-                and rt.tag_id = (select tag_id from tag where realm_id = #{realmId} and client_id = #{clientId} and v = #{v})
+                and rt.tag_id in (select tag_id from tag where realm_id = #{realmId} and client_id = #{clientId} and v = #{v})
             )
         </if>
         <if test="dimV != null and dimV != ''">

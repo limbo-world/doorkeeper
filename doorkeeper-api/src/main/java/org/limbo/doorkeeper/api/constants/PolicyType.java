@@ -36,15 +36,15 @@ public enum PolicyType implements IEnum<String> {
     /**
      * 多个策略的组合
      */
-    COMBINE,
+//    COMBINE,
     /**
      * 基于时间
      */
-    TIME,
+//    TIME,
     /**
      * 基于参数
      */
-    PARAM,
+//    PARAM,
     /**
      * 基于用户组
      */

@@ -21,7 +21,6 @@ import lombok.Data;
 import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.Logic;
 import org.limbo.doorkeeper.api.model.param.add.PolicyGroupAddParam;
-import org.limbo.doorkeeper.api.model.param.add.PolicyParamAddParam;
 import org.limbo.doorkeeper.api.model.param.add.PolicyRoleAddParam;
 import org.limbo.doorkeeper.api.model.param.add.PolicyUserAddParam;
 
@@ -48,9 +47,6 @@ public class PolicyUpdateParam {
 
     @Schema(description ="是否启用")
     private Boolean isEnabled;
-
-    @Schema(description ="操作策略")
-    private List<PolicyParamAddParam> params;
 
     @Schema(description ="角色策略")
     private List<PolicyRoleAddParam>  roles;

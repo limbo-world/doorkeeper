@@ -14,44 +14,21 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.infrastructure.po;
+package org.limbo.doorkeeper.api.dto.command;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.Data;
-
-import java.util.Date;
 
 /**
  * @author Devil
- * @date 2020/12/31 10:56 上午
+ * @date 2021/4/27 4:23 下午
  */
 @Data
-@TableName("resource")
-public class ResourcePO {
+public class InitCommand {
 
-    @TableId(type = IdType.AUTO)
-    private Long resourceId;
+    @Parameter(description ="用户名")
+    private String username;
 
-    private Long realmId;
-
-    private Long clientId;
-    /**
-     * 名称
-     */
-    private String name;
-    /**
-     * 描述
-     */
-    private String description;
-    /**
-     * 是否启用
-     */
-    private Boolean isEnabled;
-
-    private Date createTime;
-
-    private Date updateTime;
-
+    @Parameter(description ="密码")
+    private String password;
 }

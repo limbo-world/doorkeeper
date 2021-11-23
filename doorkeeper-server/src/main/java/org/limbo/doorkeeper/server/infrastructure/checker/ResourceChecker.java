@@ -24,7 +24,6 @@ import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.Logic;
 import org.limbo.doorkeeper.api.constants.UriMethod;
 import org.limbo.doorkeeper.api.model.param.query.PermissionQueryParam;
-import org.limbo.doorkeeper.api.model.param.query.PolicyCheckerParam;
 import org.limbo.doorkeeper.api.model.param.query.ResourceCheckParam;
 import org.limbo.doorkeeper.api.model.param.query.ResourceQueryParam;
 import org.limbo.doorkeeper.api.model.vo.PermissionPolicyVO;
@@ -349,16 +348,9 @@ public class ResourceChecker {
             if (policy == null) {
                 continue;
             }
-            // todo 判断是否能进行校验
-//            PolicyChecker policyChecker = policyCheckerFactory.newPolicyChecker(user, policy);
-//            if (policyChecker == null) {
-//                continue;
-//            }
-            PolicyCheckerParam policyCheckerParam = new PolicyCheckerParam();
-            policyCheckerParam.setParams(checkParam.getParams());
             totalCount++;
             // 统计允许的policy个数
-            if (checker.check(policy, policyCheckerParam.getParams()).allow()) {
+            if (checker.check(policy).allow()) {
                 allowedCount++;
             }
 

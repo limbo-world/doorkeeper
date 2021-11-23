@@ -22,11 +22,10 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.*;
-import org.limbo.doorkeeper.api.model.param.InitParam;
+import org.limbo.doorkeeper.api.dto.command.InitCommand;
 import org.limbo.doorkeeper.api.model.param.add.*;
 import org.limbo.doorkeeper.api.model.param.batch.UserRoleBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.query.*;
@@ -45,9 +44,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ResourceUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -120,7 +117,7 @@ public class DoorkeeperService {
      * 系统数据初始化
      */
     @Transactional
-    public void initDoorkeeper(InitParam param) {
+    public void initDoorkeeper(InitCommand param) {
         RealmPO realm = new RealmPO();
         realm.setName(DoorkeeperConstants.DOORKEEPER_REALM_NAME);
         realm.setSecret(UUIDUtils.get());

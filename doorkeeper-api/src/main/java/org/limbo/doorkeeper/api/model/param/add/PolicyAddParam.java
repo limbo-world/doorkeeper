@@ -54,9 +54,6 @@ public class PolicyAddParam {
     @Schema(description ="是否启用")
     private Boolean isEnabled;
 
-    @Schema(description ="参数策略")
-    private List<PolicyParamAddParam>  params;
-
     @Schema(description ="角色策略")
     private List<PolicyRoleAddParam>  roles;
 

@@ -52,9 +52,6 @@ public class ResourceCheckParam {
     @Parameter(description = "uri列表 method=uri 如 get=/api/test 或者 /api/test")
     private List<String> uris;
 
-    @Parameter(description = "进行权限校验时附带的参数 k=v")
-    private List<String> params;
-
     @Parameter(description = "是否返回标签")
     private Boolean needTag;
 

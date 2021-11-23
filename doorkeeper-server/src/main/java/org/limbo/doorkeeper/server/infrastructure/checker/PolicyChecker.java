@@ -19,12 +19,14 @@ package org.limbo.doorkeeper.server.infrastructure.checker;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.Logic;
 import org.limbo.doorkeeper.api.constants.PolicyType;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
-import org.limbo.doorkeeper.api.model.vo.policy.*;
+import org.limbo.doorkeeper.api.model.vo.policy.PolicyGroupVO;
+import org.limbo.doorkeeper.api.model.vo.policy.PolicyRoleVO;
+import org.limbo.doorkeeper.api.model.vo.policy.PolicyUserVO;
+import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
 import org.limbo.doorkeeper.server.domain.GroupTreeDO;
 import org.limbo.doorkeeper.server.infrastructure.exception.AuthorizationException;
 import org.limbo.doorkeeper.server.infrastructure.mapper.GroupMapper;
@@ -76,10 +78,9 @@ public class PolicyChecker {
      * 校验策略是否通过
      *
      * @param policy 策略
-     * @param params 校验参数 k=v
-     * @return
+     * @return 是否通过
      */
-    public Intention check(PolicyVO policy, List<String> params) {
+    public Intention check(PolicyVO policy) {
         PolicyType policyType = PolicyType.parse(policy.getType());
         if (policyType == null) {
             throw new AuthorizationException("解析policy类型失败，类型" + policy.getType());
@@ -99,17 +100,12 @@ public class PolicyChecker {
                 case ROLE:
                     checkPassed = doRoleCheck(policy);
                     break;
-                case PARAM:
-                    checkPassed = doParamCheck(policy, params);
-                    break;
                 case USER:
                     checkPassed = doUserCheck(policy);
                     break;
                 case GROUP:
                     checkPassed = doGroupCheck(policy);
                     break;
-                case COMBINE:
-                case TIME:
                 default:
                     throw new AuthorizationException("不支持的策略类型:" + policyType);
             }
@@ -185,39 +181,6 @@ public class PolicyChecker {
         return user != null && user.getIsEnabled() && policy.getUsers().stream()
                 .map(PolicyUserVO::getUserId)
                 .anyMatch(uid -> Objects.equals(uid, user.getUserId()));
-    }
-
-    /**
-     * 根据参数校验策略是否通过
-     *
-     * @param policy
-     * @param paramStrings
-     * @return
-     */
-    private boolean doParamCheck(PolicyVO policy, List<String> paramStrings) {
-        Map<String, String> params = new HashMap<>();
-        if (CollectionUtils.isNotEmpty(paramStrings)) {
-            for (String param : paramStrings) {
-                String[] split = param.split(DoorkeeperConstants.KV_DELIMITER);
-                params.put(split[0], split[1]);
-            }
-        }
-        List<PolicyParamVO> policyParams = policy.getParams();
-        Map<String, String> policyParamMap = policyParams.stream()
-                .collect(Collectors.toMap(
-                        PolicyParamVO::getK, PolicyParamVO::getV
-                ));
-
-        // 统计满足限制条件的参数个数
-        int satisfiedParamCount = 0;
-        for (Map.Entry<String, String> policyParamEntry : policyParamMap.entrySet()) {
-            String v = params.get(policyParamEntry.getKey());
-            if (v != null && v.equals(policyParamEntry.getValue())) {
-                satisfiedParamCount++;
-            }
-        }
-
-        return Logic.isSatisfied(getPolicyLogic(policy), policyParamMap.size(), satisfiedParamCount);
     }
 
     /**

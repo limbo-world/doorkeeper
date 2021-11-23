@@ -60,9 +60,6 @@ public class PolicyVO {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
-    @Schema(description ="操作策略")
-    private List<PolicyParamVO> params;
-
     @Schema(description ="角色策略")
     private List<PolicyRoleVO>  roles;
 

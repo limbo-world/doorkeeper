@@ -21,17 +21,23 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.param.add.PolicyAddParam;
-import org.limbo.doorkeeper.api.model.param.query.PolicyQueryParam;
 import org.limbo.doorkeeper.api.model.param.batch.PolicyBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.query.PolicyQueryParam;
 import org.limbo.doorkeeper.api.model.param.update.PolicyUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.PageVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
-import org.limbo.doorkeeper.server.infrastructure.dao.*;
-import org.limbo.doorkeeper.server.infrastructure.po.*;
+import org.limbo.doorkeeper.server.infrastructure.dao.PermissionPolicyDao;
+import org.limbo.doorkeeper.server.infrastructure.dao.PolicyGroupDao;
+import org.limbo.doorkeeper.server.infrastructure.dao.PolicyRoleDao;
+import org.limbo.doorkeeper.server.infrastructure.dao.PolicyUserDao;
+import org.limbo.doorkeeper.server.infrastructure.exception.ParamException;
 import org.limbo.doorkeeper.server.infrastructure.mapper.ClientMapper;
 import org.limbo.doorkeeper.server.infrastructure.mapper.PermissionPolicyMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.policy.*;
-import org.limbo.doorkeeper.server.infrastructure.exception.ParamException;
+import org.limbo.doorkeeper.server.infrastructure.mapper.policy.PolicyGroupMapper;
+import org.limbo.doorkeeper.server.infrastructure.mapper.policy.PolicyMapper;
+import org.limbo.doorkeeper.server.infrastructure.mapper.policy.PolicyRoleMapper;
+import org.limbo.doorkeeper.server.infrastructure.mapper.policy.PolicyUserMapper;
+import org.limbo.doorkeeper.server.infrastructure.po.*;
 import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.infrastructure.utils.MyBatisPlusUtils;
 import org.limbo.doorkeeper.server.infrastructure.utils.Verifies;
@@ -61,9 +67,6 @@ public class PolicyService {
     private PolicyUserDao policyUserDao;
 
     @Autowired
-    private PolicyParamDao policyParamDao;
-
-    @Autowired
     private PolicyGroupDao policyGroupDao;
 
     @Autowired
@@ -77,9 +80,6 @@ public class PolicyService {
 
     @Autowired
     private PolicyUserMapper policyUserMapper;
-
-    @Autowired
-    private PolicyParamMapper policyParamMapper;
 
     @Autowired
     private PolicyRoleMapper policyRoleMapper;
@@ -108,9 +108,6 @@ public class PolicyService {
                 break;
             case USER:
                 policyUserDao.batchSave(policy.getPolicyId(), param.getUsers());
-                break;
-            case PARAM:
-                policyParamDao.batchSave(policy.getPolicyId(), param.getParams());
                 break;
             case GROUP:
                 policyGroupDao.batchSave(policy.getPolicyId(), param.getGroups());
@@ -164,9 +161,6 @@ public class PolicyService {
                 policyGroupMapper.delete(Wrappers.<PolicyGroupPO>lambdaQuery()
                         .in(PolicyGroupPO::getPolicyId, policyIds)
                 );
-                policyParamMapper.delete(Wrappers.<PolicyParamPO>lambdaQuery()
-                        .in(PolicyParamPO::getPolicyId, policyIds)
-                );
                 policyUserMapper.delete(Wrappers.<PolicyUserPO>lambdaQuery()
                         .in(PolicyUserPO::getPolicyId, policyIds)
                 );
@@ -209,9 +203,6 @@ public class PolicyService {
             case USER:
                 result.setUsers(policyUserDao.getByPolicy(policyId));
                 break;
-            case PARAM:
-                result.setParams(policyParamDao.getByPolicy(policyId));
-                break;
             case GROUP:
                 result.setGroups(policyGroupDao.getByPolicy(policyId));
                 break;
@@ -244,9 +235,6 @@ public class PolicyService {
                 break;
             case USER:
                 policyUserDao.update(policyId, param.getUsers());
-                break;
-            case PARAM:
-                policyParamDao.update(policyId, param.getParams());
                 break;
             case GROUP:
                 policyGroupDao.update(policyId, param.getGroups());

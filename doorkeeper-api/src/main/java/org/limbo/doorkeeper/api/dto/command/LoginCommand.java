@@ -14,44 +14,28 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.infrastructure.po;
+package org.limbo.doorkeeper.api.dto.command;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.Data;
 
-import java.util.Date;
+import javax.validation.constraints.NotBlank;
 
 /**
  * @author Devil
- * @date 2020/12/31 10:56 上午
+ * @date 2020/12/31 5:29 下午
  */
 @Data
-@TableName("resource")
-public class ResourcePO {
+public class LoginCommand {
 
-    @TableId(type = IdType.AUTO)
-    private Long resourceId;
-
+    @Parameter(description = "域，为空则默认登录doorkeeper域")
     private Long realmId;
 
-    private Long clientId;
-    /**
-     * 名称
-     */
-    private String name;
-    /**
-     * 描述
-     */
-    private String description;
-    /**
-     * 是否启用
-     */
-    private Boolean isEnabled;
+    @NotBlank(message = "用户名不能为空")
+    @Parameter(description ="用户名", required = true)
+    private String username;
 
-    private Date createTime;
-
-    private Date updateTime;
-
+    @NotBlank(message = "密码不能为空")
+    @Parameter(description ="密码", required = true)
+    private String password;
 }
