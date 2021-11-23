@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @author Devil
- * @date 2020/11/24 10:04 AM
+ * @since 2020/11/24 10:04 AM
  */
 public class RedisSessionDAO extends AbstractSessionDAO<SessionUser> {
 

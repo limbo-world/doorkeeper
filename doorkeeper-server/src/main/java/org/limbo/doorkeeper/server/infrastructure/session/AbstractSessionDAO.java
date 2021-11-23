@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @author Devil
- * @date 2020/11/23 8:17 PM
+ * @since 2020/11/23 8:17 PM
  */
 public abstract class AbstractSessionDAO<T extends SessionUser> {
 

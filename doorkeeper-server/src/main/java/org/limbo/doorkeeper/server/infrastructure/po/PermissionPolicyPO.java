@@ -23,7 +23,7 @@ import lombok.Data;
 
 /**
  * @author Devil
- * @date 2020/12/31 5:06 下午
+ * @since 2020/12/31 5:06 下午
  */
 @Data
 @TableName("permission_policy")

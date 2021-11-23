@@ -25,7 +25,7 @@ import java.util.List;
 
 /**
  * @author Devil
- * @date 2021/1/5 4:47 下午
+ * @since 2021/1/5 4:47 下午
  */
 @Data
 public class ResourceVO {

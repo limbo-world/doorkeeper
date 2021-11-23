@@ -21,7 +21,7 @@ import org.limbo.doorkeeper.server.infrastructure.po.GroupPO;
 
 /**
  * @author Devil
- * @date 2020/12/31 5:44 下午
+ * @since 2020/12/31 5:44 下午
  */
 public interface GroupMapper extends BaseMapper<GroupPO> {
 }

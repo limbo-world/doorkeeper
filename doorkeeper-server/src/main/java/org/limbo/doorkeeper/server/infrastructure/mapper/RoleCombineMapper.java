@@ -21,7 +21,7 @@ import org.limbo.doorkeeper.server.infrastructure.po.RoleCombinePO;
 
 /**
  * @author Devil
- * @date 2021/1/3 6:08 下午
+ * @since 2021/1/3 6:08 下午
  */
 public interface RoleCombineMapper extends BaseMapper<RoleCombinePO> {
 }

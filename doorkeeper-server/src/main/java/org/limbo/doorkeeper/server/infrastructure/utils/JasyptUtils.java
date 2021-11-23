@@ -6,7 +6,7 @@ import org.jasypt.encryption.pbe.config.SimpleStringPBEConfig;
 
 /**
  * @author Devil
- * @date 2020/11/18 3:31 PM
+ * @since 2020/11/18 3:31 PM
  */
 public class JasyptUtils {
 

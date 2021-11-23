@@ -29,7 +29,7 @@ import java.util.Date;
  * 针对某一资源进行处理
  *
  * @author Devil
- * @date 2020/12/31 11:00 上午
+ * @since 2020/12/31 11:00 上午
  */
 @Data
 @TableName("permission")

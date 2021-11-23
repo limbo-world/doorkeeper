@@ -21,7 +21,7 @@ import lombok.Data;
 
 /**
  * @author Devil
- * @date 2021/3/16 10:58 上午
+ * @since 2021/3/16 10:58 上午
  */
 @Data
 public class GroupQueryParam {

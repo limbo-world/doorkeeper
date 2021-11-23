@@ -11,7 +11,7 @@ import java.util.Date;
  * 域 一个域中的配置会有交集 不同域有隔离性
  *
  * @author Devil
- * @date 2020/12/29 3:49 下午
+ * @since 2020/12/29 3:49 下午
  */
 @Data
 @TableName("realm")

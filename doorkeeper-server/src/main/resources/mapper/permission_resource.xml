@@ -20,7 +20,7 @@
 
     <insert id="batchInsertIgnore" parameterType="org.limbo.doorkeeper.server.infrastructure.po.PermissionResourcePO">
         INSERT ignore INTO permission_resource (
-        permission_id, resource_id
+            permission_id, resource_id
         ) VALUES
         <foreach collection="permissionResources" separator="," item="permissionResource">
             ( #{permissionResource.permissionId}, #{permissionResource.resourceId} )

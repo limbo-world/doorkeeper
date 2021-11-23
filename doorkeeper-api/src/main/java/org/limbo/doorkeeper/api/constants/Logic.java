@@ -22,7 +22,7 @@ import com.baomidou.mybatisplus.core.enums.IEnum;
  * 判断逻辑
  *
  * @author Devil
- * @date 2020/12/31 3:01 下午
+ * @since 2020/12/31 3:01 下午
  */
 public enum Logic implements IEnum<String> {
 

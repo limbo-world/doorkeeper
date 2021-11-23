@@ -24,7 +24,7 @@ import java.util.List;
 
 /**
  * @author Devil
- * @date 2021/1/12 3:32 下午
+ * @since 2021/1/12 3:32 下午
  */
 public interface GroupUserMapper extends BaseMapper<GroupUserPO> {
 

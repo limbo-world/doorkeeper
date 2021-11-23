@@ -22,7 +22,7 @@ import org.limbo.doorkeeper.server.infrastructure.utils.EasyAntPathMatcher;
 
 /**
  * @author Devil
- * @date 2021/6/1 3:46 下午
+ * @since 2021/6/1 3:46 下午
  */
 @Data
 public class PatternDO {

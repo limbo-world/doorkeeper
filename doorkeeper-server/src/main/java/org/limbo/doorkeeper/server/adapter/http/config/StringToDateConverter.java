@@ -25,7 +25,7 @@ import java.util.Date;
 
 /**
  * @author Devil
- * @date 2020/11/24 11:50 AM
+ * @since 2020/11/24 11:50 AM
  */
 public class StringToDateConverter implements Converter<String, Date> {
 

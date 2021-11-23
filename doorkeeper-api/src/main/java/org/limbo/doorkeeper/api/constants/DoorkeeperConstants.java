@@ -18,7 +18,7 @@ package org.limbo.doorkeeper.api.constants;
 
 /**
  * @author Devil
- * @date 2021/1/10 10:40 上午
+ * @since 2021/1/10 10:40 上午
  */
 public interface DoorkeeperConstants {
     /**

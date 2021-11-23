@@ -28,7 +28,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * @author liuqingtong
- * @date 2020/11/19 19:29
+ * @since 2020/11/19 19:29
  */
 @SpringBootApplication
 @EnableAspectJAutoProxy(proxyTargetClass = true)

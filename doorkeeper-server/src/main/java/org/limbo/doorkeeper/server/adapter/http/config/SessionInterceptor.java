@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author liuqingtong
- * @date 2020/11/24 15:54
+ * @since 2020/11/24 15:54
  */
 @Slf4j
 public class SessionInterceptor implements HandlerInterceptor {

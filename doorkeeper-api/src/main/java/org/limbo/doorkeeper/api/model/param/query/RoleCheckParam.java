@@ -23,7 +23,7 @@ import java.util.List;
 
 /**
  * @author Devil
- * @date 2021/1/29 12:39 下午
+ * @since 2021/1/29 12:39 下午
  */
 @Data
 public class RoleCheckParam {

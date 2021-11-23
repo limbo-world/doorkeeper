@@ -23,7 +23,7 @@ import lombok.Data;
 
 /**
  * @author Devil
- * @date 2021/1/14 7:37 下午
+ * @since 2021/1/14 7:37 下午
  */
 @Data
 @TableName("group_user")

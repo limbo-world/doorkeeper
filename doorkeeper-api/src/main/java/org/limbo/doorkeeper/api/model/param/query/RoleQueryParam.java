@@ -24,7 +24,7 @@ import javax.validation.constraints.NotNull;
 
 /**
  * @author Devil
- * @date 2021/1/4 5:44 下午
+ * @since 2021/1/4 5:44 下午
  */
 @Data
 public class RoleQueryParam extends PageParam<RoleVO> {

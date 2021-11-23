@@ -21,7 +21,7 @@ import lombok.Data;
 
 /**
  * @author Devil
- * @date 2020/11/23 8:17 PM
+ * @since 2020/11/23 8:17 PM
  */
 @Data
 public class SessionUser {

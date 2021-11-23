@@ -23,7 +23,7 @@ import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 
 /**
  * @author Devil
- * @date 2021/1/15 7:43 下午
+ * @since 2021/1/15 7:43 下午
  */
 public class JWTUtil {
 

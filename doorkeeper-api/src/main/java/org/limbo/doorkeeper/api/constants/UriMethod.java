@@ -20,7 +20,7 @@ import com.baomidou.mybatisplus.core.enums.IEnum;
 
 /**
  * @author Devil
- * @date 2021/1/11 4:25 下午
+ * @since 2021/1/11 4:25 下午
  */
 public enum UriMethod implements IEnum<String> {
     ALL, GET, POST, PUT, DELETE, HEAD, OPTIONS, TRACE, CONNECT;

@@ -24,7 +24,7 @@ import lombok.Data;
 /**
  * 用户组角色绑定关系
  * @author Devil
- * @date 2021/1/4 7:11 下午
+ * @since 2021/1/4 7:11 下午
  */
 @Data
 @TableName("group_role")

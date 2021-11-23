@@ -25,7 +25,7 @@ import lombok.Data;
  * 资源关联关系
  *
  * @author Devil
- * @date 2021/5/13 4:44 下午
+ * @since 2021/5/13 4:44 下午
  */
 @Data
 @TableName("resource_association")

@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
  * 资源校验器
  *
  * @author Devil
- * @date 2021/3/31 2:04 下午
+ * @since 2021/3/31 2:04 下午
  */
 @Slf4j
 @Component

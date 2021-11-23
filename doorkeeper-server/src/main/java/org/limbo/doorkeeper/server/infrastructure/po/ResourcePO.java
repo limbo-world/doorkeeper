@@ -25,7 +25,7 @@ import java.util.Date;
 
 /**
  * @author Devil
- * @date 2020/12/31 10:56 上午
+ * @since 2020/12/31 10:56 上午
  */
 @Data
 @TableName("resource")

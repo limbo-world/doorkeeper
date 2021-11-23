@@ -18,7 +18,7 @@ package org.limbo.doorkeeper.api.constants;
 
 /**
  * @author Brozen
- * @date 2020/3/9 11:30 AM
+ * @since 2020/3/9 11:30 AM
  * @email brozen@qq.com
  */
 public enum Sorts {

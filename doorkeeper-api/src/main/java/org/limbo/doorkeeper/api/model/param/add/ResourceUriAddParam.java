@@ -24,7 +24,7 @@ import javax.validation.constraints.NotBlank;
 
 /**
  * @author Devil
- * @date 2021/1/5 4:52 下午
+ * @since 2021/1/5 4:52 下午
  */
 @Data
 public class ResourceUriAddParam {

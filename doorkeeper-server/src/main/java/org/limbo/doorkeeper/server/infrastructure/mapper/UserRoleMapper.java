@@ -21,7 +21,7 @@ import org.limbo.doorkeeper.server.infrastructure.po.UserRolePO;
 
 /**
  * @author Devil
- * @date 2021/1/12 3:32 下午
+ * @since 2021/1/12 3:32 下午
  */
 public interface UserRoleMapper extends BaseMapper<UserRolePO> {
 }

@@ -25,7 +25,7 @@ import lombok.Data;
  * 角色组合关系
  *
  * @author Devil
- * @date 2020/12/31 10:54 上午
+ * @since 2020/12/31 10:54 上午
  */
 @Data
 @TableName("role_combine")

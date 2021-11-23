@@ -20,7 +20,7 @@ import lombok.Data;
 
 /**
  * @author Devil
- * @date 2021/1/8 10:42 上午
+ * @since 2021/1/8 10:42 上午
  */
 @Data
 public class PermissionPolicyVO {

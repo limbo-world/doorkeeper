@@ -23,7 +23,7 @@ import lombok.Data;
 
 /**
  * @author Devil
- * @date 2021/1/8 9:38 上午
+ * @since 2021/1/8 9:38 上午
  */
 @Data
 @TableName("permission_resource")

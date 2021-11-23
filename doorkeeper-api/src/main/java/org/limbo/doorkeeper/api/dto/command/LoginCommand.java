@@ -23,7 +23,7 @@ import javax.validation.constraints.NotBlank;
 
 /**
  * @author Devil
- * @date 2020/12/31 5:29 下午
+ * @since 2020/12/31 5:29 下午
  */
 @Data
 public class LoginCommand {

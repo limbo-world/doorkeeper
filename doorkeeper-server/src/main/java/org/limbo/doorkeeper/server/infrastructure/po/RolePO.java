@@ -27,7 +27,7 @@ import java.util.Date;
  * realmId clientId name 唯一
  *
  * @author Devil
- * @date 2020/12/29 4:28 下午
+ * @since 2020/12/29 4:28 下午
  */
 @Data
 @TableName("role")

@@ -23,7 +23,7 @@ import org.limbo.doorkeeper.api.model.vo.UserVO;
 
 /**
  * @author Devil
- * @date 2021/1/9 7:56 下午
+ * @since 2021/1/9 7:56 下午
  */
 @Data
 @EqualsAndHashCode(callSuper = true)

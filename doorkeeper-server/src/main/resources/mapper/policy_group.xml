@@ -20,7 +20,7 @@
 
     <insert id="batchInsertIgnore" parameterType="org.limbo.doorkeeper.server.infrastructure.po.PolicyGroupPO">
         INSERT ignore INTO policy_group (
-        policy_id, group_id, is_extend
+            policy_id, group_id, is_extend
         ) VALUES
         <foreach collection="policyGroups" separator="," item="policyGroup">
             ( #{policyGroup.policyId}, #{policyGroup.groupId}, #{policyGroup.isExtend} )

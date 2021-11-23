@@ -27,7 +27,7 @@ import java.util.List;
  * 授权校验参数
  *
  * @author brozen
- * @date 2021/1/14
+ * @since 2021/1/14
  */
 @Data
 @Accessors(chain = true)

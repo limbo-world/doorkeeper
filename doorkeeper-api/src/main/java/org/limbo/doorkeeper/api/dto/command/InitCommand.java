@@ -21,7 +21,7 @@ import lombok.Data;
 
 /**
  * @author Devil
- * @date 2021/4/27 4:23 下午
+ * @since 2021/4/27 4:23 下午
  */
 @Data
 public class InitCommand {

@@ -21,7 +21,7 @@ import lombok.Data;
 
 /**
  * @author Devil
- * @date 2021/1/9 7:56 下午
+ * @since 2021/1/9 7:56 下午
  */
 @Data
 public class UserUpdateParam {

@@ -25,7 +25,7 @@ import java.util.List;
 
 /**
  * @author Devil
- * @date 2021/1/4 11:40 上午
+ * @since 2021/1/4 11:40 上午
  */
 @Data
 public class PermissionVO {

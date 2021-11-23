@@ -22,7 +22,7 @@ import org.limbo.doorkeeper.api.constants.UriMethod;
 
 /**
  * @author Devil
- * @date 2021/4/19 8:29 下午
+ * @since 2021/4/19 8:29 下午
  */
 @Data
 public class UriQueryParam {

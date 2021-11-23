@@ -18,7 +18,7 @@ package org.limbo.doorkeeper.server.infrastructure.exception;
 
 /**
  * @author Brozen
- * @date 2020/3/4 12:15 PM
+ * @since 2020/3/4 12:15 PM
  * @email brozen@qq.com
  */
 public class ParamException extends RuntimeException {

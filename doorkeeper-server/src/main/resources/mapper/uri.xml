@@ -20,7 +20,7 @@
 
     <insert id="batchInsertIgnore" parameterType="org.limbo.doorkeeper.server.infrastructure.po.UriPO">
         INSERT ignore INTO uri (
-            realm_id, client_id, uri, method
+            realm_id, client_id, uri, `method`
         ) VALUES
         <foreach collection="uris" separator="," item="uri">
             ( #{uri.realmId}, #{uri.clientId}, #{uri.uri}, #{uri.method} )

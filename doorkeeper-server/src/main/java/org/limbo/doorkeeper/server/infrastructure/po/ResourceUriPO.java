@@ -23,7 +23,7 @@ import lombok.Data;
 
 /**
  * @author Devil
- * @date 2020/12/31 2:38 下午
+ * @since 2020/12/31 2:38 下午
  */
 @Data
 @TableName("resource_uri")

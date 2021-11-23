@@ -20,7 +20,7 @@ package org.limbo.doorkeeper.api.constants;
  * API请求 业务码
  *
  * @author Brozen
- * @date 2020/3/5 10:51 AM
+ * @since 2020/3/5 10:51 AM
  * @email brozen@qq.com
  */
 public enum ResponseCode {

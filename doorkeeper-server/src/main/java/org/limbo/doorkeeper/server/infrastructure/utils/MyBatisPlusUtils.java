@@ -41,7 +41,7 @@ import java.util.stream.IntStream;
 
 /**
  * @author Devil
- * @date 2020/11/18 3:31 PM
+ * @since 2020/11/18 3:31 PM
  */
 public class MyBatisPlusUtils {
 

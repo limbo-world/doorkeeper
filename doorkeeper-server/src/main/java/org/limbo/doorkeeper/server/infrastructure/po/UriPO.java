@@ -24,7 +24,7 @@ import org.limbo.doorkeeper.api.constants.UriMethod;
 
 /**
  * @author Devil
- * @date 2021/4/25 4:42 下午
+ * @since 2021/4/25 4:42 下午
  */
 @Data
 @TableName("uri")

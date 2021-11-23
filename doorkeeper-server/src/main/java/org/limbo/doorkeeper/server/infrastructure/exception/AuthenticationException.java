@@ -18,7 +18,7 @@ package org.limbo.doorkeeper.server.infrastructure.exception;
 
 /**
  * @author Devil
- * @date 2020/11/23 8:18 PM
+ * @since 2020/11/23 8:18 PM
  */
 public class AuthenticationException extends RuntimeException {
 

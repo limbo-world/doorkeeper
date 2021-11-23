@@ -18,7 +18,7 @@ package org.limbo.doorkeeper.api.constants;
 
 /**
  * @author Devil
- * @date 2020/12/31 3:01 下午
+ * @since 2020/12/31 3:01 下午
  */
 public enum BatchMethod {
     /**

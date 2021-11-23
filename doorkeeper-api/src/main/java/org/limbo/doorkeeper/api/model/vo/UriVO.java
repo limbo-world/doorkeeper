@@ -21,7 +21,7 @@ import lombok.Data;
 
 /**
  * @author Devil
- * @date 2021/4/25 5:19 下午
+ * @since 2021/4/25 5:19 下午
  */
 @Data
 public class UriVO {

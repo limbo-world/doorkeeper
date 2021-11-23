@@ -25,7 +25,7 @@ import java.util.Date;
 
 /**
  * @author Devil
- * @date 2020/12/31 3:51 下午
+ * @since 2020/12/31 3:51 下午
  */
 @Data
 @TableName("user")

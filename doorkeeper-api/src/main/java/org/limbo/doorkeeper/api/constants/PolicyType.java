@@ -22,7 +22,7 @@ import com.baomidou.mybatisplus.core.enums.IEnum;
  * 策略类型
  *
  * @author Devil
- * @date 2020/12/31 3:01 下午
+ * @since 2020/12/31 3:01 下午
  */
 public enum PolicyType implements IEnum<String> {
     /**
