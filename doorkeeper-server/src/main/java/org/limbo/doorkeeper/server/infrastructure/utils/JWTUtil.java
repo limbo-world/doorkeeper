@@ -19,7 +19,7 @@ package org.limbo.doorkeeper.server.infrastructure.utils;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.JWTVerifier;
-import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.infrastructure.constants.DoorkeeperConstants;
 
 /**
  * @author Devil

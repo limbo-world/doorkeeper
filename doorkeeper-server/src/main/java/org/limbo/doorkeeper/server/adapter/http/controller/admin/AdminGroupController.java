@@ -19,7 +19,7 @@ package org.limbo.doorkeeper.server.adapter.http.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.infrastructure.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.model.param.add.GroupAddParam;
 import org.limbo.doorkeeper.api.model.param.query.GroupQueryParam;
 import org.limbo.doorkeeper.api.model.param.update.GroupUpdateParam;

@@ -22,7 +22,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.BatchMethod;
-import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.model.param.add.UserAddParam;
 import org.limbo.doorkeeper.api.model.param.batch.UserRoleBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.param.query.UserQueryParam;
@@ -30,17 +29,18 @@ import org.limbo.doorkeeper.api.model.param.update.PasswordUpdateParam;
 import org.limbo.doorkeeper.api.model.param.update.UserUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.PageVO;
 import org.limbo.doorkeeper.api.model.vo.UserVO;
+import org.limbo.doorkeeper.infrastructure.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.infrastructure.mapper.NamespaceMapper;
+import org.limbo.doorkeeper.infrastructure.po.NamespacePO;
 import org.limbo.doorkeeper.server.infrastructure.dao.GroupDao;
-import org.limbo.doorkeeper.server.infrastructure.dao.RoleDao;
-import org.limbo.doorkeeper.server.infrastructure.dao.UserGroupDao;
-import org.limbo.doorkeeper.server.infrastructure.dao.UserPolicyDao;
 import org.limbo.doorkeeper.server.infrastructure.exception.ParamException;
-import org.limbo.doorkeeper.server.infrastructure.mapper.ClientMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.UserMapper;
-import org.limbo.doorkeeper.server.infrastructure.po.ClientPO;
-import org.limbo.doorkeeper.server.infrastructure.po.GroupPO;
-import org.limbo.doorkeeper.server.infrastructure.po.RolePO;
-import org.limbo.doorkeeper.server.infrastructure.po.UserPO;
+import org.limbo.doorkeeper.infrastructure.mapper.GroupUserMapper;
+import org.limbo.doorkeeper.infrastructure.mapper.RoleMapper;
+import org.limbo.doorkeeper.infrastructure.mapper.UserMapper;
+import org.limbo.doorkeeper.infrastructure.po.GroupPO;
+import org.limbo.doorkeeper.infrastructure.po.GroupUserPO;
+import org.limbo.doorkeeper.infrastructure.po.RolePO;
+import org.limbo.doorkeeper.infrastructure.po.UserPO;
 import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.infrastructure.utils.MD5Utils;
 import org.limbo.doorkeeper.server.infrastructure.utils.MyBatisPlusUtils;
@@ -50,6 +50,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,31 +65,28 @@ public class UserService {
     private UserMapper userMapper;
 
     @Autowired
-    private UserGroupDao userGroupDao;
-
-    @Autowired
     private UserRoleService userRoleService;
-
-    @Autowired
-    private UserPolicyDao userPolicyDao;
 
     @Autowired
     private GroupDao groupDao;
 
     @Autowired
-    private RoleDao roleDao;
+    private RoleMapper roleMapper;
 
     @Autowired
     private DoorkeeperService doorkeeperService;
 
     @Autowired
-    private ClientMapper clientMapper;
+    private NamespaceMapper namespaceMapper;
+
+    @Autowired
+    private GroupUserMapper groupUserMapper;
 
     @Transactional
     public UserVO add(Long realmId, UserAddParam param) {
         UserPO user = EnhancedBeanUtils.createAndCopy(param, UserPO.class);
         user.setRealmId(realmId);
-        user.setPassword(MD5Utils.md5WithSalt(param.getPassword()));
+        user.setPassword(MD5Utils.md5AndHex(param.getPassword(), null));
         try {
             userMapper.insert(user);
         } catch (DuplicateKeyException e) {
@@ -98,39 +96,43 @@ public class UserService {
 
         // 用户组 参数添加 默认添加
         List<GroupPO> defaultGroup = groupDao.getDefaultGroup(realmId);
-        List<Long> groupIds = defaultGroup.stream().map(GroupPO::getGroupId).collect(Collectors.toList());
-        if (CollectionUtils.isNotEmpty(param.getGroupIds())) {
-            groupIds.addAll(param.getGroupIds());
-        }
-        if (CollectionUtils.isNotEmpty(groupIds)) {
-            userGroupDao.batchSave(user.getUserId(), groupIds);
+        if (CollectionUtils.isNotEmpty(defaultGroup)) {
+            List<Long> groupIds = defaultGroup.stream().map(GroupPO::getGroupId).collect(Collectors.toList());
+            batchSaveUserGroups(user.getUserId(), groupIds);
         }
 
         // 用户角色 参数添加 默认添加
-        List<RolePO> defaultRole = roleDao.getDefaultRole(realmId, null);
-        List<Long> roleIds = defaultRole.stream().map(RolePO::getRoleId).collect(Collectors.toList());
-        if (CollectionUtils.isNotEmpty(param.getRoleIds())) {
-            roleIds.addAll(param.getRoleIds());
-        }
-        if (CollectionUtils.isNotEmpty(roleIds)) {
+        List<RolePO> defaultRole = roleMapper.selectList(Wrappers.<RolePO>lambdaQuery()
+                .eq(RolePO::getRealmId, realmId)
+                .eq(RolePO::getIsDefault, true)
+        );
+        if (CollectionUtils.isNotEmpty(defaultRole)) {
+            List<Long> roleIds = defaultRole.stream().map(RolePO::getRoleId).collect(Collectors.toList());
             UserRoleBatchUpdateParam batchUpdateParam = new UserRoleBatchUpdateParam();
             batchUpdateParam.setType(BatchMethod.SAVE);
             batchUpdateParam.setRoleIds(roleIds);
             userRoleService.batchUpdate(user.getUserId(), batchUpdateParam);
         }
 
-        // 用户策略
-        if (CollectionUtils.isNotEmpty(param.getPolicyIds())) {
-            userPolicyDao.batchSave(user.getUserId(), param.getPolicyIds());
-        }
-
         // 如果是 doorkeeper 域下的用户 创建策略和权限
-        if (doorkeeperService.getDoorkeeperRealmId().equals(realmId)) {
-            ClientPO apiClient = clientMapper.getByName(doorkeeperService.getDoorkeeperRealmId(), DoorkeeperConstants.API_CLIENT);
-            doorkeeperService.bindUser(user.getUserId(), user.getUsername(), null, apiClient.getRealmId(), apiClient.getClientId());
+        if (doorkeeperService.getDoorkeeperTenantId().equals(realmId)) {
+            NamespacePO apiClient = namespaceMapper.getByName(doorkeeperService.getDoorkeeperTenantId(), DoorkeeperConstants.API_CLIENT);
+            doorkeeperService.bindUser(user.getUserId(), user.getUsername(), null, apiClient.getRealmId(), apiClient.getNamespaceId());
         }
 
         return EnhancedBeanUtils.createAndCopy(user, UserVO.class);
+    }
+
+    private void batchSaveUserGroups(Long userId, List<Long> groupIds) {
+        List<GroupUserPO> groupUsers = new ArrayList<>();
+        for (Long groupId : groupIds) {
+            GroupUserPO groupUser = new GroupUserPO();
+            groupUser.setGroupId(groupId);
+            groupUser.setUserId(userId);
+            groupUser.setExtend("");
+            groupUsers.add(groupUser);
+        }
+        groupUserMapper.batchInsertIgnore(groupUsers);
     }
 
     public PageVO<UserVO> page(Long realmId, UserQueryParam param) {
@@ -189,7 +191,7 @@ public class UserService {
 
         // 判断是否需要更新密码
         if (StringUtils.isNotBlank(param.getPassword())) {
-            updateWrapper.set(UserPO::getPassword, MD5Utils.md5WithSalt(param.getPassword()));
+            updateWrapper.set(UserPO::getPassword, MD5Utils.md5AndHex(param.getPassword(), null));
         }
         userMapper.update(null, updateWrapper);
     }
@@ -203,7 +205,7 @@ public class UserService {
         Verifies.notNull(user, "用户不存在");
         Verifies.verify(MD5Utils.verify(param.getOldPassword(), user.getPassword()), "密码错误");
         userMapper.update(null, Wrappers.<UserPO>lambdaUpdate()
-                .set(UserPO::getPassword, MD5Utils.md5WithSalt(param.getNewPassword()))
+                .set(UserPO::getPassword, MD5Utils.md5AndHex(param.getNewPassword(), null))
                 .eq(UserPO::getUserId, userId)
                 .eq(UserPO::getRealmId, realmId)
         );

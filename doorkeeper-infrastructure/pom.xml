@@ -11,5 +11,24 @@
 
     <artifactId>doorkeeper-infrastructure</artifactId>
 
+    <dependencies>
+        <!-- 内部依赖 -->
+        <dependency>
+            <groupId>org.limbo</groupId>
+            <artifactId>doorkeeper-api</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.limbo</groupId>
+            <artifactId>doorkeeper-domain</artifactId>
+            <version>3.0.0</version>
+        </dependency>
 
+        <!-- MyBatis -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>${mybatis.plus.verison}</version>
+        </dependency>
+    </dependencies>
 </project>

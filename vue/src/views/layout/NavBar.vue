@@ -47,10 +47,9 @@
 
 <script>
 
-import {mapState, mapMutations, mapActions} from 'vuex';
+import {mapActions, mapMutations, mapState} from 'vuex';
 import RealmAddEdit from "@/views/layout/RealmAddEdit";
 import PasswordEdit from './PasswordEdit';
-import {http} from "@/libs/axios-installer";
 import store from "@/libs/vuex-installer";
 
 export default {

@@ -31,9 +31,9 @@ public class RoleQueryParam extends PageParam<RoleVO> {
 
     private Long realmId;
 
-    @NotNull(message = "委托方不能为空")
-    @Parameter(description = "委托方，如果是域角色 clientId 为 0", required = true)
-    private Long clientId;
+    @NotNull(message = "命名空间不能为空")
+    @Parameter(description = "命名空间 如果是域角色 为 0", required = true)
+    private Long namespaceId;
 
     @Parameter(description = "名称，精确查询")
     private String name;

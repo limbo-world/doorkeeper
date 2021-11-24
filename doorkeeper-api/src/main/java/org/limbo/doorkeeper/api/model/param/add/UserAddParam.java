@@ -56,12 +56,4 @@ public class UserAddParam {
     @Schema(description ="是否启用")
     private Boolean isEnabled;
 
-    @Schema(description = "用户组列表，新增的时候将用户加入哪些用户组")
-    private List<Long> groupIds;
-
-    @Schema(description = "角色列表，新增的时候将用户加入哪些角色")
-    private List<Long> roleIds;
-
-    @Schema(description = "策略列表，新增的时候将用户加入哪些策略")
-    private List<Long> policyIds;
 }

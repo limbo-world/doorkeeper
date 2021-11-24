@@ -18,7 +18,7 @@ package org.limbo.doorkeeper.server.domain;
 
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
-import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.infrastructure.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
 
 import java.util.ArrayList;

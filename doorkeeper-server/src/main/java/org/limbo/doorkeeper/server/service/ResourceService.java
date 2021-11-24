@@ -19,18 +19,18 @@ package org.limbo.doorkeeper.server.service;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.model.param.add.ResourceAddParam;
 import org.limbo.doorkeeper.api.model.param.add.ResourceTagAddParam;
 import org.limbo.doorkeeper.api.model.param.add.ResourceUriAddParam;
-import org.limbo.doorkeeper.api.model.param.query.ResourceQueryParam;
 import org.limbo.doorkeeper.api.model.param.batch.ResourceBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.query.ResourceQueryParam;
 import org.limbo.doorkeeper.api.model.param.update.ResourceUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.PageVO;
 import org.limbo.doorkeeper.api.model.vo.ResourceVO;
+import org.limbo.doorkeeper.infrastructure.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.infrastructure.mapper.*;
+import org.limbo.doorkeeper.infrastructure.po.*;
 import org.limbo.doorkeeper.server.infrastructure.dao.PermissionResourceDao;
-import org.limbo.doorkeeper.server.infrastructure.po.*;
-import org.limbo.doorkeeper.server.infrastructure.mapper.*;
 import org.limbo.doorkeeper.server.infrastructure.exception.ParamException;
 import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.infrastructure.utils.MyBatisPlusUtils;
@@ -56,7 +56,7 @@ public class ResourceService {
     private ResourceMapper resourceMapper;
 
     @Autowired
-    private ClientMapper clientMapper;
+    private NamespaceMapper namespaceMapper;
 
     @Autowired
     private PermissionResourceMapper permissionResourceMapper;
@@ -81,12 +81,12 @@ public class ResourceService {
 
     @Transactional
     public ResourceVO add(Long realmId, Long clientId, ResourceAddParam param) {
-        ClientPO client = clientMapper.getById(realmId, clientId);
+        NamespacePO client = namespaceMapper.getById(realmId, clientId);
         Verifies.notNull(client, "委托方不存在");
 
         ResourcePO resource = EnhancedBeanUtils.createAndCopy(param, ResourcePO.class);
         resource.setRealmId(client.getRealmId());
-        resource.setClientId(client.getClientId());
+        resource.setClientId(client.getNamespaceId());
         try {
             resourceMapper.insert(resource);
         } catch (DuplicateKeyException e) {

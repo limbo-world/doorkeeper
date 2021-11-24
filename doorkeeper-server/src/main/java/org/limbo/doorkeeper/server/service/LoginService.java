@@ -19,13 +19,13 @@ package org.limbo.doorkeeper.server.service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import org.apache.commons.lang3.time.DateUtils;
-import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.dto.command.LoginCommand;
+import org.limbo.doorkeeper.infrastructure.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.infrastructure.mapper.RealmMapper;
+import org.limbo.doorkeeper.infrastructure.mapper.UserMapper;
+import org.limbo.doorkeeper.infrastructure.po.RealmPO;
+import org.limbo.doorkeeper.infrastructure.po.UserPO;
 import org.limbo.doorkeeper.server.infrastructure.exception.AuthenticationException;
-import org.limbo.doorkeeper.server.infrastructure.mapper.RealmMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.UserMapper;
-import org.limbo.doorkeeper.server.infrastructure.po.RealmPO;
-import org.limbo.doorkeeper.server.infrastructure.po.UserPO;
 import org.limbo.doorkeeper.server.infrastructure.utils.JWTUtil;
 import org.limbo.doorkeeper.server.infrastructure.utils.MD5Utils;
 import org.limbo.doorkeeper.server.infrastructure.utils.Verifies;
@@ -53,26 +53,31 @@ public class LoginService {
 
     public String login(LoginCommand param) {
         UserPO user;
-        RealmPO realm;
+        RealmPO tenant;
         // 不填realm 默认登录 doorkeeper
         if (param.getRealmId() == null) {
-            realm = realmMapper.getDoorkeeperRealm();
-            Verifies.notNull(realm, "realm不存在");
+            tenant = realmMapper.getDoorkeeperRealm();
+            Verifies.notNull(tenant, "realm不存在");
 
-            user = userMapper.getByUsername(realm.getRealmId(), param.getUsername());
+            user = userMapper.getByUsername(tenant.getRealmId(), param.getUsername());
             Verifies.notNull(user, "用户不存在");
             Verifies.verify(user.getIsEnabled(), "用户未启用");
-            Verifies.verify(MD5Utils.verify(param.getPassword(), user.getPassword()), "密码错误");
+            verifyPassword(param.getUsername(), param.getPassword(), param.getTimestamp(), user.getPassword());
         } else {
             user = userMapper.getByUsername(param.getRealmId(), param.getUsername());
             Verifies.notNull(user, "用户不存在");
             Verifies.verify(user.getIsEnabled(), "用户未启用");
-            Verifies.verify(MD5Utils.verify(param.getPassword(), user.getPassword()), "密码错误");
+            verifyPassword(param.getUsername(), param.getPassword(), param.getTimestamp(), user.getPassword());
 
-            realm = realmMapper.selectById(user.getRealmId());
-            Verifies.notNull(realm, "realm不存在");
+            tenant = realmMapper.selectById(user.getRealmId());
+            Verifies.notNull(tenant, "realm不存在");
         }
-        return token(user.getUserId(), realm.getRealmId(), user.getUsername(), user.getNickname(), realm.getSecret());
+        return token(user.getUserId(), tenant.getRealmId(), user.getUsername(), user.getNickname(), tenant.getSecret());
+    }
+
+    private void verifyPassword(String username, String requirePassword, Long timestamp, String password) {
+        Verifies.verify(new Date().getTime() - timestamp <= 300000, "请校对时间"); // 5分钟内的
+        Verifies.verify(MD5Utils.md5AndHex(username + password + timestamp, null).equals(requirePassword), "密码错误");
     }
 
     public String token(Long userId, Long realmId, String username, String nickname, String secret) {
@@ -87,18 +92,19 @@ public class LoginService {
 
     /**
      * 根据token返回一个重置过期时间新的token（旧的token也还能使用）
+     *
      * @param token
      * @return
      */
     public String refreshToken(String token) {
-        RealmPO realm;
+        RealmPO tenant;
         try {
-            realm = realmService.getRealmByToken(token);
+            tenant = realmService.getTenantByToken(token);
         } catch (Exception e) {
             throw new AuthenticationException();
         }
 
-        return token(JWTUtil.getUserId(token), realm.getRealmId(), JWTUtil.getUsername(token), JWTUtil.getNickname(token), realm.getSecret());
+        return token(JWTUtil.getUserId(token), tenant.getRealmId(), JWTUtil.getUsername(token), JWTUtil.getNickname(token), tenant.getSecret());
     }
 
 }

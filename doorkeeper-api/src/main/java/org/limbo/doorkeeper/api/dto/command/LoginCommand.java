@@ -20,6 +20,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Devil
@@ -38,4 +39,8 @@ public class LoginCommand {
     @NotBlank(message = "密码不能为空")
     @Parameter(description ="密码", required = true)
     private String password;
+
+    @NotNull(message = "时间戳不能为空")
+    @Parameter(description ="时间戳", required = true)
+    private Long timestamp;
 }

@@ -20,8 +20,8 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.param.update.ClientUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.ClientVO;
-import org.limbo.doorkeeper.server.infrastructure.po.ClientPO;
-import org.limbo.doorkeeper.server.infrastructure.mapper.ClientMapper;
+import org.limbo.doorkeeper.infrastructure.po.NamespacePO;
+import org.limbo.doorkeeper.infrastructure.mapper.NamespaceMapper;
 import org.limbo.doorkeeper.server.infrastructure.exception.ParamException;
 import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.infrastructure.utils.Verifies;
@@ -38,25 +38,25 @@ import org.springframework.transaction.annotation.Transactional;
 public class ClientService {
 
     @Autowired
-    private ClientMapper clientMapper;
+    private NamespaceMapper namespaceMapper;
 
     public ClientVO get(Long realmId, Long clientId) {
-        ClientPO client = clientMapper.getById(realmId, clientId);
+        NamespacePO client = namespaceMapper.getById(realmId, clientId);
         Verifies.notNull(client, "委托方不存在");
         return EnhancedBeanUtils.createAndCopy(client, ClientVO.class);
     }
 
     @Transactional
     public void update(Long realmId, Long clientId, ClientUpdateParam param) {
-        ClientPO client = clientMapper.getById(realmId, clientId);
+        NamespacePO client = namespaceMapper.getById(realmId, clientId);
         Verifies.notNull(client, "委托方不存在");
 
         try {
-            clientMapper.update(null, Wrappers.<ClientPO>lambdaUpdate()
-                    .set(StringUtils.isNotBlank(param.getName()), ClientPO::getName, param.getName())
-                    .set(param.getDescription() != null, ClientPO::getDescription, param.getDescription())
-                    .set(param.getIsEnabled() != null, ClientPO::getIsEnabled, param.getIsEnabled())
-                    .eq(ClientPO::getClientId, clientId)
+            namespaceMapper.update(null, Wrappers.<NamespacePO>lambdaUpdate()
+                    .set(StringUtils.isNotBlank(param.getName()), NamespacePO::getName, param.getName())
+                    .set(param.getDescription() != null, NamespacePO::getDescription, param.getDescription())
+                    .set(param.getIsEnabled() != null, NamespacePO::getIsEnabled, param.getIsEnabled())
+                    .eq(NamespacePO::getNamespaceId, clientId)
             );
         } catch (DuplicateKeyException e) {
             throw new ParamException("名称已存在");

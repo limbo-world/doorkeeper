@@ -9,10 +9,11 @@
     <version>3.0.0</version>
     <modules>
         <module>doorkeeper-api</module>
-        <module>doorkeeper-core</module>
+        <module>doorkeeper-domain</module>
         <module>doorkeeper-server</module>
-        <module>doorkeeper-dao</module>
         <module>doorkeeper-infrastructure</module>
+        <module>doorkeeper-app</module>
+        <module>doorkeeper-adapter</module>
     </modules>
 
     <packaging>pom</packaging>

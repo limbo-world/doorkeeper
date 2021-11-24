@@ -24,6 +24,11 @@
             <artifactId>doorkeeper-api</artifactId>
             <version>3.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.limbo</groupId>
+            <artifactId>doorkeeper-app</artifactId>
+            <version>3.0.0</version>
+        </dependency>
 
         <!-- SpringBootStarter -->
         <dependency>
@@ -55,13 +60,6 @@
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
             <version>${springdoc.version}</version>
-        </dependency>
-
-        <!-- MyBatis -->
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>${mybatis.plus.verison}</version>
         </dependency>
 
         <!-- MySql -->

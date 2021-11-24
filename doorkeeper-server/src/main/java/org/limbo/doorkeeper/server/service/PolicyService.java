@@ -26,18 +26,18 @@ import org.limbo.doorkeeper.api.model.param.query.PolicyQueryParam;
 import org.limbo.doorkeeper.api.model.param.update.PolicyUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.PageVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
+import org.limbo.doorkeeper.infrastructure.po.*;
 import org.limbo.doorkeeper.server.infrastructure.dao.PermissionPolicyDao;
 import org.limbo.doorkeeper.server.infrastructure.dao.PolicyGroupDao;
 import org.limbo.doorkeeper.server.infrastructure.dao.PolicyRoleDao;
 import org.limbo.doorkeeper.server.infrastructure.dao.PolicyUserDao;
 import org.limbo.doorkeeper.server.infrastructure.exception.ParamException;
-import org.limbo.doorkeeper.server.infrastructure.mapper.ClientMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.PermissionPolicyMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.policy.PolicyGroupMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.policy.PolicyMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.policy.PolicyRoleMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.policy.PolicyUserMapper;
-import org.limbo.doorkeeper.server.infrastructure.po.*;
+import org.limbo.doorkeeper.infrastructure.mapper.NamespaceMapper;
+import org.limbo.doorkeeper.infrastructure.mapper.PermissionPolicyMapper;
+import org.limbo.doorkeeper.infrastructure.mapper.policy.PolicyGroupMapper;
+import org.limbo.doorkeeper.infrastructure.mapper.policy.PolicyMapper;
+import org.limbo.doorkeeper.infrastructure.mapper.policy.PolicyRoleMapper;
+import org.limbo.doorkeeper.infrastructure.mapper.policy.PolicyUserMapper;
 import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.infrastructure.utils.MyBatisPlusUtils;
 import org.limbo.doorkeeper.server.infrastructure.utils.Verifies;
@@ -70,7 +70,7 @@ public class PolicyService {
     private PolicyGroupDao policyGroupDao;
 
     @Autowired
-    private ClientMapper clientMapper;
+    private NamespaceMapper namespaceMapper;
 
     @Autowired
     private PermissionPolicyMapper permissionPolicyMapper;
@@ -91,12 +91,12 @@ public class PolicyService {
     public PolicyVO add(Long realmId, Long clientId, PolicyAddParam param) {
         Verifies.notNull(param.getType(), "策略类型不存在");
 
-        ClientPO client = clientMapper.getById(realmId, clientId);
+        NamespacePO client = namespaceMapper.getById(realmId, clientId);
         Verifies.notNull(client, "委托方不存在");
 
         PolicyPO policy = EnhancedBeanUtils.createAndCopy(param, PolicyPO.class);
         policy.setRealmId(client.getRealmId());
-        policy.setClientId(client.getClientId());
+        policy.setClientId(client.getNamespaceId());
         try {
             policyMapper.insert(policy);
         } catch (DuplicateKeyException e) {

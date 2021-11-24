@@ -27,13 +27,13 @@ import org.limbo.doorkeeper.api.model.vo.policy.PolicyGroupVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyRoleVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyUserVO;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
+import org.limbo.doorkeeper.infrastructure.po.*;
 import org.limbo.doorkeeper.server.domain.GroupTreeDO;
 import org.limbo.doorkeeper.server.infrastructure.exception.AuthorizationException;
-import org.limbo.doorkeeper.server.infrastructure.mapper.GroupMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.GroupRoleMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.GroupUserMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.UserRoleMapper;
-import org.limbo.doorkeeper.server.infrastructure.po.*;
+import org.limbo.doorkeeper.infrastructure.mapper.GroupMapper;
+import org.limbo.doorkeeper.infrastructure.mapper.GroupRoleMapper;
+import org.limbo.doorkeeper.infrastructure.mapper.GroupUserMapper;
+import org.limbo.doorkeeper.infrastructure.mapper.UserRoleMapper;
 import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.infrastructure.utils.JacksonUtil;
 

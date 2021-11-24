@@ -25,10 +25,10 @@ import org.limbo.doorkeeper.api.model.vo.GroupRoleVO;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.api.model.vo.check.RoleCheckResult;
+import org.limbo.doorkeeper.infrastructure.mapper.*;
+import org.limbo.doorkeeper.infrastructure.po.*;
 import org.limbo.doorkeeper.server.domain.GroupTreeDO;
 import org.limbo.doorkeeper.server.infrastructure.exception.AuthorizationException;
-import org.limbo.doorkeeper.server.infrastructure.mapper.*;
-import org.limbo.doorkeeper.server.infrastructure.po.*;
 import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -88,7 +88,7 @@ public class RoleChecker {
                 .eq(RolePO::getRealmId, user.getRealmId())
                 .eq(RolePO::getIsEnabled, true)
                 .in(CollectionUtils.isNotEmpty(checkParam.getRoleIds()), RolePO::getRoleId, checkParam.getRoleIds())
-                .eq(checkParam.getClientId() != null, RolePO::getClientId, checkParam.getClientId())
+                .eq(checkParam.getClientId() != null, RolePO::getNamespaceId, checkParam.getClientId())
                 .eq(StringUtils.isNotBlank(checkParam.getName()), RolePO::getName, checkParam.getName())
                 .like(StringUtils.isNotBlank(checkParam.getDimName()), RolePO::getName, checkParam.getDimName())
                 .in(CollectionUtils.isNotEmpty(checkParam.getNames()), RolePO::getName, checkParam.getNames())

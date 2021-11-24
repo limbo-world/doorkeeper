@@ -16,9 +16,9 @@
   -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="org.limbo.doorkeeper.server.infrastructure.mapper.GroupRoleMapper" >
+<mapper namespace="org.limbo.doorkeeper.infrastructure.mapper.GroupRoleMapper" >
 
-    <insert id="batchInsertIgnore" parameterType="org.limbo.doorkeeper.server.infrastructure.po.GroupRolePO">
+    <insert id="batchInsertIgnore" parameterType="org.limbo.doorkeeper.infrastructure.po.GroupRolePO">
         INSERT ignore INTO group_role (
             group_id, role_id, is_extend
         ) VALUES

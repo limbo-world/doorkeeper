@@ -1,6 +1,3 @@
-import { http } from '../axios-installer';
-import { MenuRoute } from '../router-installer/MenuData';
-
 /**
  * 进度条自动增长速度
  */

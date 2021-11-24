@@ -20,10 +20,11 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.param.update.RealmUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.RealmVO;
-import org.limbo.doorkeeper.server.infrastructure.po.RealmPO;
-import org.limbo.doorkeeper.server.infrastructure.po.UserPO;
-import org.limbo.doorkeeper.server.infrastructure.mapper.RealmMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.UserMapper;
+import org.limbo.doorkeeper.api.constants.MsgConstants;
+import org.limbo.doorkeeper.infrastructure.mapper.RealmMapper;
+import org.limbo.doorkeeper.infrastructure.po.RealmPO;
+import org.limbo.doorkeeper.infrastructure.mapper.UserMapper;
+import org.limbo.doorkeeper.infrastructure.po.UserPO;
 import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.infrastructure.utils.JWTUtil;
 import org.limbo.doorkeeper.server.infrastructure.utils.Verifies;
@@ -56,7 +57,7 @@ public class RealmService {
     }
 
 
-    public RealmPO getRealmByToken(String token) {
+    public RealmPO getTenantByToken(String token) {
         Long userId = JWTUtil.getUserId(token);
         UserPO user;
         if (userId != null) {
@@ -66,11 +67,12 @@ public class RealmService {
             Long realmId = JWTUtil.getRealmId(token);
             user = userMapper.getByUsername(realmId, username);
         }
-        Verifies.notNull(user, "用户不存在");
-        Verifies.verify(user.getIsEnabled(), "用户未启用");
+        Verifies.notNull(user, MsgConstants.NO_USER);
+        Verifies.verify(user.getIsEnabled(), MsgConstants.DISABLED_USER);
 
-        RealmPO realm = realmMapper.selectById(user.getRealmId());
-        Verifies.notNull(realm, "realm不存在");
-        return realm;
+        RealmPO tenant = realmMapper.selectById(user.getRealmId());
+        Verifies.notNull(tenant, MsgConstants.NO_TENANT);
+        return tenant;
     }
+
 }

@@ -22,23 +22,22 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.BatchMethod;
 import org.limbo.doorkeeper.api.model.param.add.RoleAddParam;
-import org.limbo.doorkeeper.api.model.param.query.RoleQueryParam;
+import org.limbo.doorkeeper.api.model.param.add.RoleGroupAddParam;
 import org.limbo.doorkeeper.api.model.param.batch.RoleBatchUpdateParam;
-import org.limbo.doorkeeper.api.model.param.update.RoleUpdateParam;
 import org.limbo.doorkeeper.api.model.param.batch.RoleUserBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.query.RoleQueryParam;
+import org.limbo.doorkeeper.api.model.param.update.RoleUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.PageVO;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
-import org.limbo.doorkeeper.server.infrastructure.dao.RoleGroupDao;
-import org.limbo.doorkeeper.server.infrastructure.dao.RolePolicyDao;
-import org.limbo.doorkeeper.server.infrastructure.po.GroupRolePO;
-import org.limbo.doorkeeper.server.infrastructure.po.RolePO;
-import org.limbo.doorkeeper.server.infrastructure.po.UserRolePO;
-import org.limbo.doorkeeper.server.infrastructure.po.PolicyRolePO;
-import org.limbo.doorkeeper.server.infrastructure.mapper.GroupRoleMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.RoleMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.UserRoleMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.policy.PolicyRoleMapper;
 import org.limbo.doorkeeper.server.infrastructure.exception.ParamException;
+import org.limbo.doorkeeper.infrastructure.mapper.GroupRoleMapper;
+import org.limbo.doorkeeper.infrastructure.mapper.RoleMapper;
+import org.limbo.doorkeeper.infrastructure.mapper.UserRoleMapper;
+import org.limbo.doorkeeper.infrastructure.mapper.policy.PolicyRoleMapper;
+import org.limbo.doorkeeper.infrastructure.po.GroupRolePO;
+import org.limbo.doorkeeper.infrastructure.po.PolicyRolePO;
+import org.limbo.doorkeeper.infrastructure.po.RolePO;
+import org.limbo.doorkeeper.infrastructure.po.UserRolePO;
 import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.infrastructure.utils.MyBatisPlusUtils;
 import org.limbo.doorkeeper.server.infrastructure.utils.Verifies;
@@ -47,6 +46,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -70,13 +70,7 @@ public class RoleService {
     private UserRoleMapper userRoleMapper;
 
     @Autowired
-    private RoleGroupDao roleGroupDao;
-
-    @Autowired
     private RoleUserService roleUserService;
-
-    @Autowired
-    private RolePolicyDao rolePolicyDao;
 
     @Transactional
     public RoleVO add(Long realmId, RoleAddParam param) {
@@ -89,7 +83,7 @@ public class RoleService {
         }
 
         if (CollectionUtils.isNotEmpty(param.getGroups())) {
-            roleGroupDao.batchSave(role.getRoleId(), param.getGroups());
+            batchSaveRoleGroups(role.getRoleId(), param.getGroups());
         }
 
         if (CollectionUtils.isNotEmpty(param.getUserIds())) {
@@ -100,17 +94,40 @@ public class RoleService {
         }
 
         if (CollectionUtils.isNotEmpty(param.getPolicyIds())) {
-            rolePolicyDao.batchSave(role.getRoleId(), param.getPolicyIds());
+            batchSaveRolePolicies(role.getRoleId(), param.getPolicyIds());
         }
 
         return EnhancedBeanUtils.createAndCopy(role, RoleVO.class);
+    }
+
+    private void batchSaveRoleGroups(Long roleId, List<RoleGroupAddParam> groups) {
+        List<GroupRolePO> groupRoles = new ArrayList<>();
+        for (RoleGroupAddParam group : groups) {
+            GroupRolePO groupRole = new GroupRolePO();
+            groupRole.setGroupId(group.getGroupId());
+            groupRole.setRoleId(roleId);
+            groupRole.setIsExtend(group.getIsExtend());
+            groupRoles.add(groupRole);
+        }
+        groupRoleMapper.batchInsertIgnore(groupRoles);
+    }
+
+    private void batchSaveRolePolicies(Long roleId, List<Long> policyIds) {
+        List<PolicyRolePO> policyRoles = new ArrayList<>();
+        for (Long policyId : policyIds) {
+            PolicyRolePO policyRole = new PolicyRolePO();
+            policyRole.setPolicyId(policyId);
+            policyRole.setRoleId(roleId);
+            policyRoles.add(policyRole);
+        }
+        policyRoleMapper.batchInsertIgnore(policyRoles);
     }
 
     public PageVO<RoleVO> page(Long realmId, RoleQueryParam param) {
         IPage<RolePO> mpage = MyBatisPlusUtils.pageOf(param);
         mpage = roleMapper.selectPage(mpage, Wrappers.<RolePO>lambdaQuery()
                 .eq(RolePO::getRealmId, realmId)
-                .eq(RolePO::getClientId, param.getClientId())
+                .eq(RolePO::getNamespaceId, param.getNamespaceId())
                 .eq(param.getIsEnabled() != null, RolePO::getIsEnabled, param.getIsEnabled())
                 .eq(param.getIsDefault() != null, RolePO::getIsDefault, param.getIsDefault())
                 .eq(StringUtils.isNotBlank(param.getName()), RolePO::getName, param.getName())

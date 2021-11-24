@@ -18,14 +18,14 @@ package org.limbo.doorkeeper.server.adapter.http.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.model.vo.ResponseVO;
-import org.limbo.doorkeeper.server.infrastructure.po.RealmPO;
-import org.limbo.doorkeeper.server.service.RealmService;
+import org.limbo.doorkeeper.infrastructure.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.infrastructure.po.RealmPO;
 import org.limbo.doorkeeper.server.infrastructure.exception.AuthenticationException;
 import org.limbo.doorkeeper.server.infrastructure.utils.JWTUtil;
 import org.limbo.doorkeeper.server.infrastructure.utils.JacksonUtil;
 import org.limbo.doorkeeper.server.infrastructure.utils.WebUtil;
+import org.limbo.doorkeeper.server.service.RealmService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -51,8 +51,8 @@ public class SessionInterceptor implements HandlerInterceptor {
             return false;
         }
         try {
-            RealmPO realm = realmService.getRealmByToken(token);
-            JWTUtil.verifyToken(token, realm.getSecret());
+            RealmPO tenant = realmService.getTenantByToken(token);
+            JWTUtil.verifyToken(token, tenant.getSecret());
         } catch (Exception e) {
             WebUtil.writeToResponse(response, JacksonUtil.toJSONString(ResponseVO.unauthenticated(AuthenticationException.msg)));
             return false;

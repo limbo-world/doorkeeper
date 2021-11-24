@@ -21,8 +21,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.param.batch.GroupUserBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.GroupUserVO;
-import org.limbo.doorkeeper.server.infrastructure.po.GroupUserPO;
-import org.limbo.doorkeeper.server.infrastructure.mapper.GroupUserMapper;
+import org.limbo.doorkeeper.infrastructure.po.GroupUserPO;
+import org.limbo.doorkeeper.infrastructure.mapper.GroupUserMapper;
 import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.infrastructure.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +42,7 @@ public class GroupUserService {
     @Autowired
     private GroupUserMapper groupUserMapper;
 
-    public List<GroupUserVO> list(Long realmId, Long groupId) {
+    public List<GroupUserVO> list(Long groupId) {
         List<GroupUserPO> groupUsers = groupUserMapper.selectList(Wrappers.<GroupUserPO>lambdaQuery()
                 .eq(GroupUserPO::getGroupId, groupId)
         );

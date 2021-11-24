@@ -19,7 +19,6 @@ export default {
         return {min, max, message: `长度在 ${min} 到 ${max} 个字符`, trigger};
     },
 
-
     pattern(fieldName, pattern, trigger = 'blur') {
         if (Patterns[pattern]) {
             pattern = Patterns[pattern];

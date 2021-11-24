@@ -17,11 +17,11 @@
 package org.limbo.doorkeeper.server.adapter.http.config;
 
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.infrastructure.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.constants.UriMethod;
 import org.limbo.doorkeeper.api.model.vo.ResponseVO;
-import org.limbo.doorkeeper.server.infrastructure.po.UserPO;
-import org.limbo.doorkeeper.server.infrastructure.mapper.UserMapper;
+import org.limbo.doorkeeper.infrastructure.po.UserPO;
+import org.limbo.doorkeeper.infrastructure.mapper.UserMapper;
 import org.limbo.doorkeeper.server.service.DoorkeeperService;
 import org.limbo.doorkeeper.server.infrastructure.exception.AuthorizationException;
 import org.limbo.doorkeeper.server.infrastructure.utils.JWTUtil;

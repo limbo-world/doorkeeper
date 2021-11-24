@@ -20,22 +20,22 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.model.param.add.PermissionAddParam;
-import org.limbo.doorkeeper.api.model.param.query.PermissionQueryParam;
 import org.limbo.doorkeeper.api.model.param.batch.PermissionBatchUpdateParam;
+import org.limbo.doorkeeper.api.model.param.query.PermissionQueryParam;
 import org.limbo.doorkeeper.api.model.param.update.PermissionUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.PageVO;
 import org.limbo.doorkeeper.api.model.vo.PermissionVO;
+import org.limbo.doorkeeper.infrastructure.mapper.NamespaceMapper;
+import org.limbo.doorkeeper.infrastructure.po.NamespacePO;
 import org.limbo.doorkeeper.server.infrastructure.dao.PermissionPolicyDao;
 import org.limbo.doorkeeper.server.infrastructure.dao.PermissionResourceDao;
-import org.limbo.doorkeeper.server.infrastructure.po.ClientPO;
-import org.limbo.doorkeeper.server.infrastructure.po.PermissionPO;
-import org.limbo.doorkeeper.server.infrastructure.po.PermissionPolicyPO;
-import org.limbo.doorkeeper.server.infrastructure.po.PermissionResourcePO;
-import org.limbo.doorkeeper.server.infrastructure.mapper.ClientMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.PermissionMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.PermissionPolicyMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.PermissionResourceMapper;
 import org.limbo.doorkeeper.server.infrastructure.exception.ParamException;
+import org.limbo.doorkeeper.infrastructure.mapper.PermissionMapper;
+import org.limbo.doorkeeper.infrastructure.mapper.PermissionPolicyMapper;
+import org.limbo.doorkeeper.infrastructure.mapper.PermissionResourceMapper;
+import org.limbo.doorkeeper.infrastructure.po.PermissionPO;
+import org.limbo.doorkeeper.infrastructure.po.PermissionPolicyPO;
+import org.limbo.doorkeeper.infrastructure.po.PermissionResourcePO;
 import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.infrastructure.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +58,7 @@ public class PermissionService {
     private PermissionMapper permissionMapper;
 
     @Autowired
-    private ClientMapper clientMapper;
+    private NamespaceMapper namespaceMapper;
 
     @Autowired
     private PermissionPolicyDao permissionPolicyDao;
@@ -77,12 +77,12 @@ public class PermissionService {
         Verifies.notNull(param.getLogic(), "判断逻辑不存在");
         Verifies.notNull(param.getIntention(), "执行逻辑不存在");
 
-        ClientPO client = clientMapper.getById(realmId, clientId);
+        NamespacePO client = namespaceMapper.getById(realmId, clientId);
         Verifies.notNull(client, "委托方不存在");
 
         PermissionPO permission = EnhancedBeanUtils.createAndCopy(param, PermissionPO.class);
         permission.setRealmId(client.getRealmId());
-        permission.setClientId(client.getClientId());
+        permission.setClientId(client.getNamespaceId());
 
         permissionMapper.insert(permission);
 

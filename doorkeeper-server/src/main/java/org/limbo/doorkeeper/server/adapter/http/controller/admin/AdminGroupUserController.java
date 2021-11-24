@@ -19,9 +19,9 @@ package org.limbo.doorkeeper.server.adapter.http.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.vo.ResponseVO;
 import org.limbo.doorkeeper.api.model.param.batch.GroupUserBatchUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.GroupUserVO;
+import org.limbo.doorkeeper.api.model.vo.ResponseVO;
 import org.limbo.doorkeeper.server.adapter.http.controller.BaseController;
 import org.limbo.doorkeeper.server.service.GroupUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +47,7 @@ public class AdminGroupUserController extends BaseController {
     @Operation(summary = "查询用户组用户列表")
     @GetMapping("/{groupId}/user")
     public ResponseVO<List<GroupUserVO>> list(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId) {
-        return ResponseVO.success(groupUserService.list(getRealmId(), groupId));
+        return ResponseVO.success(groupUserService.list(groupId));
     }
 
     @Operation(summary = "批量修改用户组用户")

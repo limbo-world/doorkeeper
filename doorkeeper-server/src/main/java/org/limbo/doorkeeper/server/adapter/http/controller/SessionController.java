@@ -20,6 +20,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.model.param.update.PasswordUpdateParam;
+import org.limbo.doorkeeper.api.model.vo.AccountGrantVO;
 import org.limbo.doorkeeper.api.model.vo.ResponseVO;
 import org.limbo.doorkeeper.api.model.vo.UserVO;
 import org.limbo.doorkeeper.server.service.LoginService;
@@ -66,6 +67,14 @@ public class SessionController extends BaseController {
     public ResponseVO<String> changePassword(@RequestBody PasswordUpdateParam param) {
         UserVO user = getUser();
         userService.changePassword(user.getRealmId(), user.getUserId(), param);
+        return ResponseVO.success();
+    }
+
+    // todo
+    @Operation(summary = "获取当前项目页面权限信息")
+    @GetMapping("/grant-info")
+    public ResponseVO<AccountGrantVO> getGrantInfo() {
+        // 拿到用户管理端权限
         return ResponseVO.success();
     }
 

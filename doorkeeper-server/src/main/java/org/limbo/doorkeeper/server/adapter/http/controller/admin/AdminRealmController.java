@@ -53,13 +53,13 @@ public class AdminRealmController extends BaseController {
     @Operation(summary = "新建域")
     @PostMapping
     public ResponseVO<RealmVO> add(@RequestBody @Validated RealmAddParam param) {
-        return ResponseVO.success(doorkeeperService.addRealm(getUser().getUserId(), param));
+        return ResponseVO.success(doorkeeperService.addTenant(getUser().getUserId(), param));
     }
 
     @Operation(summary = "查询账户拥有的域")
     @GetMapping
     public ResponseVO<List<RealmVO>> userRealms() {
-        return ResponseVO.success(doorkeeperService.userRealms(getUser().getUserId()));
+        return ResponseVO.success(doorkeeperService.userTenants(getUser().getUserId()));
     }
 
     @Operation(summary = "域详情")

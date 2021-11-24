@@ -19,7 +19,6 @@ package org.limbo.doorkeeper.server.infrastructure.checker;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.limbo.doorkeeper.api.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.Logic;
 import org.limbo.doorkeeper.api.constants.UriMethod;
@@ -31,11 +30,16 @@ import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.limbo.doorkeeper.api.model.vo.ResourceVO;
 import org.limbo.doorkeeper.api.model.vo.check.ResourceCheckResult;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
+import org.limbo.doorkeeper.infrastructure.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.infrastructure.mapper.*;
+import org.limbo.doorkeeper.infrastructure.po.NamespacePO;
 import org.limbo.doorkeeper.server.domain.PatternDO;
-import org.limbo.doorkeeper.server.infrastructure.dao.PolicyDao;
 import org.limbo.doorkeeper.server.infrastructure.exception.AuthorizationException;
-import org.limbo.doorkeeper.server.infrastructure.mapper.*;
-import org.limbo.doorkeeper.server.infrastructure.po.*;
+import org.limbo.doorkeeper.infrastructure.mapper.policy.PolicyMapper;
+import org.limbo.doorkeeper.infrastructure.po.PermissionResourcePO;
+import org.limbo.doorkeeper.infrastructure.po.ResourceUriPO;
+import org.limbo.doorkeeper.infrastructure.po.UriPO;
+import org.limbo.doorkeeper.infrastructure.po.UserPO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -57,10 +61,10 @@ public class ResourceChecker {
     private PermissionMapper permissionMapper;
 
     @Autowired
-    private PolicyDao policyDao;
+    private PolicyMapper policyMapper;
 
     @Autowired
-    private ClientMapper clientMapper;
+    private NamespaceMapper namespaceMapper;
 
     @Autowired
     private PermissionResourceMapper permissionResourceMapper;
@@ -84,11 +88,6 @@ public class ResourceChecker {
     private PolicyCheckerFactory policyCheckerFactory;
 
     /**
-     * 未授权情况下是否拒绝，未授权是指，资源找不到对应的Permission
-     */
-    private boolean refuseWhenUnauthorized = true;
-
-    /**
      * 进行权限校验，是否有资格访问
      *
      * @param userId     用户id
@@ -96,7 +95,7 @@ public class ResourceChecker {
      * @return
      */
     public ResourceCheckResult check(Long userId, ResourceCheckParam checkParam) {
-        ClientPO client = getClient(checkParam.getClientId());
+        NamespacePO client = getClient(checkParam.getClientId());
 
         UserPO user = getUser(userId);
         if (!user.getIsEnabled()) {
@@ -105,7 +104,7 @@ public class ResourceChecker {
 
         try {
             // 找到待检测的启用资源
-            List<ResourceVO> resources = findResources(client.getRealmId(), client.getClientId(), checkParam);
+            List<ResourceVO> resources = findResources(client.getRealmId(), client.getNamespaceId(), checkParam);
             if (CollectionUtils.isEmpty(resources)) {
                 return emptyResult();
             }
@@ -128,7 +127,7 @@ public class ResourceChecker {
             }
 
             // 查询权限
-            List<PermissionVO> allPermissions = getPermissions(client.getRealmId(), client.getClientId(), new ArrayList<>(permissionIds));
+            List<PermissionVO> allPermissions = getPermissions(client.getRealmId(), client.getNamespaceId(), new ArrayList<>(permissionIds));
             if (CollectionUtils.isEmpty(allPermissions)) {
                 return checkResourceRefuseResult(resources);
             }
@@ -150,7 +149,7 @@ public class ResourceChecker {
             }
 
             // 获取策略
-            List<PolicyVO> allPolicies = policyDao.getVOSByPolicyIds(client.getRealmId(), client.getClientId(), new ArrayList<>(policyIds), true);
+            List<PolicyVO> allPolicies = policyMapper.getVOS(client.getRealmId(), client.getNamespaceId(), new ArrayList<>(policyIds), true);
             if (CollectionUtils.isEmpty(allPolicies)) {
                 return checkResourceRefuseResult(resources);
             }
@@ -165,7 +164,7 @@ public class ResourceChecker {
                 // 获取资源权限ID
                 List<Long> resourcePermissionIds = resourcePermissionMap.get(resource.getResourceId());
                 if (CollectionUtils.isEmpty(resourcePermissionIds)) {
-                    if (refuseWhenUnauthorized) {
+                    if (DoorkeeperConstants.REFUSE_WHEN_UNAUTHORIZED) {
                         continue;
                     } else {
                         result.add(resource);
@@ -180,7 +179,7 @@ public class ResourceChecker {
                     }
                 }
                 if (CollectionUtils.isEmpty(permissionVOS)) {
-                    if (refuseWhenUnauthorized) {
+                    if (DoorkeeperConstants.REFUSE_WHEN_UNAUTHORIZED) {
                         continue;
                     } else {
                         result.add(resource);
@@ -365,8 +364,8 @@ public class ResourceChecker {
      * @param clientId
      * @return
      */
-    private ClientPO getClient(Long clientId) {
-        ClientPO client = clientMapper.selectById(clientId);
+    private NamespacePO getClient(Long clientId) {
+        NamespacePO client = namespaceMapper.selectById(clientId);
         if (client == null) {
             throw new AuthorizationException("无法找到Client，clientId=" + clientId);
         }
@@ -391,7 +390,7 @@ public class ResourceChecker {
      * @return
      */
     private ResourceCheckResult checkResourceRefuseResult(List<ResourceVO> resources) {
-        if (!refuseWhenUnauthorized) {
+        if (!DoorkeeperConstants.REFUSE_WHEN_UNAUTHORIZED) {
             return new ResourceCheckResult(resources);
         }
         return new ResourceCheckResult(new ArrayList<>());
