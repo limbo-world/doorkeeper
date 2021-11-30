@@ -19,13 +19,13 @@ package org.limbo.doorkeeper.server.adapter.http.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.vo.PageVO;
-import org.limbo.doorkeeper.api.model.vo.ResponseVO;
-import org.limbo.doorkeeper.api.model.param.add.PolicyAddParam;
-import org.limbo.doorkeeper.api.model.param.batch.PolicyBatchUpdateParam;
-import org.limbo.doorkeeper.api.model.param.query.PolicyQueryParam;
-import org.limbo.doorkeeper.api.model.param.update.PolicyUpdateParam;
-import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
+import org.limbo.doorkeeper.api.dto.vo.PageVO;
+import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
+import org.limbo.doorkeeper.api.dto.param.add.PolicyAddParam;
+import org.limbo.doorkeeper.api.dto.param.batch.PolicyBatchUpdateParam;
+import org.limbo.doorkeeper.api.dto.param.query.PolicyQueryParam;
+import org.limbo.doorkeeper.api.dto.param.update.PolicyUpdateParam;
+import org.limbo.doorkeeper.api.dto.vo.policy.PolicyVO;
 import org.limbo.doorkeeper.server.adapter.http.controller.BaseController;
 import org.limbo.doorkeeper.server.service.PolicyService;
 import org.springdoc.api.annotations.ParameterObject;
@@ -42,7 +42,7 @@ import javax.validation.constraints.NotNull;
 @Tag(name = "策略")
 @Slf4j
 @RestController
-@RequestMapping("/api/admin/realm/{realmId}/client/{clientId}/policy")
+@RequestMapping("/api/doorkeeper/v1/admin/realm/{realmId}/client/{clientId}/policy")
 public class AdminPolicyController extends BaseController {
 
     @Autowired

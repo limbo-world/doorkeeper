@@ -19,9 +19,9 @@ package org.limbo.doorkeeper.server.adapter.http.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.vo.ResponseVO;
-import org.limbo.doorkeeper.api.model.param.query.UriQueryParam;
-import org.limbo.doorkeeper.api.model.vo.UriVO;
+import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
+import org.limbo.doorkeeper.api.dto.param.query.UriQueryParam;
+import org.limbo.doorkeeper.api.dto.vo.UriVO;
 import org.limbo.doorkeeper.server.adapter.http.controller.BaseController;
 import org.limbo.doorkeeper.server.service.UriService;
 import org.springdoc.api.annotations.ParameterObject;
@@ -39,7 +39,7 @@ import java.util.List;
 @Tag(name = "uri")
 @Slf4j
 @RestController
-@RequestMapping("/api/admin/realm/{realmId}/client/{clientId}/uri")
+@RequestMapping("/api/doorkeeper/v1/admin/realm/{realmId}/client/{clientId}/uri")
 public class AdminUriController extends BaseController {
 
     @Autowired

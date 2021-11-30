@@ -17,8 +17,8 @@
 package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import org.limbo.doorkeeper.api.model.param.batch.RoleUserBatchUpdateParam;
-import org.limbo.doorkeeper.api.model.vo.UserRoleVO;
+import org.limbo.doorkeeper.api.dto.param.batch.RoleUserBatchUpdateParam;
+import org.limbo.doorkeeper.api.dto.vo.UserRoleVO;
 import org.limbo.doorkeeper.infrastructure.po.UserRolePO;
 import org.limbo.doorkeeper.infrastructure.mapper.UserRoleMapper;
 import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;

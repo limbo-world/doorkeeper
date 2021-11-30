@@ -4,7 +4,7 @@
     "isEnabled": true,
     "uris": [
       {
-        "uri": "/api/admin/realm/${realmId}/client/${clientId}/**",
+        "uri": "/api/doorkeeper/v1/admin/realm/${realmId}/client/${clientId}/**",
         "method": "GET"
       }
     ],
@@ -24,7 +24,7 @@
     "isEnabled": true,
     "uris": [
       {
-        "uri": "/api/admin/realm/${realmId}/client/${clientId}/**",
+        "uri": "/api/doorkeeper/v1/admin/realm/${realmId}/client/${clientId}/**",
         "method": "ALL"
       }
     ]
@@ -34,7 +34,7 @@
     "isEnabled": true,
     "uris": [
       {
-        "uri": "/api/admin/realm/${realmId}/client/${clientId}/resource/**",
+        "uri": "/api/doorkeeper/v1/admin/realm/${realmId}/client/${clientId}/resource/**",
         "method": "ALL"
       }
     ]
@@ -44,7 +44,7 @@
     "isEnabled": true,
     "uris": [
       {
-        "uri": "/api/admin/realm/${realmId}/client/${clientId}/policy/**",
+        "uri": "/api/doorkeeper/v1/admin/realm/${realmId}/client/${clientId}/policy/**",
         "method": "ALL"
       }
     ]
@@ -54,7 +54,7 @@
     "isEnabled": true,
     "uris": [
       {
-        "uri": "/api/admin/realm/${realmId}/client/${clientId}/permission/**",
+        "uri": "/api/doorkeeper/v1/admin/realm/${realmId}/client/${clientId}/permission/**",
         "method": "ALL"
       }
     ]

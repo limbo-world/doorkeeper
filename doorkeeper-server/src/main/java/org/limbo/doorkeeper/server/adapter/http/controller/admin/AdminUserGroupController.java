@@ -19,8 +19,8 @@ package org.limbo.doorkeeper.server.adapter.http.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.vo.ResponseVO;
-import org.limbo.doorkeeper.api.model.vo.GroupUserVO;
+import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
+import org.limbo.doorkeeper.api.dto.vo.GroupUserVO;
 import org.limbo.doorkeeper.server.adapter.http.controller.BaseController;
 import org.limbo.doorkeeper.server.service.GroupUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,7 @@ import java.util.List;
 @Tag(name = "用户用户组")
 @Slf4j
 @RestController
-@RequestMapping("/api/admin/realm/{realmId}/user")
+@RequestMapping("/api/doorkeeper/v1/admin/realm/{realmId}/user")
 public class AdminUserGroupController extends BaseController {
 
     @Autowired

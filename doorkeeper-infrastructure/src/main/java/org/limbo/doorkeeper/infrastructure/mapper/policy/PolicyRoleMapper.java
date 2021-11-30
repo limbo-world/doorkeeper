@@ -18,7 +18,7 @@ package org.limbo.doorkeeper.infrastructure.mapper.policy;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
-import org.limbo.doorkeeper.api.model.vo.policy.PolicyRoleVO;
+import org.limbo.doorkeeper.api.dto.vo.policy.PolicyRoleVO;
 import org.limbo.doorkeeper.infrastructure.po.PolicyRolePO;
 
 import java.util.List;

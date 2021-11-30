@@ -19,16 +19,16 @@ package org.limbo.doorkeeper.server.adapter.http.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.vo.ResponseVO;
-import org.limbo.doorkeeper.api.model.param.query.GroupCheckParam;
-import org.limbo.doorkeeper.api.model.param.query.ResourceCheckParam;
-import org.limbo.doorkeeper.api.model.param.query.RoleCheckParam;
-import org.limbo.doorkeeper.api.model.vo.GroupVO;
-import org.limbo.doorkeeper.api.model.vo.ResourceVO;
-import org.limbo.doorkeeper.api.model.vo.RoleVO;
-import org.limbo.doorkeeper.api.model.vo.check.GroupCheckResult;
-import org.limbo.doorkeeper.api.model.vo.check.ResourceCheckResult;
-import org.limbo.doorkeeper.api.model.vo.check.RoleCheckResult;
+import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
+import org.limbo.doorkeeper.api.dto.param.query.GroupCheckParam;
+import org.limbo.doorkeeper.api.dto.param.query.ResourceCheckParam;
+import org.limbo.doorkeeper.api.dto.param.query.RoleCheckParam;
+import org.limbo.doorkeeper.api.dto.vo.GroupVO;
+import org.limbo.doorkeeper.api.dto.vo.ResourceVO;
+import org.limbo.doorkeeper.api.dto.vo.RoleVO;
+import org.limbo.doorkeeper.api.dto.vo.check.GroupCheckResult;
+import org.limbo.doorkeeper.api.dto.vo.check.ResourceCheckResult;
+import org.limbo.doorkeeper.api.dto.vo.check.RoleCheckResult;
 import org.limbo.doorkeeper.server.adapter.http.controller.BaseController;
 import org.limbo.doorkeeper.server.infrastructure.checker.GroupChecker;
 import org.limbo.doorkeeper.server.infrastructure.checker.ResourceChecker;
@@ -51,7 +51,7 @@ import java.util.List;
 @Tag(name = "用户校验")
 @Slf4j
 @RestController
-@RequestMapping("/api/admin/realm/{realmId}/user/{userId}")
+@RequestMapping("/api/doorkeeper/v1/admin/realm/{realmId}/user/{userId}")
 public class AdminUserCheckController extends BaseController {
 
     @Autowired

@@ -19,8 +19,8 @@ package org.limbo.doorkeeper.infrastructure.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
-import org.limbo.doorkeeper.api.model.param.query.ResourceQueryParam;
-import org.limbo.doorkeeper.api.model.vo.ResourceVO;
+import org.limbo.doorkeeper.api.dto.param.query.ResourceQueryParam;
+import org.limbo.doorkeeper.api.dto.vo.ResourceVO;
 import org.limbo.doorkeeper.infrastructure.po.ResourcePO;
 
 import java.util.List;

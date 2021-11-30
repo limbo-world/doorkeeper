@@ -17,7 +17,7 @@
 package org.limbo.doorkeeper.server.infrastructure.session;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.limbo.doorkeeper.api.model.vo.SessionUser;
+import org.limbo.doorkeeper.api.dto.vo.SessionUser;
 import org.limbo.doorkeeper.server.infrastructure.exception.AuthenticationException;
 import org.limbo.doorkeeper.server.infrastructure.utils.UUIDUtils;
 

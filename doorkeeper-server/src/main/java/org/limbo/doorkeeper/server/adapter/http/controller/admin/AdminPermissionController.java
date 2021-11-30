@@ -19,13 +19,13 @@ package org.limbo.doorkeeper.server.adapter.http.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.param.add.PermissionAddParam;
-import org.limbo.doorkeeper.api.model.param.query.PermissionQueryParam;
-import org.limbo.doorkeeper.api.model.param.batch.PermissionBatchUpdateParam;
-import org.limbo.doorkeeper.api.model.param.update.PermissionUpdateParam;
-import org.limbo.doorkeeper.api.model.vo.PageVO;
-import org.limbo.doorkeeper.api.model.vo.PermissionVO;
-import org.limbo.doorkeeper.api.model.vo.ResponseVO;
+import org.limbo.doorkeeper.api.dto.param.add.PermissionAddParam;
+import org.limbo.doorkeeper.api.dto.param.query.PermissionQueryParam;
+import org.limbo.doorkeeper.api.dto.param.batch.PermissionBatchUpdateParam;
+import org.limbo.doorkeeper.api.dto.param.update.PermissionUpdateParam;
+import org.limbo.doorkeeper.api.dto.vo.PageVO;
+import org.limbo.doorkeeper.api.dto.vo.PermissionVO;
+import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
 import org.limbo.doorkeeper.server.adapter.http.controller.BaseController;
 import org.limbo.doorkeeper.server.service.PermissionService;
 import org.springdoc.api.annotations.ParameterObject;
@@ -42,7 +42,7 @@ import javax.validation.constraints.NotNull;
 @Tag(name = "权限")
 @Slf4j
 @RestController
-@RequestMapping("/api/admin/realm/{realmId}/client/{clientId}/permission")
+@RequestMapping("/api/doorkeeper/v1/admin/realm/{realmId}/client/{clientId}/permission")
 public class AdminPermissionController extends BaseController {
 
     @Autowired

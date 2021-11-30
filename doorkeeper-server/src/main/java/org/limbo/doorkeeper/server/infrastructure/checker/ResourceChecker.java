@@ -19,27 +19,24 @@ package org.limbo.doorkeeper.server.infrastructure.checker;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.limbo.doorkeeper.api.constants.ApiConstants;
 import org.limbo.doorkeeper.api.constants.Intention;
 import org.limbo.doorkeeper.api.constants.Logic;
 import org.limbo.doorkeeper.api.constants.UriMethod;
-import org.limbo.doorkeeper.api.model.param.query.PermissionQueryParam;
-import org.limbo.doorkeeper.api.model.param.query.ResourceCheckParam;
-import org.limbo.doorkeeper.api.model.param.query.ResourceQueryParam;
-import org.limbo.doorkeeper.api.model.vo.PermissionPolicyVO;
-import org.limbo.doorkeeper.api.model.vo.PermissionVO;
-import org.limbo.doorkeeper.api.model.vo.ResourceVO;
-import org.limbo.doorkeeper.api.model.vo.check.ResourceCheckResult;
-import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
+import org.limbo.doorkeeper.api.dto.param.query.PermissionQueryParam;
+import org.limbo.doorkeeper.api.dto.param.query.ResourceCheckParam;
+import org.limbo.doorkeeper.api.dto.param.query.ResourceQueryParam;
+import org.limbo.doorkeeper.api.dto.vo.PermissionPolicyVO;
+import org.limbo.doorkeeper.api.dto.vo.PermissionVO;
+import org.limbo.doorkeeper.api.dto.vo.ResourceVO;
+import org.limbo.doorkeeper.api.dto.vo.check.ResourceCheckResult;
+import org.limbo.doorkeeper.api.dto.vo.policy.PolicyVO;
 import org.limbo.doorkeeper.infrastructure.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.infrastructure.mapper.*;
-import org.limbo.doorkeeper.infrastructure.po.NamespacePO;
+import org.limbo.doorkeeper.infrastructure.mapper.policy.PolicyMapper;
+import org.limbo.doorkeeper.infrastructure.po.*;
 import org.limbo.doorkeeper.server.domain.PatternDO;
 import org.limbo.doorkeeper.server.infrastructure.exception.AuthorizationException;
-import org.limbo.doorkeeper.infrastructure.mapper.policy.PolicyMapper;
-import org.limbo.doorkeeper.infrastructure.po.PermissionResourcePO;
-import org.limbo.doorkeeper.infrastructure.po.ResourceUriPO;
-import org.limbo.doorkeeper.infrastructure.po.UriPO;
-import org.limbo.doorkeeper.infrastructure.po.UserPO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -243,8 +240,8 @@ public class ResourceChecker {
                 for (String str : checkParam.getUris()) {
                     String requestMethod = UriMethod.ALL.getValue();
                     String requestUri;
-                    if (str.contains(DoorkeeperConstants.KV_DELIMITER)) {
-                        String[] split = str.split(DoorkeeperConstants.KV_DELIMITER);
+                    if (str.contains(ApiConstants.KV_DELIMITER)) {
+                        String[] split = str.split(ApiConstants.KV_DELIMITER);
                         requestMethod = split[0];
                         requestUri = split[1];
                     } else {

@@ -22,13 +22,13 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.BatchMethod;
-import org.limbo.doorkeeper.api.model.param.add.UserAddParam;
-import org.limbo.doorkeeper.api.model.param.batch.UserRoleBatchUpdateParam;
-import org.limbo.doorkeeper.api.model.param.query.UserQueryParam;
-import org.limbo.doorkeeper.api.model.param.update.PasswordUpdateParam;
-import org.limbo.doorkeeper.api.model.param.update.UserUpdateParam;
-import org.limbo.doorkeeper.api.model.vo.PageVO;
-import org.limbo.doorkeeper.api.model.vo.UserVO;
+import org.limbo.doorkeeper.api.dto.param.add.UserAddParam;
+import org.limbo.doorkeeper.api.dto.param.batch.UserRoleBatchUpdateParam;
+import org.limbo.doorkeeper.api.dto.param.query.UserQueryParam;
+import org.limbo.doorkeeper.api.dto.param.update.PasswordUpdateParam;
+import org.limbo.doorkeeper.api.dto.param.update.UserUpdateParam;
+import org.limbo.doorkeeper.api.dto.vo.PageVO;
+import org.limbo.doorkeeper.api.dto.vo.UserVO;
 import org.limbo.doorkeeper.infrastructure.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.infrastructure.mapper.NamespaceMapper;
 import org.limbo.doorkeeper.infrastructure.po.NamespacePO;
@@ -115,8 +115,8 @@ public class UserService {
         }
 
         // 如果是 doorkeeper 域下的用户 创建策略和权限
-        if (doorkeeperService.getDoorkeeperTenantId().equals(realmId)) {
-            NamespacePO apiClient = namespaceMapper.getByName(doorkeeperService.getDoorkeeperTenantId(), DoorkeeperConstants.API_CLIENT);
+        if (doorkeeperService.getDoorkeeperRealmId().equals(realmId)) {
+            NamespacePO apiClient = namespaceMapper.getByName(doorkeeperService.getDoorkeeperRealmId(), DoorkeeperConstants.API_CLIENT);
             doorkeeperService.bindUser(user.getUserId(), user.getUsername(), null, apiClient.getRealmId(), apiClient.getNamespaceId());
         }
 

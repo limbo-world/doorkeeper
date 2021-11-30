@@ -20,11 +20,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.infrastructure.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.api.model.param.add.GroupAddParam;
-import org.limbo.doorkeeper.api.model.param.query.GroupQueryParam;
-import org.limbo.doorkeeper.api.model.param.update.GroupUpdateParam;
-import org.limbo.doorkeeper.api.model.vo.GroupVO;
-import org.limbo.doorkeeper.api.model.vo.ResponseVO;
+import org.limbo.doorkeeper.api.dto.param.add.GroupAddParam;
+import org.limbo.doorkeeper.api.dto.param.query.GroupQueryParam;
+import org.limbo.doorkeeper.api.dto.param.update.GroupUpdateParam;
+import org.limbo.doorkeeper.api.dto.vo.GroupVO;
+import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
 import org.limbo.doorkeeper.server.adapter.http.controller.BaseController;
 import org.limbo.doorkeeper.server.domain.GroupTreeDO;
 import org.limbo.doorkeeper.server.service.GroupService;
@@ -43,7 +43,7 @@ import java.util.List;
 @Tag(name = "用户组")
 @Slf4j
 @RestController
-@RequestMapping("/api/admin/realm/{realmId}/group")
+@RequestMapping("/api/doorkeeper/v1/admin/realm/{realmId}/group")
 public class AdminGroupController extends BaseController {
 
     @Autowired

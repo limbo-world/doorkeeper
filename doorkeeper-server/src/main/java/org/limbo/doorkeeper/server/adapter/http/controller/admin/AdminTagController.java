@@ -19,9 +19,9 @@ package org.limbo.doorkeeper.server.adapter.http.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.vo.ResponseVO;
-import org.limbo.doorkeeper.api.model.param.query.TagQueryParam;
-import org.limbo.doorkeeper.api.model.vo.TagVO;
+import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
+import org.limbo.doorkeeper.api.dto.param.query.TagQueryParam;
+import org.limbo.doorkeeper.api.dto.vo.TagVO;
 import org.limbo.doorkeeper.server.adapter.http.controller.BaseController;
 import org.limbo.doorkeeper.server.service.TagService;
 import org.springdoc.api.annotations.ParameterObject;
@@ -39,7 +39,7 @@ import java.util.List;
 @Tag(name = "标签")
 @Slf4j
 @RestController
-@RequestMapping("/api/admin/realm/{realmId}/client/{clientId}/tag")
+@RequestMapping("/api/doorkeeper/v1/admin/realm/{realmId}/client/{clientId}/tag")
 public class AdminTagController extends BaseController {
 
     @Autowired

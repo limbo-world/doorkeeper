@@ -18,8 +18,8 @@ package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import org.limbo.doorkeeper.api.model.param.query.UriQueryParam;
-import org.limbo.doorkeeper.api.model.vo.UriVO;
+import org.limbo.doorkeeper.api.dto.param.query.UriQueryParam;
+import org.limbo.doorkeeper.api.dto.vo.UriVO;
 import org.limbo.doorkeeper.infrastructure.po.UriPO;
 import org.limbo.doorkeeper.infrastructure.mapper.UriMapper;
 import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;

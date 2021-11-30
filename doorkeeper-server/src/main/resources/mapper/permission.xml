@@ -31,20 +31,20 @@
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
     </resultMap>
 
-    <resultMap id="PermissionVO" type="org.limbo.doorkeeper.api.model.vo.PermissionVO" extends="BaseResult">
+    <resultMap id="PermissionVO" type="org.limbo.doorkeeper.api.dto.vo.PermissionVO" extends="BaseResult">
         <result column="logic" property="logic" jdbcType="VARCHAR" javaType="java.lang.String" />
         <result column="intention" property="intention" jdbcType="VARCHAR" javaType="java.lang.String" />
         <collection property="policies" columnPrefix="policy_" resultMap="PermissionPolicyVO" />
         <collection property="resources" columnPrefix="resource_" resultMap="PermissionResourceVO" />
     </resultMap>
 
-    <resultMap id="PermissionPolicyVO" type="org.limbo.doorkeeper.api.model.vo.PermissionPolicyVO">
+    <resultMap id="PermissionPolicyVO" type="org.limbo.doorkeeper.api.dto.vo.PermissionPolicyVO">
         <result column="permission_policy_id" property="permissionPolicyId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="permission_id" property="permissionId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="policy_id" property="policyId" jdbcType="BIGINT" javaType="java.lang.Long" />
     </resultMap>
 
-    <resultMap id="PermissionResourceVO" type="org.limbo.doorkeeper.api.model.vo.PermissionResourceVO">
+    <resultMap id="PermissionResourceVO" type="org.limbo.doorkeeper.api.dto.vo.PermissionResourceVO">
         <result column="permission_resource_id" property="permissionResourceId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="permission_id" property="permissionId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="resource_id" property="resourceId" jdbcType="BIGINT" javaType="java.lang.Long" />

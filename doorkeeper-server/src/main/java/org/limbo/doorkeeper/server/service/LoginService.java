@@ -19,7 +19,7 @@ package org.limbo.doorkeeper.server.service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import org.apache.commons.lang3.time.DateUtils;
-import org.limbo.doorkeeper.api.dto.command.LoginCommand;
+import org.limbo.doorkeeper.api.dto.param.LoginParam;
 import org.limbo.doorkeeper.infrastructure.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.infrastructure.mapper.RealmMapper;
 import org.limbo.doorkeeper.infrastructure.mapper.UserMapper;
@@ -51,7 +51,7 @@ public class LoginService {
     @Autowired
     private RealmService realmService;
 
-    public String login(LoginCommand param) {
+    public String login(LoginParam param) {
         UserPO user;
         RealmPO tenant;
         // 不填realm 默认登录 doorkeeper

@@ -19,13 +19,13 @@ package org.limbo.doorkeeper.server.adapter.http.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.vo.PageVO;
-import org.limbo.doorkeeper.api.model.vo.ResponseVO;
-import org.limbo.doorkeeper.api.model.param.add.ResourceAddParam;
-import org.limbo.doorkeeper.api.model.param.batch.ResourceBatchUpdateParam;
-import org.limbo.doorkeeper.api.model.param.query.ResourceQueryParam;
-import org.limbo.doorkeeper.api.model.param.update.ResourceUpdateParam;
-import org.limbo.doorkeeper.api.model.vo.ResourceVO;
+import org.limbo.doorkeeper.api.dto.vo.PageVO;
+import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
+import org.limbo.doorkeeper.api.dto.param.add.ResourceAddParam;
+import org.limbo.doorkeeper.api.dto.param.batch.ResourceBatchUpdateParam;
+import org.limbo.doorkeeper.api.dto.param.query.ResourceQueryParam;
+import org.limbo.doorkeeper.api.dto.param.update.ResourceUpdateParam;
+import org.limbo.doorkeeper.api.dto.vo.ResourceVO;
 import org.limbo.doorkeeper.server.adapter.http.controller.BaseController;
 import org.limbo.doorkeeper.server.service.ResourceService;
 import org.springdoc.api.annotations.ParameterObject;
@@ -42,7 +42,7 @@ import javax.validation.constraints.NotNull;
 @Tag(name = "资源")
 @Slf4j
 @RestController
-@RequestMapping("/api/admin/realm/{realmId}/client/{clientId}/resource")
+@RequestMapping("/api/doorkeeper/v1/admin/realm/{realmId}/client/{clientId}/resource")
 public class AdminResourceController extends BaseController {
 
     @Autowired

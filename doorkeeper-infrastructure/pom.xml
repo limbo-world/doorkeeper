@@ -30,5 +30,10 @@
             <artifactId>mybatis-plus-boot-starter</artifactId>
             <version>${mybatis.plus.verison}</version>
         </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
     </dependencies>
 </project>

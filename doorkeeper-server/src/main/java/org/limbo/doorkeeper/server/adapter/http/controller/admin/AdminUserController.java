@@ -19,12 +19,12 @@ package org.limbo.doorkeeper.server.adapter.http.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.vo.PageVO;
-import org.limbo.doorkeeper.api.model.vo.ResponseVO;
-import org.limbo.doorkeeper.api.model.param.add.UserAddParam;
-import org.limbo.doorkeeper.api.model.param.query.UserQueryParam;
-import org.limbo.doorkeeper.api.model.param.update.UserUpdateParam;
-import org.limbo.doorkeeper.api.model.vo.UserVO;
+import org.limbo.doorkeeper.api.dto.vo.PageVO;
+import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
+import org.limbo.doorkeeper.api.dto.param.add.UserAddParam;
+import org.limbo.doorkeeper.api.dto.param.query.UserQueryParam;
+import org.limbo.doorkeeper.api.dto.param.update.UserUpdateParam;
+import org.limbo.doorkeeper.api.dto.vo.UserVO;
 import org.limbo.doorkeeper.server.adapter.http.controller.BaseController;
 import org.limbo.doorkeeper.server.service.UserService;
 import org.springdoc.api.annotations.ParameterObject;
@@ -41,7 +41,7 @@ import javax.validation.constraints.NotNull;
 @Tag(name = "用户")
 @Slf4j
 @RestController
-@RequestMapping("/api/admin/realm/{realmId}/user")
+@RequestMapping("/api/doorkeeper/v1/admin/realm/{realmId}/user")
 public class AdminUserController extends BaseController {
 
     @Autowired

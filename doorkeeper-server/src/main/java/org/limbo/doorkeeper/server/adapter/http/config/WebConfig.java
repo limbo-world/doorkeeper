@@ -20,10 +20,14 @@ import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.limbo.doorkeeper.server.service.InitializeService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.DateFormatter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -38,7 +42,7 @@ import java.text.SimpleDateFormat;
  */
 @Slf4j
 @Configuration
-public class WebConfig implements WebMvcConfigurer {
+public class WebConfig implements WebMvcConfigurer, ApplicationListener<ContextRefreshedEvent> {
 
     /**
      * json 返回结果处理
@@ -96,4 +100,19 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/api/admin/realm/*/client"); // realm client 列表/新增接口 直接开放
     }
 
+    @Autowired
+    private InitializeService initializeService;
+
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent event) {
+        if (event.getApplicationContext().getParent() == null) {
+            log.info("start initialize...");
+            boolean initialized = initializeService.initDoorkeeper();
+            if (initialized) {
+                log.info("initialize complete...");
+            } else {
+                log.info("already initialized...");
+            }
+        }
+    }
 }

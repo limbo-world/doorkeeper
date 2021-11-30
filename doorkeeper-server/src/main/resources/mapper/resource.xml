@@ -29,7 +29,7 @@
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
     </resultMap>
 
-    <resultMap id="ResourceVO" type="org.limbo.doorkeeper.api.model.vo.ResourceVO" extends="BaseResult">
+    <resultMap id="ResourceVO" type="org.limbo.doorkeeper.api.dto.vo.ResourceVO" extends="BaseResult">
         <collection property="tags" columnPrefix="tag_" resultMap="ResourceTagVO" />
         <collection property="uris" columnPrefix="uri_" resultMap="ResourceUriVO" />
         <collection property="parentIds" columnPrefix="parent_" ofType="java.lang.Long">
@@ -40,14 +40,14 @@
         </collection>
     </resultMap>
 
-    <resultMap id="ResourceTagVO" type="org.limbo.doorkeeper.api.model.vo.ResourceTagVO">
+    <resultMap id="ResourceTagVO" type="org.limbo.doorkeeper.api.dto.vo.ResourceTagVO">
         <result column="resource_tag_id" property="resourceTagId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="resource_id" property="resourceId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="k" property="k" jdbcType="VARCHAR" javaType="java.lang.String" />
         <result column="v" property="v" jdbcType="VARCHAR" javaType="java.lang.String" />
     </resultMap>
 
-    <resultMap id="ResourceUriVO" type="org.limbo.doorkeeper.api.model.vo.ResourceUriVO">
+    <resultMap id="ResourceUriVO" type="org.limbo.doorkeeper.api.dto.vo.ResourceUriVO">
         <result column="resource_uri_id" property="resourceUriId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="resource_id" property="resourceId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="uri" property="uri" jdbcType="VARCHAR" javaType="java.lang.String" />

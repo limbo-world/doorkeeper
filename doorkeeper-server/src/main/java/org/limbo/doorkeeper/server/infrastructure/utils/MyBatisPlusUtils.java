@@ -28,7 +28,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.ibatis.binding.MapperMethod;
 import org.apache.ibatis.executor.BatchResult;
 import org.apache.ibatis.session.SqlSession;
-import org.limbo.doorkeeper.api.model.param.query.PageParam;
+import org.limbo.doorkeeper.api.dto.param.query.PageParam;
 
 import java.util.Collection;
 import java.util.HashMap;

@@ -18,8 +18,8 @@ package org.limbo.doorkeeper.server.infrastructure.dao;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
-import org.limbo.doorkeeper.api.model.param.add.PolicyRoleAddParam;
-import org.limbo.doorkeeper.api.model.vo.policy.PolicyRoleVO;
+import org.limbo.doorkeeper.api.dto.param.add.PolicyRoleAddParam;
+import org.limbo.doorkeeper.api.dto.vo.policy.PolicyRoleVO;
 import org.limbo.doorkeeper.infrastructure.po.PolicyRolePO;
 import org.limbo.doorkeeper.infrastructure.mapper.policy.PolicyRoleMapper;
 import org.springframework.beans.factory.annotation.Autowired;

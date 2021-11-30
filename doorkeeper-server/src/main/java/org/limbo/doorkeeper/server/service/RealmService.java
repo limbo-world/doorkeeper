@@ -18,8 +18,8 @@ package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.lang3.StringUtils;
-import org.limbo.doorkeeper.api.model.param.update.RealmUpdateParam;
-import org.limbo.doorkeeper.api.model.vo.RealmVO;
+import org.limbo.doorkeeper.api.dto.param.update.RealmUpdateParam;
+import org.limbo.doorkeeper.api.dto.vo.RealmVO;
 import org.limbo.doorkeeper.api.constants.MsgConstants;
 import org.limbo.doorkeeper.infrastructure.mapper.RealmMapper;
 import org.limbo.doorkeeper.infrastructure.po.RealmPO;

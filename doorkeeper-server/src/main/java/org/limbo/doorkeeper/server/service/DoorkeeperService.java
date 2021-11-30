@@ -22,40 +22,32 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.*;
-import org.limbo.doorkeeper.api.dto.command.InitCommand;
-import org.limbo.doorkeeper.api.model.param.add.*;
-import org.limbo.doorkeeper.api.model.param.batch.UserRoleBatchUpdateParam;
-import org.limbo.doorkeeper.api.model.param.query.*;
-import org.limbo.doorkeeper.api.model.param.update.PermissionUpdateParam;
-import org.limbo.doorkeeper.api.model.vo.*;
-import org.limbo.doorkeeper.api.model.vo.check.ResourceCheckResult;
-import org.limbo.doorkeeper.api.model.vo.check.RoleCheckResult;
-import org.limbo.doorkeeper.api.constants.Intention;
-import org.limbo.doorkeeper.api.constants.Logic;
-import org.limbo.doorkeeper.api.constants.PolicyType;
+import org.limbo.doorkeeper.api.dto.param.add.RealmAddParam;
+import org.limbo.doorkeeper.api.dto.param.add.*;
+import org.limbo.doorkeeper.api.dto.param.query.*;
+import org.limbo.doorkeeper.api.dto.param.update.PermissionUpdateParam;
+import org.limbo.doorkeeper.api.dto.vo.*;
+import org.limbo.doorkeeper.api.dto.vo.check.ResourceCheckResult;
+import org.limbo.doorkeeper.api.dto.vo.check.RoleCheckResult;
+import org.limbo.doorkeeper.infrastructure.config.TemplateLoader;
 import org.limbo.doorkeeper.infrastructure.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.infrastructure.mapper.*;
-import org.limbo.doorkeeper.infrastructure.po.RealmPO;
+import org.limbo.doorkeeper.infrastructure.mapper.policy.PolicyMapper;
+import org.limbo.doorkeeper.infrastructure.po.*;
 import org.limbo.doorkeeper.server.infrastructure.checker.ResourceChecker;
 import org.limbo.doorkeeper.server.infrastructure.checker.RoleChecker;
 import org.limbo.doorkeeper.server.infrastructure.exception.ParamException;
-import org.limbo.doorkeeper.infrastructure.mapper.policy.PolicyMapper;
-import org.limbo.doorkeeper.infrastructure.po.NamespacePO;
-import org.limbo.doorkeeper.infrastructure.po.PolicyPO;
-import org.limbo.doorkeeper.infrastructure.po.RolePO;
-import org.limbo.doorkeeper.infrastructure.po.UserPO;
-import org.limbo.doorkeeper.server.infrastructure.utils.*;
+import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.server.infrastructure.utils.JacksonUtil;
+import org.limbo.doorkeeper.server.infrastructure.utils.UUIDUtils;
+import org.limbo.doorkeeper.server.infrastructure.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -84,16 +76,10 @@ public class DoorkeeperService {
     private ResourceService resourceService;
 
     @Autowired
-    private RoleService roleService;
-
-    @Autowired
     private PermissionService permissionService;
 
     @Autowired
     private UserMapper userMapper;
-
-    @Autowired
-    private UserRoleService userRoleService;
 
     @Autowired
     private ResourceMapper resourceMapper;
@@ -113,58 +99,17 @@ public class DoorkeeperService {
     @Autowired
     private RoleChecker roleChecker;
 
-    private volatile String realmResource;
+    private final TemplateLoader realmResourceLoader = new TemplateLoader("realm_resource.json");
 
-    private volatile String clientResource;
+    private final TemplateLoader clientResourceLoader = new TemplateLoader("client_resource.json");
+
     /**
      * doorkeeper域缓存对象 不能保证secret的变动
      */
-    private volatile RealmPO doorkeeperTenant;
-
-    /**
-     * 系统数据初始化
-     */
-    @Transactional
-    public void initDoorkeeper(InitCommand param) {
-        RealmPO realm = new RealmPO();
-        realm.setName(DoorkeeperConstants.DOORKEEPER_REALM_NAME);
-        realm.setSecret(UUIDUtils.get());
-        try {
-            realmMapper.insert(realm);
-        } catch (DuplicateKeyException e) {
-            throw new ParamException("请勿重复操作");
-        }
-
-        // 创建管理员账户
-        UserPO admin = new UserPO();
-        admin.setRealmId(realm.getRealmId());
-        admin.setNickname(DoorkeeperConstants.ADMIN);
-        admin.setUsername(StringUtils.isBlank(param.getUsername()) ? DoorkeeperConstants.ADMIN : param.getUsername());
-        admin.setPassword(MD5Utils.md5AndHex(StringUtils.isBlank(param.getPassword()) ? DoorkeeperConstants.ADMIN : param.getPassword(), null));
-        admin.setIsEnabled(true);
-        userMapper.insert(admin);
-        // 创建doorkeeper超管角色
-        RoleAddParam realmAdminRoleParam = createRole(DoorkeeperConstants.REALM_CLIENT_ID, DoorkeeperConstants.ADMIN, "");
-        RoleVO realmAdminRole = roleService.add(realm.getRealmId(), realmAdminRoleParam);
-        // 绑定管理员和角色
-        UserRoleBatchUpdateParam userRoleBatchUpdateParam = new UserRoleBatchUpdateParam();
-        userRoleBatchUpdateParam.setType(BatchMethod.SAVE);
-        userRoleBatchUpdateParam.setRoleIds(Collections.singletonList(realmAdminRole.getRoleId()));
-        userRoleService.batchUpdate(admin.getUserId(), userRoleBatchUpdateParam);
-        // 创建api client
-        NamespacePO apiClient = new NamespacePO();
-        apiClient.setRealmId(realm.getRealmId());
-        apiClient.setName(DoorkeeperConstants.API_CLIENT);
-        apiClient.setDescription("manager doorkeeper permission");
-        apiClient.setIsEnabled(true);
-        namespaceMapper.insert(apiClient);
-        // 资源数据
-        createTenantResource(admin.getUserId(), realm.getRealmId(), realm.getName());
-        createClientResource(admin.getUserId(), realm.getRealmId(), apiClient.getNamespaceId(), apiClient.getName());
-    }
+    private volatile RealmPO doorkeeperRealm;
 
     @Transactional
-    public RealmVO addTenant(Long userId, RealmAddParam param) {
+    public RealmVO addRealm(Long userId, RealmAddParam param) {
         RealmPO realm = EnhancedBeanUtils.createAndCopy(param, RealmPO.class);
         if (StringUtils.isBlank(param.getSecret())) {
             realm.setSecret(UUIDUtils.get());
@@ -176,7 +121,7 @@ public class DoorkeeperService {
         }
 
         // 初始化realm数据
-        createTenantResource(userId, realm.getRealmId(), realm.getName());
+        createRealmResource(userId, realm.getRealmId(), realm.getName());
 
         return EnhancedBeanUtils.createAndCopy(realm, RealmVO.class);
     }
@@ -184,7 +129,7 @@ public class DoorkeeperService {
     /**
      * user拥有哪些realm
      */
-    public List<RealmVO> userTenants(Long userId) {
+    public List<RealmVO> userRealms(Long userId) {
         LambdaQueryWrapper<RealmPO> realmSelect = Wrappers.<RealmPO>lambdaQuery().select(RealmPO::getRealmId, RealmPO::getName);
         // 判断是不是doorkeeper的REALM admin
         if (isSuperAdmin(userId)) {
@@ -192,7 +137,7 @@ public class DoorkeeperService {
             return EnhancedBeanUtils.createAndCopyList(realms, RealmVO.class);
         }
 
-        NamespacePO apiClient = namespaceMapper.getByName(getDoorkeeperTenantId(), DoorkeeperConstants.API_CLIENT);
+        NamespacePO apiClient = namespaceMapper.getByName(getDoorkeeperRealmId(), DoorkeeperConstants.API_CLIENT);
         // 普通用户，查看绑定的realm 资源
         ResourceCheckParam checkParam = new ResourceCheckParam();
         checkParam.setClientId(apiClient.getNamespaceId());
@@ -247,7 +192,7 @@ public class DoorkeeperService {
         if (!isSuperAdmin(userId)) {
             clientIds = new ArrayList<>();
             // 获取realm在doorkeeper下对应的client
-            NamespacePO apiClient = namespaceMapper.getByName(getDoorkeeperTenantId(), DoorkeeperConstants.API_CLIENT);
+            NamespacePO apiClient = namespaceMapper.getByName(getDoorkeeperRealmId(), DoorkeeperConstants.API_CLIENT);
 
             ResourceCheckParam checkParam = new ResourceCheckParam();
             checkParam.setClientId(apiClient.getNamespaceId());
@@ -289,16 +234,21 @@ public class DoorkeeperService {
      * @param realmName 新建的realm名称
      */
     @Transactional
-    public void createTenantResource(Long userId, Long realmId, String realmName) {
-        NamespacePO apiClient = namespaceMapper.getByName(getDoorkeeperTenantId(), DoorkeeperConstants.API_CLIENT);
+    public void createRealmResource(Long userId, Long realmId, String realmName) {
+        NamespacePO apiClient = namespaceMapper.getByName(getDoorkeeperRealmId(), DoorkeeperConstants.API_CLIENT);
         // 域资源
-        String resourceTemplate = getRealmResourceTemplate();
+        String resourceTemplate = null;
+        try {
+            resourceTemplate = realmResourceLoader.getTemplate();
+        } catch (Exception e) {
+            throw new RuntimeException("template " + realmResourceLoader.getPath() + " read error");
+        }
         resourceTemplate = resourceTemplate.replaceAll("\\$\\{realmId}", realmId.toString());
         resourceTemplate = resourceTemplate.replaceAll("\\$\\{realmName}", realmName);
         List<ResourceAddParam> resourceAddParams = JacksonUtil.parseObject(resourceTemplate, new TypeReference<List<ResourceAddParam>>() {
         });
         for (ResourceAddParam resourceAddParam : resourceAddParams) {
-            resourceService.add(getDoorkeeperTenantId(), apiClient.getNamespaceId(), resourceAddParam);
+            resourceService.add(getDoorkeeperRealmId(), apiClient.getNamespaceId(), resourceAddParam);
         }
 
         UserPO user = userMapper.selectById(userId);
@@ -318,11 +268,16 @@ public class DoorkeeperService {
      */
     @Transactional
     public void createClientResource(Long userId, Long realmId, Long clientId, String clientName) {
-        NamespacePO apiClient = namespaceMapper.getByName(getDoorkeeperTenantId(), DoorkeeperConstants.API_CLIENT);
+        NamespacePO apiClient = namespaceMapper.getByName(getDoorkeeperRealmId(), DoorkeeperConstants.API_CLIENT);
         RealmPO realm = realmMapper.selectById(realmId);
 
         // 资源
-        String resourceTemplate = getClientResourceTemplate();
+        String resourceTemplate = null;
+        try {
+            resourceTemplate = clientResourceLoader.getTemplate();
+        } catch (Exception e) {
+            throw new RuntimeException("template " + clientResourceLoader.getPath() + " read error");
+        }
         resourceTemplate = resourceTemplate.replaceAll("\\$\\{realmId}", realmId.toString());
         resourceTemplate = resourceTemplate.replaceAll("\\$\\{realmName}", realm.getName());
         resourceTemplate = resourceTemplate.replaceAll("\\$\\{clientId}", clientId.toString());
@@ -330,7 +285,7 @@ public class DoorkeeperService {
         List<ResourceAddParam> resourceAddParams = JacksonUtil.parseObject(resourceTemplate, new TypeReference<List<ResourceAddParam>>() {
         });
         for (ResourceAddParam resourceAddParam : resourceAddParams) {
-            resourceService.add(getDoorkeeperTenantId(), apiClient.getNamespaceId(), resourceAddParam);
+            resourceService.add(getDoorkeeperRealmId(), apiClient.getNamespaceId(), resourceAddParam);
         }
 
         UserPO user = userMapper.selectById(userId);
@@ -400,31 +355,6 @@ public class DoorkeeperService {
         }
     }
 
-
-    private RoleAddParam createRole(Long clientId, String name, String description) {
-        RoleAddParam roleAddParam = new RoleAddParam();
-        roleAddParam.setName(name);
-        roleAddParam.setClientId(clientId);
-        roleAddParam.setDescription(description);
-        roleAddParam.setIsEnabled(true);
-        return roleAddParam;
-    }
-
-    private PolicyAddParam createRolePolicy(String name, Long roleId) {
-        PolicyAddParam policyAddParam = new PolicyAddParam();
-        policyAddParam.setName(name);
-        policyAddParam.setType(PolicyType.ROLE);
-        policyAddParam.setLogic(Logic.ALL);
-        policyAddParam.setIntention(Intention.ALLOW);
-        policyAddParam.setIsEnabled(Boolean.TRUE);
-
-        PolicyRoleAddParam roleAddParam = new PolicyRoleAddParam();
-        roleAddParam.setRoleId(roleId);
-
-        policyAddParam.setRoles(Collections.singletonList(roleAddParam));
-        return policyAddParam;
-    }
-
     private PolicyAddParam createUserPolicy(String name, Long userId) {
         PolicyAddParam policyAddParam = new PolicyAddParam();
         policyAddParam.setName(name);
@@ -452,51 +382,13 @@ public class DoorkeeperService {
     }
 
     /**
-     * 获取 realm 资源模板
-     */
-    private String getRealmResourceTemplate() {
-        if (realmResource == null) {
-            synchronized (this) {
-                if (realmResource == null) {
-                    try {
-                        InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("realm_resource.json");
-                        realmResource = IOUtils.toString(resourceAsStream, StandardCharsets.UTF_8);
-                    } catch (IOException e) {
-                        log.error("read realm_resource.json error", e);
-                    }
-                }
-            }
-        }
-        return realmResource;
-    }
-
-    /**
-     * 获取 client 资源模板
-     */
-    private String getClientResourceTemplate() {
-        if (clientResource == null) {
-            synchronized (this) {
-                if (clientResource == null) {
-                    try {
-                        InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("client_resource.json");
-                        clientResource = IOUtils.toString(resourceAsStream, StandardCharsets.UTF_8);
-                    } catch (IOException e) {
-                        log.error("read client_resource.json error", e);
-                    }
-                }
-            }
-        }
-        return clientResource;
-    }
-
-    /**
      * 判断用户是否doorkeeper的管理员 校验是否为 doorkeeper域下的域管理员
      *
      * @param userId 用户ID
      * @return 是否超级管理员
      */
     public boolean isSuperAdmin(Long userId) {
-        RolePO doorkeeperAdmin = roleMapper.getByName(getDoorkeeperTenantId(), DoorkeeperConstants.REALM_CLIENT_ID, DoorkeeperConstants.ADMIN);
+        RolePO doorkeeperAdmin = roleMapper.getByName(getDoorkeeperRealmId(), DoorkeeperConstants.REALM_ROLE_ID, DoorkeeperConstants.ADMIN);
 
         RoleCheckParam param = new RoleCheckParam();
         param.setRoleIds(Collections.singletonList(doorkeeperAdmin.getRoleId()));
@@ -509,7 +401,7 @@ public class DoorkeeperService {
      */
     public boolean hasUriPermission(UserPO user, String path, UriMethod method) {
         // 判断用户是否属于doorkeeper域或公有域
-        if (!getDoorkeeperTenantId().equals(user.getRealmId())) {
+        if (!getDoorkeeperRealmId().equals(user.getRealmId())) {
             return false;
         }
 
@@ -519,31 +411,31 @@ public class DoorkeeperService {
         }
 
         // 判断uri权限
-        NamespacePO apiClient = namespaceMapper.getByName(doorkeeperTenant.getRealmId(), DoorkeeperConstants.API_CLIENT);
-        ResourceCheckParam checkParam = new ResourceCheckParam()
-                .setClientId(apiClient.getNamespaceId())
-                .setUris(Collections.singletonList(method + DoorkeeperConstants.KV_DELIMITER + path));
+        NamespacePO apiClient = namespaceMapper.getByName(doorkeeperRealm.getRealmId(), DoorkeeperConstants.API_CLIENT);
+        ResourceCheckParam checkParam = ResourceCheckParam.builder()
+                .clientId(apiClient.getNamespaceId())
+                .uris(Collections.singletonList(method + ApiConstants.KV_DELIMITER + path)).build();
         ResourceCheckResult checkResult = resourceChecker.check(user.getUserId(), checkParam);
 
         return checkResult.getResources().size() > 0;
     }
 
-    public Long getDoorkeeperTenantId() {
-        return getDoorkeeperTenant().getRealmId();
+    public Long getDoorkeeperRealmId() {
+        return getDoorkeeperRealm().getRealmId();
     }
 
-    private RealmPO getDoorkeeperTenant() {
-        if (doorkeeperTenant == null) {
+    private RealmPO getDoorkeeperRealm() {
+        if (doorkeeperRealm == null) {
             synchronized (this) {
-                if (doorkeeperTenant == null) {
-                    doorkeeperTenant = realmMapper.selectOne(Wrappers.<RealmPO>lambdaQuery()
+                if (doorkeeperRealm == null) {
+                    doorkeeperRealm = realmMapper.selectOne(Wrappers.<RealmPO>lambdaQuery()
                             .eq(RealmPO::getName, DoorkeeperConstants.DOORKEEPER_REALM_NAME)
                     );
-                    Verifies.notNull(doorkeeperTenant, "doorkeeper域不存在");
+                    Verifies.notNull(doorkeeperRealm, "doorkeeper域不存在");
                 }
             }
         }
-        return doorkeeperTenant;
+        return doorkeeperRealm;
     }
 
 }

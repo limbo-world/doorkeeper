@@ -18,8 +18,8 @@ package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.lang3.StringUtils;
-import org.limbo.doorkeeper.api.model.param.update.ClientUpdateParam;
-import org.limbo.doorkeeper.api.model.vo.ClientVO;
+import org.limbo.doorkeeper.api.dto.param.update.ClientUpdateParam;
+import org.limbo.doorkeeper.api.dto.vo.ClientVO;
 import org.limbo.doorkeeper.infrastructure.po.NamespacePO;
 import org.limbo.doorkeeper.infrastructure.mapper.NamespaceMapper;
 import org.limbo.doorkeeper.server.infrastructure.exception.ParamException;

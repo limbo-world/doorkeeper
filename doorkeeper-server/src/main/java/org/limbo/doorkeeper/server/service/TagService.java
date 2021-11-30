@@ -18,8 +18,8 @@ package org.limbo.doorkeeper.server.service;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import org.limbo.doorkeeper.api.model.param.query.TagQueryParam;
-import org.limbo.doorkeeper.api.model.vo.TagVO;
+import org.limbo.doorkeeper.api.dto.param.query.TagQueryParam;
+import org.limbo.doorkeeper.api.dto.vo.TagVO;
 import org.limbo.doorkeeper.infrastructure.po.TagPO;
 import org.limbo.doorkeeper.infrastructure.mapper.TagMapper;
 import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;

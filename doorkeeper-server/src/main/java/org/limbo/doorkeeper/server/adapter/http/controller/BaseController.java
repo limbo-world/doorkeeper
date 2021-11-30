@@ -17,7 +17,7 @@
 package org.limbo.doorkeeper.server.adapter.http.controller;
 
 import org.apache.commons.lang3.StringUtils;
-import org.limbo.doorkeeper.api.model.vo.UserVO;
+import org.limbo.doorkeeper.api.dto.vo.UserVO;
 import org.limbo.doorkeeper.infrastructure.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.infrastructure.po.RealmPO;
 import org.limbo.doorkeeper.server.infrastructure.exception.AuthenticationException;

@@ -32,7 +32,7 @@
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
     </resultMap>
 
-    <resultMap id="PolicyVO" type="org.limbo.doorkeeper.api.model.vo.policy.PolicyVO" extends="BaseResult">
+    <resultMap id="PolicyVO" type="org.limbo.doorkeeper.api.dto.vo.policy.PolicyVO" extends="BaseResult">
         <result column="type" property="type" jdbcType="VARCHAR" javaType="java.lang.String" />
         <result column="logic" property="logic" jdbcType="VARCHAR" javaType="java.lang.String" />
         <result column="intention" property="intention" jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -42,14 +42,14 @@
         <collection property="groups" columnPrefix="group_" resultMap="PolicyGroupVO" />
     </resultMap>
 
-    <resultMap id="PolicyParamVO" type="org.limbo.doorkeeper.api.model.vo.policy.PolicyParamVO">
+    <resultMap id="PolicyParamVO" type="org.limbo.doorkeeper.api.dto.vo.policy.PolicyParamVO">
         <result column="policy_param_id" property="policyParamId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="policy_id" property="policyId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="k" property="k" jdbcType="VARCHAR" javaType="java.lang.String" />
         <result column="v" property="v" jdbcType="VARCHAR" javaType="java.lang.String" />
     </resultMap>
 
-    <resultMap id="PolicyRoleVO" type="org.limbo.doorkeeper.api.model.vo.policy.PolicyRoleVO">
+    <resultMap id="PolicyRoleVO" type="org.limbo.doorkeeper.api.dto.vo.policy.PolicyRoleVO">
         <result column="policy_role_id" property="policyRoleId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="policy_id" property="policyId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="role_id" property="roleId" jdbcType="BIGINT" javaType="java.lang.Long" />
@@ -59,14 +59,14 @@
         <result column="is_enabled" property="isEnabled" jdbcType="BIT" javaType="java.lang.Boolean"/>
     </resultMap>
 
-    <resultMap id="PolicyUserVO" type="org.limbo.doorkeeper.api.model.vo.policy.PolicyUserVO">
+    <resultMap id="PolicyUserVO" type="org.limbo.doorkeeper.api.dto.vo.policy.PolicyUserVO">
         <result column="policy_user_id" property="policyUserId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="policy_id" property="policyId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="user_id" property="userId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="username" property="username" jdbcType="VARCHAR" javaType="java.lang.String" />
     </resultMap>
 
-    <resultMap id="PolicyGroupVO" type="org.limbo.doorkeeper.api.model.vo.policy.PolicyGroupVO">
+    <resultMap id="PolicyGroupVO" type="org.limbo.doorkeeper.api.dto.vo.policy.PolicyGroupVO">
         <result column="policy_group_id" property="policyGroupId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="policy_id" property="policyId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="group_id" property="groupId" jdbcType="BIGINT" javaType="java.lang.Long" />

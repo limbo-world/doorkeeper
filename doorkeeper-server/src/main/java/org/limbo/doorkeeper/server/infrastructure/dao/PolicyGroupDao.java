@@ -18,8 +18,8 @@ package org.limbo.doorkeeper.server.infrastructure.dao;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
-import org.limbo.doorkeeper.api.model.param.add.PolicyGroupAddParam;
-import org.limbo.doorkeeper.api.model.vo.policy.PolicyGroupVO;
+import org.limbo.doorkeeper.api.dto.param.add.PolicyGroupAddParam;
+import org.limbo.doorkeeper.api.dto.vo.policy.PolicyGroupVO;
 import org.limbo.doorkeeper.infrastructure.po.PolicyGroupPO;
 import org.limbo.doorkeeper.infrastructure.mapper.policy.PolicyGroupMapper;
 import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;

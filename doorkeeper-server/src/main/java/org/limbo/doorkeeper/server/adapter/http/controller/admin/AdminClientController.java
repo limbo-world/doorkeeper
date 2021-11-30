@@ -19,12 +19,12 @@ package org.limbo.doorkeeper.server.adapter.http.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.vo.ResponseVO;
-import org.limbo.doorkeeper.api.model.param.add.ClientAddParam;
-import org.limbo.doorkeeper.api.model.param.query.ClientQueryParam;
-import org.limbo.doorkeeper.api.model.param.update.ClientUpdateParam;
-import org.limbo.doorkeeper.api.model.vo.ClientVO;
-import org.limbo.doorkeeper.api.model.vo.RoleVO;
+import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
+import org.limbo.doorkeeper.api.dto.param.add.ClientAddParam;
+import org.limbo.doorkeeper.api.dto.param.query.ClientQueryParam;
+import org.limbo.doorkeeper.api.dto.param.update.ClientUpdateParam;
+import org.limbo.doorkeeper.api.dto.vo.ClientVO;
+import org.limbo.doorkeeper.api.dto.vo.RoleVO;
 import org.limbo.doorkeeper.server.adapter.http.controller.BaseController;
 import org.limbo.doorkeeper.server.service.ClientService;
 import org.limbo.doorkeeper.server.service.DoorkeeperService;
@@ -43,7 +43,7 @@ import java.util.List;
 @Tag(name = "委托方")
 @Slf4j
 @RestController
-@RequestMapping("/api/admin/realm/{realmId}/client")
+@RequestMapping("/api/doorkeeper/v1/admin/realm/{realmId}/client")
 public class AdminClientController extends BaseController {
 
     @Autowired

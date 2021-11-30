@@ -18,7 +18,7 @@ package org.limbo.doorkeeper.server.adapter.http.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.limbo.doorkeeper.api.model.vo.ResponseVO;
+import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
 import org.limbo.doorkeeper.infrastructure.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.infrastructure.po.RealmPO;
 import org.limbo.doorkeeper.server.infrastructure.exception.AuthenticationException;

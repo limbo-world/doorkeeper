@@ -44,7 +44,7 @@ public interface DoorkeeperConstants {
     /**
      * 查询域角色时候使用
      */
-    Long REALM_CLIENT_ID = 0L;
+    Long REALM_ROLE_ID = 0L;
 
     String ADMIN = "admin";
 
@@ -53,10 +53,7 @@ public interface DoorkeeperConstants {
     String USER_ID = "userId";
     String USERNAME = "username";
     String NICKNAME = "nickname";
-    /**
-     * k、v类型的连接方式
-     */
-    String KV_DELIMITER = "=";
+
 
     String TREE = "tree";
 

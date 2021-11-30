@@ -19,8 +19,8 @@ package org.limbo.doorkeeper.infrastructure.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
-import org.limbo.doorkeeper.api.model.param.query.PermissionQueryParam;
-import org.limbo.doorkeeper.api.model.vo.PermissionVO;
+import org.limbo.doorkeeper.api.dto.param.query.PermissionQueryParam;
+import org.limbo.doorkeeper.api.dto.vo.PermissionVO;
 import org.limbo.doorkeeper.infrastructure.po.PermissionPO;
 
 import java.util.List;

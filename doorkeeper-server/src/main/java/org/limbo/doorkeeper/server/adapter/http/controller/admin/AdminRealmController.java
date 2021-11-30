@@ -19,11 +19,11 @@ package org.limbo.doorkeeper.server.adapter.http.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.model.vo.ResponseVO;
-import org.limbo.doorkeeper.api.model.param.update.RealmUpdateParam;
-import org.limbo.doorkeeper.api.model.param.add.RealmAddParam;
-import org.limbo.doorkeeper.api.model.vo.RealmVO;
-import org.limbo.doorkeeper.api.model.vo.RoleVO;
+import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
+import org.limbo.doorkeeper.api.dto.param.update.RealmUpdateParam;
+import org.limbo.doorkeeper.api.dto.param.add.RealmAddParam;
+import org.limbo.doorkeeper.api.dto.vo.RealmVO;
+import org.limbo.doorkeeper.api.dto.vo.RoleVO;
 import org.limbo.doorkeeper.server.adapter.http.controller.BaseController;
 import org.limbo.doorkeeper.server.service.DoorkeeperService;
 import org.limbo.doorkeeper.server.service.RealmService;
@@ -41,7 +41,7 @@ import java.util.List;
 @Tag(name = "域")
 @Slf4j
 @RestController
-@RequestMapping("/api/admin/realm")
+@RequestMapping("/api/doorkeeper/v1/admin/realm")
 public class AdminRealmController extends BaseController {
 
     @Autowired
@@ -53,13 +53,13 @@ public class AdminRealmController extends BaseController {
     @Operation(summary = "新建域")
     @PostMapping
     public ResponseVO<RealmVO> add(@RequestBody @Validated RealmAddParam param) {
-        return ResponseVO.success(doorkeeperService.addTenant(getUser().getUserId(), param));
+        return ResponseVO.success(doorkeeperService.addRealm(getUser().getUserId(), param));
     }
 
     @Operation(summary = "查询账户拥有的域")
     @GetMapping
     public ResponseVO<List<RealmVO>> userRealms() {
-        return ResponseVO.success(doorkeeperService.userTenants(getUser().getUserId()));
+        return ResponseVO.success(doorkeeperService.userRealms(getUser().getUserId()));
     }
 
     @Operation(summary = "域详情")
