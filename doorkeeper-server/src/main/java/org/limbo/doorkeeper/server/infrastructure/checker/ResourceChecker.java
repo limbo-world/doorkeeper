@@ -31,12 +31,12 @@ import org.limbo.doorkeeper.api.dto.vo.PermissionVO;
 import org.limbo.doorkeeper.api.dto.vo.ResourceVO;
 import org.limbo.doorkeeper.api.dto.vo.check.ResourceCheckResult;
 import org.limbo.doorkeeper.api.dto.vo.policy.PolicyVO;
-import org.limbo.doorkeeper.infrastructure.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.infrastructure.mapper.*;
-import org.limbo.doorkeeper.infrastructure.mapper.policy.PolicyMapper;
-import org.limbo.doorkeeper.infrastructure.po.*;
-import org.limbo.doorkeeper.server.domain.PatternDO;
+import org.limbo.doorkeeper.server.infrastructure.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.server.infrastructure.mapper.*;
+import org.limbo.doorkeeper.server.infrastructure.mapper.policy.PolicyMapper;
+import org.limbo.doorkeeper.server.infrastructure.config.PatternMatcher;
 import org.limbo.doorkeeper.server.infrastructure.exception.AuthorizationException;
+import org.limbo.doorkeeper.server.infrastructure.po.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -192,14 +192,14 @@ public class ResourceChecker {
                 // 先检测 REFUSE 的权限，如果存在一个 REFUSE 的权限校验通过，则此资源约束被看作拒绝
                 Set<PermissionVO> refusedPerms = intentGroupedPerms.getOrDefault(Intention.REFUSE, new HashSet<>());
                 for (PermissionVO permission : refusedPerms) {
-                    if (checkPermissionLogic(checker, checkParam, permission, policyMap)) {
+                    if (checkPermissionLogic(checker, permission, policyMap)) {
                         continue ASSIGNER_ITER;
                     }
                 }
                 // 再检测 ALLOW 的权限
                 Set<PermissionVO> allowedPerms = intentGroupedPerms.getOrDefault(Intention.ALLOW, new HashSet<>());
                 for (PermissionVO permission : allowedPerms) {
-                    if (checkPermissionLogic(checker, checkParam, permission, policyMap)) {
+                    if (checkPermissionLogic(checker, permission, policyMap)) {
                         result.add(resource);
                         continue ASSIGNER_ITER;
                     }
@@ -249,7 +249,7 @@ public class ResourceChecker {
                     }
 
                     // 判断是否匹配方法和路径
-                    PatternDO pattern = new PatternDO(uri.getUri().trim());
+                    PatternMatcher pattern = new PatternMatcher(uri.getUri().trim());
                     if ((UriMethod.ALL == uri.getMethod() || uri.getMethod() == UriMethod.parse(requestMethod))
                             && pattern.pathMatch(requestUri.trim())) {
                         uriIds.add(uri.getUriId());
@@ -320,8 +320,7 @@ public class ResourceChecker {
      * @param permission 待校验的授权信息
      * @return 返回Permission校验是否通过
      */
-    private boolean checkPermissionLogic(PolicyChecker checker, ResourceCheckParam checkParam, PermissionVO permission,
-                                         Map<Long, PolicyVO> policyMap) {
+    private boolean checkPermissionLogic(PolicyChecker checker, PermissionVO permission, Map<Long, PolicyVO> policyMap) {
         // 检测权限是否禁用
         if (!permission.getIsEnabled()) {
             return false;

@@ -6,7 +6,7 @@ package org.limbo.doorkeeper.api.constants;
  */
 public interface MsgConstants {
 
-    String NO_TENANT = "租户不存在";
+    String NO_REALM = "域不存在";
     String NO_USER = "用户不存在";
     String DISABLED_USER = "用户未启用";
 

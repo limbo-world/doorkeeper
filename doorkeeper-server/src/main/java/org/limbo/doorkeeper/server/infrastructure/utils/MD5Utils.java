@@ -16,8 +16,8 @@
 
 package org.limbo.doorkeeper.server.infrastructure.utils;
 
-import org.apache.commons.lang3.StringUtils;
-
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Random;
 
@@ -49,17 +49,13 @@ public class MD5Utils {
      * @param charset 原始字符串字符集
      * @return MD5加密后的16进制数字的字符串形式
      */
-    public static String md5AndHex(String origin, String charset) {
+    public static String md5AndHex(String origin, Charset charset) {
         String resultString;
-        charset = charset == null ? "UTF-8" : charset;
+        charset = charset == null ? StandardCharsets.UTF_8 : charset;
 
         try {
-            resultString = origin;
             MessageDigest md = MessageDigest.getInstance("MD5");
-            if (StringUtils.isBlank(charset))
-                resultString = toHex(md.digest(resultString.getBytes()));
-            else
-                resultString = toHex(md.digest(resultString.getBytes(charset)));
+            resultString = toHex(md.digest(origin.getBytes(charset)));
         } catch (Exception e) {
             throw new IllegalStateException("加密失败！", e);
         }
@@ -86,7 +82,7 @@ public class MD5Utils {
 
         // 生成最终的加密盐
         String salt = saltBuilder.toString();
-        input = md5AndHex(input + salt, null);
+        input = md5AndHex(input + salt, StandardCharsets.UTF_8);
         char[] cs = new char[48];
         for (int i = 0; i < 48; i += 3) {
             cs[i] = input.charAt(i / 3 * 2);
@@ -112,13 +108,13 @@ public class MD5Utils {
             cs2[i / 3] = encrypted.charAt(i + 1);
         }
         String Salt = new String(cs2);
-        return md5AndHex(input + Salt, null).equals(String.valueOf(cs1));
+        return md5AndHex(input + Salt, StandardCharsets.UTF_8).equals(String.valueOf(cs1));
     }
 
     public static void main(String[] args) {
         // 原密码
         String plaintext = "admin";
-        System.out.println("未加盐MD5：" + md5AndHex(plaintext, null));
+        System.out.println("未加盐MD5：" + md5AndHex(plaintext, StandardCharsets.UTF_8));
 
         // 获取加盐后的MD5值
         String ciphertext = md5WithSalt(plaintext);

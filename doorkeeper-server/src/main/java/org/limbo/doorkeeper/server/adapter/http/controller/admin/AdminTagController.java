@@ -23,7 +23,7 @@ import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
 import org.limbo.doorkeeper.api.dto.param.query.TagQueryParam;
 import org.limbo.doorkeeper.api.dto.vo.TagVO;
 import org.limbo.doorkeeper.server.adapter.http.controller.BaseController;
-import org.limbo.doorkeeper.server.service.TagService;
+import org.limbo.doorkeeper.server.application.service.TagService;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

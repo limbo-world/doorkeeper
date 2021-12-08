@@ -18,14 +18,19 @@ package org.limbo.doorkeeper.server.adapter.http.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.limbo.doorkeeper.api.constants.ApiConstants;
+import org.limbo.doorkeeper.api.constants.MsgConstants;
 import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
-import org.limbo.doorkeeper.infrastructure.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.infrastructure.po.RealmPO;
+import org.limbo.doorkeeper.server.infrastructure.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.server.infrastructure.mapper.RealmMapper;
+import org.limbo.doorkeeper.server.infrastructure.mapper.UserMapper;
+import org.limbo.doorkeeper.server.infrastructure.po.RealmPO;
+import org.limbo.doorkeeper.server.infrastructure.po.UserPO;
 import org.limbo.doorkeeper.server.infrastructure.exception.AuthenticationException;
 import org.limbo.doorkeeper.server.infrastructure.utils.JWTUtil;
 import org.limbo.doorkeeper.server.infrastructure.utils.JacksonUtil;
+import org.limbo.doorkeeper.server.infrastructure.utils.Verifies;
 import org.limbo.doorkeeper.server.infrastructure.utils.WebUtil;
-import org.limbo.doorkeeper.server.service.RealmService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -40,19 +45,29 @@ import javax.servlet.http.HttpServletResponse;
 public class SessionInterceptor implements HandlerInterceptor {
 
     @Autowired
-    private RealmService realmService;
+    private UserMapper userMapper;
+
+    @Autowired
+    private RealmMapper realmMapper;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         // 验证会话存在
-        String token = request.getHeader(DoorkeeperConstants.TOKEN_HEADER);
+        String token = request.getHeader(ApiConstants.TOKEN_HEADER);
         if (StringUtils.isBlank(token)) {
             WebUtil.writeToResponse(response, JacksonUtil.toJSONString(ResponseVO.unauthenticated("无认证请求")));
             return false;
         }
         try {
-            RealmPO tenant = realmService.getTenantByToken(token);
-            JWTUtil.verifyToken(token, tenant.getSecret());
+            Long userId = JWTUtil.getLong(token, DoorkeeperConstants.USER_ID);
+            UserPO user = userMapper.selectById(userId);
+            Verifies.notNull(user, MsgConstants.NO_USER);
+            Verifies.verify(user.getIsEnabled(), MsgConstants.DISABLED_USER);
+
+            RealmPO realm = realmMapper.selectById(user.getRealmId());
+            Verifies.notNull(realm, MsgConstants.NO_REALM);
+
+            JWTUtil.verifyToken(token, realm.getSecret());
         } catch (Exception e) {
             WebUtil.writeToResponse(response, JacksonUtil.toJSONString(ResponseVO.unauthenticated(AuthenticationException.msg)));
             return false;

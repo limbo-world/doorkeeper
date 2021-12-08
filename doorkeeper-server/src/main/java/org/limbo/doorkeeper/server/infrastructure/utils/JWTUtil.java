@@ -19,7 +19,6 @@ package org.limbo.doorkeeper.server.infrastructure.utils;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.JWTVerifier;
-import org.limbo.doorkeeper.infrastructure.constants.DoorkeeperConstants;
 
 /**
  * @author Devil
@@ -27,25 +26,17 @@ import org.limbo.doorkeeper.infrastructure.constants.DoorkeeperConstants;
  */
 public class JWTUtil {
 
-    public static boolean verifyToken(String token, String secret) {
+    public static void verifyToken(String token, String secret) {
         JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(secret)).build();
         jwtVerifier.verify(token);
-        return true;
     }
 
-    public static Long getUserId(String token) {
-        return JWT.decode(token).getClaim(DoorkeeperConstants.USER_ID).asLong();
+    public static Long getLong(String token, String prop) {
+        return JWT.decode(token).getClaim(prop).asLong();
     }
 
-    public static String getUsername(String token) {
-        return JWT.decode(token).getClaim(DoorkeeperConstants.USERNAME).asString();
+    public static String getString(String token, String prop) {
+        return JWT.decode(token).getClaim(prop).asString();
     }
 
-    public static String getNickname(String token) {
-        return JWT.decode(token).getClaim(DoorkeeperConstants.NICKNAME).asString();
-    }
-
-    public static Long getRealmId(String token) {
-        return JWT.decode(token).getClaim(DoorkeeperConstants.REALM_ID).asLong();
-    }
 }

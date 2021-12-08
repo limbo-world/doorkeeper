@@ -19,11 +19,13 @@ package org.limbo.doorkeeper.server.adapter.http.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
-import org.limbo.doorkeeper.api.dto.param.batch.GroupRoleBatchUpdateParam;
+import org.limbo.doorkeeper.api.dto.param.add.GroupRoleAddParam;
+import org.limbo.doorkeeper.api.dto.param.delete.RoleBatchDeleteParam;
+import org.limbo.doorkeeper.api.dto.param.update.GroupRoleUpdateParam;
 import org.limbo.doorkeeper.api.dto.vo.GroupRoleVO;
+import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
 import org.limbo.doorkeeper.server.adapter.http.controller.BaseController;
-import org.limbo.doorkeeper.server.service.GroupRoleService;
+import org.limbo.doorkeeper.server.application.service.GroupRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -46,15 +48,41 @@ public class AdminGroupRoleController extends BaseController {
 
     @Operation(summary = "查询用户组角色列表")
     @GetMapping("/{groupId}/role")
-    public ResponseVO<List<GroupRoleVO>> listRole(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId) {
-        return ResponseVO.success(groupRoleService.list(getRealmId(), groupId));
+    public ResponseVO<List<GroupRoleVO>> list(@Validated @NotNull(message = "groupId is null") @PathVariable("groupId") Long groupId) {
+        return ResponseVO.success(groupRoleService.list(groupId));
     }
 
-    @Operation(summary = "批量修改用户组角色")
-    @PostMapping("/{groupId}/role/batch")
-    public ResponseVO<Void> batchRole(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId,
-                                      @RequestBody @Validated GroupRoleBatchUpdateParam param) {
-        groupRoleService.batchUpdate(groupId, param);
+    @Operation(summary = "新增用户组角色")
+    @PostMapping("/{groupId}/role")
+    public ResponseVO<Void> add(@Validated @NotNull(message = "groupId is null") @PathVariable("groupId") Long groupId,
+                                     @RequestBody @Validated GroupRoleAddParam param) {
+        groupRoleService.add(groupId, param);
+        return ResponseVO.success();
+    }
+
+    @Operation(summary = "修改用户组角色")
+    @PatchMapping("/{groupId}/role/{roleId}")
+    public ResponseVO<Void> patch(@Validated @NotNull(message = "groupId is null") @PathVariable("groupId") Long groupId,
+                                  @Validated @NotNull(message = "roleId is null") @PathVariable("roleId") Long roleId,
+                                  @RequestBody GroupRoleUpdateParam param) {
+        groupRoleService.patch(groupId, roleId, param);
+        return ResponseVO.success();
+    }
+
+    @Operation(summary = "删除用户组角色")
+    @DeleteMapping("/{groupId}/role/{roleId}")
+    public ResponseVO<Void> delete(@Validated @NotNull(message = "groupId is null") @PathVariable("groupId") Long groupId,
+                                   @Validated @NotNull(message = "roleId is null") @PathVariable("roleId") Long roleId) {
+        groupRoleService.delete(groupId, roleId);
+        return ResponseVO.success();
+    }
+
+
+    @Operation(summary = "批量删除用户组角色")
+    @DeleteMapping("/{groupId}/roles")
+    public ResponseVO<Void> batchDelete(@Validated @NotNull(message = "groupId is null") @PathVariable("groupId") Long groupId,
+                                        @RequestBody @Validated RoleBatchDeleteParam param) {
+        groupRoleService.batchDelete(groupId, param.getRoleIds());
         return ResponseVO.success();
     }
 

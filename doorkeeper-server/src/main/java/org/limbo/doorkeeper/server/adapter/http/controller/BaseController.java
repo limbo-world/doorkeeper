@@ -17,14 +17,18 @@
 package org.limbo.doorkeeper.server.adapter.http.controller;
 
 import org.apache.commons.lang3.StringUtils;
+import org.limbo.doorkeeper.api.constants.ApiConstants;
+import org.limbo.doorkeeper.api.constants.MsgConstants;
 import org.limbo.doorkeeper.api.dto.vo.UserVO;
-import org.limbo.doorkeeper.infrastructure.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.infrastructure.po.RealmPO;
+import org.limbo.doorkeeper.server.infrastructure.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.server.infrastructure.mapper.RealmMapper;
+import org.limbo.doorkeeper.server.infrastructure.mapper.UserMapper;
+import org.limbo.doorkeeper.server.infrastructure.po.RealmPO;
+import org.limbo.doorkeeper.server.infrastructure.po.UserPO;
 import org.limbo.doorkeeper.server.infrastructure.exception.AuthenticationException;
 import org.limbo.doorkeeper.server.infrastructure.utils.JWTUtil;
 import org.limbo.doorkeeper.server.infrastructure.utils.Verifies;
-import org.limbo.doorkeeper.server.service.RealmService;
-import org.limbo.doorkeeper.server.service.UserService;
+import org.limbo.doorkeeper.server.application.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestAttributes;
@@ -47,10 +51,13 @@ public class BaseController {
     private UserService userService;
 
     @Autowired
-    private RealmService realmService;
+    private UserMapper userMapper;
+
+    @Autowired
+    private RealmMapper realmMapper;
 
     protected String getToken() {
-        String token = request.getHeader(DoorkeeperConstants.TOKEN_HEADER);
+        String token = request.getHeader(ApiConstants.TOKEN_HEADER);
         if (StringUtils.isBlank(token)) {
             throw new AuthenticationException("无认证请求");
         }
@@ -60,9 +67,15 @@ public class BaseController {
     protected UserVO getUser() {
         String token = getToken();
         try {
-            RealmPO tenant = realmService.getTenantByToken(token);
-            JWTUtil.verifyToken(token, tenant.getSecret());
-            return userService.get(tenant.getRealmId(), JWTUtil.getUserId(token), JWTUtil.getUsername(token));
+            UserPO user = userMapper.selectById(JWTUtil.getLong(token, DoorkeeperConstants.USER_ID));
+            Verifies.notNull(user, MsgConstants.NO_USER);
+            Verifies.verify(user.getIsEnabled(), MsgConstants.DISABLED_USER);
+
+            RealmPO realm = realmMapper.selectById(user.getRealmId());
+            Verifies.notNull(realm, MsgConstants.NO_REALM);
+
+            JWTUtil.verifyToken(token, realm.getSecret());
+            return userService.get(realm.getRealmId(), JWTUtil.getLong(token, DoorkeeperConstants.USER_ID), JWTUtil.getString(token, DoorkeeperConstants.USERNAME));
         } catch (Exception e) {
             throw new AuthenticationException("认证失败");
         }
@@ -72,15 +85,15 @@ public class BaseController {
         NativeWebRequest webRequest = new ServletWebRequest(request);
         Map<String, String> uriTemplateVars = (Map<String, String>) webRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
         String realmId = uriTemplateVars.get(DoorkeeperConstants.REALM_ID);
-        Verifies.notBlank(realmId, "请选择域");
+        Verifies.notBlank(realmId, "realmId is null");
         return Long.valueOf(realmId);
     }
 
     protected Long getClientId() {
         NativeWebRequest webRequest = new ServletWebRequest(request);
         Map<String, String> uriTemplateVars = (Map<String, String>) webRequest.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE, RequestAttributes.SCOPE_REQUEST);
-        String clientId = uriTemplateVars.get(DoorkeeperConstants.CLIENT_ID);
-        Verifies.notBlank(clientId, "请选择委托方");
+        String clientId = uriTemplateVars.get(DoorkeeperConstants.NAMESPACE_ID);
+        Verifies.notBlank(clientId, "groupId is null");
         return Long.valueOf(clientId);
     }
 

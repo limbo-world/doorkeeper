@@ -17,12 +17,13 @@
 package org.limbo.doorkeeper.server.adapter.http.config;
 
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.infrastructure.constants.DoorkeeperConstants;
+import org.limbo.doorkeeper.api.constants.ApiConstants;
+import org.limbo.doorkeeper.server.infrastructure.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.constants.UriMethod;
 import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
-import org.limbo.doorkeeper.infrastructure.po.UserPO;
-import org.limbo.doorkeeper.infrastructure.mapper.UserMapper;
-import org.limbo.doorkeeper.server.service.DoorkeeperService;
+import org.limbo.doorkeeper.server.infrastructure.po.UserPO;
+import org.limbo.doorkeeper.server.infrastructure.mapper.UserMapper;
+import org.limbo.doorkeeper.server.application.service.DoorkeeperService;
 import org.limbo.doorkeeper.server.infrastructure.exception.AuthorizationException;
 import org.limbo.doorkeeper.server.infrastructure.utils.JWTUtil;
 import org.limbo.doorkeeper.server.infrastructure.utils.JacksonUtil;
@@ -52,8 +53,8 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         // 判断 url 是否有对应权限
-        String token = request.getHeader(DoorkeeperConstants.TOKEN_HEADER);
-        Long userId = JWTUtil.getUserId(token);
+        String token = request.getHeader(ApiConstants.TOKEN_HEADER);
+        Long userId = JWTUtil.getLong(token, DoorkeeperConstants.USER_ID);
         UserPO user = userMapper.selectById(userId);
 
         // 判断用户是否启用

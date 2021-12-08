@@ -16,11 +16,11 @@
 
 package org.limbo.doorkeeper.server.infrastructure.checker;
 
-import org.limbo.doorkeeper.infrastructure.mapper.GroupMapper;
-import org.limbo.doorkeeper.infrastructure.mapper.GroupRoleMapper;
-import org.limbo.doorkeeper.infrastructure.mapper.GroupUserMapper;
-import org.limbo.doorkeeper.infrastructure.mapper.UserRoleMapper;
-import org.limbo.doorkeeper.infrastructure.po.UserPO;
+import org.limbo.doorkeeper.server.infrastructure.mapper.GroupMapper;
+import org.limbo.doorkeeper.server.infrastructure.mapper.GroupRoleMapper;
+import org.limbo.doorkeeper.server.infrastructure.mapper.GroupUserMapper;
+import org.limbo.doorkeeper.server.infrastructure.mapper.UserRoleMapper;
+import org.limbo.doorkeeper.server.infrastructure.po.UserPO;
 import org.limbo.doorkeeper.server.infrastructure.utils.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

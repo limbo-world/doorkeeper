@@ -16,7 +16,7 @@
   -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="org.limbo.doorkeeper.infrastructure.mapper.policy.PolicyRoleMapper" >
+<mapper namespace="org.limbo.doorkeeper.server.infrastructure.mapper.policy.PolicyRoleMapper" >
 
     <resultMap id="PolicyRoleVO" type="org.limbo.doorkeeper.api.dto.vo.policy.PolicyRoleVO">
         <result column="policy_role_id" property="policyRoleId" jdbcType="BIGINT" javaType="java.lang.Long" />
@@ -28,7 +28,7 @@
         <result column="is_enabled" property="isEnabled" jdbcType="BIT" javaType="java.lang.Boolean" />
     </resultMap>
 
-    <insert id="batchInsertIgnore" parameterType="org.limbo.doorkeeper.infrastructure.po.PolicyRolePO">
+    <insert id="batchInsertIgnore" parameterType="org.limbo.doorkeeper.server.infrastructure.po.PolicyRolePO">
         INSERT ignore INTO policy_role (
             policy_id, role_id
         ) VALUES

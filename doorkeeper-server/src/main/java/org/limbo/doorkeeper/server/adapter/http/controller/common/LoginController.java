@@ -21,7 +21,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
 import org.limbo.doorkeeper.api.dto.param.LoginParam;
-import org.limbo.doorkeeper.server.service.LoginService;
+import org.limbo.doorkeeper.server.application.service.LoginService;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;

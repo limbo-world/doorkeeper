@@ -16,9 +16,9 @@
   -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="org.limbo.doorkeeper.infrastructure.mapper.PermissionMapper" >
+<mapper namespace="org.limbo.doorkeeper.server.infrastructure.mapper.PermissionMapper" >
 
-    <resultMap id="BaseResult" type="org.limbo.doorkeeper.infrastructure.po.PermissionPO">
+    <resultMap id="BaseResult" type="org.limbo.doorkeeper.server.infrastructure.po.PermissionPO">
         <result column="permission_id" property="permissionId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="realm_id" property="realmId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="client_id" property="clientId" jdbcType="BIGINT" javaType="java.lang.Long" />

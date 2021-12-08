@@ -16,9 +16,9 @@
   -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="org.limbo.doorkeeper.infrastructure.mapper.policy.PolicyUserMapper" >
+<mapper namespace="org.limbo.doorkeeper.server.infrastructure.mapper.policy.PolicyUserMapper" >
 
-    <insert id="batchInsertIgnore" parameterType="org.limbo.doorkeeper.infrastructure.po.PolicyUserPO">
+    <insert id="batchInsertIgnore" parameterType="org.limbo.doorkeeper.server.infrastructure.po.PolicyUserPO">
         INSERT ignore INTO policy_user (
         policy_id, user_id
         ) VALUES

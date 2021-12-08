@@ -17,8 +17,8 @@
 package org.limbo.doorkeeper.server.infrastructure.dao;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import org.limbo.doorkeeper.infrastructure.po.GroupPO;
-import org.limbo.doorkeeper.infrastructure.mapper.GroupMapper;
+import org.limbo.doorkeeper.server.infrastructure.po.GroupPO;
+import org.limbo.doorkeeper.server.infrastructure.mapper.GroupMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

@@ -27,13 +27,13 @@ import org.limbo.doorkeeper.api.dto.vo.policy.PolicyGroupVO;
 import org.limbo.doorkeeper.api.dto.vo.policy.PolicyRoleVO;
 import org.limbo.doorkeeper.api.dto.vo.policy.PolicyUserVO;
 import org.limbo.doorkeeper.api.dto.vo.policy.PolicyVO;
-import org.limbo.doorkeeper.infrastructure.po.*;
-import org.limbo.doorkeeper.server.domain.GroupTreeDO;
+import org.limbo.doorkeeper.server.domain.policy.GroupTreeDO;
 import org.limbo.doorkeeper.server.infrastructure.exception.AuthorizationException;
-import org.limbo.doorkeeper.infrastructure.mapper.GroupMapper;
-import org.limbo.doorkeeper.infrastructure.mapper.GroupRoleMapper;
-import org.limbo.doorkeeper.infrastructure.mapper.GroupUserMapper;
-import org.limbo.doorkeeper.infrastructure.mapper.UserRoleMapper;
+import org.limbo.doorkeeper.server.infrastructure.mapper.GroupMapper;
+import org.limbo.doorkeeper.server.infrastructure.mapper.GroupRoleMapper;
+import org.limbo.doorkeeper.server.infrastructure.mapper.GroupUserMapper;
+import org.limbo.doorkeeper.server.infrastructure.mapper.UserRoleMapper;
+import org.limbo.doorkeeper.server.infrastructure.po.*;
 import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
 import org.limbo.doorkeeper.server.infrastructure.utils.JacksonUtil;
 
@@ -249,12 +249,6 @@ public class PolicyChecker {
             );
         }
         return groupUsers;
-    }
-
-    public List<UserRolePO> getUserRoles() {
-        return userRoleMapper.selectList(Wrappers.<UserRolePO>lambdaQuery()
-                .eq(UserRolePO::getUserId, user.getUserId())
-        );
     }
 
     public Set<Long> getUserRoleIds() {

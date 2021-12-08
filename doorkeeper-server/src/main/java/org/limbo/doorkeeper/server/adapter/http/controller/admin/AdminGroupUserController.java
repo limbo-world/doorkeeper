@@ -23,7 +23,7 @@ import org.limbo.doorkeeper.api.dto.param.batch.GroupUserBatchUpdateParam;
 import org.limbo.doorkeeper.api.dto.vo.GroupUserVO;
 import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
 import org.limbo.doorkeeper.server.adapter.http.controller.BaseController;
-import org.limbo.doorkeeper.server.service.GroupUserService;
+import org.limbo.doorkeeper.server.application.service.GroupUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -50,6 +50,7 @@ public class AdminGroupUserController extends BaseController {
         return ResponseVO.success(groupUserService.list(groupId));
     }
 
+    // todo
     @Operation(summary = "批量修改用户组用户")
     @PostMapping("/{groupId}/user/batch")
     public ResponseVO<Void> batchUser(@Validated @NotNull(message = "未提交用户组ID") @PathVariable("groupId") Long groupId,

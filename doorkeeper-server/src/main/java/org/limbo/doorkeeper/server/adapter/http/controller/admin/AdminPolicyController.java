@@ -27,7 +27,7 @@ import org.limbo.doorkeeper.api.dto.param.query.PolicyQueryParam;
 import org.limbo.doorkeeper.api.dto.param.update.PolicyUpdateParam;
 import org.limbo.doorkeeper.api.dto.vo.policy.PolicyVO;
 import org.limbo.doorkeeper.server.adapter.http.controller.BaseController;
-import org.limbo.doorkeeper.server.service.PolicyService;
+import org.limbo.doorkeeper.server.application.service.PolicyService;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;

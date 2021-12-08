@@ -26,7 +26,7 @@ import org.limbo.doorkeeper.api.dto.param.query.UserQueryParam;
 import org.limbo.doorkeeper.api.dto.param.update.UserUpdateParam;
 import org.limbo.doorkeeper.api.dto.vo.UserVO;
 import org.limbo.doorkeeper.server.adapter.http.controller.BaseController;
-import org.limbo.doorkeeper.server.service.UserService;
+import org.limbo.doorkeeper.server.application.service.UserService;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;

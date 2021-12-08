@@ -19,15 +19,15 @@ package org.limbo.doorkeeper.server.adapter.http.controller.admin;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.limbo.doorkeeper.api.dto.param.add.RoleAddParam;
+import org.limbo.doorkeeper.api.dto.param.delete.RoleBatchDeleteParam;
+import org.limbo.doorkeeper.api.dto.param.query.RoleQueryParam;
+import org.limbo.doorkeeper.api.dto.param.update.RolePatchParam;
 import org.limbo.doorkeeper.api.dto.vo.PageVO;
 import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
-import org.limbo.doorkeeper.api.dto.param.add.RoleAddParam;
-import org.limbo.doorkeeper.api.dto.param.batch.RoleBatchUpdateParam;
-import org.limbo.doorkeeper.api.dto.param.query.RoleQueryParam;
-import org.limbo.doorkeeper.api.dto.param.update.RoleUpdateParam;
 import org.limbo.doorkeeper.api.dto.vo.RoleVO;
 import org.limbo.doorkeeper.server.adapter.http.controller.BaseController;
-import org.limbo.doorkeeper.server.service.RoleService;
+import org.limbo.doorkeeper.server.application.service.RoleService;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.constraints.NotNull;
 
 /**
- * 如果是域角色 clientId 为 0
+ *
  * @author Devil
  * @since 2021/1/4 5:19 下午
  */
@@ -51,7 +51,7 @@ public class AdminRoleController extends BaseController {
 
     @Operation(summary = "新建角色")
     @PostMapping
-    public ResponseVO<RoleVO> add(@RequestBody @Validated RoleAddParam param) {
+    public ResponseVO<Long> add(@RequestBody @Validated RoleAddParam param) {
         return ResponseVO.success(roleService.add(getRealmId(), param));
     }
 
@@ -67,18 +67,18 @@ public class AdminRoleController extends BaseController {
         return ResponseVO.success(roleService.get(getRealmId(), roleId));
     }
 
-    @Operation(summary = "更新角色")
-    @PutMapping("/{roleId}")
+    @Operation(summary = "角色部分修改")
+    @PatchMapping("/{roleId}")
     public ResponseVO<RoleVO> update(@Validated @NotNull(message = "未提交角色ID") @PathVariable("roleId") Long roleId,
-                                     @Validated @RequestBody RoleUpdateParam param) {
+                                     @Validated @RequestBody RolePatchParam param) {
         roleService.update(getRealmId(), roleId, param);
         return ResponseVO.success();
     }
 
-    @Operation(summary = "批量更新角色")
-    @PostMapping("/batch")
-    public ResponseVO<Void> batch(@RequestBody @Validated RoleBatchUpdateParam param) {
-        roleService.batchUpdate(getRealmId(), param);
+    @Operation(summary = "批量删除角色")
+    @DeleteMapping
+    public ResponseVO<Void> batchDelete(@RequestBody @Validated RoleBatchDeleteParam param) {
+        roleService.batchDelete(getRealmId(), param.getRoleIds());
         return ResponseVO.success();
     }
 
