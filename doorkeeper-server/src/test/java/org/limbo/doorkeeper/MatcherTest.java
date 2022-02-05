@@ -17,7 +17,7 @@
 package org.limbo.doorkeeper;
 
 import org.junit.Test;
-import org.limbo.doorkeeper.server.infrastructure.utils.EasyAntPathMatcher;
+import org.limbo.doorkeeper.core.domain.component.path.AntPathMatcher;
 
 /**
  * @Author Devil
@@ -27,7 +27,7 @@ public class MatcherTest {
 
     @Test
     public void t() {
-        EasyAntPathMatcher matcher = new EasyAntPathMatcher();
+        AntPathMatcher matcher = new AntPathMatcher();
         System.out.println(matcher.match("/account/{\\d+}", "/account/123"));
         System.out.println(matcher.match("/account/{\\d+}", "/account/ccc"));
         System.out.println(matcher.match("/account/{id:\\d+}", "/account/123"));

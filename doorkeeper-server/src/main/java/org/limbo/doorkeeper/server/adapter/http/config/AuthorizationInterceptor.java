@@ -18,16 +18,16 @@ package org.limbo.doorkeeper.server.adapter.http.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.constants.ApiConstants;
-import org.limbo.doorkeeper.server.infrastructure.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.constants.UriMethod;
 import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
-import org.limbo.doorkeeper.server.infrastructure.po.UserPO;
-import org.limbo.doorkeeper.server.infrastructure.mapper.UserMapper;
 import org.limbo.doorkeeper.server.application.service.DoorkeeperService;
-import org.limbo.doorkeeper.server.infrastructure.exception.AuthorizationException;
+import org.limbo.doorkeeper.common.constant.DoorkeeperConstants;
+import org.limbo.doorkeeper.common.exception.AuthorizationException;
+import org.limbo.doorkeeper.infrastructure.dao.mybatis.UserMapper;
+import org.limbo.doorkeeper.server.infrastructure.po.UserPO;
 import org.limbo.doorkeeper.server.infrastructure.utils.JWTUtil;
-import org.limbo.doorkeeper.server.infrastructure.utils.JacksonUtil;
 import org.limbo.doorkeeper.server.infrastructure.utils.WebUtil;
+import org.limbo.utils.jackson.JacksonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -59,12 +59,12 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
         // 判断用户是否启用
         if (!user.getIsEnabled()) {
-            WebUtil.writeToResponse(response, JacksonUtil.toJSONString(ResponseVO.unauthorized("用户未启用")));
+            WebUtil.writeToResponse(response, JacksonUtils.toJSONString(ResponseVO.unauthorized("用户未启用")));
             return false;
         }
 
         if (!doorkeeperService.hasUriPermission(user, request.getRequestURI(), UriMethod.parse(request.getMethod()))) {
-            WebUtil.writeToResponse(response, JacksonUtil.toJSONString(ResponseVO.unauthorized(AuthorizationException.msg)));
+            WebUtil.writeToResponse(response, JacksonUtils.toJSONString(ResponseVO.unauthorized(AuthorizationException.msg)));
             return false;
         }
 

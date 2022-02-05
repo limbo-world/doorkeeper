@@ -18,7 +18,7 @@ package org.limbo.doorkeeper.server.infrastructure.session;
 
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.dto.vo.SessionUser;
-import org.limbo.doorkeeper.server.infrastructure.utils.JacksonUtil;
+import org.limbo.utils.jackson.JacksonUtils;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
 
@@ -53,7 +53,7 @@ public class RedisSessionDAO extends AbstractSessionDAO<SessionUser> {
     public void save(SessionUser session) {
         String sessionId = session.getSessionId();
         redissonClient.getBucket(getSessionPrefix() + sessionId)
-                .set(JacksonUtil.toJSONString(session), sessionExpiry, sessionExpiryUnit);
+                .set(JacksonUtils.toJSONString(session), sessionExpiry, sessionExpiryUnit);
     }
 
     @Override
@@ -73,7 +73,7 @@ public class RedisSessionDAO extends AbstractSessionDAO<SessionUser> {
             return null;
         }
 
-        return JacksonUtil.parseObject(sessionJson, SessionUser.class);
+        return JacksonUtils.parseObject(sessionJson, SessionUser.class);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class RedisSessionDAO extends AbstractSessionDAO<SessionUser> {
             return null;
         }
         bucket.delete();
-        return JacksonUtil.parseObject(sessionJson, SessionUser.class);
+        return JacksonUtils.parseObject(sessionJson, SessionUser.class);
     }
 
     @Override

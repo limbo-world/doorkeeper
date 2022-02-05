@@ -33,18 +33,20 @@ import org.limbo.doorkeeper.api.dto.param.update.PermissionUpdateParam;
 import org.limbo.doorkeeper.api.dto.vo.*;
 import org.limbo.doorkeeper.api.dto.vo.check.ResourceCheckResult;
 import org.limbo.doorkeeper.api.dto.vo.check.RoleCheckResult;
+import org.limbo.doorkeeper.infrastructure.dao.mybatis.*;
+import org.limbo.doorkeeper.infrastructure.po.NamespacePO;
+import org.limbo.doorkeeper.infrastructure.po.RealmPO;
+import org.limbo.doorkeeper.infrastructure.po.UserPO;
 import org.limbo.doorkeeper.server.infrastructure.checker.ResourceChecker;
 import org.limbo.doorkeeper.server.infrastructure.checker.RoleChecker;
-import org.limbo.doorkeeper.server.infrastructure.config.TemplateLoader;
-import org.limbo.doorkeeper.server.infrastructure.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.server.infrastructure.exception.ParamException;
-import org.limbo.doorkeeper.server.infrastructure.mapper.*;
-import org.limbo.doorkeeper.server.infrastructure.mapper.policy.PolicyMapper;
-import org.limbo.doorkeeper.server.infrastructure.po.*;
-import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
-import org.limbo.doorkeeper.server.infrastructure.utils.JacksonUtil;
-import org.limbo.doorkeeper.server.infrastructure.utils.UUIDUtils;
-import org.limbo.doorkeeper.server.infrastructure.utils.Verifies;
+import org.limbo.doorkeeper.infrastructure.config.TemplateLoader;
+import org.limbo.doorkeeper.common.constant.DoorkeeperConstants;
+import org.limbo.doorkeeper.common.exception.ParamException;
+import org.limbo.doorkeeper.infrastructure.dao.mybatis.policy.PolicyMapper;
+import org.limbo.utils.jackson.JacksonUtils;
+import org.limbo.utils.reflection.EnhancedBeanUtils;
+import org.limbo.utils.strings.UUIDUtils;
+import org.limbo.utils.verifies.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -109,7 +111,7 @@ public class DoorkeeperService {
     public Long addRealm(Long userId, RealmAddParam param) {
         RealmPO realm = EnhancedBeanUtils.createAndCopy(param, RealmPO.class);
         if (StringUtils.isBlank(param.getSecret())) {
-            realm.setSecret(UUIDUtils.get());
+            realm.setSecret(UUIDUtils.randomID());
         }
         try {
             realmMapper.insert(realm);
@@ -239,7 +241,7 @@ public class DoorkeeperService {
         }
         resourceTemplate = resourceTemplate.replaceAll("\\$\\{realmId}", realmId.toString());
         resourceTemplate = resourceTemplate.replaceAll("\\$\\{realmName}", realmName);
-        List<ResourceAddParam> resourceAddParams = JacksonUtil.parseObject(resourceTemplate, new TypeReference<List<ResourceAddParam>>() {
+        List<ResourceAddParam> resourceAddParams = JacksonUtils.parseObject(resourceTemplate, new TypeReference<List<ResourceAddParam>>() {
         });
         for (ResourceAddParam resourceAddParam : resourceAddParams) {
             resourceService.add(getDoorkeeperRealmId(), apiClient.getNamespaceId(), resourceAddParam);
@@ -276,7 +278,7 @@ public class DoorkeeperService {
         resourceTemplate = resourceTemplate.replaceAll("\\$\\{realmName}", realm.getName());
         resourceTemplate = resourceTemplate.replaceAll("\\$\\{clientId}", clientId.toString());
         resourceTemplate = resourceTemplate.replaceAll("\\$\\{clientName}", clientName);
-        List<ResourceAddParam> resourceAddParams = JacksonUtil.parseObject(resourceTemplate, new TypeReference<List<ResourceAddParam>>() {
+        List<ResourceAddParam> resourceAddParams = JacksonUtils.parseObject(resourceTemplate, new TypeReference<List<ResourceAddParam>>() {
         });
         for (ResourceAddParam resourceAddParam : resourceAddParams) {
             resourceService.add(getDoorkeeperRealmId(), apiClient.getNamespaceId(), resourceAddParam);

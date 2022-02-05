@@ -20,27 +20,26 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.BatchMethod;
-import org.limbo.doorkeeper.server.infrastructure.constants.DoorkeeperConstants;
 import org.limbo.doorkeeper.api.dto.param.add.GroupAddParam;
 import org.limbo.doorkeeper.api.dto.param.add.PolicyGroupAddParam;
-import org.limbo.doorkeeper.api.dto.param.query.GroupQueryParam;
 import org.limbo.doorkeeper.api.dto.param.batch.GroupRoleBatchUpdateParam;
-import org.limbo.doorkeeper.api.dto.param.update.GroupPatchParam;
 import org.limbo.doorkeeper.api.dto.param.batch.GroupUserBatchUpdateParam;
+import org.limbo.doorkeeper.api.dto.param.query.GroupQueryParam;
+import org.limbo.doorkeeper.api.dto.param.update.GroupPatchParam;
 import org.limbo.doorkeeper.api.dto.vo.GroupVO;
+import org.limbo.doorkeeper.common.constant.DoorkeeperConstants;
+import org.limbo.doorkeeper.server.infrastructure.dao.PolicyGroupDao;
+import org.limbo.doorkeeper.common.exception.ParamException;
+import org.limbo.doorkeeper.infrastructure.dao.mybatis.GroupMapper;
+import org.limbo.doorkeeper.infrastructure.dao.mybatis.GroupRoleMapper;
+import org.limbo.doorkeeper.infrastructure.dao.mybatis.GroupUserMapper;
+import org.limbo.doorkeeper.infrastructure.dao.mybatis.policy.PolicyGroupMapper;
 import org.limbo.doorkeeper.server.infrastructure.po.GroupPO;
 import org.limbo.doorkeeper.server.infrastructure.po.GroupRolePO;
 import org.limbo.doorkeeper.server.infrastructure.po.GroupUserPO;
 import org.limbo.doorkeeper.server.infrastructure.po.PolicyGroupPO;
-import org.limbo.doorkeeper.server.infrastructure.mapper.GroupMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.GroupRoleMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.GroupUserMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.RealmMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.policy.PolicyGroupMapper;
-import org.limbo.doorkeeper.server.infrastructure.dao.PolicyGroupDao;
-import org.limbo.doorkeeper.server.infrastructure.exception.ParamException;
-import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
-import org.limbo.doorkeeper.server.infrastructure.utils.Verifies;
+import org.limbo.utils.reflection.EnhancedBeanUtils;
+import org.limbo.utils.verifies.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -58,9 +57,6 @@ public class GroupService {
 
     @Autowired
     private GroupMapper groupMapper;
-
-    @Autowired
-    private RealmMapper realmMapper;
 
     @Autowired
     private GroupRoleMapper groupRoleMapper;

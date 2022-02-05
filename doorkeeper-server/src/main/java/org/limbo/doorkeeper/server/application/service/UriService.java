@@ -20,9 +20,9 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.limbo.doorkeeper.api.dto.param.query.UriQueryParam;
 import org.limbo.doorkeeper.api.dto.vo.UriVO;
+import org.limbo.doorkeeper.infrastructure.dao.mybatis.UriMapper;
 import org.limbo.doorkeeper.server.infrastructure.po.UriPO;
-import org.limbo.doorkeeper.server.infrastructure.mapper.UriMapper;
-import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
+import org.limbo.utils.reflection.EnhancedBeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

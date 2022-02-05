@@ -34,6 +34,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 
 /**
@@ -100,9 +101,13 @@ public class WebConfig implements WebMvcConfigurer, ApplicationListener<ContextR
                 .excludePathPatterns("/api/admin/realm/*/client"); // realm client 列表/新增接口 直接开放
     }
 
-    @Autowired
+    @Resource
     private InitializeService initializeService;
 
+    /**
+     * 初始化项目数据
+     * @param event
+     */
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         if (event.getApplicationContext().getParent() == null) {

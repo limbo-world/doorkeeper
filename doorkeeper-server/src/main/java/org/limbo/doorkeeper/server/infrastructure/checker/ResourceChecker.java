@@ -31,12 +31,12 @@ import org.limbo.doorkeeper.api.dto.vo.PermissionVO;
 import org.limbo.doorkeeper.api.dto.vo.ResourceVO;
 import org.limbo.doorkeeper.api.dto.vo.check.ResourceCheckResult;
 import org.limbo.doorkeeper.api.dto.vo.policy.PolicyVO;
-import org.limbo.doorkeeper.server.infrastructure.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.server.infrastructure.mapper.*;
-import org.limbo.doorkeeper.server.infrastructure.mapper.policy.PolicyMapper;
-import org.limbo.doorkeeper.server.infrastructure.config.PatternMatcher;
-import org.limbo.doorkeeper.server.infrastructure.exception.AuthorizationException;
-import org.limbo.doorkeeper.server.infrastructure.po.*;
+import org.limbo.doorkeeper.common.constant.DoorkeeperConstants;
+import org.limbo.doorkeeper.infrastructure.dao.mybatis.*;
+import org.limbo.doorkeeper.infrastructure.po.*;
+import org.limbo.doorkeeper.infrastructure.dao.mybatis.policy.PolicyMapper;
+import org.limbo.doorkeeper.server.useless.PatternMatcher;
+import org.limbo.doorkeeper.common.exception.AuthorizationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

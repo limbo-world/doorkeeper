@@ -16,9 +16,9 @@
   -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="org.limbo.doorkeeper.server.infrastructure.mapper.UriMapper" >
+<mapper namespace="org.limbo.doorkeeper.infrastructure.dao.mybatis.UriMapper" >
 
-    <insert id="batchInsertIgnore" parameterType="org.limbo.doorkeeper.server.infrastructure.po.UriPO">
+    <insert id="batchInsertIgnore" parameterType="org.limbo.doorkeeper.infrastructure.po.UriPO">
         INSERT ignore INTO uri (
             realm_id, client_id, uri, `method`
         ) VALUES

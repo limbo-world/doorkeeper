@@ -20,9 +20,9 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.limbo.doorkeeper.api.dto.param.query.TagQueryParam;
 import org.limbo.doorkeeper.api.dto.vo.TagVO;
+import org.limbo.doorkeeper.infrastructure.dao.mybatis.TagMapper;
 import org.limbo.doorkeeper.server.infrastructure.po.TagPO;
-import org.limbo.doorkeeper.server.infrastructure.mapper.TagMapper;
-import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
+import org.limbo.utils.reflection.EnhancedBeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -19,6 +19,7 @@ package org.limbo.doorkeeper.api.dto.param.query;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.Data;
+import org.limbo.utils.mybatisplus.Page;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -32,7 +33,7 @@ import java.util.List;
  * @email brozen@qq.com
  */
 @Data
-public class PageParam<T> {
+public class PageParam<T> extends Page<T> {
     /**
      * 页码，从1开始
      */
@@ -45,7 +46,7 @@ public class PageParam<T> {
      * 每页条数
      */
     @Positive(message = "条数不可为负数")
-    @Max(value = 1000, message = "每页最多1000条数据")
+    @Max(value = MAX_SIZE, message = "每页最多1000条数据")
     @Parameter(description = "每页条数，默认20，上限1000")
     private int size = 20;
 

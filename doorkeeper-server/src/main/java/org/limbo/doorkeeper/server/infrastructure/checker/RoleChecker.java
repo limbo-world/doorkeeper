@@ -25,11 +25,10 @@ import org.limbo.doorkeeper.api.dto.vo.GroupRoleVO;
 import org.limbo.doorkeeper.api.dto.vo.GroupVO;
 import org.limbo.doorkeeper.api.dto.vo.RoleVO;
 import org.limbo.doorkeeper.api.dto.vo.check.RoleCheckResult;
-import org.limbo.doorkeeper.server.domain.policy.GroupTreeDO;
-import org.limbo.doorkeeper.server.infrastructure.exception.AuthorizationException;
-import org.limbo.doorkeeper.server.infrastructure.mapper.*;
-import org.limbo.doorkeeper.server.infrastructure.po.*;
-import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
+import org.limbo.doorkeeper.core.domain.entity.policy.GroupTreeDO;
+import org.limbo.doorkeeper.common.exception.AuthorizationException;
+import org.limbo.doorkeeper.infrastructure.dao.mybatis.*;
+import org.limbo.utils.reflection.EnhancedBeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

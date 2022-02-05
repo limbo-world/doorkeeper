@@ -19,7 +19,7 @@ package org.limbo.doorkeeper.server.infrastructure.dao;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.collections4.CollectionUtils;
 import org.limbo.doorkeeper.server.infrastructure.po.PermissionPolicyPO;
-import org.limbo.doorkeeper.server.infrastructure.mapper.PermissionPolicyMapper;
+import org.limbo.doorkeeper.infrastructure.dao.mybatis.PermissionPolicyMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;

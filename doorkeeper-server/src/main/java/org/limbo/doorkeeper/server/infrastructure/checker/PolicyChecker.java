@@ -27,15 +27,15 @@ import org.limbo.doorkeeper.api.dto.vo.policy.PolicyGroupVO;
 import org.limbo.doorkeeper.api.dto.vo.policy.PolicyRoleVO;
 import org.limbo.doorkeeper.api.dto.vo.policy.PolicyUserVO;
 import org.limbo.doorkeeper.api.dto.vo.policy.PolicyVO;
-import org.limbo.doorkeeper.server.domain.policy.GroupTreeDO;
-import org.limbo.doorkeeper.server.infrastructure.exception.AuthorizationException;
-import org.limbo.doorkeeper.server.infrastructure.mapper.GroupMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.GroupRoleMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.GroupUserMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.UserRoleMapper;
-import org.limbo.doorkeeper.server.infrastructure.po.*;
-import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
-import org.limbo.doorkeeper.server.infrastructure.utils.JacksonUtil;
+import org.limbo.doorkeeper.core.domain.entity.policy.GroupTreeDO;
+import org.limbo.doorkeeper.common.exception.AuthorizationException;
+import org.limbo.doorkeeper.infrastructure.po.*;
+import org.limbo.doorkeeper.infrastructure.dao.mybatis.GroupMapper;
+import org.limbo.doorkeeper.infrastructure.dao.mybatis.GroupRoleMapper;
+import org.limbo.doorkeeper.infrastructure.dao.mybatis.GroupUserMapper;
+import org.limbo.doorkeeper.infrastructure.dao.mybatis.UserRoleMapper;
+import org.limbo.utils.jackson.JacksonUtils;
+import org.limbo.utils.reflection.EnhancedBeanUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -110,7 +110,7 @@ public class PolicyChecker {
                     throw new AuthorizationException("不支持的策略类型:" + policyType);
             }
         } catch (Exception e) {
-            log.error("策略校验失败 " + JacksonUtil.toJSONString(policy));
+            log.error("策略校验失败 " + JacksonUtils.toJSONString(policy));
             throw e;
         }
         return reverseIntentionIfNotPassed(intention, checkPassed);

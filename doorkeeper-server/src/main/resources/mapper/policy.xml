@@ -16,9 +16,9 @@
   -->
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="org.limbo.doorkeeper.server.infrastructure.mapper.policy.PolicyMapper" >
+<mapper namespace="org.limbo.doorkeeper.infrastructure.dao.mybatis.policy.PolicyMapper" >
 
-    <resultMap id="BaseResult" type="org.limbo.doorkeeper.server.infrastructure.po.PolicyPO">
+    <resultMap id="BaseResult" type="org.limbo.doorkeeper.infrastructure.po.PolicyPO">
         <result column="policy_id" property="policyId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="realm_id" property="realmId" jdbcType="BIGINT" javaType="java.lang.Long" />
         <result column="client_id" property="clientId" jdbcType="BIGINT" javaType="java.lang.Long" />

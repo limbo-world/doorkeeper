@@ -17,14 +17,18 @@
 package org.limbo.doorkeeper.server.adapter.http.config;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
-import org.limbo.doorkeeper.server.infrastructure.exception.ParamException;
-import org.limbo.doorkeeper.server.infrastructure.exception.AuthorizationException;
-import org.limbo.doorkeeper.server.infrastructure.exception.AuthenticationException;
+import org.limbo.doorkeeper.common.exception.AuthenticationException;
+import org.limbo.doorkeeper.common.exception.AuthorizationException;
+import org.limbo.doorkeeper.common.exception.ParamException;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.Optional;
 
 /**
  * @author Devil
@@ -34,35 +38,41 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class BaseExceptionHandler {
 
-    @ExceptionHandler(value = { BindException.class })
+    @ExceptionHandler(value = {BindException.class})
     public ResponseVO handBind(BindException e) {
-        return ResponseVO.paramError(e.getBindingResult().getFieldError().getDefaultMessage());
+        return ResponseVO.paramError(Optional.ofNullable(e.getBindingResult().getFieldError())
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .orElse(StringUtils.EMPTY)
+        );
     }
 
-    @ExceptionHandler(value = { MethodArgumentNotValidException.class })
+    @ExceptionHandler(value = {MethodArgumentNotValidException.class})
     public ResponseVO handBind(MethodArgumentNotValidException e) {
-        return ResponseVO.paramError(e.getBindingResult().getFieldError().getDefaultMessage());
+        return ResponseVO.paramError(Optional.ofNullable(e.getBindingResult().getFieldError())
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .orElse(StringUtils.EMPTY));
     }
 
-    @ExceptionHandler(value = { ParamException.class })
+    @ExceptionHandler(value = {ParamException.class})
     public ResponseVO handVerify(ParamException e) {
         log.info("参数异常 {}", e.getMessage());
         return ResponseVO.paramError(e.getMessage());
     }
 
-    @ExceptionHandler(value = { AuthenticationException.class })
+    @ExceptionHandler(value = {AuthenticationException.class})
     public ResponseVO handAuthentication(AuthenticationException e) {
         return ResponseVO.unauthenticated(e.getMessage());
     }
 
-    @ExceptionHandler(value = { AuthorizationException.class })
+    @ExceptionHandler(value = {AuthorizationException.class})
     public ResponseVO handAuthorization(AuthorizationException e) {
         return ResponseVO.unauthorized(e.getMessage());
     }
 
-    @ExceptionHandler(value = { Throwable.class })
+    @ExceptionHandler(value = {Throwable.class})
     public ResponseVO unknownException(Throwable e) {
-        log.error("系统异常: {}", e);
+        log.error("系统异常", e);
         return ResponseVO.serviceError(e.getMessage());
     }
+
 }

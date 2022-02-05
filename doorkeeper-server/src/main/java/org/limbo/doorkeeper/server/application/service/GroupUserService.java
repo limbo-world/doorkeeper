@@ -21,10 +21,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.dto.param.batch.GroupUserBatchUpdateParam;
 import org.limbo.doorkeeper.api.dto.vo.GroupUserVO;
+import org.limbo.doorkeeper.infrastructure.dao.mybatis.GroupUserMapper;
 import org.limbo.doorkeeper.server.infrastructure.po.GroupUserPO;
-import org.limbo.doorkeeper.server.infrastructure.mapper.GroupUserMapper;
-import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
-import org.limbo.doorkeeper.server.infrastructure.utils.Verifies;
+import org.limbo.utils.reflection.EnhancedBeanUtils;
+import org.limbo.utils.verifies.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,7 +62,7 @@ public class GroupUserService {
                     GroupUserPO groupUser = new GroupUserPO();
                     groupUser.setGroupId(groupId);
                     groupUser.setUserId(userId);
-                    groupUser.setExtend(StringUtils.isBlank(param.getExtend()) ? "" : param.getExtend());
+                    groupUser.setExtend(StringUtils.isBlank(param.getExtend()) ? StringUtils.EMPTY : param.getExtend());
                     groupUsers.add(groupUser);
                 }
                 groupUserMapper.batchInsertIgnore(groupUsers);

@@ -21,16 +21,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.constants.ApiConstants;
 import org.limbo.doorkeeper.api.constants.MsgConstants;
 import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
-import org.limbo.doorkeeper.server.infrastructure.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.server.infrastructure.mapper.RealmMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.UserMapper;
+import org.limbo.doorkeeper.common.constant.DoorkeeperConstants;
+import org.limbo.doorkeeper.common.exception.AuthenticationException;
+import org.limbo.doorkeeper.infrastructure.dao.mybatis.RealmMapper;
+import org.limbo.doorkeeper.infrastructure.dao.mybatis.UserMapper;
 import org.limbo.doorkeeper.server.infrastructure.po.RealmPO;
 import org.limbo.doorkeeper.server.infrastructure.po.UserPO;
-import org.limbo.doorkeeper.server.infrastructure.exception.AuthenticationException;
 import org.limbo.doorkeeper.server.infrastructure.utils.JWTUtil;
-import org.limbo.doorkeeper.server.infrastructure.utils.JacksonUtil;
-import org.limbo.doorkeeper.server.infrastructure.utils.Verifies;
 import org.limbo.doorkeeper.server.infrastructure.utils.WebUtil;
+import org.limbo.utils.jackson.JacksonUtils;
+import org.limbo.utils.verifies.Verifies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -55,7 +55,7 @@ public class SessionInterceptor implements HandlerInterceptor {
         // 验证会话存在
         String token = request.getHeader(ApiConstants.TOKEN_HEADER);
         if (StringUtils.isBlank(token)) {
-            WebUtil.writeToResponse(response, JacksonUtil.toJSONString(ResponseVO.unauthenticated("无认证请求")));
+            WebUtil.writeToResponse(response, JacksonUtils.toJSONString(ResponseVO.unauthenticated("无认证请求")));
             return false;
         }
         try {
@@ -69,7 +69,7 @@ public class SessionInterceptor implements HandlerInterceptor {
 
             JWTUtil.verifyToken(token, realm.getSecret());
         } catch (Exception e) {
-            WebUtil.writeToResponse(response, JacksonUtil.toJSONString(ResponseVO.unauthenticated(AuthenticationException.msg)));
+            WebUtil.writeToResponse(response, JacksonUtils.toJSONString(ResponseVO.unauthenticated(AuthenticationException.msg)));
             return false;
         }
 

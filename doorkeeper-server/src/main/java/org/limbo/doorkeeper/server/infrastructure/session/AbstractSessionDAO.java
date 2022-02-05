@@ -18,8 +18,8 @@ package org.limbo.doorkeeper.server.infrastructure.session;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.limbo.doorkeeper.api.dto.vo.SessionUser;
-import org.limbo.doorkeeper.server.infrastructure.exception.AuthenticationException;
-import org.limbo.doorkeeper.server.infrastructure.utils.UUIDUtils;
+import org.limbo.doorkeeper.common.exception.AuthenticationException;
+import org.limbo.utils.strings.UUIDUtils;
 
 import java.util.Date;
 import java.util.Objects;
@@ -50,7 +50,7 @@ public abstract class AbstractSessionDAO<T extends SessionUser> {
     public T createSession(SessionUser sessionUser) {
         try {
             // 会话用户
-            T session = create(UUIDUtils.get(), sessionUser);
+            T session = create(UUIDUtils.randomID(), sessionUser);
 
             // 保存会话
             save(session);

@@ -4,15 +4,15 @@ import org.limbo.doorkeeper.api.constants.BatchMethod;
 import org.limbo.doorkeeper.api.dto.param.add.RoleAddParam;
 import org.limbo.doorkeeper.api.dto.param.batch.UserRoleBatchUpdateParam;
 import org.limbo.doorkeeper.api.dto.vo.RoleVO;
-import org.limbo.doorkeeper.server.infrastructure.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.server.infrastructure.mapper.NamespaceMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.RealmMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.UserMapper;
+import org.limbo.doorkeeper.common.constant.DoorkeeperConstants;
+import org.limbo.doorkeeper.infrastructure.dao.mybatis.NamespaceMapper;
+import org.limbo.doorkeeper.infrastructure.dao.mybatis.RealmMapper;
+import org.limbo.doorkeeper.infrastructure.dao.mybatis.UserMapper;
 import org.limbo.doorkeeper.server.infrastructure.po.NamespacePO;
 import org.limbo.doorkeeper.server.infrastructure.po.RealmPO;
 import org.limbo.doorkeeper.server.infrastructure.po.UserPO;
-import org.limbo.doorkeeper.server.infrastructure.utils.MD5Utils;
-import org.limbo.doorkeeper.server.infrastructure.utils.UUIDUtils;
+import org.limbo.utils.encryption.MD5Utils;
+import org.limbo.utils.strings.UUIDUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -54,7 +54,7 @@ public class InitializeService {
     public boolean initDoorkeeper() {
         RealmPO realm = new RealmPO();
         realm.setName(DoorkeeperConstants.DOORKEEPER_REALM_NAME);
-        realm.setSecret(UUIDUtils.get());
+        realm.setSecret(UUIDUtils.randomID());
         try {
             realmMapper.insert(realm);
         } catch (DuplicateKeyException e) {
@@ -72,7 +72,8 @@ public class InitializeService {
         // 创建doorkeeper超管角色
         RoleAddParam realmAdminRoleParam =  RoleAddParam.builder()
                 .namespaceId(DoorkeeperConstants.REALM_ROLE_ID)
-                .name(DoorkeeperConstants.ADMIN).build();
+                .name(DoorkeeperConstants.ADMIN)
+                .build();
 
         RoleVO realmAdminRole = roleService.add(realm.getRealmId(), realmAdminRoleParam);
         // 绑定管理员和角色

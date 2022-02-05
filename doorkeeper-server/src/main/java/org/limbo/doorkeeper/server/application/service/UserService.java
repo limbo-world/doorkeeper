@@ -29,27 +29,22 @@ import org.limbo.doorkeeper.api.dto.param.update.PasswordUpdateParam;
 import org.limbo.doorkeeper.api.dto.param.update.UserUpdateParam;
 import org.limbo.doorkeeper.api.dto.vo.PageVO;
 import org.limbo.doorkeeper.api.dto.vo.UserVO;
-import org.limbo.doorkeeper.server.infrastructure.constants.DoorkeeperConstants;
-import org.limbo.doorkeeper.server.infrastructure.mapper.NamespaceMapper;
-import org.limbo.doorkeeper.server.infrastructure.po.NamespacePO;
+import org.limbo.doorkeeper.common.exception.ParamException;
+import org.limbo.doorkeeper.common.constant.DoorkeeperConstants;
 import org.limbo.doorkeeper.server.infrastructure.dao.GroupDao;
-import org.limbo.doorkeeper.server.infrastructure.exception.ParamException;
-import org.limbo.doorkeeper.server.infrastructure.mapper.GroupUserMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.RoleMapper;
-import org.limbo.doorkeeper.server.infrastructure.mapper.UserMapper;
-import org.limbo.doorkeeper.server.infrastructure.po.GroupPO;
-import org.limbo.doorkeeper.server.infrastructure.po.GroupUserPO;
-import org.limbo.doorkeeper.server.infrastructure.po.RolePO;
-import org.limbo.doorkeeper.server.infrastructure.po.UserPO;
-import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
-import org.limbo.doorkeeper.server.infrastructure.utils.MD5Utils;
-import org.limbo.doorkeeper.server.infrastructure.utils.MyBatisPlusUtils;
-import org.limbo.doorkeeper.server.infrastructure.utils.Verifies;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.limbo.doorkeeper.infrastructure.dao.mybatis.GroupUserMapper;
+import org.limbo.doorkeeper.infrastructure.dao.mybatis.NamespaceMapper;
+import org.limbo.doorkeeper.infrastructure.dao.mybatis.RoleMapper;
+import org.limbo.doorkeeper.infrastructure.dao.mybatis.UserMapper;
+import org.limbo.utils.encryption.MD5Utils;
+import org.limbo.utils.mybatisplus.MyBatisPlusUtils;
+import org.limbo.utils.reflection.EnhancedBeanUtils;
+import org.limbo.utils.verifies.Verifies;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,32 +57,32 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
 
-    @Autowired
+    @Resource
     private UserMapper userMapper;
 
-    @Autowired
+    @Resource
     private UserRoleService userRoleService;
 
-    @Autowired
+    @Resource
     private GroupDao groupDao;
 
-    @Autowired
+    @Resource
     private RoleMapper roleMapper;
 
-    @Autowired
+    @Resource
     private DoorkeeperService doorkeeperService;
 
-    @Autowired
+    @Resource
     private NamespaceMapper namespaceMapper;
 
-    @Autowired
+    @Resource
     private GroupUserMapper groupUserMapper;
 
     @Transactional
     public UserVO add(Long realmId, UserAddParam param) {
         UserPO user = EnhancedBeanUtils.createAndCopy(param, UserPO.class);
         user.setRealmId(realmId);
-        user.setPassword(MD5Utils.md5AndHex(param.getPassword(), StandardCharsets.UTF_8));
+        user.setPassword(MD5Utils.md5AndHex(param.getPassword(), StandardCharsets.UTF_8.name()));
         try {
             userMapper.insert(user);
         } catch (DuplicateKeyException e) {
@@ -130,7 +125,7 @@ public class UserService {
             GroupUserPO groupUser = new GroupUserPO();
             groupUser.setGroupId(groupId);
             groupUser.setUserId(userId);
-            groupUser.setExtend("");
+            groupUser.setExtend(StringUtils.EMPTY);
             groupUsers.add(groupUser);
         }
         groupUserMapper.batchInsertIgnore(groupUsers);
@@ -192,7 +187,7 @@ public class UserService {
 
         // 判断是否需要更新密码
         if (StringUtils.isNotBlank(param.getPassword())) {
-            updateWrapper.set(UserPO::getPassword, MD5Utils.md5AndHex(param.getPassword(), StandardCharsets.UTF_8));
+            updateWrapper.set(UserPO::getPassword, MD5Utils.md5AndHex(param.getPassword(), StandardCharsets.UTF_8.name()));
         }
         userMapper.update(null, updateWrapper);
     }
@@ -206,7 +201,7 @@ public class UserService {
         Verifies.notNull(user, "用户不存在");
         Verifies.verify(MD5Utils.verify(param.getOldPassword(), user.getPassword()), "密码错误");
         userMapper.update(null, Wrappers.<UserPO>lambdaUpdate()
-                .set(UserPO::getPassword, MD5Utils.md5AndHex(param.getNewPassword(), StandardCharsets.UTF_8))
+                .set(UserPO::getPassword, MD5Utils.md5AndHex(param.getNewPassword(), StandardCharsets.UTF_8.name()))
                 .eq(UserPO::getUserId, userId)
                 .eq(UserPO::getRealmId, realmId)
         );

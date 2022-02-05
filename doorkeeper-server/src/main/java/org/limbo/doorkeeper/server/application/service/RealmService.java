@@ -20,9 +20,9 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.dto.param.update.RealmUpdateParam;
 import org.limbo.doorkeeper.api.dto.vo.RealmVO;
-import org.limbo.doorkeeper.server.infrastructure.mapper.RealmMapper;
+import org.limbo.doorkeeper.infrastructure.dao.mybatis.RealmMapper;
 import org.limbo.doorkeeper.server.infrastructure.po.RealmPO;
-import org.limbo.doorkeeper.server.infrastructure.utils.EnhancedBeanUtils;
+import org.limbo.utils.reflection.EnhancedBeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
