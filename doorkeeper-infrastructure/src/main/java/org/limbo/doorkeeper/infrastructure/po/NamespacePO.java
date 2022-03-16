@@ -26,6 +26,8 @@ import java.util.Date;
 /**
  * 命名空间
  *
+ * 大多数情况下，namespace是希望使用 doorkeeper 来保护自己并提供单点登录解决方案的应用程序和服务。
+ *
  * @author Devil
  * @since 2020/12/29 4:22 下午
  */

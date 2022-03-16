@@ -26,6 +26,12 @@ import java.util.Date;
 /**
  * realmId clientId name 唯一
  *
+ * 分为 realm-role 和 namespace-role 是因为可能存在以下情况
+ *
+ * 公司内部系统，使用一个realm 那对于每个子应用如OA、财务等都是各自的namespace
+ *
+ * 对于一个对外应用，可能存在多个模块，那每个子模块就是一个namespace
+ *
  * @author Devil
  * @since 2020/12/29 4:28 下午
  */

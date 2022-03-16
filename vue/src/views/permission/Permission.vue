@@ -10,12 +10,12 @@
   - Unless required by applicable law or agreed to in writing, software
   - distributed under the License is distributed on an "AS IS" BASIS,
   - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  - See the License for the specific language governing permissions and
+  - See the License for the specific language governing permissionAggregates and
   - limitations under the License.
   -->
 
 <template>
-    <el-container class="permission-page">
+    <el-container class="permissionAggregate-page">
         <el-header class="padding-top-xs" height="80px">
             <el-row>
                 <el-form ref="searchForm" :inline="true" size="mini">
@@ -32,7 +32,7 @@
                         <el-button type="primary" @click="loadPermissions(1)" size="mini" icon="el-icon-search">查询
                         </el-button>
                         <el-button type="primary" @click="() => {
-                            $router.push({path: '/permission/permission-edit',query: {clientId: clientId}})
+                            $router.push({path: '/permissionAggregate/permissionAggregate-edit',query: {clientId: clientId}})
                             }" size="mini" icon="el-icon-circle-plus">新增</el-button>
                         <el-button type="primary" @click="batchEnable(true)" size="mini">批量启用</el-button>
                         <el-button type="primary" @click="batchEnable(false)" size="mini">批量停用</el-button>
@@ -42,7 +42,7 @@
         </el-header>
 
         <el-main>
-            <el-table :data="permissions" size="mini" @selection-change="handleSelectionChange">
+            <el-table :data="permissionAggregates" size="mini" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="50"></el-table-column>
                 <el-table-column prop="permissionId" label="ID"></el-table-column>
                 <el-table-column prop="name" label="名称"></el-table-column>
@@ -56,7 +56,7 @@
                     <template slot-scope="scope">
                         <div class="operations">
                             <i class="el-icon-edit" @click="() => {
-                                $router.push({path: '/permission/permission-edit',query: {
+                                $router.push({path: '/permissionAggregate/permissionAggregate-edit',query: {
                                     clientId: clientId, permissionId: scope.row.permissionId}
                                 })
                             }"></i>
@@ -96,17 +96,17 @@ export default {
                 size: 10,
                 total: -1,
             },
-            permissions: [],
+            permissionAggregates: [],
             selectPermissions: []
         };
     },
 
     computed: {
-        ...mapState('session', ['user', 'authExpEvaluator']),
+        ...mapState('sessionAggregate', ['user', 'authExpEvaluator']),
     },
 
     created() {
-        pages.permission = this;
+        pages.permissionAggregate = this;
         this.loadPermissions();
     },
 
@@ -124,12 +124,12 @@ export default {
                 this.resetPageForm();
             }
             this.startProgress();
-            return this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/permission`, {
+            return this.$ajax.get(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/permissionAggregate`, {
                 params: this.queryForm
             }).then(response => {
                 const page = response.data;
                 this.queryForm.total = page.total >= 0 ? page.total : this.queryForm.total;
-                this.permissions = page.data;
+                this.permissionAggregates = page.data;
             }).finally(() => this.stopProgress());
         },
 
@@ -140,10 +140,10 @@ export default {
         batchEnable(v) {
             let permissionIds = [];
             if (this.selectPermissions && this.selectPermissions.length > 0 ) {
-                this.selectPermissions.forEach(permission => permissionIds.push(permission.permissionId))
+                this.selectPermissions.forEach(permissionAggregate => permissionIds.push(permissionAggregate.permissionId))
             }
             this.startProgress();
-            return this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/permission/batch`, {
+            return this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/permissionAggregate/batch`, {
                 type: this.$constants.batchMethod.UPDATE, isEnabled: v, permissionIds: permissionIds
             }).then(response => {
                 this.loadPermissions();
@@ -157,7 +157,7 @@ export default {
                 type: 'warning'
             }).then(() => {
                 this.dialogProcessing = true;
-                this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/permission/batch`, {
+                this.$ajax.post(`/admin/realm/${this.user.realm.realmId}/client/${this.clientId}/permissionAggregate/batch`, {
                     type: this.$constants.batchMethod.DELETE, permissionIds: permissionIds
                 }).then(() => {
                     this.loadPermissions();

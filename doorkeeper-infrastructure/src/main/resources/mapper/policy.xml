@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2020-2024 Limbo Team (https://github.com/limbo-world).
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ 	http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissionAggregates and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.limbo.doorkeeper.infrastructure.dao.mybatis.mapper.policy.PolicyMapper" >
+
+    <resultMap id="BaseResult" type="org.limbo.doorkeeper.infrastructure.po.PolicyPO">
+        <result column="policy_id" property="policyId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="realm_id" property="realmId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="client_id" property="clientId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="name" property="name" jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result column="description" property="description" jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result column="type" property="type" jdbcType="VARCHAR" javaType="org.limbo.doorkeeper.api.constants.PolicyType" />
+        <result column="logic" property="logic" jdbcType="VARCHAR" javaType="org.limbo.doorkeeper.api.constants.Logic" />
+        <result column="intention" property="intention" jdbcType="VARCHAR" javaType="org.limbo.doorkeeper.api.constants.Intention" />
+        <result column="is_enabled" property="isEnabled" jdbcType="BIT" javaType="java.lang.Boolean"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+    </resultMap>
+
+    <resultMap id="PolicyVO" type="org.limbo.doorkeeper.api.dto.vo.policy.PolicyVO" extends="BaseResult">
+        <result column="type" property="type" jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result column="logic" property="logic" jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result column="intention" property="intention" jdbcType="VARCHAR" javaType="java.lang.String" />
+        <collection property="params" columnPrefix="param_" resultMap="PolicyParamVO" />
+        <collection property="roles" columnPrefix="role_" resultMap="PolicyRoleVO" />
+        <collection property="users" columnPrefix="user_" resultMap="PolicyUserVO" />
+        <collection property="groups" columnPrefix="group_" resultMap="PolicyGroupVO" />
+    </resultMap>
+
+    <resultMap id="PolicyParamVO" type="org.limbo.doorkeeper.api.dto.vo.policy.PolicyParamVO">
+        <result column="policy_param_id" property="policyParamId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="policy_id" property="policyId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="k" property="k" jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result column="v" property="v" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </resultMap>
+
+    <resultMap id="PolicyRoleVO" type="org.limbo.doorkeeper.api.dto.vo.policy.PolicyRoleVO">
+        <result column="policy_role_id" property="policyRoleId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="policy_id" property="policyId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="role_id" property="roleId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="realm_id" property="realmId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="client_id" property="clientId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="name" property="name" jdbcType="VARCHAR" javaType="java.lang.String" />
+        <result column="is_enabled" property="isEnabled" jdbcType="BIT" javaType="java.lang.Boolean"/>
+    </resultMap>
+
+    <resultMap id="PolicyUserVO" type="org.limbo.doorkeeper.api.dto.vo.policy.PolicyUserVO">
+        <result column="policy_user_id" property="policyUserId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="policy_id" property="policyId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="user_id" property="userId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="username" property="username" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </resultMap>
+
+    <resultMap id="PolicyGroupVO" type="org.limbo.doorkeeper.api.dto.vo.policy.PolicyGroupVO">
+        <result column="policy_group_id" property="policyGroupId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="policy_id" property="policyId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="group_id" property="groupId" jdbcType="BIGINT" javaType="java.lang.Long" />
+        <result column="is_extend" property="isExtend" jdbcType="BIT" javaType="java.lang.Boolean"/>
+    </resultMap>
+
+    <select id="getVOS" resultMap="PolicyVO">
+        select p.*,
+        pp.policy_param_id as param_policy_param_id, pp.k as param_k, pp.v as param_v,
+        pr.policy_role_id as role_policy_role_id, pr.role_id as role_role_id,
+        r.realm_id as role_realm_id, r.client_id as role_client_id, r.name as role_name, r.is_enabled as role_is_enabled,
+        pu.policy_user_id as user_policy_user_id, pu.user_id as user_user_id,
+        u.username as user_username,
+        pg.policy_group_id as group_policy_group_id, pg.group_id as group_group_id, pg.is_extend as group_is_extend
+        from policy p
+        left join policy_param pp on pp.policy_id = p.policy_id
+        left join policy_role pr on pr.policy_id = p.policy_id
+        left join `role` r on r.role_id = pr.role_id
+        left join policy_user pu on pu.policy_id = p.policy_id
+        left join `user` u on u.user_id = pu.user_id
+        left join policy_group pg on pg.policy_id = p.policy_id
+        where p.realm_id = #{realmId} and p.client_id = #{clientId}
+        <if test="policyIds != null and policyIds.size() > 0">
+            and p.policy_id in (
+            <foreach collection="policyIds" separator="," item="policyId">
+                #{policyId}
+            </foreach>
+            )
+        </if>
+        <if test="isEnabled != null">
+            and p.is_enabled = #{isEnabled}
+        </if>
+    </select>
+
+</mapper>

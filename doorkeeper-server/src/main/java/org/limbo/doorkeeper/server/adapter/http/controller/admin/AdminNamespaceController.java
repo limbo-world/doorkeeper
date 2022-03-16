@@ -24,9 +24,9 @@ import org.limbo.doorkeeper.api.dto.param.update.ClientUpdateParam;
 import org.limbo.doorkeeper.api.dto.vo.NamespaceVO;
 import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
 import org.limbo.doorkeeper.api.dto.vo.RoleVO;
+import org.limbo.doorkeeper.application.service.DoorkeeperService;
+import org.limbo.doorkeeper.application.service.NamespaceAppService;
 import org.limbo.doorkeeper.server.adapter.http.controller.BaseController;
-import org.limbo.doorkeeper.server.application.service.DoorkeeperService;
-import org.limbo.doorkeeper.server.application.service.NamespaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -45,7 +45,7 @@ import java.util.List;
 public class AdminNamespaceController extends BaseController {
 
     @Autowired
-    private NamespaceService namespaceService;
+    private NamespaceAppService namespaceAppService;
 
     @Autowired
     private DoorkeeperService doorkeeperService;
@@ -59,20 +59,20 @@ public class AdminNamespaceController extends BaseController {
     @Operation(summary = "命名空间列表")
     @GetMapping
     public ResponseVO<List<NamespaceVO>> namespaces() {
-        return ResponseVO.success(namespaceService.list(getRealmId()));
+        return ResponseVO.success(namespaceAppService.list(getRealmId()));
     }
 
     @Operation(summary = "获取命名空间")
     @GetMapping("/{namespaceId}")
     public ResponseVO<NamespaceVO> get(@Validated @NotNull(message = "namespaceId is null") @PathVariable("namespaceId") Long namespaceId) {
-        return ResponseVO.success(namespaceService.get(getRealmId(), namespaceId));
+        return ResponseVO.success(namespaceAppService.get(namespaceId));
     }
 
     @Operation(summary = "更新命名空间")
     @PutMapping("/{namespaceId}")
     public ResponseVO<RoleVO> update(@Validated @NotNull(message = "namespaceId is null") @PathVariable("namespaceId") Long namespaceId,
                                      @Validated @RequestBody ClientUpdateParam param) {
-        namespaceService.update(getRealmId(), namespaceId, param);
+        namespaceAppService.update(namespaceId, param);
         return ResponseVO.success();
     }
 

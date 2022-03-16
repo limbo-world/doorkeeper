@@ -24,8 +24,8 @@ import org.limbo.doorkeeper.api.dto.vo.AccountGrantVO;
 import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
 import org.limbo.doorkeeper.api.dto.vo.UserVO;
 import org.limbo.doorkeeper.server.adapter.http.controller.BaseController;
-import org.limbo.doorkeeper.server.application.service.LoginService;
-import org.limbo.doorkeeper.server.application.service.UserService;
+import org.limbo.doorkeeper.application.service.LoginService;
+import org.limbo.doorkeeper.application.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

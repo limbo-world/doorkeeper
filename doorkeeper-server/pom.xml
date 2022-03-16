@@ -13,7 +13,6 @@
     <properties>
         <!-- 不deploy -->
         <maven.deploy.skip>true</maven.deploy.skip>
-        <redisson.version>3.12.3</redisson.version>
         <xvcode.version>1.0</xvcode.version>
     </properties>
 
@@ -21,15 +20,7 @@
         <!-- 内部依赖 -->
         <dependency>
             <groupId>org.limbo.doorkeeper</groupId>
-            <artifactId>doorkeeper-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.limbo.doorkeeper</groupId>
-            <artifactId>doorkeeper-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.limbo.doorkeeper</groupId>
-            <artifactId>doorkeeper-infrastructure</artifactId>
+            <artifactId>doorkeeper-application</artifactId>
         </dependency>
 
         <!-- SpringBootStarter -->
@@ -44,56 +35,31 @@
             </exclusions>
         </dependency>
 
-        <!-- 配置加密 -->
-        <dependency>
-            <groupId>com.github.ulisesbocchio</groupId>
-            <artifactId>jasypt-spring-boot-starter</artifactId>
-            <version>${jasypt.version}</version>
-        </dependency>
-
-        <!-- Spring -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-tx</artifactId>
-        </dependency>
-
         <!-- SpringDoc -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
-            <version>${springdoc.version}</version>
         </dependency>
 
         <!-- MySql -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql.driver.version}</version>
         </dependency>
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>${hikari.version}</version>
         </dependency>
 
         <!-- Redis Redisson -->
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson</artifactId>
-            <version>${redisson.version}</version>
-        </dependency>
-
-        <!-- jwt -->
-        <dependency>
-            <groupId>com.auth0</groupId>
-            <artifactId>java-jwt</artifactId>
-            <version>3.10.3</version>
         </dependency>
 
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
-            <version>1.9.5</version>
         </dependency>
 
         <!-- logger begin -->
@@ -104,42 +70,20 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
         </dependency>
-        <!-- 代码直接调用common-logging会被桥接到slf4j -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
-            <version>${slf4j.version}</version>
         </dependency>
-        <!-- 代码直接调用java.util.logging会被桥接到slf4j -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jul-to-slf4j</artifactId>
-            <version>${slf4j.version}</version>
         </dependency>
         <!-- logger end -->
 
-        <!-- Utils -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-collections4</artifactId>
-        </dependency>
         <dependency>
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
-        </dependency>
-
-        <!-- test -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.1</version>
-            <scope>test</scope>
         </dependency>
 
     </dependencies>

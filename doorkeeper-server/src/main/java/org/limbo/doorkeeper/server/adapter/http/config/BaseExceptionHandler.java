@@ -19,9 +19,9 @@ package org.limbo.doorkeeper.server.adapter.http.config;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
-import org.limbo.doorkeeper.common.exception.AuthenticationException;
-import org.limbo.doorkeeper.common.exception.AuthorizationException;
-import org.limbo.doorkeeper.common.exception.ParamException;
+import org.limbo.doorkeeper.infrastructure.exception.AuthenticationException;
+import org.limbo.doorkeeper.infrastructure.exception.AuthorizationException;
+import org.limbo.utils.verifies.VerifyException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -53,9 +53,9 @@ public class BaseExceptionHandler {
                 .orElse(StringUtils.EMPTY));
     }
 
-    @ExceptionHandler(value = {ParamException.class})
-    public ResponseVO handVerify(ParamException e) {
-        log.info("参数异常 {}", e.getMessage());
+    @ExceptionHandler(value = {VerifyException.class, IllegalArgumentException.class})
+    public ResponseVO handVerify(RuntimeException e) {
+        log.info("校验异常 {}", e.getMessage());
         return ResponseVO.paramError(e.getMessage());
     }
 

@@ -23,7 +23,7 @@ import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
 import org.limbo.doorkeeper.api.dto.param.batch.RoleUserBatchUpdateParam;
 import org.limbo.doorkeeper.api.dto.vo.UserRoleVO;
 import org.limbo.doorkeeper.server.adapter.http.controller.BaseController;
-import org.limbo.doorkeeper.server.application.service.RoleUserService;
+import org.limbo.doorkeeper.server.service.RoleUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;

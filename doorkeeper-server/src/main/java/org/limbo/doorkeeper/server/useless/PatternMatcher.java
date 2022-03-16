@@ -17,7 +17,7 @@
 package org.limbo.doorkeeper.server.useless;
 
 import org.apache.commons.lang3.StringUtils;
-import org.limbo.doorkeeper.core.domain.component.path.AntPathMatcher;
+import org.limbo.doorkeeper.core.component.path.AntPathMatcher;
 
 /**
  * @author Devil

@@ -17,7 +17,7 @@
 package org.limbo.doorkeeper;
 
 import org.junit.Test;
-import org.limbo.doorkeeper.core.domain.component.path.AntPathMatcher;
+import org.limbo.doorkeeper.core.component.path.AntPathMatcher;
 
 /**
  * @Author Devil

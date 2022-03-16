@@ -27,7 +27,7 @@ import org.limbo.doorkeeper.api.dto.vo.PageVO;
 import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
 import org.limbo.doorkeeper.api.dto.vo.RoleVO;
 import org.limbo.doorkeeper.server.adapter.http.controller.BaseController;
-import org.limbo.doorkeeper.server.application.service.RoleService;
+import org.limbo.doorkeeper.application.service.RoleService;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;

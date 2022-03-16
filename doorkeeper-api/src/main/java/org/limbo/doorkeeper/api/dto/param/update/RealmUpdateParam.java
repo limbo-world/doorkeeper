@@ -26,7 +26,10 @@ import lombok.Data;
 @Data
 public class RealmUpdateParam {
 
-    @Schema(description ="描述")
+    @Schema(description ="名称")
+    private String name;
+
+    @Schema(description ="秘钥")
     private String secret;
 
 }

@@ -44,7 +44,4 @@ public class UserUpdateParam {
     @Schema(description ="电话")
     private String phone;
 
-    @Schema(description ="扩展信息")
-    private String extend;
-
 }

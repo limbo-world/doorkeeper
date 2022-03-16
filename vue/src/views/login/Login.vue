@@ -62,7 +62,7 @@ export default {
      * 比较好的方法是通过session module的getter获取user，判断user存不存在
      */
     beforeRouteEnter(to, from, next) {
-        window.$ajax.get('/session/user-info', {
+        window.$ajax.get('/sessionAggregate/user-info', {
             ignoreException: {401: true}
         }).then(response => {
             next('/home');
@@ -76,7 +76,7 @@ export default {
     },
 
     methods: {
-        ...mapActions('session', ['loadMenus']),
+        ...mapActions('sessionAggregate', ['loadMenus']),
 
         login() {
             this.loginProcessing = true;
@@ -93,7 +93,7 @@ export default {
                     password: md5.md5AndHex(this.loginForm.username + md5.md5AndHex(this.loginForm.password) + timestamp)
                 }
 
-                this.$store.dispatch('session/login', loginParam).then(() => {
+                this.$store.dispatch('sessionAggregate/login', loginParam).then(() => {
                     this.$router.push({
                         path: '/home',
                     });

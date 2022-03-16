@@ -60,7 +60,7 @@
 
         computed: {
             ...mapState('ui', ['isMenuHidden']),
-            ...mapState('session', ['menus']),
+            ...mapState('sessionAggregate', ['menus']),
 
             menuHiddenClass() {
                 return this.isMenuHidden ? 'menu-hidden' : '';
@@ -80,8 +80,8 @@
         },
 
         methods: {
-            ...mapMutations('session', ['setSelectedMenu']),
-            ...mapActions('session', ['loadMenus']),
+            ...mapMutations('sessionAggregate', ['setSelectedMenu']),
+            ...mapActions('sessionAggregate', ['loadMenus']),
 
             hasChildren(m) {
                 return m.children && m.children.length > 0

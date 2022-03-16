@@ -23,18 +23,22 @@ public class TemplateLoader {
     /**
      * 获取模板
      */
-    public String getTemplate() throws Exception {
-        if (template != null) {
-            return template;
-        }
-        synchronized (this) {
+    public String getTemplate() {
+        try {
             if (template != null) {
                 return template;
             }
-            InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream(path);
-            template = IOUtils.toString(Objects.requireNonNull(resourceAsStream), StandardCharsets.UTF_8);
+            synchronized (this) {
+                if (template != null) {
+                    return template;
+                }
+                InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream(path);
+                template = IOUtils.toString(Objects.requireNonNull(resourceAsStream), StandardCharsets.UTF_8);
+            }
+            return template;
+        } catch (Exception e) {
+            throw new RuntimeException("template " + path + " read error");
         }
-        return template;
     }
 
     public String getPath() {

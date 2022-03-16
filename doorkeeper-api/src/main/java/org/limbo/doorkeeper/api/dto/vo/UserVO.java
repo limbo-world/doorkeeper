@@ -45,9 +45,6 @@ public class UserVO {
     @Schema(description ="电话")
     private String phone;
 
-    @Schema(description ="扩展信息")
-    private String extend;
-
     @Schema(description ="是否启用")
     private Boolean isEnabled;
 }

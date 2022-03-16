@@ -48,7 +48,7 @@ export default {
     },
 
     computed: {
-        ...mapState('session', ['user']),
+        ...mapState('sessionAggregate', ['user']),
     },
 
     created() {
@@ -64,7 +64,7 @@ export default {
                         return;
                     }
 
-                    this.$ajax.put(`/session/change-password`, {
+                    this.$ajax.put(`/sessionAggregate/change-password`, {
                         oldPassword: this.account.oldPassword,
                         newPassword: this.account.newPassword
                     }).then((response) => {

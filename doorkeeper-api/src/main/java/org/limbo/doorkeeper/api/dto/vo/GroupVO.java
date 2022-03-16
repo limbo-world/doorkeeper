@@ -55,13 +55,4 @@ public class GroupVO {
     private List<GroupVO> children;
 
     private List<GroupRoleVO> roles;
-
-    @Schema(description ="用户组用户ID")
-    private Long groupUserId;
-
-    @Schema(description ="用户ID")
-    private Long userId;
-
-    @Schema(description ="扩展信息")
-    private String extend;
 }

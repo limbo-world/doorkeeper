@@ -24,13 +24,12 @@ import org.limbo.doorkeeper.api.dto.param.update.RealmUpdateParam;
 import org.limbo.doorkeeper.api.dto.vo.RealmVO;
 import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
 import org.limbo.doorkeeper.api.dto.vo.RoleVO;
+import org.limbo.doorkeeper.application.service.DoorkeeperService;
 import org.limbo.doorkeeper.server.adapter.http.controller.BaseController;
-import org.limbo.doorkeeper.server.application.service.DoorkeeperService;
-import org.limbo.doorkeeper.server.application.service.RealmService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -44,10 +43,7 @@ import java.util.List;
 @RequestMapping("/api/doorkeeper/v1/admin/realm")
 public class AdminRealmController extends BaseController {
 
-    @Autowired
-    private RealmService realmService;
-
-    @Autowired
+    @Resource
     private DoorkeeperService doorkeeperService;
 
     @Operation(summary = "新建域")
@@ -65,14 +61,14 @@ public class AdminRealmController extends BaseController {
     @Operation(summary = "域详情")
     @GetMapping("/{realmId}")
     public ResponseVO<RealmVO> get(@Validated @NotNull(message = "未提交域ID") @PathVariable("realmId") Long realmId) {
-        return ResponseVO.success(realmService.get(realmId));
+        return ResponseVO.success(doorkeeperService.get(realmId));
     }
 
     @Operation(summary = "更新域")
     @PutMapping("/{realmId}")
     public ResponseVO<RoleVO> update(@Validated @NotNull(message = "未提交域ID") @PathVariable("realmId") Long realmId,
                                      @Validated @RequestBody RealmUpdateParam param) {
-        realmService.update(realmId, param);
+        doorkeeperService.update(realmId, param);
         return ResponseVO.success();
     }
 

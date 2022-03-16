@@ -65,7 +65,7 @@ export default {
     },
 
     computed: {
-        ...mapState('session', ['user', 'realms']),
+        ...mapState('sessionAggregate', ['user', 'realms']),
         ...mapState('ui', ['breadcrumbs']),
 
         toggleMenuClass() {
@@ -80,11 +80,11 @@ export default {
 
     methods: {
         ...mapMutations('ui', ['toggleMenu']),
-        ...mapActions('session', ['logout']),
+        ...mapActions('sessionAggregate', ['logout']),
 
         // 切换
         changeRealm(realm) {
-            this.$store.dispatch('session/changeRealm', realm)
+            this.$store.dispatch('sessionAggregate/changeRealm', realm)
         },
 
         // 新建realm
@@ -96,9 +96,9 @@ export default {
                 this.realmAddDialogOpened = false;
 
                 // 加载用户拥有的域
-                this.$store.dispatch('session/loadRealms').then(() => {
-                    const user = store.getters['session/user']
-                    const realms = store.state.session.realms
+                this.$store.dispatch('sessionAggregate/loadRealms').then(() => {
+                    const user = store.getters['sessionAggregate/user']
+                    const realms = store.state.sessionAggregate.realms
                     let needChange = true;
                     // 设置当前选中的域 如果已经有选了则不需要切换了
                     if (user.realm) {
@@ -110,7 +110,7 @@ export default {
                         }
                     }
                     if (needChange) {
-                        this.$store.dispatch('session/changeRealm', realms[0])
+                        this.$store.dispatch('sessionAggregate/changeRealm', realms[0])
                     }
                 }).catch(reject => {
                     console.log("realms加载失败", reject)

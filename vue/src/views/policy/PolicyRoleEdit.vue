@@ -54,7 +54,7 @@ export default {
         };
     },
     computed: {
-        ...mapState('session', ['user']),
+        ...mapState('sessionEntity', ['user']),
     },
     created() {
         pages.policyRoleEdit = this;

@@ -35,8 +35,4 @@ public class GroupUserPO {
     private Long groupId;
 
     private Long userId;
-    /**
-     * 扩展信息
-     */
-    private String extend;
 }

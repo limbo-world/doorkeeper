@@ -20,8 +20,7 @@ import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.limbo.doorkeeper.server.application.service.InitializeService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.limbo.doorkeeper.application.service.DoorkeeperService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
@@ -102,7 +101,7 @@ public class WebConfig implements WebMvcConfigurer, ApplicationListener<ContextR
     }
 
     @Resource
-    private InitializeService initializeService;
+    private DoorkeeperService doorkeeperService;
 
     /**
      * 初始化项目数据
@@ -112,7 +111,7 @@ public class WebConfig implements WebMvcConfigurer, ApplicationListener<ContextR
     public void onApplicationEvent(ContextRefreshedEvent event) {
         if (event.getApplicationContext().getParent() == null) {
             log.info("start initialize...");
-            boolean initialized = initializeService.initDoorkeeper();
+            boolean initialized = doorkeeperService.init();
             if (initialized) {
                 log.info("initialize complete...");
             } else {

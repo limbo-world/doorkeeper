@@ -14,11 +14,18 @@
     <dependencies>
         <dependency>
             <groupId>org.limbo.doorkeeper</groupId>
-            <artifactId>doorkeeper-api</artifactId>
+            <artifactId>doorkeeper-infrastructure</artifactId>
         </dependency>
+
         <dependency>
+            <artifactId>doorkeeper-api</artifactId>
             <groupId>org.limbo.doorkeeper</groupId>
-            <artifactId>doorkeeper-core</artifactId>
+        </dependency>
+
+        <!-- tx -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
         </dependency>
     </dependencies>
 </project>

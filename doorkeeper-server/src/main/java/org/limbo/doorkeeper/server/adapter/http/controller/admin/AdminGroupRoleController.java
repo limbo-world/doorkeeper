@@ -25,7 +25,7 @@ import org.limbo.doorkeeper.api.dto.param.update.GroupRoleUpdateParam;
 import org.limbo.doorkeeper.api.dto.vo.GroupRoleVO;
 import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
 import org.limbo.doorkeeper.server.adapter.http.controller.BaseController;
-import org.limbo.doorkeeper.server.application.service.GroupRoleService;
+import org.limbo.doorkeeper.server.service.GroupRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;

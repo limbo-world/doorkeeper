@@ -23,7 +23,7 @@ import com.baomidou.mybatisplus.core.enums.IEnum;
  * @since 2021/1/11 4:25 下午
  */
 public enum UriMethod implements IEnum<String> {
-    ALL, GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS, TRACE, CONNECT;
+    UNKNOWN, ALL, GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS, TRACE, CONNECT;
 
     @Override
     public String getValue() {
@@ -36,6 +36,6 @@ public enum UriMethod implements IEnum<String> {
                 return value;
             }
         }
-        return null;
+        return UNKNOWN;
     }
 }

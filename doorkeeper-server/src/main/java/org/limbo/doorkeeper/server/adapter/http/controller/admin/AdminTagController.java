@@ -20,10 +20,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.limbo.doorkeeper.api.dto.vo.ResponseVO;
-import org.limbo.doorkeeper.api.dto.param.query.TagQueryParam;
+import org.limbo.doorkeeper.api.dto.param.query.LabelQueryParam;
 import org.limbo.doorkeeper.api.dto.vo.TagVO;
 import org.limbo.doorkeeper.server.adapter.http.controller.BaseController;
-import org.limbo.doorkeeper.server.application.service.TagService;
+import org.limbo.doorkeeper.server.service.TagService;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,7 +47,7 @@ public class AdminTagController extends BaseController {
 
     @Operation(summary = "查询标签")
     @GetMapping
-    public ResponseVO<List<TagVO>> list(@ParameterObject TagQueryParam param) {
+    public ResponseVO<List<TagVO>> list(@ParameterObject LabelQueryParam param) {
         return ResponseVO.success(tagService.list(getRealmId(), getClientId(), param));
     }
 }

@@ -31,7 +31,7 @@ export default {
     },
 
     computed: {
-        ...mapState('session', ['user']),
+        ...mapState('sessionAggregate', ['user']),
     },
 
     created() {

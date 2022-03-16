@@ -49,10 +49,6 @@ public class UserAddParam {
     @Schema(description ="电话")
     private String phone;
 
-    // todo
-    @Schema(description ="扩展信息")
-    private String extend;
-
     @Schema(description ="是否启用")
     private Boolean isEnabled;
 

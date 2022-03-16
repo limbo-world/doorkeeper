@@ -39,7 +39,4 @@ public class GroupUserBatchUpdateParam {
     @Schema(description ="用户列表", required = true)
     private List<Long> userIds;
 
-    @Schema(description ="扩展字段 新增/更新时使用")
-    private String extend;
-
 }

@@ -60,10 +60,6 @@ public class UserPO {
      */
     private String phone;
     /**
-     * 扩展信息
-     */
-    private String extend;
-    /**
      * 是否启用
      */
     private Boolean isEnabled;

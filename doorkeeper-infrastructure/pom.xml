@@ -16,9 +16,10 @@
             <artifactId>doorkeeper-core</artifactId>
             <groupId>org.limbo.doorkeeper</groupId>
         </dependency>
+
         <dependency>
-            <artifactId>doorkeeper-api</artifactId>
-            <groupId>org.limbo.doorkeeper</groupId>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
         </dependency>
 
         <!-- mybatis plus -->
