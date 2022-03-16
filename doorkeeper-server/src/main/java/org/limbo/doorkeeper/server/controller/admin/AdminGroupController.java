@@ -26,7 +26,7 @@ import org.limbo.doorkeeper.api.model.param.update.GroupUpdateParam;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
 import org.limbo.doorkeeper.api.model.vo.ResponseVO;
 import org.limbo.doorkeeper.server.controller.BaseController;
-import org.limbo.doorkeeper.server.domain.GroupTreeDO;
+import org.limbo.doorkeeper.server.infrastructure.checker.GroupTree;
 import org.limbo.doorkeeper.server.service.GroupService;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +60,7 @@ public class AdminGroupController extends BaseController {
     public ResponseVO<List<GroupVO>> list(@ParameterObject GroupQueryParam param) {
         List<GroupVO> groups = groupService.list(getRealmId(), param);
         if (DoorkeeperConstants.TREE.equals(param.getReturnType())) {
-            return ResponseVO.success(GroupTreeDO.create(groups).getTree());
+            return ResponseVO.success(GroupTree.create(groups).getTree());
         }
         return ResponseVO.success(groups);
     }

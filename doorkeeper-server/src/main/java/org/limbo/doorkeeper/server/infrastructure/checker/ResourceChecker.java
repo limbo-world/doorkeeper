@@ -32,7 +32,6 @@ import org.limbo.doorkeeper.api.model.vo.PermissionVO;
 import org.limbo.doorkeeper.api.model.vo.ResourceVO;
 import org.limbo.doorkeeper.api.model.vo.check.ResourceCheckResult;
 import org.limbo.doorkeeper.api.model.vo.policy.PolicyVO;
-import org.limbo.doorkeeper.server.domain.PatternDO;
 import org.limbo.doorkeeper.server.infrastructure.dao.PolicyDao;
 import org.limbo.doorkeeper.server.infrastructure.exception.AuthorizationException;
 import org.limbo.doorkeeper.server.infrastructure.mapper.*;
@@ -254,7 +253,7 @@ public class ResourceChecker {
                     }
 
                     // 判断是否匹配方法和路径
-                    PatternDO pattern = new PatternDO(uri.getUri().trim());
+                    ThreadSafePattern pattern = new ThreadSafePattern(uri.getUri().trim());
                     if ((UriMethod.ALL == uri.getMethod() || uri.getMethod() == UriMethod.parse(requestMethod))
                             && pattern.pathMatch(requestUri.trim())) {
                         uriIds.add(uri.getUriId());

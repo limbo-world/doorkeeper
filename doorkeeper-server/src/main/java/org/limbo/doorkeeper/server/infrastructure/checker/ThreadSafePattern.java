@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.domain;
+package org.limbo.doorkeeper.server.infrastructure.checker;
 
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +25,7 @@ import org.limbo.doorkeeper.server.infrastructure.utils.EasyAntPathMatcher;
  * @date 2021/6/1 3:46 下午
  */
 @Data
-public class PatternDO {
+public class ThreadSafePattern {
 
     private static final ThreadLocal<EasyAntPathMatcher> PATH_MATCHER = ThreadLocal.withInitial(EasyAntPathMatcher::new);
 
@@ -34,7 +34,7 @@ public class PatternDO {
      */
     private String pattern;
 
-    public PatternDO(String pattern) {
+    public ThreadSafePattern(String pattern) {
         this.pattern = pattern;
     }
 

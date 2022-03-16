@@ -25,7 +25,6 @@ import org.limbo.doorkeeper.api.model.vo.GroupRoleVO;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
 import org.limbo.doorkeeper.api.model.vo.RoleVO;
 import org.limbo.doorkeeper.api.model.vo.check.RoleCheckResult;
-import org.limbo.doorkeeper.server.domain.GroupTreeDO;
 import org.limbo.doorkeeper.server.infrastructure.exception.AuthorizationException;
 import org.limbo.doorkeeper.server.infrastructure.mapper.*;
 import org.limbo.doorkeeper.server.infrastructure.po.*;
@@ -168,7 +167,7 @@ public class RoleChecker {
         List<GroupRoleVO> groupRoleVOS = EnhancedBeanUtils.createAndCopyList(groupRoles, GroupRoleVO.class);
 
         // 生成组织树
-        GroupTreeDO groupTreeDO = GroupTreeDO.create(groupVOS);
+        GroupTree groupTreeDO = GroupTree.create(groupVOS);
         // 给树绑定角色
         for (GroupRoleVO groupRoleVO : groupRoleVOS) {
             GroupVO group = groupTreeDO.findFromTree(groupRoleVO.getGroupId());

@@ -25,7 +25,6 @@ import org.limbo.doorkeeper.api.constants.Logic;
 import org.limbo.doorkeeper.api.constants.PolicyType;
 import org.limbo.doorkeeper.api.model.vo.GroupVO;
 import org.limbo.doorkeeper.api.model.vo.policy.*;
-import org.limbo.doorkeeper.server.domain.GroupTreeDO;
 import org.limbo.doorkeeper.server.infrastructure.exception.AuthorizationException;
 import org.limbo.doorkeeper.server.infrastructure.mapper.GroupMapper;
 import org.limbo.doorkeeper.server.infrastructure.mapper.GroupRoleMapper;
@@ -61,7 +60,7 @@ public class PolicyChecker {
      */
     private Set<Long> userRoleIds;
 
-    private GroupTreeDO groupTree;
+    private GroupTree groupTree;
 
     public PolicyChecker(UserPO user, GroupMapper groupMapper, GroupUserMapper groupUserMapper, GroupRoleMapper groupRoleMapper,
                          UserRoleMapper userRoleMapper) {
@@ -149,7 +148,7 @@ public class PolicyChecker {
      */
     private boolean doGroupCheck(PolicyVO policy) {
         List<GroupUserPO> groupUsers = getGroupUsers();
-        GroupTreeDO groupTree = getGroupTree();
+        GroupTree groupTree = getGroupTree();
         if (CollectionUtils.isEmpty(groupUsers)) {
             return false;
         }
@@ -354,7 +353,7 @@ public class PolicyChecker {
         return userRoleIds;
     }
 
-    public GroupTreeDO getGroupTree() {
+    public GroupTree getGroupTree() {
         if (groupTree == null) {
             // 获取用户所在用户组
             List<GroupPO> groups = groupMapper.selectList(Wrappers.<GroupPO>lambdaQuery()
@@ -362,7 +361,7 @@ public class PolicyChecker {
             );
             // 生成组织树
             List<GroupVO> groupVOS = EnhancedBeanUtils.createAndCopyList(groups, GroupVO.class);
-            groupTree = GroupTreeDO.create(groupVOS);
+            groupTree = GroupTree.create(groupVOS);
         }
         return groupTree;
     }

@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package org.limbo.doorkeeper.server.domain;
+package org.limbo.doorkeeper.server.infrastructure.checker;
 
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
@@ -29,13 +29,13 @@ import java.util.List;
  * @date 2021/6/1 4:29 下午
  */
 @Data
-public class GroupTreeDO {
+public class GroupTree {
 
     private List<GroupVO> tree;
 
     private List<GroupVO> list;
 
-    private GroupTreeDO(List<GroupVO> groups) {
+    private GroupTree(List<GroupVO> groups) {
         this.list = groups;
         this.tree = organizeGroupTree(new ArrayList<>(), groups);
     }
@@ -44,8 +44,8 @@ public class GroupTreeDO {
      * 工厂方式创建
      * @return
      */
-    public static GroupTreeDO create(List<GroupVO> groups) {
-        return new GroupTreeDO(groups);
+    public static GroupTree create(List<GroupVO> groups) {
+        return new GroupTree(groups);
     }
 
     /**
