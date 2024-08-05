@@ -13,7 +13,7 @@
     <properties>
         <!-- 不deploy -->
         <maven.deploy.skip>true</maven.deploy.skip>
-        <redisson.version>3.12.3</redisson.version>
+        <redisson.version>3.22.0</redisson.version>
         <xvcode.version>1.0</xvcode.version>
     </properties>
 
